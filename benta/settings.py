@@ -41,7 +41,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "https://your-app-name.herokuapp.com",
     "http://property-production-61c8.up.railway.app",
-    "property-production-61c8.up.railway.app",
     "https://property-production-61c8.up.railway.app"
 ]
 
