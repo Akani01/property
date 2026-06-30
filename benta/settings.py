@@ -41,6 +41,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "https://your-app-name.herokuapp.com",
     "https://yourdomain.com",
+    "https://property-production-61c8.up.railway.app"
 ]
 
 # SSL/Proxy settings for Heroku
