@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropNest - Add Property</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --primary-light: #e8f0fe;
+            --secondary: #34a853;
+            --accent: #ea4335;
+            --warning: #fbbc04;
+            --dark: #202124;
+            --gray: #5f6368;
+            --light-gray: #f1f3f4;
+            --border: #dadce0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding-top: 72px;
+            padding-bottom: 40px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+        img { max-width: 100%; }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .header-brand img { height: 36px; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-actions .btn-icon:hover {
+            background: var(--light-gray);
+            color: var(--primary);
+        }
+
+        .user-badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fce8e6;
+            color: var(--accent);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #4285f4);
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+        }
+
+        .avatar.business {
+            background: linear-gradient(135deg, #ea4335, #fbbc04);
+        }
+
+        /* ===== DROPDOWNS ===== */
+        .dropdown-container { position: relative; }
+        
+        .dropdown-menu-custom {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 220px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.98);
+            transition: var(--transition);
+            z-index: 1000;
+            border: 1px solid var(--border);
+        }
+
+        .dropdown-menu-custom.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-menu-custom .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--dark);
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-menu-custom .dropdown-item:hover {
+            background: var(--light-gray);
+            color: var(--primary);
+        }
+
+        .dropdown-menu-custom .dropdown-item i {
+            width: 20px;
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .dropdown-menu-custom .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 16px;
+        }
+
+        /* ===== SIDEBAR NAV ===== */
+        .sidebar-nav {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            box-shadow: var(--shadow);
+            padding: 12px 8px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 900;
+            border: 1px solid var(--border);
+            border-left: none;
+        }
+
+        @media (min-width: 992px) {
+            .sidebar-nav { display: flex; }
+            body { padding-left: 80px; }
+        }
+
+        .sidebar-nav .nav-link {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-nav .nav-link .tooltip-text {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav .nav-link:hover .tooltip-text {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-layout {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+        }
+
+        .page-header h1 i { color: var(--primary); }
+        .page-header .subtitle { color: var(--gray); font-size: 14px; font-weight: 400; }
+
+        /* ===== FORM CARD ===== */
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .form-card .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+        }
+
+        .form-card .card-header i { color: var(--primary); }
+        .form-card .card-body { padding: 24px; }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--dark);
+        }
+        .form-group label .required { color: var(--accent); margin-left: 2px; }
+        .form-group .help-text { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+            color: var(--dark);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.15);
+        }
+
+        .form-control.is-invalid { border-color: var(--accent); }
+        .form-control::placeholder { color: #aaa; }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 576px) { .form-row { grid-template-columns: 1fr; } }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) { .form-row-3 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 576px) { .form-row-3 { grid-template-columns: 1fr; } }
+
+        /* ===== FILE UPLOAD ===== */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--light-gray);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-area i { font-size: 40px; color: var(--gray); margin-bottom: 12px; }
+        .file-upload-area p { margin: 0; color: var(--gray); font-size: 14px; }
+        .file-upload-area .upload-hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+        .file-upload-area input[type="file"] { display: none; }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            aspect-ratio: 1;
+            background: var(--light-gray);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .image-preview-item .remove-btn:hover { background: var(--accent); }
+
+        /* ===== CHECKBOX / TOGGLE ===== */
+        .toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 4px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px 14px;
+            background: var(--light-gray);
+            border-radius: 20px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .toggle-item:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .toggle-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .toggle-item.feature-tag {
+            background: var(--light-gray);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-item.feature-tag:has(input:checked) {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .features-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .features-header label {
+            margin-bottom: 0;
+        }
+
+        .btn-add-feature {
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-add-feature:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+        }
+
+        .feature-search {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            min-width: 150px;
+        }
+
+        .feature-search:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover { background: #e8eaed; }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover { background: #2d9248; }
+
+        .btn-danger {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-danger:hover { background: #d33426; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-lg { padding: 12px 32px; font-size: 16px; }
+        .btn-sm { padding: 6px 16px; font-size: 13px; }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-box {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-box .modal-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .modal-box .modal-head .close-btn {
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-box .modal-head .close-btn:hover { color: var(--dark); }
+
+        .modal-box .modal-body { padding: 20px; }
+
+        .modal-box .modal-foot {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-box .modal-foot .btn {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .modal-box .modal-foot .btn-primary:hover { background: var(--primary-dark); }
+        .modal-box .modal-foot .btn-secondary:hover { background: #e8eaed; }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast-item {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 280px;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .toast-item.success { background: var(--secondary); }
+        .toast-item.error { background: var(--accent); }
+        .toast-item.info { background: var(--primary); }
+
+        .toast-item .close-toast {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .toast-item .close-toast:hover { color: white; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 6px 0 env(safe-area-inset-bottom);
+            z-index: 999;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        @media (max-width: 992px) {
+            .mobile-nav { display: flex; }
+            body { padding-bottom: 72px; }
+        }
+
+        .mobile-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 10px;
+            color: var(--gray);
+            padding: 4px 12px;
+            transition: var(--transition);
+            border: none;
+            background: none;
+        }
+
+        .mobile-nav a i { font-size: 20px; }
+        .mobile-nav a.active { color: var(--primary); }
+        .mobile-nav a:hover { color: var(--primary); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 576px) {
+            .header { padding: 0 12px; }
+            .header-brand { font-size: 16px; }
+            .header-brand img { height: 28px; }
+            .main-layout { padding: 0 12px; }
+            .page-header h1 { font-size: 20px; }
+            .form-card .card-header { padding: 16px 20px; }
+            .form-card .card-body { padding: 16px; }
+            .form-actions { flex-direction: column; }
+            .form-actions .btn { width: 100%; justify-content: center; }
+            .toast-item { min-width: auto; width: calc(100vw - 40px); }
+            .features-header { flex-direction: column; align-items: stretch; }
+            .feature-search { min-width: auto; width: 100%; }
+        }
+
+        /* ===== UTILITIES ===== */
+        .hidden { display: none !important; }
+        .text-muted { color: var(--gray); }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 16px; }
+        .d-flex { display: flex; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 16px; }
+        .align-items-center { align-items: center; }
+        .justify-content-between { justify-content: space-between; }
+        .w-100 { width: 100%; }
+        .flex-column { flex-direction: column; }
+        .flex-wrap { flex-wrap: wrap; }
+        .flex-1 { flex: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR NAV ===== -->
+    <nav class="sidebar-nav">
+        <a href="/admin-portal/" class="nav-link" title="Dashboard">
+            <i class="fas fa-th-large"></i>
+            <span class="tooltip-text">Dashboard</span>
+        </a>
+        <a href="/properties/manage/" class="nav-link" title="Properties">
+            <i class="fas fa-home"></i>
+            <span class="tooltip-text">Properties</span>
+        </a>
+        <a href="/properties/add/" class="nav-link active" title="Add Property">
+            <i class="fas fa-plus-circle"></i>
+            <span class="tooltip-text">Add Property</span>
+        </a>
+        <a href="/features/manage/" class="nav-link" title="Features">
+            <i class="fas fa-star"></i>
+            <span class="tooltip-text">Features</span>
+        </a>
+        <a href="/properties/bookings/" class="nav-link" title="Bookings">
+            <i class="fas fa-calendar-check"></i>
+            <span class="tooltip-text">Bookings</span>
+        </a>
+    </nav>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <a href="/" class="header-brand">
+            <img src="/static/images/logo.png" alt="PropNest">
+            <span>PropNest</span>
+        </a>
+
+        <div class="header-actions">
+            <span class="user-badge"><i class="fas fa-building me-1"></i>Business</span>
+            <a href="/messaging/" class="btn-icon"><i class="fas fa-comment-dots"></i></a>
+
+            <div class="dropdown-container">
+                <div class="avatar business" onclick="toggleDropdown('profileMenu')">
+                    {{ user.username|first|upper }}
+                </div>
+                <div class="dropdown-menu-custom" id="profileMenu">
+                    <a href="/admin-portal/" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                    <a href="/properties/manage/" class="dropdown-item"><i class="fas fa-home"></i> Properties</a>
+                    <a href="/properties/add/" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Property</a>
+                    <a href="/features/manage/" class="dropdown-item"><i class="fas fa-star"></i> Features</a>
+                    <a href="/properties/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+
+            <div class="dropdown-container">
+                <button class="btn-icon" onclick="toggleDropdown('moreMenu')">
+                    <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div class="dropdown-menu-custom" id="moreMenu">
+                    <a href="/properties/reports/" class="dropdown-item"><i class="fas fa-file-pdf"></i> Reports</a>
+                    <a href="/admin-portal/settings/" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-layout">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>
+                    <i class="fas fa-plus-circle"></i>
+                    Add New Property
+                    <span class="subtitle">List your property for sale or rent</span>
+                </h1>
+            </div>
+            <a href="/properties/manage/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Properties
+            </a>
+        </div>
+
+        <!-- ===== FORM ===== -->
+        <form id="propertyForm" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+
+            <!-- Basic Information -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-info-circle"></i> Basic Information</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Property Title <span class="required">*</span></label>
+                        <input type="text" class="form-control" name="title" placeholder="e.g., Modern 3-Bedroom Apartment in Sandton" required>
+                        <div class="help-text">A clear, descriptive title for your property listing</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description <span class="required">*</span></label>
+                        <textarea class="form-control" name="description" placeholder="Describe your property in detail..." required></textarea>
+                        <div class="help-text">Include features, amenities, and any special highlights</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Listing Type <span class="required">*</span></label>
+                            <select class="form-control" name="listing_type" required>
+                                <option value="">Select type...</option>
+                                {% for value, label in listing_types %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Property Type <span class="required">*</span></label>
+                            <div class="d-flex gap-2" style="display:flex;gap:8px;">
+                                <select class="form-control" name="property_type" id="propertyTypeSelect" required style="flex:1;">
+                                    <option value="">Select type...</option>
+                                    {% for type in property_types %}
+                                    <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="showAddTypeModal()" style="padding:8px 16px;border-radius:8px;background:var(--primary);color:white;border:none;white-space:nowrap;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="help-text">Select from list or click + to add a new type</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-map-marker-alt"></i> Location</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Address <span class="required">*</span></label>
+                        <input type="text" class="form-control" name="address" placeholder="e.g., 123 Main Street" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="city" placeholder="e.g., Cape Town" required>
+                        </div>
+                        <div class="form-group">
+                            <label>State/Province</label>
+                            <input type="text" class="form-control" name="state" placeholder="e.g., Western Cape">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Country</label>
+                            <input type="text" class="form-control" name="country" placeholder="South Africa" value="South Africa">
+                        </div>
+                        <div class="form-group">
+                            <label>Postal Code</label>
+                            <input type="text" class="form-control" name="postal_code" placeholder="e.g., 8001">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-home"></i> Property Details</div>
+                <div class="card-body">
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label>Bedrooms</label>
+                            <input type="number" class="form-control" name="bedrooms" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Bathrooms</label>
+                            <input type="number" class="form-control" name="bathrooms" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Garages</label>
+                            <input type="number" class="form-control" name="garages" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Total Area (m²)</label>
+                            <input type="number" class="form-control" name="total_area" min="0" step="0.01" placeholder="e.g., 150">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-tag"></i> Pricing & Status</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Base Price <span class="required">*</span></label>
+                            <input type="number" class="form-control" name="base_price" min="0" step="100" placeholder="e.g., 2500" required>
+                            <div class="help-text">Enter the price in your selected currency</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select class="form-control" name="price_currency">
+                                <option value="ZAR">ZAR - South African Rand</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Booking Unit</label>
+                            <select class="form-control" name="booking_unit">
+                                <option value="day">Per Day</option>
+                                <option value="night">Per Night</option>
+                                <option value="week">Per Week</option>
+                                <option value="month">Per Month</option>
+                                <option value="hour">Per Hour</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum Stay</label>
+                            <input type="number" class="form-control" name="minimum_stay" min="1" value="1">
+                            <div class="help-text">Minimum number of days/units for booking</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control" name="status">
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if value == 'available' %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Booking Mode</label>
+                            <select class="form-control" name="booking_mode">
+                                {% for value, label in booking_modes %}
+                                <option value="{{ value }}" {% if value == 'traditional' %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-star"></i> Features & Amenities</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="features-header">
+                            <label>Select Features</label>
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <input type="text" class="feature-search" id="featureSearch" placeholder="Search features...">
+                                <button type="button" class="btn-add-feature" onclick="showAddFeatureModal()">
+                                    <i class="fas fa-plus"></i> Add New
+                                </button>
+                            </div>
+                        </div>
+                        <div class="toggle-group" id="featuresContainer">
+                            {% for feature in features %}
+                            <label class="toggle-item feature-tag" data-feature-name="{{ feature.name|lower }}">
+                                <input type="checkbox" name="features" value="{{ feature.id }}">
+                                <i class="{{ feature.icon|default:'fas fa-tag' }}" style="font-size:12px;"></i>
+                                <span>{{ feature.name }}</span>
+                            </label>
+                            {% empty %}
+                            <span class="text-muted">No features available. Click "Add New" to create one.</span>
+                            {% endfor %}
+                        </div>
+                        <div class="help-text">Select all features that apply to your property</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-images"></i> Images</div>
+                <div class="card-body">
+                    <div class="file-upload-area" id="dropArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <div class="upload-hint">PNG, JPG, WEBP up to 10MB each</div>
+                        <input type="file" name="images" accept="image/*" multiple id="fileInput">
+                    </div>
+
+                    <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                    <div class="help-text mt-2">Upload up to 10 images. First image will be the main cover.</div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="/properties/manage/" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="reset" class="btn btn-outline">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                    <i class="fas fa-save"></i> Publish Property
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- ===== ADD NEW TYPE MODAL ===== -->
+    <div class="modal-overlay" id="addTypeModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <span>Add New Property Type</span>
+                <button class="close-btn" onclick="closeAddTypeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Type Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="newTypeName" placeholder="e.g., Townhouse" onkeypress="if(event.key==='Enter'){confirmAddType();}">
+                    <div class="help-text">Enter a new property type name</div>
+                </div>
+                <div class="form-group">
+                    <label>Category (optional)</label>
+                    <select class="form-control" id="newTypeCategory">
+                        <option value="">Uncategorized</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="closeAddTypeModal()">Cancel</button>
+                <button class="btn btn-primary" id="addTypeBtn" onclick="confirmAddType()">
+                    <i class="fas fa-plus"></i> Add Type
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE NAV ===== -->
+    <nav class="mobile-nav">
+        <a href="/admin-portal/"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="/properties/manage/"><i class="fas fa-home"></i><span>Properties</span></a>
+        <a href="/properties/add/" class="active"><i class="fas fa-plus"></i><span>Add</span></a>
+        <a href="/features/manage/"><i class="fas fa-star"></i><span>Features</span></a>
+        <a href="/profile/"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ===== TOGGLE DROPDOWN =====
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            document.querySelectorAll('.dropdown-menu-custom.show').forEach(d => {
+                if (d.id !== id) d.classList.remove('show');
+            });
+            el.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-menu-custom.show').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        // ===== TOAST =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                ${message}
+                <button class="close-toast" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // ===== GET CSRF TOKEN =====
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') return decodeURIComponent(value);
+            }
+            return null;
+        }
+
+        // ===== ADD NEW TYPE MODAL =====
+        function showAddTypeModal() {
+            document.getElementById('addTypeModal').classList.add('show');
+            document.getElementById('newTypeName').focus();
+        }
+
+        function closeAddTypeModal() {
+            document.getElementById('addTypeModal').classList.remove('show');
+            document.getElementById('newTypeName').value = '';
+        }
+
+        function confirmAddType() {
+            const name = document.getElementById('newTypeName').value.trim();
+            const category = document.getElementById('newTypeCategory').value;
+            
+            if (!name) {
+                showToast('Please enter a type name', 'error');
+                document.getElementById('newTypeName').focus();
+                return;
+            }
+            
+            const btn = document.getElementById('addTypeBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            btn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('category', category);
+
+            fetch('/api/property-types/add/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if (data.success) {
+                    showToast(`Type "${name}" added successfully!`, 'success');
+                    closeAddTypeModal();
+                    
+                    // Add to dropdown
+                    const select = document.getElementById('propertyTypeSelect');
+                    const option = document.createElement('option');
+                    option.value = data.type.id;
+                    option.textContent = data.type.name;
+                    select.appendChild(option);
+                    select.value = data.type.id;
+                } else {
+                    showToast(data.error || 'Failed to add type', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Network error. Please try again.', 'error');
+            });
+        }
+
+        // Close modal on outside click
+        document.getElementById('addTypeModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAddTypeModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAddTypeModal();
+        });
+
+        // ===== FILE UPLOAD =====
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewGrid = document.getElementById('imagePreviewGrid');
+        let uploadedFiles = [];
+
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFiles(e.target.files);
+            }
+        });
+
+        function handleFiles(files) {
+            const maxFiles = 10;
+            const remaining = maxFiles - uploadedFiles.length;
+            
+            if (remaining <= 0) {
+                showToast('Maximum 10 images allowed', 'error');
+                return;
+            }
+
+            const toAdd = Math.min(files.length, remaining);
+            for (let i = 0; i < toAdd; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`${file.name} is too large (max 10MB)`, 'error');
+                    continue;
+                }
+                uploadedFiles.push(file);
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-preview-item';
+                    const idx = uploadedFiles.length - 1;
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <button class="remove-btn" onclick="removeImage(${idx})">&times;</button>
+                    `;
+                    previewGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            updateFileInput();
+            
+            if (uploadedFiles.length >= maxFiles) {
+                showToast('Maximum 10 images reached', 'info');
+            }
+        }
+
+        function removeImage(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileInput();
+            renderPreviews();
+        }
+
+        function renderPreviews() {
+            previewGrid.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-preview-item';
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <button class="remove-btn" onclick="removeImage(${index})">&times;</button>
+                    `;
+                    previewGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            uploadedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        // ===== FEATURE SEARCH =====
+        document.getElementById('featureSearch').addEventListener('keyup', function() {
+            const query = this.value.toLowerCase();
+            const tags = document.querySelectorAll('#featuresContainer .feature-tag');
+            tags.forEach(tag => {
+                const name = tag.dataset.featureName || '';
+                tag.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        });
+
+        // ===== ADD FEATURE FROM PROPERTY ADD PAGE =====
+        function showAddFeatureModal() {
+            let modal = document.getElementById('featureAddModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'featureAddModal';
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-box">
+                        <div class="modal-head">
+                            <span>Add New Feature</span>
+                            <button class="close-btn" onclick="closeFeatureAddModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Feature Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="newFeatureName" placeholder="e.g., Swimming Pool">
+                                <div class="help-text">Enter a descriptive name for the feature</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select class="form-control" id="newFeatureCategory">
+                                    <option value="amenity">Amenity</option>
+                                    <option value="facility">Facility</option>
+                                    <option value="safety">Safety</option>
+                                    <option value="utility">Utility</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="accessibility">Accessibility</option>
+                                    <option value="business">Business</option>
+                                    <option value="other" selected>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Icon (Font Awesome)</label>
+                                <input type="text" class="form-control" id="newFeatureIcon" placeholder="fas fa-swimming-pool" value="fas fa-tag">
+                                <div class="help-text">Enter a Font Awesome icon class</div>
+                            </div>
+                        </div>
+                        <div class="modal-foot">
+                            <button class="btn btn-secondary" onclick="closeFeatureAddModal()">Cancel</button>
+                            <button class="btn btn-primary" id="addFeatureBtn" onclick="confirmAddFeature()">
+                                <i class="fas fa-plus"></i> Add Feature
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) closeFeatureAddModal();
+                });
+                
+                document.getElementById('newFeatureName').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') confirmAddFeature();
+                });
+            }
+            
+            modal.classList.add('show');
+            document.getElementById('newFeatureName').focus();
+            document.getElementById('newFeatureName').value = '';
+            document.getElementById('newFeatureCategory').value = 'other';
+            document.getElementById('newFeatureIcon').value = 'fas fa-tag';
+        }
+
+        function closeFeatureAddModal() {
+            const modal = document.getElementById('featureAddModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function confirmAddFeature() {
+            const name = document.getElementById('newFeatureName').value.trim();
+            const category = document.getElementById('newFeatureCategory').value;
+            const icon = document.getElementById('newFeatureIcon').value.trim() || 'fas fa-tag';
+            
+            if (!name) {
+                showToast('Please enter a feature name', 'error');
+                document.getElementById('newFeatureName').focus();
+                return;
+            }
+            
+            const btn = document.getElementById('addFeatureBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            btn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('category', category);
+            formData.append('icon', icon);
+
+            fetch('/api/features/add/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if (data.success) {
+                    showToast(`Feature "${name}" added successfully!`, 'success');
+                    closeFeatureAddModal();
+                    
+                    const container = document.getElementById('featuresContainer');
+                    const label = document.createElement('label');
+                    label.className = 'toggle-item feature-tag';
+                    label.dataset.featureName = name.toLowerCase();
+                    label.innerHTML = `
+                        <input type="checkbox" name="features" value="${data.feature.id}">
+                        <i class="${data.feature.icon || 'fas fa-tag'}" style="font-size:12px;"></i>
+                        <span>${data.feature.name}</span>
+                    `;
+                    container.appendChild(label);
+                    
+                    const emptyMsg = container.querySelector('.text-muted');
+                    if (emptyMsg) emptyMsg.remove();
+                    
+                } else {
+                    showToast(data.error || 'Failed to add feature', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Network error. Please try again.', 'error');
+            });
+        }
+
+        // ===== FORM SUBMISSION =====
+        document.getElementById('propertyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+
+            const formData = new FormData(this);
+            
+            uploadedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            fetch('/properties/add/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+
+                if (data.success) {
+                    showToast('Property published successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/properties/manage/';
+                    }, 1500);
+                } else {
+                    showToast(data.error || 'Failed to publish property', 'error');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+                showToast('Network error. Please try again.', 'error');
+            });
+        });
+
+        // ===== RESET FORM =====
+        document.querySelector('[type="reset"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Clear all form data?')) {
+                document.getElementById('propertyForm').reset();
+                uploadedFiles = [];
+                previewGrid.innerHTML = '';
+                fileInput.value = '';
+                showToast('Form reset', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

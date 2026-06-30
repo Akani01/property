@@ -1,0 +1,4102 @@
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tolleya - Find Your Dream Property</title>
+    
+    <!-- PWA Meta Tags - django-pwa handles everything -->
+    {% progressive_web_app_meta %}
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #c62828;
+            --secondary-color: #ff589e;
+            --dark-color: #191919;
+            --light-color: #f8f9fa;
+            --gray-color: #8e8e8e;
+            --border-color: #efefef;
+            --shadow: 0 2px 16px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            padding-top: 70px;
+            padding-bottom: 70px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .header-area {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .main-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        
+        .logo img {
+            max-height: 40px;
+        }
+        
+        .nav-icons {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-icons a {
+            font-size: 20px;
+            color: #555;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        
+        .nav-icons a:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .profile-dropdown {
+            position: relative;
+        }
+        
+        .profile-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #ff136f 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .profile-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 220px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+            z-index: 1000;
+        }
+        
+        .profile-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0px);
+        }
+        
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #444;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        
+        .profile-menu a:hover {
+            background: #f5f7fa;
+            color: var(--secondary-color);
+        }
+        
+        .profile-divider {
+            height: 1px;
+            background: #eee;
+            margin: 8px 0;
+        }
+        
+        .user-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .user-badge.business {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #ff136f 100%);
+        }
+        
+        .desktop-icon-bar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 15px 8px;
+            z-index: 998;
+            flex-direction: column;
+            gap: 15px;
+            display: none;
+        }
+        
+        @media (min-width: 992px) {
+            .desktop-icon-bar {
+                display: flex;
+            }
+        }
+        
+        .desktop-icon-bar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .desktop-icon-bar a:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .desktop-icon-bar a i {
+            font-size: 20px;
+        }
+        
+        .desktop-icon-bar a .tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .desktop-icon-bar a:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .three-dot-menu {
+            position: relative;
+        }
+        
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #555;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .three-dot-btn:hover {
+            color: var(--secondary-color);
+        }
+        
+        .menu-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 220px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+            z-index: 1000;
+        }
+        
+        .menu-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0px);
+        }
+        
+        .menu-content a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #444;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        
+        .menu-content a:hover {
+            background: #f5f7fa;
+            color: var(--secondary-color);
+        }
+        
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .left-sidebar {
+            flex: 0 0 280px;
+        }
+        
+        .main-content {
+            flex: 1;
+            max-width: 800px;
+        }
+        
+        .right-sidebar {
+            flex: 0 0 280px;
+        }
+        
+        .sidebar-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .tabs-nav {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .create-post-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .post-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .post-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .post-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: #f0f2f5;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .post-input:hover {
+            background: #e4e6e9;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .post-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border: none;
+            background: none;
+            color: #65676b;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .post-action-btn:hover {
+            background: #f0f2f5;
+        }
+        
+        .post-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .post-modal.show {
+            display: flex;
+        }
+        
+        .post-modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .post-modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .post-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .post-textarea {
+            width: 100%;
+            min-height: 150px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+        }
+        
+        .post-textarea::placeholder {
+            color: #999;
+        }
+        
+        .media-preview {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .media-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+        }
+        
+        .post-modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .post-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .post-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .post-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .post-user-info {
+            flex: 1;
+        }
+        
+        .post-username {
+            font-weight: 600;
+            color: var(--dark-color);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .post-time {
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+        
+        .post-content {
+            padding: 0 15px 15px;
+        }
+        
+        .post-text {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .post-stats {
+            padding: 0 15px 10px;
+            display: flex;
+            gap: 15px;
+            color: #65676b;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .post-actions-bar {
+            padding: 10px 15px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .post-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            border: none;
+            background: none;
+            color: #65676b;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .post-action:hover {
+            background: #f0f2f5;
+        }
+        
+        .post-action.liked {
+            color: #ed4956;
+        }
+        
+        .comments-section {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        
+        .comments-section.show {
+            display: block;
+        }
+        
+        .comment-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .comment-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .comment-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 20px;
+            cursor: pointer;
+        }
+        
+        .job-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+        
+        .job-card-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .job-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .company-name {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .company-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .company-logo-small {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #f0f0f0;
+            background: white;
+            padding: 4px;
+        }
+        
+        .company-logo-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8c8c8c;
+            border: 1px dashed #ddd;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .job-card-content {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .job-card-main {
+            flex: 1;
+        }
+        
+        .job-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 12px 0;
+        }
+        
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .job-meta-item i {
+            color: #8c8c8c;
+            width: 16px;
+        }
+        
+        .job-card-body {
+            padding: 20px;
+        }
+        
+        .job-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .job-card-footer {
+            padding: 15px 20px;
+            background: #fafafa;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .card-footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .job-status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-published {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-urgent {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .status-featured {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-view, .btn-apply, .btn-applied {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-view {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #b71c1c;
+            transform: translateY(-1px);
+        }
+        
+        .btn-apply {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-apply:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .btn-applied {
+            background: #28a745;
+            color: white;
+            cursor: default;
+        }
+        
+        .add-post-icon-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+        }
+        
+        .add-post-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,115,177,0.3);
+        }
+        
+        .add-post-icon:hover {
+            background: #b71c1c;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 4px 12px rgba(0,115,177,0.4);
+        }
+        
+        .message-icon-container {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+        }
+        
+        .message-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .message-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .share-button-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .share-button {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #555;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .share-button:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .share-dropdown {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 180px;
+            bottom: 100%;
+            left: 0;
+            margin-bottom: 5px;
+        }
+        
+        .share-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .share-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #444;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .share-dropdown a:hover {
+            background: #f5f7fa;
+            color: var(--primary-color);
+        }
+        
+        .share-dropdown a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .property-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+        
+        .property-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            background: #f0f0f0;
+        }
+        
+        .property-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .property-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .property-badge.featured {
+            background: #ff9800;
+        }
+        
+        .property-badge.premium {
+            background: #4caf50;
+        }
+        
+        .property-badge.online {
+            background: #2196f3;
+            animation: pulse 2s infinite;
+        }
+        
+        .property-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+        
+        .property-location {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .property-details {
+            padding: 15px 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .property-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .property-detail-item i {
+            color: var(--primary-color);
+            width: 18px;
+        }
+        
+        .property-description {
+            padding: 15px 20px;
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .property-footer {
+            padding: 15px 20px;
+            background: #fafafa;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .property-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-view-property {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-view-property:hover {
+            background: #b71c1c;
+        }
+        
+        .btn-book {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-book:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-book.booked {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+            cursor: not-allowed;
+        }
+        
+        .filter-section {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-row select,
+        .filter-row input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filter-row select:focus,
+        .filter-row input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .filter-btn {
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background: #b71c1c;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+        }
+        
+        .management-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .management-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .management-card .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .management-card .icon-circle.primary {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .management-card .icon-circle.success {
+            background: #d4edda;
+            color: #28a745;
+        }
+        
+        .management-card .icon-circle.warning {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+        
+        .management-card .icon-circle.info {
+            background: #d1ecf1;
+            color: #17a2b8;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast {
+            min-width: 300px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .password-input-group {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        .feed-toggle-btn {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 999;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-bottom-nav {
+            display: none;
+        }
+        
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .left-sidebar, .right-sidebar {
+                display: none;
+            }
+            
+            .desktop-icon-bar {
+                display: none !important;
+            }
+            
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 65px;
+                background: white;
+                border-top: 1px solid #ddd;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 9999;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            .mobile-bottom-nav a {
+                text-align: center;
+                color: #333;
+                font-size: 12px;
+                text-decoration: none;
+                flex: 1;
+                padding: 5px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .mobile-bottom-nav i {
+                font-size: 20px;
+                display: block;
+                margin-bottom: 2px;
+            }
+            
+            .mobile-bottom-nav a.active {
+                color: var(--secondary-color);
+            }
+            
+            body {
+                padding-bottom: 80px;
+            }
+            
+            .profile-menu {
+                width: 280px;
+                right: -10px;
+            }
+            
+            .tabs-nav {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 14px;
+                white-space: nowrap;
+                flex: 0 0 auto;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .filter-row select,
+            .filter-row input {
+                width: 100%;
+            }
+            
+            .filter-btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-icons {
+                gap: 8px;
+            }
+            
+            .user-badge {
+                display: none;
+            }
+            
+            .profile-avatar-small {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .post-modal-content {
+                width: 95%;
+            }
+            
+            .job-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .property-card .property-image-container {
+                height: 180px;
+            }
+            
+            .property-details {
+                gap: 12px;
+            }
+            
+            .property-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .property-actions {
+                flex-direction: column;
+            }
+            
+            .property-actions button {
+                width: 100%;
+            }
+            
+            .job-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .job-actions button {
+                width: 100%;
+            }
+            
+            .card-footer-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .share-button-container {
+                width: 100%;
+            }
+            
+            .share-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .video-feed-tab {
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            height: 80vh;
+            max-height: 800px;
+        }
+
+        .video-feed-container {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .video-feed-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-item {
+            height: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .video-item video::-webkit-media-controls {
+            display: none !important;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            z-index: 10;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .video-author {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .video-author .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .video-description {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-actions {
+            position: absolute;
+            right: 16px;
+            bottom: 120px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .video-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .video-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .video-action-btn:active {
+            transform: scale(0.9);
+        }
+
+        .video-action-btn .icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s;
+        }
+
+        .video-action-btn .icon-circle:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .video-action-btn .icon-circle.liked {
+            background: rgba(255, 70, 70, 0.3);
+            border-color: rgba(255, 70, 70, 0.4);
+        }
+
+        .video-action-btn .icon-circle.liked i {
+            color: #ff4444;
+        }
+
+        .video-action-btn .count {
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .video-comment-popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            height: 70vh;
+            border-radius: 20px 20px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-comment-popup.open {
+            transform: translateY(0);
+        }
+
+        .video-comment-popup .popup-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .video-comment-popup .popup-header h3 {
+            color: white;
+            font-size: 16px;
+        }
+
+        .video-comment-popup .popup-header .close-btn {
+            color: white;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .video-comment-popup .popup-header .close-btn:hover {
+            opacity: 1;
+        }
+
+        .video-comment-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+
+        .video-comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+
+        .video-comment-item .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .video-comment-item .comment-body {
+            flex: 1;
+        }
+
+        .video-comment-item .comment-body .comment-author {
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .video-comment-item .comment-body .comment-time {
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .video-comment-item .comment-body .comment-text {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            margin-top: 4px;
+            word-wrap: break-word;
+        }
+
+        .video-comment-item .comment-body .comment-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .video-comment-item .comment-body .comment-actions button {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .video-comment-item .comment-body .comment-actions button:hover {
+            color: white;
+        }
+
+        .video-comment-item .comment-body .comment-actions .liked {
+            color: #ff4444;
+        }
+
+        .video-comment-input-area {
+            padding: 12px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .video-comment-input-area input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .video-comment-input-area input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .video-comment-input-area input:focus {
+            border-color: #667eea;
+        }
+
+        .video-comment-input-area .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .video-comment-input-area .send-btn:active {
+            transform: scale(0.9);
+        }
+
+        .video-upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-upload-btn:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    {% load api_utils %}
+    {% api_js_functions %}
+    <script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show a custom install button
+        const installBtn = document.createElement('button');
+        installBtn.textContent = '📱 Install Tolleya App';
+        installBtn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #c62828;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 9999;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(installBtn);
+        
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.remove();
+            }
+        });
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 App installed successfully!');
+        // Remove the install button
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.includes('Install Tolleya')) btn.remove();
+        });
+    });
+    </script>
+    <!-- Desktop Icon Bar -->
+    <div class="desktop-icon-bar">
+        {% if user.is_authenticated %}
+            {% if user.user_type == 'admin' or user.is_superuser %}
+                <a href="/admin-portal/" title="Dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span class="tooltip">Dashboard</span>
+                </a>
+                <a href="/properties/manage/" title="Properties">
+                    <i class="fas fa-home"></i>
+                    <span class="tooltip">Properties</span>
+                </a>
+                <a href="/admin-portal/jobs/" title="Jobs">
+                    <i class="fas fa-briefcase"></i>
+                    <span class="tooltip">Jobs</span>
+                </a>
+                <a href="/admin-portal/applications/" title="Applications">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="tooltip">Applications</span>
+                </a>
+                <a href="/admin-portal/analytics/" title="Analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="tooltip">Analytics</span>
+                </a>
+            {% else %}
+                <a href="/dashboard" title="Dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span class="tooltip">Dashboard</span>
+                </a>
+                <a href="/#job-listings" title="Browse Jobs">
+                    <i class="fas fa-search"></i>
+                    <span class="tooltip">Browse Jobs</span>
+                </a>
+                <a href="/applications/" title="Applications">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="tooltip">Applications</span>
+                </a>
+                <a href="/properties/search/" title="Properties">
+                    <i class="fas fa-home"></i>
+                    <span class="tooltip">Properties</span>
+                </a>
+                <a href="/profile/" title="Profile">
+                    <i class="fas fa-user"></i>
+                    <span class="tooltip">Profile</span>
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="/" title="Home">
+                <i class="fas fa-home"></i>
+                <span class="tooltip">Home</span>
+            </a>
+            <a href="/#job-listings" title="Browse Jobs">
+                <i class="fas fa-search"></i>
+                <span class="tooltip">Browse Jobs</span>
+            </a>
+            <a href="/properties/search/" title="Properties">
+                <i class="fas fa-home"></i>
+                <span class="tooltip">Properties</span>
+            </a>
+            <a href="#" onclick="showLogin()" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="tooltip">Login</span>
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Top Navigation -->
+    <header class="header-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <a href="/" class="logo">
+                            <img src="/static/images/logo.png" alt="Tolleya" style="max-height: 40px;">
+                        </a>
+
+                        <ul class="nav-icons">
+                            <li>
+                                <a href="/" title="Home">
+                                    <i class="fas fa-home"></i>
+                                </a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                                <li>
+                                    {% if user.user_type == 'admin' or user.is_superuser %}
+                                        <span class="user-badge business">
+                                            <i class="fas fa-building me-1"></i>Business
+                                        </span>
+                                    {% else %}
+                                        <span class="user-badge">
+                                            <i class="fas fa-user me-1"></i>Job Seeker
+                                        </span>
+                                    {% endif %}
+                                </li>
+
+                                <li>
+                                    <a href="/messaging/" title="Messages">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </a>
+                                </li>
+
+                                <li class="profile-dropdown">
+                                    <div class="profile-avatar-small" onclick="toggleProfileMenu()">
+                                        {{ user.username|first|upper }}
+                                    </div>
+
+                                    <div class="profile-menu" id="profileMenu">
+                                        {% if user.user_type == 'admin' or user.is_superuser %}
+                                            <a href="/admin-portal/"><i class="fas fa-th-large"></i> Dashboard</a>
+                                            <a href="/properties/manage/"><i class="fas fa-home"></i> Properties</a>
+                                            <a href="/properties/add/"><i class="fas fa-plus-circle"></i> Add Property</a>
+                                            <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i> Bookings</a>
+                                            <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
+                                            <a href="/admin-portal/applications/"><i class="fas fa-file-alt"></i> Applications</a>
+                                            <a href="/admin-portal/analytics/"><i class="fas fa-chart-bar"></i> Analytics</a>
+                                        {% else %}
+                                            <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
+                                            <a href="/applications/"><i class="fas fa-file-alt"></i> Applications</a>
+                                            <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
+                                            <a href="/preferences/"><i class="fas fa-cog"></i> Preferences</a>
+                                            <a href="/properties/search/"><i class="fas fa-home"></i> Properties</a>
+                                            <a href="/bookings/"><i class="fas fa-calendar-check"></i> My Bookings</a>
+                                        {% endif %}
+                                        
+                                        <div class="profile-divider"></div>
+                                        <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="three-dot-menu">
+                                        <button class="three-dot-btn" onclick="toggleThreeDotMenu(this)">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <div class="menu-content">
+                                            {% if user.user_type == 'admin' or user.is_superuser %}
+                                                <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property Analytics</a>
+                                                <a href="/properties/reports/"><i class="fas fa-file-pdf"></i> Reports</a>
+                                                <a href="/admin-portal/settings/"><i class="fas fa-cog"></i> Settings</a>
+                                            {% else %}
+                                                <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
+                                                <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+                                                <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+                                                <a href="/profile/documents/"><i class="fas fa-file-upload"></i> Documents</a>
+                                                <a href="/saved-jobs/"><i class="fas fa-bookmark"></i> Saved Jobs</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+
+                            {% else %}
+                                <li>
+                                    <a href="#" onclick="showLogin()" title="Login">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Sign Up">
+                                            <i class="fas fa-user-plus"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#" onclick="showSignup()">
+                                                <i class="fas fa-user me-2"></i>Job Seeker Signup
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="showBusinessSignup()">
+                                                <i class="fas fa-building me-2"></i>Business Signup
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Quick Actions</h3>
+                <div class="d-flex flex-column gap-2">
+                    {% if user.is_authenticated %}
+                        <button class="btn btn-outline-primary" onclick="showPostModal()">
+                            <i class="fas fa-plus me-2"></i>Create Post
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="switchTab('feed')">
+                            <i class="fas fa-newspaper me-2"></i>View Feed
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="switchTab('videos')">
+                            <i class="fas fa-video me-2"></i>Videos
+                        </button>
+                        {% if user.user_type == 'admin' or user.is_superuser %}
+                            <a href="/properties/add/" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-plus-circle me-2"></i>List Property
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <button class="btn btn-outline-primary" onclick="showLogin()">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Post
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="switchTab('jobs')">
+                            <i class="fas fa-briefcase me-2"></i>Browse Jobs
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Property Stats</h3>
+                <div id="propertyStats">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Properties:</span>
+                        <strong id="totalProperties">{{ total_properties|default:"0" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Available Now:</span>
+                        <strong id="availableProperties">{{ available_properties|default:"0" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Bookings Today:</span>
+                        <strong id="todayBookings">{{ today_bookings|default:"0" }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Trending Jobs</h3>
+                <div id="trendingJobs"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tabs Navigation -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('jobs')">
+                    <i class="fas fa-briefcase me-2"></i>Jobs
+                </button>
+                <button class="tab-btn" onclick="switchTab('properties')">
+                    <i class="fas fa-home me-2"></i>Properties
+                </button>
+                <button class="tab-btn" onclick="switchTab('featured')">
+                    <i class="fas fa-star me-2"></i>Featured
+                </button>
+                {% if user.is_authenticated %}
+                <button class="tab-btn" onclick="switchTab('feed')">
+                    <i class="fas fa-newspaper me-2"></i>Feed
+                </button>
+                <button class="tab-btn" onclick="switchTab('videos')">
+                    <i class="fas fa-video me-2"></i>Videos
+                </button>
+                {% if user.user_type == 'admin' or user.is_superuser %}
+                <button class="tab-btn" onclick="switchTab('management')">
+                    <i class="fas fa-cog me-2"></i>Management
+                </button>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Create Post Card -->
+            {% if user.is_authenticated %}
+            <div id="createPostCard" class="create-post-card hidden">
+                <div class="post-input-row">
+                    <div class="user-avatar">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div class="post-input-wrapper">
+                        <input type="text" class="post-input" placeholder="What's on your mind?" onclick="showPostModal()" readonly>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="post-action-btn" onclick="showPostModal()">
+                        <i class="fas fa-image text-success"></i> Photo
+                    </button>
+                    <button class="post-action-btn" onclick="showPostModal()">
+                        <i class="fas fa-video text-danger"></i> Video
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Property Filter -->
+            <div class="filter-section" id="propertyFilter">
+                <div class="filter-row">
+                    <select id="propertyTypeFilter">
+                        <option value="">All Types</option>
+                    </select>
+                    <select id="listingTypeFilter">
+                        <option value="">All Listings</option>
+                        <option value="sale">For Sale</option>
+                        <option value="rent">For Rent</option>
+                        <option value="booking">For Booking</option>
+                    </select>
+                    <input type="number" id="minPriceFilter" placeholder="Min Price" step="1000">
+                    <input type="number" id="maxPriceFilter" placeholder="Max Price" step="1000">
+                    <button class="filter-btn" onclick="applyFilters()">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div id="jobsTab" class="tab-content active">
+                <div id="jobsContainer"></div>
+            </div>
+
+            <!-- Properties Tab -->
+            <div id="propertiesTab" class="tab-content">
+                <div id="propertiesContainer"></div>
+            </div>
+
+            <!-- Featured Tab -->
+            <div id="featuredTab" class="tab-content">
+                <div id="featuredContainer"></div>
+            </div>
+
+            <!-- Feed Tab -->
+            <div id="feedTab" class="tab-content">
+                <div id="feedContainer"></div>
+            </div>
+
+            <!-- Videos Tab -->
+            <div id="videosTab" class="tab-content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-video me-2"></i>Video Feed</h5>
+                    {% if user.is_authenticated %}
+                    <button class="video-upload-btn" onclick="document.getElementById('videoUploadInput').click()">
+                        <i class="fas fa-upload me-1"></i>Upload Video
+                    </button>
+                    <input type="file" id="videoUploadInput" accept="video/*" style="display:none" onchange="uploadVideo(this)">
+                    {% endif %}
+                </div>
+                <div class="video-feed-tab">
+                    <div class="video-feed-container" id="videoFeedContainer">
+                        <!-- Videos loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Management Tab -->
+            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+            <div id="managementTab" class="tab-content">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="/properties/manage/" class="text-decoration-none">
+                            <div class="management-card">
+                                <div class="icon-circle primary">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <h5>Manage Properties</h5>
+                                <p class="text-muted small">View, edit, and manage all your properties</p>
+                                <span class="badge bg-primary">{{ total_properties|default:"0" }} Properties</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/properties/add/" class="text-decoration-none">
+                            <div class="management-card">
+                                <div class="icon-circle success">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <h5>Add New Property</h5>
+                                <p class="text-muted small">List a new property for sale, rent, or booking</p>
+                                <span class="badge bg-success">New Listing</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/properties/bookings/" class="text-decoration-none">
+                            <div class="management-card">
+                                <div class="icon-circle warning">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <h5>Manage Bookings</h5>
+                                <p class="text-muted small">View and manage all property bookings</p>
+                                <span class="badge bg-warning">{{ pending_bookings|default:"0" }} Pending</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/properties/analytics/" class="text-decoration-none">
+                            <div class="management-card">
+                                <div class="icon-circle info">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <h5>Analytics</h5>
+                                <p class="text-muted small">View property performance and insights</p>
+                                <span class="badge bg-info">Stats</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Quick Stats</h3>
+                <div id="quickStats">
+                    {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total Properties:</span>
+                            <strong id="totalPropertiesCount">{{ total_properties|default:"0" }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Active Jobs:</span>
+                            <strong id="activeJobsCount">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Applications:</span>
+                            <strong id="totalApplications">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Profile Views:</span>
+                            <strong id="profileViews">0</strong>
+                        </div>
+                    {% else %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Jobs Available:</span>
+                            <strong id="jobsCount">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Active Posts:</span>
+                            <strong id="postsCount">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Properties:</span>
+                            <strong>{{ total_properties|default:"0" }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Recent Activity</h3>
+                <div id="recentActivity"></div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">Popular Locations</h3>
+                <div id="popularLocations"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Creation Modal -->
+    <div id="postModal" class="post-modal">
+        <div class="post-modal-content">
+            <div class="post-modal-header">
+                <h5 class="mb-0">Create Post</h5>
+                <button type="button" class="btn-close" onclick="hidePostModal()"></button>
+            </div>
+            
+            <div class="post-modal-body">
+                <textarea id="postTextarea" class="post-textarea" placeholder="What's on your mind?"></textarea>
+                
+                <div id="mediaPreview" class="media-preview">
+                    <img id="previewImage" src="" alt="Preview">
+                </div>
+            </div>
+            
+            <div class="post-modal-footer">
+                <div>
+                    <input type="file" id="mediaInput" accept="image/*,video/*" style="display: none;" onchange="previewMedia(event)">
+                    <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('mediaInput').click()">
+                        <i class="fas fa-image"></i> Add Media
+                    </button>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary" onclick="hidePostModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createPost()" id="createPostBtn" style="background:var(--primary-color);border-color:var(--primary-color);">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Comment Popup -->
+    <div class="video-comment-popup" id="videoCommentPopup">
+        <div class="popup-header">
+            <h3><i class="fas fa-comment me-2"></i>Comments</h3>
+            <button class="close-btn" onclick="closeVideoComments()">&times;</button>
+        </div>
+        <div class="video-comment-list" id="videoCommentList">
+            <!-- Comments loaded dynamically -->
+        </div>
+        <div class="video-comment-input-area">
+            <input type="text" id="videoCommentInput" placeholder="Add a comment...">
+            <button class="send-btn" onclick="postVideoComment()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Feed Toggle Button -->
+    {% if user.is_authenticated %}
+    <button class="feed-toggle-btn" onclick="toggleFeed()">
+        <i class="fas fa-newspaper"></i> Feed
+    </button>
+    {% endif %}
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="active" onclick="switchTab('jobs')">
+            <i class="fas fa-briefcase"></i>
+            <span>Jobs</span>
+        </a>
+        <a href="#" onclick="switchTab('properties')">
+            <i class="fas fa-home"></i>
+            <span>Properties</span>
+        </a>
+        <a href="#" onclick="switchTab('featured')">
+            <i class="fas fa-star"></i>
+            <span>Featured</span>
+        </a>
+        
+        {% if user.is_authenticated %}
+            <a href="#" onclick="switchTab('feed')">
+                <i class="fas fa-newspaper"></i>
+                <span>Feed</span>
+            </a>
+            <a href="#" onclick="switchTab('videos')">
+                <i class="fas fa-video"></i>
+                <span>Videos</span>
+            </a>
+            
+            {% if user.user_type == 'admin' or user.is_superuser %}
+            <a href="#" onclick="switchTab('management')">
+                <i class="fas fa-cog"></i>
+                <span>Manage</span>
+            </a>
+            {% endif %}
+            
+            <a href="#" onclick="showPostModal()">
+                <i class="fas fa-plus"></i>
+                <span>Create</span>
+            </a>
+            
+            <a href="/profile/">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        {% else %}
+            <a href="#" onclick="showLogin()">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            <a href="#" onclick="showSignup()">
+                <i class="fas fa-user-plus"></i>
+                <span>Sign Up</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to Tolleya</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <div class="password-input-group">
+                                <input type="password" class="form-control" name="password" id="loginPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-end">
+                            <a href="/forgot-password/" class="text-decoration-none" style="color: var(--primary-color);">
+                                <i class="fas fa-key me-1"></i>Forgot Password?
+                            </a>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" style="background: var(--primary-color); border-color: var(--primary-color);">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Seeker Signup Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Job Seeker Sign Up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Phone *</label>
+                            <input type="tel" class="form-control" name="mobile_phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <div class="password-input-group">
+                                <input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password *</label>
+                            <div class="password-input-group">
+                                <input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" style="background: var(--primary-color); border-color: var(--primary-color);">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Signup Modal -->
+    <div class="modal fade" id="businessSignupModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Business Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="businessSignupForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Company Information</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Company Logo</label>
+                                    <input type="file" name="company_logo" accept="image/*" class="form-control">
+                                    <small class="text-muted">Optional: Upload your company logo</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Company Name *</label>
+                                    <input type="text" class="form-control" name="company_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Industry</label>
+                                    <select name="industry" class="form-control" id="industrySelect">
+                                        <option value="">Select Industry</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Company Size</label>
+                                    <select name="company_size" class="form-control" id="companySizeSelect">
+                                        <option value="">Select Company Size</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Website</label>
+                                    <input type="url" class="form-control" name="website" placeholder="https://">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Account Information</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Username *</label>
+                                    <input type="text" class="form-control" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password *</label>
+                                    <div class="password-input-group">
+                                        <input type="password" class="form-control" name="password" id="businessPassword" minlength="8" required>
+                                        <button type="button" class="password-toggle" onclick="togglePassword('businessPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm Password *</label>
+                                    <div class="password-input-group">
+                                        <input type="password" class="form-control" name="password_confirm" id="businessConfirmPassword" minlength="8" required>
+                                        <button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contact Phone</label>
+                                    <input type="tel" class="form-control" name="phone_number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Company Description</label>
+                            <textarea class="form-control" name="company_description" rows="3" placeholder="Brief description of your company"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="businessSignupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">
+                            <span id="businessSignupBtnText">Create Business Account</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- ===== PWA SETUP ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Register Service Worker - using django-pwa's serviceworker.js
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/serviceworker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            }
+
+            // Install prompt
+            let deferredPrompt;
+            const installBtn = document.createElement('button');
+            installBtn.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #c62828;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 30px;
+                font-weight: 600;
+                z-index: 9999;
+                display: none;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                cursor: pointer;
+            `;
+            installBtn.innerHTML = '📱 Install Tolleya App';
+            document.body.appendChild(installBtn);
+
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block';
+            });
+
+            installBtn.addEventListener('click', function() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(function(choiceResult) {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        installBtn.style.display = 'none';
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', function() {
+                console.log('App installed successfully!');
+                installBtn.style.display = 'none';
+            });
+        });
+    </script>
+
+    <!-- Your existing JavaScript -->
+    <script>
+        // ===== VIDEO FEED STATE =====
+        let videoState = {
+            videos: [],
+            currentVideoId: null,
+            currentPage: 1,
+            hasMore: true,
+            isLoading: false
+        };
+
+        // ===== VIDEO FEED FUNCTIONS =====
+        async function loadVideos(page = 1) {
+            if (videoState.isLoading) return;
+            videoState.isLoading = true;
+
+            const container = document.getElementById('videoFeedContainer');
+            if (page === 1) {
+                container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-white">Loading videos...</p></div>';
+            }
+
+            try {
+                const response = await fetch(`/api/videos/feed/?page=${page}&page_size=10`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const newVideos = data.videos || [];
+                    videoState.videos = page === 1 ? newVideos : [...videoState.videos, ...newVideos];
+                    videoState.hasMore = data.pagination && data.pagination.has_next;
+                    videoState.currentPage = page;
+
+                    if (page === 1) {
+                        renderVideos(newVideos);
+                    } else {
+                        appendVideos(newVideos);
+                    }
+                } else {
+                    container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-video"></i><h4>No Videos Available</h4><p>Check back later for new content</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Videos</h4><p>Please refresh the page</p></div>';
+            } finally {
+                videoState.isLoading = false;
+            }
+        }
+
+        function renderVideos(videosList) {
+            const container = document.getElementById('videoFeedContainer');
+            container.innerHTML = '';
+            videosList.forEach((video, index) => {
+                container.appendChild(createVideoElement(video, index));
+            });
+            setupVideoObserver();
+        }
+
+        function appendVideos(videosList) {
+            const container = document.getElementById('videoFeedContainer');
+            videosList.forEach((video) => {
+                container.appendChild(createVideoElement(video, container.children.length));
+            });
+        }
+
+        function createVideoElement(video, index) {
+            const div = document.createElement('div');
+            div.className = 'video-item';
+            div.dataset.index = index;
+            div.dataset.videoId = video.id;
+
+            const videoEl = document.createElement('video');
+            videoEl.src = video.video_url;
+            videoEl.loop = true;
+            videoEl.muted = true;
+            videoEl.playsInline = true;
+
+            videoEl.addEventListener('click', () => {
+                if (videoEl.paused) {
+                    videoEl.play();
+                } else {
+                    videoEl.pause();
+                }
+            });
+
+            div.appendChild(videoEl);
+
+            const overlay = document.createElement('div');
+            overlay.className = 'video-overlay';
+            overlay.innerHTML = `
+                <div class="video-author">
+                    <span class="avatar">${(video.author_name || 'U')[0].toUpperCase()}</span>
+                    <span>${video.author_name || 'Unknown User'}</span>
+                </div>
+                <div class="video-title">${video.title || 'Untitled'}</div>
+                ${video.description ? `<div class="video-description">${video.description}</div>` : ''}
+            `;
+            div.appendChild(overlay);
+
+            const actions = document.createElement('div');
+            actions.className = 'video-actions';
+            actions.innerHTML = `
+                <button class="video-action-btn" onclick="handleVideoLike('${video.id}')">
+                    <div class="icon-circle ${video.has_liked ? 'liked' : ''}">
+                        <i class="${video.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                    </div>
+                    <span class="count" id="video-likes-${video.id}">${video.likes_count || 0}</span>
+                </button>
+                <button class="video-action-btn" onclick="openVideoComments('${video.id}')">
+                    <div class="icon-circle">
+                        <i class="far fa-comment"></i>
+                    </div>
+                    <span class="count">${video.comments_count || 0}</span>
+                </button>
+                <button class="video-action-btn" onclick="handleVideoShare('${video.id}')">
+                    <div class="icon-circle">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <span class="count">${video.shares || 0}</span>
+                </button>
+            `;
+            div.appendChild(actions);
+
+            return div;
+        }
+
+        function setupVideoObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const videoEl = entry.target.querySelector('video');
+                        if (videoEl) {
+                            videoEl.play();
+                            const index = parseInt(entry.target.dataset.index);
+                            if (index >= videoState.videos.length - 3 && videoState.hasMore && !videoState.isLoading) {
+                                loadVideos(videoState.currentPage + 1);
+                            }
+                        }
+                    } else {
+                        const videoEl = entry.target.querySelector('video');
+                        if (videoEl) {
+                            videoEl.pause();
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.6
+            });
+
+            document.querySelectorAll('.video-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+
+        async function handleVideoLike(videoId) {
+            try {
+                const response = await fetch(`/api/videos/${videoId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ action: 'like' })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const likesCount = document.getElementById(`video-likes-${videoId}`);
+                    if (likesCount) {
+                        likesCount.textContent = data.likes_count;
+                    }
+
+                    const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
+                    if (videoItem) {
+                        const iconCircle = videoItem.querySelector('.video-action-btn:first-child .icon-circle');
+                        if (iconCircle) {
+                            const icon = iconCircle.querySelector('i');
+                            if (data.liked) {
+                                icon.className = 'fas fa-heart';
+                                iconCircle.classList.add('liked');
+                            } else {
+                                icon.className = 'far fa-heart';
+                                iconCircle.classList.remove('liked');
+                            }
+                        }
+                    }
+
+                    const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
+                    if (videoIndex !== -1) {
+                        videoState.videos[videoIndex].likes_count = data.likes_count;
+                        videoState.videos[videoIndex].has_liked = data.liked;
+                    }
+                }
+            } catch (error) {
+                console.error('Error liking video:', error);
+            }
+        }
+
+        async function handleVideoShare(videoId) {
+            try {
+                const response = await fetch(`/api/videos/${videoId}/share/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const url = `${window.location.origin}/video/${videoId}/`;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(url);
+                        showToast('Video link copied to clipboard!', 'success');
+                    } else {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = url;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showToast('Video link copied to clipboard!', 'success');
+                    }
+
+                    const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
+                    if (videoItem) {
+                        const shareBtn = videoItem.querySelector('.video-action-btn:last-child .count');
+                        if (shareBtn) {
+                            shareBtn.textContent = data.shares_count;
+                        }
+                    }
+
+                    const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
+                    if (videoIndex !== -1) {
+                        videoState.videos[videoIndex].shares = data.shares_count;
+                    }
+                }
+            } catch (error) {
+                console.error('Error sharing video:', error);
+                showToast('Failed to share video', 'error');
+            }
+        }
+
+        // ===== VIDEO COMMENTS =====
+        function openVideoComments(videoId) {
+            videoState.currentVideoId = videoId;
+            document.getElementById('videoCommentPopup').classList.add('open');
+            loadVideoComments(videoId);
+            document.getElementById('videoCommentInput').focus();
+        }
+
+        function closeVideoComments() {
+            document.getElementById('videoCommentPopup').classList.remove('open');
+            videoState.currentVideoId = null;
+        }
+
+        async function loadVideoComments(videoId) {
+            const container = document.getElementById('videoCommentList');
+            container.innerHTML = '<div class="text-center text-muted py-3">Loading comments...</div>';
+
+            try {
+                const response = await fetch(`/api/videos/${videoId}/comments/?page=1&page_size=20`, {
+                    headers: { 'X-CSRFToken': getCSRFToken() }
+                });
+                const data = await response.json();
+
+                if (data.success && data.comments) {
+                    renderVideoComments(data.comments);
+                } else {
+                    container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                container.innerHTML = '<div class="text-center text-muted py-3">Error loading comments</div>';
+            }
+        }
+
+        function renderVideoComments(comments) {
+            const container = document.getElementById('videoCommentList');
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
+                return;
+            }
+
+            container.innerHTML = comments.map(comment => `
+                <div class="video-comment-item" data-comment-id="${comment.id}">
+                    <div class="comment-avatar">${(comment.author_name || 'U')[0].toUpperCase()}</div>
+                    <div class="comment-body">
+                        <div>
+                            <span class="comment-author">${comment.author_name}</span>
+                            <span class="comment-time">${comment.time_ago || 'Just now'}</span>
+                        </div>
+                        <div class="comment-text">${comment.content}</div>
+                        <div class="comment-actions">
+                            <button onclick="likeVideoComment('${comment.id}')" class="${comment.has_liked ? 'liked' : ''}">
+                                <i class="${comment.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                                <span id="vcomment-likes-${comment.id}">${comment.likes_count || 0}</span>
+                            </button>
+                            <button onclick="replyToVideoComment('${comment.id}')">
+                                <i class="far fa-reply"></i> Reply
+                            </button>
+                        </div>
+                        ${comment.replies && comment.replies.length > 0 ? `
+                            <div style="margin-top:8px;padding-left:12px;border-left:2px solid rgba(255,255,255,0.1);">
+                                ${comment.replies.map(reply => `
+                                    <div class="video-comment-item" style="padding:8px 0;margin-bottom:8px;background:transparent;">
+                                        <div class="comment-avatar" style="width:28px;height:28px;font-size:11px;">${(reply.author_name || 'U')[0].toUpperCase()}</div>
+                                        <div class="comment-body">
+                                            <div>
+                                                <span class="comment-author" style="font-size:12px;">${reply.author_name}</span>
+                                                <span class="comment-time" style="font-size:10px;">${reply.time_ago || 'Just now'}</span>
+                                            </div>
+                                            <div class="comment-text" style="font-size:13px;">${reply.content}</div>
+                                            <div class="comment-actions">
+                                                <button onclick="likeVideoComment('${reply.id}')" class="${reply.has_liked ? 'liked' : ''}">
+                                                    <i class="${reply.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                                                    <span id="vcomment-likes-${reply.id}">${reply.likes_count || 0}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function postVideoComment() {
+            const input = document.getElementById('videoCommentInput');
+            const content = input.value.trim();
+            if (!content || !videoState.currentVideoId) return;
+
+            try {
+                const response = await fetch(`/api/videos/${videoState.currentVideoId}/comments/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ content })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    input.value = '';
+                    loadVideoComments(videoState.currentVideoId);
+
+                    const videoItem = document.querySelector(`[data-video-id="${videoState.currentVideoId}"]`);
+                    if (videoItem) {
+                        const commentBtn = videoItem.querySelector('.video-action-btn:nth-child(2) .count');
+                        if (commentBtn) {
+                            const currentCount = parseInt(commentBtn.textContent) || 0;
+                            commentBtn.textContent = currentCount + 1;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                showToast('Failed to post comment', 'error');
+            }
+        }
+
+        async function likeVideoComment(commentId) {
+            try {
+                const response = await fetch(`/api/comments/${commentId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ action: 'like' })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const likesSpan = document.getElementById(`vcomment-likes-${commentId}`);
+                    if (likesSpan) {
+                        likesSpan.textContent = data.likes_count;
+                    }
+
+                    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+                    if (commentItem) {
+                        const likeBtn = commentItem.querySelector('.comment-actions button:first-child');
+                        if (likeBtn) {
+                            if (data.liked) {
+                                likeBtn.classList.add('liked');
+                                likeBtn.querySelector('i').className = 'fas fa-heart';
+                            } else {
+                                likeBtn.classList.remove('liked');
+                                likeBtn.querySelector('i').className = 'far fa-heart';
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error liking comment:', error);
+            }
+        }
+
+        function replyToVideoComment(commentId) {
+            const input = document.getElementById('videoCommentInput');
+            input.placeholder = `Reply to comment...`;
+            input.focus();
+            input.dataset.replyTo = commentId;
+
+            window.postVideoComment = async function() {
+                const content = input.value.trim();
+                const parentId = input.dataset.replyTo;
+                if (!content || !videoState.currentVideoId) return;
+
+                try {
+                    const response = await fetch(`/api/videos/${videoState.currentVideoId}/comments/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({ content, parent_comment_id: parentId })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        input.value = '';
+                        input.placeholder = 'Add a comment...';
+                        delete input.dataset.replyTo;
+                        loadVideoComments(videoState.currentVideoId);
+                    }
+                } catch (error) {
+                    console.error('Error posting reply:', error);
+                    showToast('Failed to post reply', 'error');
+                }
+            };
+        }
+
+        // ===== VIDEO UPLOAD =====
+        async function uploadVideo(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 100 * 1024 * 1024) {
+                showToast('Video file too large. Max 100MB.', 'error');
+                input.value = '';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video_file', file);
+            formData.append('title', prompt('Enter a title for your video:', file.name) || file.name);
+            formData.append('description', prompt('Enter a description (optional):', ''));
+
+            showToast('Uploading video...', 'info');
+
+            try {
+                const response = await fetch('/api/videos/upload/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCSRFToken() },
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Video uploaded successfully!', 'success');
+                    input.value = '';
+                    videoState.videos = [];
+                    videoState.currentPage = 1;
+                    loadVideos(1);
+                } else {
+                    showToast(data.error || 'Upload failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading video:', error);
+                showToast('Error uploading video', 'error');
+            }
+        }
+
+        // ===== HELPER FUNCTIONS =====
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') return decodeURIComponent(value);
+            }
+            return null;
+        }
+
+        function showToast(message, type = 'success') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.profile-menu, .menu-content, .share-dropdown').forEach(el => el.classList.remove('show'));
+        }
+
+        function toggleProfileMenu() {
+            closeAllDropdowns();
+            document.getElementById('profileMenu').classList.toggle('show');
+        }
+
+        function toggleThreeDotMenu(button) {
+            closeAllDropdowns();
+            button.parentElement.querySelector('.menu-content').classList.toggle('show');
+        }
+
+        function toggleShareDropdown(button) {
+            closeAllDropdowns();
+            button.nextElementSibling.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-dropdown') && !e.target.closest('.three-dot-menu') && !e.target.closest('.share-button-container')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // ===== TAB SWITCHING =====
+        let currentTab = 'jobs';
+        let allPosts = [];
+        let allJobs = [];
+        let allProperties = [];
+        let filteredProperties = [];
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mobile-bottom-nav a').forEach(btn => btn.classList.remove('active'));
+            
+            document.querySelectorAll(`.tab-btn[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
+            document.querySelectorAll(`.mobile-bottom-nav a[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            const createPostCard = document.getElementById('createPostCard');
+            if (createPostCard) {
+                createPostCard.classList.toggle('hidden', tabName !== 'feed' && tabName !== 'myPosts');
+            }
+            
+            const propertyFilter = document.getElementById('propertyFilter');
+            if (propertyFilter) {
+                propertyFilter.style.display = (tabName === 'properties' || tabName === 'featured') ? 'block' : 'none';
+            }
+            
+            switch(tabName) {
+                case 'jobs': loadJobs(); break;
+                case 'properties': loadProperties(); break;
+                case 'featured': loadFeatured(); break;
+                case 'feed': loadFeedPosts(); break;
+                case 'videos': 
+                    if (videoState.videos.length === 0) loadVideos(1); 
+                    break;
+                case 'management': break;
+            }
+        }
+
+        // ===== POST FUNCTIONS =====
+        function showPostModal() {
+            {% if user.is_authenticated %}
+            document.getElementById('postModal').classList.add('show');
+            document.getElementById('postTextarea').focus();
+            {% else %}
+            showLogin();
+            {% endif %}
+        }
+
+        function hidePostModal() {
+            document.getElementById('postModal').classList.remove('show');
+            document.getElementById('postTextarea').value = '';
+            document.getElementById('mediaPreview').style.display = 'none';
+            document.getElementById('previewImage').src = '';
+        }
+
+        function previewMedia(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('mediaPreview');
+                const img = document.getElementById('previewImage');
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function createPost() {
+            const content = document.getElementById('postTextarea').value.trim();
+            const mediaInput = document.getElementById('mediaInput');
+            
+            if (!content && !mediaInput.files[0]) {
+                showToast('Please add some text or media', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('content', content);
+            if (mediaInput.files[0]) {
+                formData.append('image', mediaInput.files[0]);
+            }
+            
+            const btn = document.getElementById('createPostBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            btn.disabled = true;
+            
+            fetch('/api/posts/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (data.success) {
+                    showToast('Post created successfully!', 'success');
+                    hidePostModal();
+                    if (currentTab === 'feed') loadFeedPosts();
+                } else {
+                    showToast(data.error || 'Failed to create post', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Error creating post', 'error');
+            });
+        }
+
+        function loadFeedPosts() {
+            const container = document.getElementById('feedContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading posts...</p></div>';
+            
+            fetch('/api/posts/feed/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.posts) {
+                        allPosts = data.posts;
+                        renderPosts(data.posts, 'feedContainer');
+                        updateStats();
+                    } else {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts Yet</h4><p>Be the first to share something!</p></div>';
+                    }
+                })
+                .catch(() => {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Posts</h4><p>Please refresh the page</p></div>';
+                });
+        }
+
+        function renderPosts(posts, containerId) {
+            const container = document.getElementById(containerId);
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts</h4><p>Check back later</p></div>';
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => `
+                <div class="post-card" id="post-${post.id}">
+                    <div class="post-header">
+                        <div class="user-avatar">${post.author?.username?.charAt(0)?.toUpperCase() || 'U'}</div>
+                        <div class="post-user-info">
+                            <span class="post-username">${post.author?.username || 'Unknown'}</span>
+                            <span class="post-time">${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently'}</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p class="post-text">${post.content || ''}</p>
+                        ${post.image ? `<img src="${post.image}" class="post-image" alt="Post image">` : ''}
+                    </div>
+                    <div class="post-stats">
+                        <span>${post.likes_count || 0} likes</span>
+                        <span>${post.comments_count || 0} comments</span>
+                    </div>
+                    <div class="post-actions-bar">
+                        <button class="post-action ${post.user_has_liked ? 'liked' : ''}" onclick="likePost(${post.id}, this)">
+                            <i class="fas fa-heart"></i> Like
+                        </button>
+                        <button class="post-action" onclick="toggleComments(${post.id})">
+                            <i class="fas fa-comment"></i> Comment
+                        </button>
+                    </div>
+                    <div id="comments-${post.id}" class="comments-section">
+                        <div class="comment-input-row">
+                            <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a comment...">
+                            <button class="comment-btn" onclick="addComment(${post.id})">Post</button>
+                        </div>
+                        <div id="comments-list-${post.id}" class="comments-list"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function likePost(postId, button) {
+            fetch(`/api/posts/${postId}/like-dislike/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({ action: 'like' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.classList.toggle('liked');
+                    const postCard = document.getElementById(`post-${postId}`);
+                    if (postCard) {
+                        const stats = postCard.querySelector('.post-stats');
+                        if (stats) {
+                            const likesSpan = stats.querySelector('span');
+                            if (likesSpan) {
+                                likesSpan.textContent = `${data.likes_count} likes`;
+                            }
+                        }
+                    }
+                }
+            })
+            .catch(() => showToast('Failed to like post', 'error'));
+        }
+
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (commentsSection) {
+                commentsSection.classList.toggle('show');
+                if (commentsSection.classList.contains('show')) {
+                    loadComments(postId);
+                }
+            }
+        }
+
+        function loadComments(postId) {
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            if (!commentsList) return;
+            
+            commentsList.innerHTML = '<div class="text-center text-muted"><small>Loading comments...</small></div>';
+            
+            fetch(`/api/post-comments/${postId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.comments) {
+                        commentsList.innerHTML = data.comments.map(comment => `
+                            <div class="comment-item mb-2 p-2 border-bottom">
+                                <div class="comment-author fw-bold">${comment.author?.username || 'User'}</div>
+                                <div class="comment-text">${comment.content}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        commentsList.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
+                    }
+                })
+                .catch(() => {
+                    commentsList.innerHTML = '<p class="text-muted text-center">Error loading comments</p>';
+                });
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            if (!input) return;
+            const content = input.value.trim();
+            if (!content) return;
+            
+            fetch(`/api/post-comments/${postId}/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    input.value = '';
+                    loadComments(postId);
+                    showToast('Comment added!', 'success');
+                } else {
+                    showToast('Failed to add comment', 'error');
+                }
+            })
+            .catch(() => showToast('Error adding comment', 'error'));
+        }
+
+        // ===== JOB FUNCTIONS =====
+        function loadJobs() {
+            const container = document.getElementById('jobsContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading jobs...</p></div>';
+            
+            fetch('/api/jobs/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.jobs && data.jobs.length > 0) {
+                        allJobs = data.jobs;
+                        renderJobs(data.jobs);
+                        renderTrendingJobs(data.jobs.slice(0, 3));
+                        updateStats();
+                    } else {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-briefcase"></i><h4>No Jobs Available</h4><p>Check back later for new opportunities</p></div>';
+                    }
+                })
+                .catch(() => {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Jobs</h4><p>Please refresh the page</p></div>';
+                });
+        }
+
+        function renderCompanyLogo(job) {
+            if (job.company_logo) {
+                return `<img src="${job.company_logo}" class="company-logo-small" alt="${job.company_name || 'Company'}">`;
+            }
+            return `<div class="company-logo-placeholder"><i class="fas fa-building"></i></div>`;
+        }
+
+        function renderJobs(jobs) {
+            const container = document.getElementById('jobsContainer');
+            container.innerHTML = jobs.map(job => {
+                let statusBadge = '';
+                let statusClass = 'status-published';
+                let statusText = 'Active';
+                
+                if (job.apply_by) {
+                    const applyBy = new Date(job.apply_by);
+                    const today = new Date();
+                    const daysUntilDeadline = Math.ceil((applyBy - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilDeadline <= 3 && daysUntilDeadline >= 0) {
+                        statusClass = 'status-urgent';
+                        statusText = 'Urgent';
+                    } else if (daysUntilDeadline < 0) {
+                        statusClass = 'status-urgent';
+                        statusText = 'Expired';
+                    }
+                }
+                
+                if (job.is_featured) {
+                    statusClass = 'status-featured';
+                    statusText = 'Featured';
+                }
+                
+                statusBadge = `<span class="job-status-badge ${statusClass}">${statusText}</span>`;
+                
+                const hasApplied = job.user_has_applied || false;
+                const applyButton = hasApplied ? 
+                    `<button class="btn btn-applied" disabled><i class="fas fa-check"></i> Applied</button>` :
+                    `{% if user.is_authenticated %}
+                    <button class="btn btn-apply" onclick="applyForJob('${job.id}', this)"><i class="fas fa-paper-plane me-1"></i> Apply</button>
+                    {% else %}
+                    <button class="btn btn-apply" onclick="showLogin()"><i class="fas fa-sign-in-alt me-1"></i> Login to Apply</button>
+                    {% endif %}`;
+                
+                return `
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="add-post-icon-container">
+                                <button class="add-post-icon" onclick="showPostModal()" title="Create post">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="message-icon-container">
+                                <a href="/messaging/" class="message-icon" title="Message employer">
+                                    <i class="fas fa-comment-dots"></i>
+                                </a>
+                            </div>
+                            ${statusBadge}
+                            <div class="company-logo-container">
+                                ${renderCompanyLogo(job)}
+                                <div class="company-info">
+                                    <h5 class="job-title">${job.title || 'Untitled'}</h5>
+                                    <h6 class="company-name">${job.company_name || 'Unknown Company'}</h6>
+                                </div>
+                            </div>
+                            <div class="job-meta">
+                                <div class="job-meta-item"><i class="fas fa-map-marker-alt"></i><span>${job.location || 'N/A'}</span></div>
+                                <div class="job-meta-item"><i class="fas fa-clock"></i><span>${job.employment_type || 'Full-time'}</span></div>
+                                <div class="job-meta-item"><i class="fas fa-money-bill-wave"></i><span>${job.salary || 'Competitive'}</span></div>
+                            </div>
+                        </div>
+                        <div class="job-card-body">
+                            <p class="job-description">${job.position_summary ? job.position_summary.substring(0, 150) + '...' : 'No description available'}</p>
+                            ${job.apply_by ? `<div class="job-meta-item"><i class="fas fa-calendar"></i><span>Apply by: ${new Date(job.apply_by).toLocaleDateString()}</span></div>` : ''}
+                        </div>
+                        <div class="job-card-footer">
+                            <div class="card-footer-content">
+                                <div class="job-actions">
+                                    <button class="btn btn-view" onclick="viewJob('${job.id}')"><i class="fas fa-eye me-1"></i> View Details</button>
+                                    ${applyButton}
+                                </div>
+                                <div class="share-button-container">
+                                    <button class="share-button" onclick="toggleShareDropdown(this)"><i class="fas fa-share-alt me-1"></i> Share</button>
+                                    <div class="share-dropdown">
+                                        <a href="#" onclick="shareToFacebook('${job.id}'); return false;"><i class="fab fa-facebook-f"></i> Facebook</a>
+                                        <a href="#" onclick="shareToLinkedIn('${job.id}'); return false;"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+                                        <a href="#" onclick="shareToWhatsApp('${job.id}'); return false;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                                        <a href="#" onclick="shareToTwitter('${job.id}'); return false;"><i class="fab fa-twitter"></i> Twitter</a>
+                                        <a href="#" onclick="shareViaEmail('${job.id}'); return false;"><i class="fas fa-envelope"></i> Email</a>
+                                        <a href="#" onclick="copyLink('${job.id}'); return false;"><i class="fas fa-link"></i> Copy Link</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrendingJobs(jobs) {
+            const container = document.getElementById('trendingJobs');
+            if (!container) return;
+            
+            container.innerHTML = jobs.map(job => `
+                <div class="mb-3 p-2 border rounded">
+                    <div class="d-flex align-items-center mb-2">
+                        ${renderCompanyLogo(job)}
+                        <div>
+                            <strong>${job.title || 'Untitled'}</strong>
+                            <div class="small text-muted">${job.company_name || 'Unknown'}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="viewJob('${job.id}')">View Job</button>
+                </div>
+            `).join('');
+        }
+
+        function viewJob(jobId) {
+            window.location.href = `/jobs/${jobId}/`;
+        }
+
+        function applyForJob(jobId, button) {
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading-spinner"></span>';
+            button.disabled = true;
+            
+            fetch(`/api/jobs/${jobId}/apply/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.innerHTML = '<i class="fas fa-check"></i> Applied';
+                    button.classList.remove('btn-apply');
+                    button.classList.add('btn-applied');
+                    button.disabled = true;
+                    showToast('Application submitted successfully!', 'success');
+                } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    showToast(data.error || 'Failed to apply', 'error');
+                }
+            })
+            .catch(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showToast('Error submitting application', 'error');
+            });
+        }
+
+        // ===== SHARE FUNCTIONS =====
+        function shareToFacebook(jobId) {
+            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareToLinkedIn(jobId) {
+            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareToWhatsApp(jobId) {
+            const url = `${window.location.origin}/jobs/${jobId}/`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this job! ${url}`)}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareToTwitter(jobId) {
+            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${encodeURIComponent('Check out this job opportunity!')}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareViaEmail(jobId) {
+            const url = `${window.location.origin}/jobs/${jobId}/`;
+            window.location.href = `mailto:?subject=Job Opportunity&body=${encodeURIComponent(`I found this job opportunity:\n\n${url}`)}`;
+        }
+
+        function copyLink(jobId) {
+            const url = `${window.location.origin}/jobs/${jobId}/`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Link copied to clipboard!', 'success');
+                    closeAllDropdowns();
+                }).catch(() => fallbackCopyText(url));
+            } else {
+                fallbackCopyText(url);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = 0;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Link copied to clipboard!', 'success');
+            } catch (err) {
+                showToast('Failed to copy link', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // ===== PROPERTY FUNCTIONS =====
+        function loadProperties() {
+            const container = document.getElementById('propertiesContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading properties...</p></div>';
+            
+            fetch('/api/properties/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.properties) {
+                        allProperties = data.properties;
+                        filteredProperties = allProperties;
+                        renderProperties(allProperties, container);
+                        updatePropertyStats(allProperties);
+                        loadPropertyTypes();
+                    } else {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Available</h4><p>Check back later for new listings</p></div>';
+                    }
+                })
+                .catch(() => {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Properties</h4><p>Please refresh the page</p></div>';
+                });
+        }
+
+        function renderProperties(properties, container) {
+            if (!properties || properties.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Found</h4><p>Try adjusting your filters</p></div>';
+                return;
+            }
+            
+            container.innerHTML = properties.map(p => `
+                <div class="property-card">
+                    <div class="property-image-container">
+                        <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${p.title || 'Property'}">
+                        ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
+                        ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
+                        ${p.is_online ? '<span class="property-badge online">Available Now</span>' : ''}
+                        ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
+                    </div>
+                    <div class="p-3">
+                        <h4 class="property-title">${p.title || 'Untitled'}</h4>
+                        <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${p.city || 'Unknown'}, ${p.country || 'SA'}</div>
+                        <div class="property-price">${p.price_currency || 'ZAR'} ${Number(p.price || 0).toLocaleString()}</div>
+                    </div>
+                    <div class="property-details">
+                        <span class="property-detail-item"><i class="fas fa-bed"></i> ${p.bedrooms || 0}</span>
+                        <span class="property-detail-item"><i class="fas fa-bath"></i> ${p.bathrooms || 0}</span>
+                        <span class="property-detail-item"><i class="fas fa-car"></i> ${p.garages || 0}</span>
+                        <span class="property-detail-item"><i class="fas fa-ruler-combined"></i> ${p.total_area || 'N/A'} m²</span>
+                    </div>
+                    <div class="property-description">${(p.description || 'No description available').substring(0, 120)}...</div>
+                    <div class="property-footer">
+                        <div class="property-actions">
+                            <button class="btn-view-property" onclick="viewProperty('${p.id}')"><i class="fas fa-eye me-1"></i>View Details</button>
+                            ${p.status === 'available' ? `<button class="btn-book" onclick="bookProperty('${p.id}')"><i class="fas fa-calendar-plus me-1"></i>Book Now</button>` : '<button class="btn-book booked" disabled><i class="fas fa-check me-1"></i>Booked</button>'}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadFeatured() {
+            const container = document.getElementById('featuredContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading featured properties...</p></div>';
+            
+            fetch('/api/properties/featured/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.properties) {
+                        renderProperties(data.properties, container);
+                    } else {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><h4>No Featured Properties</h4><p>Check back later for featured listings</p></div>';
+                    }
+                })
+                .catch(() => {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Featured</h4><p>Please refresh the page</p></div>';
+                });
+        }
+
+        function viewProperty(id) {
+            window.location.href = `/properties/${id}/`;
+        }
+
+        function bookProperty(id) {
+            {% if user.is_authenticated %}
+            const btn = event.target.closest('.btn-book');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            btn.disabled = true;
+            
+            fetch(`/api/properties/${id}/book/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (data.success) {
+                    showToast('Property booked successfully!', 'success');
+                    loadProperties();
+                } else {
+                    showToast(data.error || 'Booking failed', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Error booking property', 'error');
+            });
+            {% else %}
+            showToast('Please login to book this property', 'error');
+            showLogin();
+            {% endif %}
+        }
+
+        function loadPropertyTypes() {
+            fetch('/api/property-types/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('propertyTypeFilter');
+                        data.types.forEach(type => {
+                            const option = document.createElement('option');
+                            option.value = type.id;
+                            option.textContent = type.name;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function applyFilters() {
+            const type = document.getElementById('propertyTypeFilter').value;
+            const listing = document.getElementById('listingTypeFilter').value;
+            const minPrice = parseFloat(document.getElementById('minPriceFilter').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
+            
+            let filtered = allProperties.filter(p => {
+                if (type && p.property_type_id !== type) return false;
+                if (listing && p.listing_type !== listing) return false;
+                if (p.price < minPrice || p.price > maxPrice) return false;
+                return true;
+            });
+            
+            renderProperties(filtered, document.getElementById('propertiesContainer'));
+        }
+
+        function updatePropertyStats(properties) {
+            document.getElementById('totalProperties').textContent = properties ? properties.length : 0;
+            document.getElementById('availableProperties').textContent = properties ? properties.filter(p => p.status === 'available').length : 0;
+            document.getElementById('todayBookings').textContent = properties ? properties.filter(p => new Date(p.created_at).toDateString() === new Date().toDateString()).length : 0;
+        }
+
+        // ===== UPDATE STATS =====
+        function updateStats() {
+            const jobsCount = document.getElementById('jobsCount');
+            if (jobsCount) jobsCount.textContent = allJobs.length;
+            
+            const postsCount = document.getElementById('postsCount');
+            if (postsCount) postsCount.textContent = allPosts.length;
+        }
+
+        function loadBusinessStats() {
+            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+            fetch('/api/business-stats/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('activeJobsCount').textContent = data.stats.active_jobs || '0';
+                        document.getElementById('totalApplications').textContent = data.stats.total_applications || '0';
+                        document.getElementById('profileViews').textContent = data.stats.profile_views || '0';
+                    }
+                })
+                .catch(() => {});
+            {% endif %}
+        }
+
+        function toggleFeed() {
+            if (currentTab === 'feed') {
+                switchTab('jobs');
+                document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-newspaper"></i> Feed';
+            } else {
+                switchTab('feed');
+                document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-briefcase"></i> Jobs';
+            }
+        }
+
+        // ===== AUTH FUNCTIONS =====
+        function showLogin() {
+            new bootstrap.Modal(document.getElementById('loginModal')).show();
+        }
+
+        function showSignup() {
+            new bootstrap.Modal(document.getElementById('signupModal')).show();
+        }
+
+        function showBusinessSignup() {
+            loadBusinessFormData();
+            new bootstrap.Modal(document.getElementById('businessSignupModal')).show();
+        }
+
+        function loadBusinessFormData() {
+            fetch('/api/industries/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('industrySelect');
+                        select.innerHTML = '<option value="">Select Industry</option>';
+                        data.industries.forEach(industry => {
+                            const option = document.createElement('option');
+                            option.value = industry.id;
+                            option.textContent = industry.name;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(() => {});
+            
+            fetch('/api/company-sizes/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('companySizeSelect');
+                        select.innerHTML = '<option value="">Select Company Size</option>';
+                        data.company_sizes.forEach(size => {
+                            const option = document.createElement('option');
+                            option.value = size.id;
+                            option.textContent = size.size_range;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // ===== LOGIN FORM =====
+        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            btn.disabled = true;
+            
+            fetch('/api/auth/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    showToast('Login successful!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                showToast('Login failed', 'error');
+            });
+        });
+
+        // ===== SIGNUP FORM =====
+        document.getElementById('signupForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            
+            if (data.password !== data.password_confirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+            btn.disabled = true;
+            
+            fetch('/api/auth/signup/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
+                    showToast('Account created! Please login.', 'success');
+                    setTimeout(() => showLogin(), 1000);
+                } else {
+                    showToast(data.error || data.message || 'Signup failed', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                showToast('Signup failed', 'error');
+            });
+        });
+
+        // ===== BUSINESS SIGNUP FORM =====
+        document.getElementById('businessSignupForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const btn = document.getElementById('businessSignupBtn');
+            const textSpan = document.getElementById('businessSignupBtnText');
+            const originalText = textSpan.textContent;
+            
+            const password = document.getElementById('businessPassword').value;
+            const confirm = document.getElementById('businessConfirmPassword').value;
+            if (password !== confirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            textSpan.textContent = 'Creating account...';
+            btn.disabled = true;
+            
+            fetch('/api/business-signup/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                textSpan.textContent = originalText;
+                btn.disabled = false;
+                
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'));
+                    if (modal) modal.hide();
+                    
+                    showToast('Business account created successfully!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect_to || '/admin-portal/';
+                    }, 2000);
+                } else {
+                    showToast(data.error || data.message || 'Signup failed', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                textSpan.textContent = originalText;
+                btn.disabled = false;
+                showToast('Network error. Please check your connection.', 'error');
+            });
+        });
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeVideoComments();
+                closeAllDropdowns();
+                hidePostModal();
+            }
+            
+            if (event.target.classList.contains('comment-input') && event.key === 'Enter') {
+                const postId = event.target.id.split('-')[2];
+                addComment(postId);
+            }
+            
+            if (event.target.id === 'videoCommentInput' && event.key === 'Enter') {
+                postVideoComment();
+            }
+        });
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('postModal').addEventListener('click', function(event) {
+                if (event.target === this) hidePostModal();
+            });
+            
+            switchTab('jobs');
+            
+            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+            loadBusinessStats();
+            setInterval(loadBusinessStats, 30000);
+            {% endif %}
+            
+            document.querySelectorAll('.mobile-bottom-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    document.querySelectorAll('.mobile-bottom-nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
