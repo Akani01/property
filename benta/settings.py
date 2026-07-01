@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import dj_database_url
 from decouple import config
 
-# Load environment variables
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,41 +11,77 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------------------------------------------------------
 # SECURITY
 # -------------------------------------------------------------------
-# Get secret key from environment or use default for local
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-@pvx_l17ce)jre+sqe8fdqbj6!5u%^z1!-av8&969s6wn@$x1z')
+SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Debug mode - set to False in production
-DEBUG = config('DEBUG', default=True, cast=bool)
-
-# Allowed hosts - add your production domains
+# ============================================
+# ALLOWED HOSTS - ADD YOUR EXACT RAILWAY URL
+# ============================================
 ALLOWED_HOSTS = [
+    # Local development
     '127.0.0.1',
     'localhost',
     '0.0.0.0',
-    # Add your Heroku app URL
-    'your-app-name.herokuapp.com',
-    # Add your custom domains
-    'yourdomain.com',
-    'www.yourdomain.com',
+    
+    # Railway internal
+    'property.railway.internal',
+    '*.railway.internal',
+    
+    # === YOUR EXACT RAILWAY URL ===
+    'property-production-61c8.up.railway.app',
+    
+    # Railway wildcards (covers all subdomains)
+    '*.up.railway.app',
+    '*.railway.app',
+    
+    # Your custom domains (when you add them)
+    # 'propertyfinder.com',
+    # 'www.propertyfinder.com',
 ]
 
-# CSRF settings
-CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = not DEBUG  # True in production
-CSRF_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = not DEBUG  # True in production
-
+# ============================================
+# CSRF TRUSTED ORIGINS
+# ============================================
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
-    "https://your-app-name.herokuapp.com",
-    "http://property-production-61c8.up.railway.app",
-    "https://property-production-61c8.up.railway.app"
+    # Local
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    
+    # Railway internal
+    'http://property.railway.internal',
+    'https://property.railway.internal',
+    
+    # === YOUR EXACT RAILWAY URL ===
+    'https://property-production-61c8.up.railway.app',
+    
+    # Railway wildcards
+    'https://*.up.railway.app',
+    'https://*.railway.app',
 ]
 
-# SSL/Proxy settings for Heroku
+# ============================================
+# CORS Settings
+# ============================================
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://property.railway.internal',
+    'https://property-production-61c8.up.railway.app',
+    'https://*.up.railway.app',
+    'https://*.railway.app',
+]
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_CREDENTIALS = True
+
+# -------------------------------------------------------------------
+# SSL/Proxy Settings
+# -------------------------------------------------------------------
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = False  # Set to True only if you have SSL properly configured
+
+# Since you're on Railway with HTTPS, keep these
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # -------------------------------------------------------------------
 # APPLICATIONS
@@ -59,8 +94,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Third-party apps
     "crispy_forms",
     "crispy_bootstrap5",
     "rest_framework",
@@ -74,10 +107,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'phonenumber_field',
     'pwa',
-    'storages',  # For AWS S3 storage
-    'whitenoise',  # For static files
-
-    # Local apps
+    'storages',
+    'whitenoise',
     'hiring',
     'realestate',
 ]
@@ -114,14 +145,14 @@ PWA_APP_SPLASH_SCREEN = [
 ]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
-PWA_APP_ORIENTATION = 'portant'
+PWA_APP_ORIENTATION = 'portrait'
 
 # -------------------------------------------------------------------
 # MIDDLEWARE
 # -------------------------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Must be here for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -157,53 +188,47 @@ WSGI_APPLICATION = 'benta.wsgi.application'
 ASGI_APPLICATION = 'benta.asgi.application'
 
 # -------------------------------------------------------------------
-# DATABASE - Supports both local and Heroku
+# DATABASE - Railway PostgreSQL
 # -------------------------------------------------------------------
-# For Heroku, use DATABASE_URL from environment
-# For local, fallback to SQLite
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
-
-
-# -------------------------------------------------------------------
-# STORAGE - Supports both local and S3
-# -------------------------------------------------------------------
-# Use S3 in production (Heroku) or local in development
-if not DEBUG and 'AWS_ACCESS_KEY_ID' in os.environ:
-    # AWS S3 Configuration for production
-    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
-    
-    # Media files on S3
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 else:
-    # Local storage for development
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    
-    # File upload settings
-    MAX_UPLOAD_SIZE = 314572800  # 300MB
-    DATA_UPLOAD_MAX_MEMORY_SIZE = 314572800
-    FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-# Static files - use Whitenoise for both
+# -------------------------------------------------------------------
+# STATIC & MEDIA FILES
+# -------------------------------------------------------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'hiring', 'static'),  # Your app's static
+    os.path.join(BASE_DIR, 'hiring', 'static'),
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Media files
+if not DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = '/app/storage/media/'
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# File upload settings
+MAX_UPLOAD_SIZE = 314572800  # 300MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 314572800
+FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 
 # -------------------------------------------------------------------
 # PASSWORD VALIDATION
@@ -219,7 +244,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # -------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Johannesburg'  # Changed to SA time
+TIME_ZONE = 'Africa/Johannesburg'
 USE_I18N = True
 USE_TZ = True
 
@@ -261,12 +286,11 @@ REST_FRAMEWORK = {
 }
 
 # -------------------------------------------------------------------
-# EMAIL - Configure based on environment
+# EMAIL
 # -------------------------------------------------------------------
-FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
+FRONTEND_URL = config('FRONTEND_URL', default='https://property-production-61c8.up.railway.app')
 
 if not DEBUG and 'EMAIL_HOST_USER' in os.environ:
-    # Production email settings (Gmail)
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = config("EMAIL_HOST_USER")
@@ -276,7 +300,6 @@ if not DEBUG and 'EMAIL_HOST_USER' in os.environ:
     EMAIL_USE_SSL = False
     DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 else:
-    # Local development - console backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # -------------------------------------------------------------------
@@ -285,46 +308,29 @@ else:
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOW_CREDENTIALS = True
-
 RESIDENT_ID_PREFIX = 'ugr'
 BUSINESS_ID_PREFIX = 'lec'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Session settings
-CART_SESSION_ID = 'cart'
-SESSION_COOKIE_AGE = 86400
 
 # -------------------------------------------------------------------
 # REAL ESTATE APP SETTINGS
 # -------------------------------------------------------------------
 REALESTATE_SETTINGS = {
-    'ENABLE_REAL_TIME_TRACKING': False,  # Set to True if you have Redis installed
-    'ENABLE_GOOGLE_MAPS': False,  # Set to True if you have Google Maps API key
-    'GOOGLE_MAPS_API_KEY': '',  # Add your key if needed
-    'MAX_NEARBY_RADIUS': 10,  # Kilometers
-    'DEFAULT_BOOKING_MODE': 'traditional',  # 'traditional' or 'instant'
+    'ENABLE_REAL_TIME_TRACKING': False,
+    'ENABLE_GOOGLE_MAPS': False,
+    'GOOGLE_MAPS_API_KEY': '',
+    'MAX_NEARBY_RADIUS': 10,
+    'DEFAULT_BOOKING_MODE': 'traditional',
 }
 
 # -------------------------------------------------------------------
-# CHANNELS (WebSocket - optional)
+# CHANNELS (WebSocket)
 # -------------------------------------------------------------------
-# Use in-memory channel layer for local development
-# For production, consider using Redis
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-
-# -------------------------------------------------------------------
-# HEROKU SETTINGS
-# -------------------------------------------------------------------
-# Configure Django Heroku - only if running on Heroku
-if 'DYNO' in os.environ:
-    django_heroku.settings(locals())
 
 # -------------------------------------------------------------------
 # LOGGING
@@ -349,7 +355,7 @@ LOGGING = {
 }
 
 # -------------------------------------------------------------------
-# SECURITY HEADERS (for production)
+# SECURITY HEADERS
 # -------------------------------------------------------------------
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
