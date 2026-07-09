@@ -869,3 +869,118 @@ class PropertyAnalytics(models.Model):
     
     def __str__(self):
         return f"Analytics for {self.property.title}"
+
+
+class MaintenanceCategory(models.Model):
+    """Simple category model - user can add, edit, delete"""
+    name = models.CharField(max_length=100, unique=True)
+    icon = models.CharField(max_length=50, blank=True, null=True)  # FontAwesome icon class
+    color = models.CharField(max_length=20, default='#c62828')  # Hex color
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = "Maintenance Categories"
+    
+    def __str__(self):
+        return self.name
+
+class MaintenanceRequest(models.Model):
+    """Simple maintenance request model"""
+    
+    class Priority(models.TextChoices):
+        LOW = 'low', 'Low'
+        MEDIUM = 'medium', 'Medium'
+        HIGH = 'high', 'High'
+        URGENT = 'urgent', 'Urgent'
+    
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        IN_PROGRESS = 'in_progress', 'In Progress'
+        COMPLETED = 'completed', 'Completed'
+        CANCELLED = 'cancelled', 'Cancelled'
+    
+    # Relationships
+    property = models.ForeignKey(
+        'Property', 
+        on_delete=models.CASCADE,
+        related_name='maintenance_requests'
+    )
+    tenant = models.ForeignKey(
+        CustomUser,  # FIXED: Changed from 'User' to 'CustomUser'
+        on_delete=models.CASCADE,
+        related_name='maintenance_requests',
+        null=True,
+        blank=True
+    )
+    category = models.ForeignKey(
+        MaintenanceCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='requests'
+    )
+    
+    # Core fields - simple and clean
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    
+    # Location info - optional
+    location = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Scheduling - optional
+    preferred_date = models.DateField(null=True, blank=True)
+    
+    # Cost tracking - optional
+    estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    actual_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
+    # Notes
+    notes = models.TextField(blank=True, null=True)
+    
+    # Media - optional
+    image = models.ImageField(upload_to='maintenance/', blank=True, null=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-priority', '-created_at']
+    
+    def __str__(self):
+        return f"#{self.id} - {self.title[:50]}"
+    
+    def save(self, *args, **kwargs):
+        if self.status == self.Status.COMPLETED and not self.completed_at:
+            self.completed_at = timezone.now()
+        super().save(*args, **kwargs)
+
+
+class MaintenanceComment(models.Model):
+    """Simple comments for maintenance requests"""
+    request = models.ForeignKey(
+        MaintenanceRequest,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    author = models.ForeignKey(
+        CustomUser,  # FIXED: Changed from 'User' to 'CustomUser'
+        on_delete=models.CASCADE,
+        related_name='maintenance_comments'
+    )
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        return f"Comment on #{self.request.id} by {self.author.username}"

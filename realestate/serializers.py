@@ -547,3 +547,84 @@ class PropertyAnalyticsSerializer(serializers.ModelSerializer):
             'revenue_last_30_days', 'seasonal_data', 'updated_at'
         ]
         read_only_fields = ['id', 'updated_at']
+
+# serializers.py
+
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from .models import MaintenanceCategory, MaintenanceRequest, MaintenanceComment
+
+User = get_user_model()
+
+class MaintenanceCategorySerializer(serializers.ModelSerializer):
+    """Simple category serializer with CRUD operations"""
+    request_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = MaintenanceCategory
+        fields = ['id', 'name', 'icon', 'color', 'description', 'is_active', 'request_count', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+    
+    def get_request_count(self, obj):
+        return obj.requests.count()
+
+
+class MaintenanceCommentSerializer(serializers.ModelSerializer):
+    author_name = serializers.SerializerMethodField()
+    time_ago = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = MaintenanceComment
+        fields = ['id', 'request', 'author', 'author_name', 'content', 'time_ago', 'created_at']
+        read_only_fields = ['author', 'created_at']
+    
+    def get_author_name(self, obj):
+        return obj.author.get_full_name() or obj.author.username
+    
+    def get_time_ago(self, obj):
+        diff = timezone.now() - obj.created_at
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        elif diff.seconds // 3600 > 0:
+            return f"{diff.seconds // 3600}h ago"
+        elif diff.seconds // 60 > 0:
+            return f"{diff.seconds // 60}m ago"
+        return "Just now"
+
+
+class MaintenanceRequestSerializer(serializers.ModelSerializer):
+    """Simple maintenance request serializer"""
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    category_color = serializers.CharField(source='category.color', read_only=True)
+    category_icon = serializers.CharField(source='category.icon', read_only=True)
+    tenant_name = serializers.SerializerMethodField()
+    comments = MaintenanceCommentSerializer(many=True, read_only=True)
+    comments_count = serializers.IntegerField(source='comments.count', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    priority_display = serializers.CharField(source='get_priority_display', read_only=True)
+    
+    class Meta:
+        model = MaintenanceRequest
+        fields = [
+            'id', 'property', 'tenant', 'tenant_name',
+            'category', 'category_name', 'category_color', 'category_icon',
+            'title', 'description', 'priority', 'priority_display',
+            'status', 'status_display', 'location',
+            'preferred_date', 'estimated_cost', 'actual_cost',
+            'notes', 'image', 'comments', 'comments_count',
+            'created_at', 'updated_at', 'completed_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at', 'completed_at']
+    
+    def get_tenant_name(self, obj):
+        if obj.tenant:
+            return obj.tenant.get_full_name() or obj.tenant.username
+        return None
+
+
+class PropertyTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyType
+        fields = ['id', 'name', 'icon', 'created_at']
+
+

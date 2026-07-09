@@ -4,22 +4,48 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
 from django.db.models import Q, Count
 from django.utils import timezone
 from django.conf import settings
 
+# At the top of your views.py, add these imports if they don't exist:
 from .models import (
-    PropertyCategory, PropertyType, PropertyFeature, Property,
-    Room, Booking, DriverLocation, AvailabilityCalendar,
-    BookingInquiry, PropertyReview, Wishlist, PropertyAnalytics
+    PropertyCategory,
+    PropertyType,
+    PropertyFeature,
+    Property,
+    Room,
+    Booking,
+    AvailabilityCalendar,
+    BookingInquiry,
+    PropertyReview,
+    Wishlist,
+    PropertyAnalytics,
+    MaintenanceCategory,
+    MaintenanceRequest,  # <-- ADD THIS
+    MaintenanceComment,  # <-- ADD THIS
+    DriverLocation,  # <-- ADD THIS
 )
+
+# Also make sure you have these serializers imported:
 from .serializers import (
-    PropertyCategorySerializer, PropertyTypeSerializer, PropertyFeatureSerializer,
-    PropertySerializer, PropertyListSerializer, PropertyDetailSerializer,
-    PropertyCreateSerializer, RoomSerializer, BookingSerializer,
-    BookingCreateSerializer, DriverLocationSerializer,
-    AvailabilityCalendarSerializer, BookingInquirySerializer,
-    PropertyReviewSerializer, WishlistSerializer, PropertyAnalyticsSerializer
+    PropertyCategorySerializer,
+    PropertyTypeSerializer,
+    PropertyFeatureSerializer,
+    PropertySerializer,
+    RoomSerializer,
+    BookingSerializer,
+    AvailabilityCalendarSerializer,
+    BookingInquirySerializer,
+    PropertyReviewSerializer,
+    WishlistSerializer,
+    PropertyAnalyticsSerializer,
+    MaintenanceCategorySerializer,  # <-- ADD THIS
+    MaintenanceRequestSerializer,   # <-- ADD THIS
+    MaintenanceCommentSerializer,   # <-- ADD THIS
+    DriverLocationSerializer,
+
 )
 
 
@@ -303,4 +329,154 @@ def book(self, request, pk=None):
         'message': 'Property booked successfully',
         'booking_id': str(booking.id),
         'booking_reference': booking.booking_reference
+    })
+
+
+class MaintenanceCategoryViewSet(viewsets.ModelViewSet):
+    """Complete CRUD for categories - simple and clean"""
+    queryset = MaintenanceCategory.objects.filter(is_active=True)
+    serializer_class = MaintenanceCategorySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        # Admin can see all, others only active
+        if self.request.user.user_type == 'admin' or self.request.user.is_superuser:
+            return MaintenanceCategory.objects.all()
+        return MaintenanceCategory.objects.filter(is_active=True)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_active(self, request, pk=None):
+        """Toggle category active status"""
+        category = self.get_object()
+        category.is_active = not category.is_active
+        category.save()
+        return Response({
+            'success': True,
+            'is_active': category.is_active,
+            'message': f"Category {'activated' if category.is_active else 'deactivated'} successfully"
+        })
+
+
+class MaintenanceRequestViewSet(viewsets.ModelViewSet):
+    """Simple maintenance request management"""
+    serializer_class = MaintenanceRequestSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        # Admin sees all
+        if user.user_type == 'admin' or user.is_superuser:
+            return MaintenanceRequest.objects.all().select_related('category', 'tenant', 'property')
+        
+        # Tenant sees their own
+        return MaintenanceRequest.objects.filter(tenant=user).select_related('category', 'property')
+    
+    def perform_create(self, serializer):
+        """Auto-set tenant if not provided"""
+        tenant = serializer.validated_data.get('tenant')
+        if not tenant:
+            tenant = self.request.user
+        serializer.save(tenant=tenant)
+    
+    @action(detail=True, methods=['post'])
+    def update_status(self, request, pk=None):
+        """Quick status update"""
+        request_obj = self.get_object()
+        new_status = request.data.get('status')
+        
+        if new_status not in dict(MaintenanceRequest.Status.choices):
+            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Only admin or the tenant can update
+        if request_obj.tenant != request.user and request.user.user_type not in ['admin']:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        request_obj.status = new_status
+        if new_status == MaintenanceRequest.Status.COMPLETED:
+            request_obj.completed_at = timezone.now()
+        request_obj.save()
+        
+        return Response({
+            'success': True,
+            'status': request_obj.status,
+            'status_display': request_obj.get_status_display()
+        })
+    
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        """Add a comment to a maintenance request"""
+        request_obj = self.get_object()
+        content = request.data.get('content')
+        
+        if not content:
+            return Response({'error': 'Comment content is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        comment = MaintenanceComment.objects.create(
+            request=request_obj,
+            author=request.user,
+            content=content
+        )
+        
+        serializer = MaintenanceCommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get maintenance statistics"""
+        user = request.user
+        
+        if user.user_type == 'admin' or user.is_superuser:
+            queryset = MaintenanceRequest.objects.all()
+        else:
+            queryset = MaintenanceRequest.objects.filter(tenant=user)
+        
+        stats = {
+            'total': queryset.count(),
+            'pending': queryset.filter(status=MaintenanceRequest.Status.PENDING).count(),
+            'in_progress': queryset.filter(status=MaintenanceRequest.Status.IN_PROGRESS).count(),
+            'completed': queryset.filter(status=MaintenanceRequest.Status.COMPLETED).count(),
+            'cancelled': queryset.filter(status=MaintenanceRequest.Status.CANCELLED).count(),
+        }
+        
+        # Category breakdown
+        category_stats = []
+        for category in MaintenanceCategory.objects.filter(is_active=True):
+            count = queryset.filter(category=category).count()
+            if count > 0:
+                category_stats.append({
+                    'category': category.name,
+                    'count': count,
+                    'color': category.color,
+                    'icon': category.icon
+                })
+        
+        stats['by_category'] = category_stats
+        
+        return Response(stats)
+
+
+class MaintenanceCommentViewSet(viewsets.ModelViewSet):
+    """Comments management"""
+    serializer_class = MaintenanceCommentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return MaintenanceComment.objects.filter(
+            request__in=MaintenanceRequest.objects.filter(tenant=self.request.user)
+        )
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+
+@api_view(['GET'])
+def get_property_types(request):
+    """Get all property types for the frontend"""
+    types = PropertyType.objects.all().order_by('name')
+    serializer = PropertyTypeSerializer(types, many=True)
+    return Response({
+        'success': True,
+        'types': serializer.data
     })

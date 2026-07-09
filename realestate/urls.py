@@ -18,10 +18,38 @@ router.register(r'reviews', views.PropertyReviewViewSet, basename='review')
 router.register(r'wishlists', views.WishlistViewSet, basename='wishlist')
 router.register(r'analytics', views.PropertyAnalyticsViewSet, basename='analytics')
 
+# ===== MAINTENANCE VIEWSETS - ADD THESE =====
+router.register(r'maintenance/categories', views.MaintenanceCategoryViewSet, basename='maintenance-category')
+router.register(r'maintenance/requests', views.MaintenanceRequestViewSet, basename='maintenance-request')
+router.register(r'maintenance/comments', views.MaintenanceCommentViewSet, basename='maintenance-comment')
+
 # Only register driver-locations if real-time tracking is enabled
 if getattr(settings, 'REALESTATE_SETTINGS', {}).get('ENABLE_REAL_TIME_TRACKING', False):
     router.register(r'driver-locations', views.DriverLocationViewSet, basename='driverlocation')
 
 urlpatterns = [
     path('', include(router.urls)),
+    
+    # ===== PROPERTY TYPES (Custom endpoint) =====
+    path('property-types/', views.get_property_types, name='property_types'),
+    
+    # ===== MAINTENANCE - Additional custom endpoints =====
+    # These are for frontend compatibility with your existing JS
+    path('maintenance/requests/stats/', views.MaintenanceRequestViewSet.as_view({'get': 'stats'}), name='maintenance_stats'),
+    
+    # For the specific endpoints your JS is calling
+    path('maintenance/requests/<int:request_id>/', views.MaintenanceRequestViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'patch': 'partial_update',
+        'delete': 'destroy'
+    }), name='maintenance_request_detail'),
+    
+    path('maintenance/requests/<int:request_id>/update-status/', views.MaintenanceRequestViewSet.as_view({
+        'post': 'update_status'
+    }), name='maintenance_update_status'),
+    
+    path('maintenance/requests/<int:request_id>/add-comment/', views.MaintenanceRequestViewSet.as_view({
+        'post': 'add_comment'
+    }), name='maintenance_add_comment'),
 ]

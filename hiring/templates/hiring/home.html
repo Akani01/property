@@ -73,6 +73,32 @@
             transform: translateY(-2px);
         }
         
+        /* Apps sticker - chrome-like icon on top right */
+        .apps-sticker {
+            background: #f0f2f5;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .apps-sticker:hover {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+        .apps-sticker i {
+            font-size: 18px;
+        }
+        
         .profile-dropdown {
             position: relative;
         }
@@ -1311,8 +1337,10 @@
             align-items: center;
             gap: 5px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 13px;
         }
         
+        /* Mobile Bottom Navigation - CLEAN 5 ICONS */
         .mobile-bottom-nav {
             display: none;
         }
@@ -1336,40 +1364,47 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 65px;
+                height: 60px;
                 background: white;
-                border-top: 1px solid #ddd;
+                border-top: 1px solid #e8e8e8;
                 justify-content: space-around;
                 align-items: center;
                 z-index: 9999;
                 padding-bottom: env(safe-area-inset-bottom);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
             }
             
             .mobile-bottom-nav a {
                 text-align: center;
-                color: #333;
-                font-size: 12px;
+                color: #777;
+                font-size: 10px;
                 text-decoration: none;
                 flex: 1;
-                padding: 5px;
+                padding: 4px 0;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                transition: 0.2s;
+                position: relative;
             }
             
-            .mobile-bottom-nav i {
+            .mobile-bottom-nav a i {
                 font-size: 20px;
                 display: block;
                 margin-bottom: 2px;
             }
             
             .mobile-bottom-nav a.active {
-                color: var(--secondary-color);
+                color: var(--primary-color);
+            }
+            
+            .mobile-bottom-nav a.active i {
+                transform: scale(1.1);
             }
             
             body {
-                padding-bottom: 80px;
+                padding-bottom: 70px;
             }
             
             .profile-menu {
@@ -1401,9 +1436,29 @@
             .filter-btn {
                 width: 100%;
             }
+            
+            .feed-toggle-btn {
+                top: 75px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            .feed-toggle-btn i {
+                font-size: 14px;
+            }
         }
         
         @media (max-width: 576px) {
+            .mobile-bottom-nav {
+                height: 55px;
+            }
+            .mobile-bottom-nav a {
+                font-size: 9px;
+            }
+            .mobile-bottom-nav a i {
+                font-size: 18px;
+            }
+            
             .nav-icons {
                 gap: 8px;
             }
@@ -1416,6 +1471,14 @@
                 width: 32px;
                 height: 32px;
                 font-size: 14px;
+            }
+            
+            .apps-sticker {
+                padding: 4px 10px;
+                font-size: 13px;
+            }
+            .apps-sticker i {
+                font-size: 15px;
             }
             
             .post-modal-content {
@@ -1470,6 +1533,44 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .feed-toggle-btn {
+                top: 70px;
+                right: 8px;
+                padding: 4px 10px;
+                font-size: 10px;
+                border-radius: 15px;
+            }
+            .feed-toggle-btn i {
+                font-size: 12px;
+            }
+        }
+
+        /* Apps Modal - Chrome-like grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 10px;
+        }
+        .apps-grid a {
+            background: #f0f2f5;
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .apps-grid a i {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .apps-grid a:hover {
+            background: #e0e2e5;
+            transform: scale(1.05);
         }
 
         .video-feed-tab {
@@ -1817,6 +1918,70 @@
             background: #b71c1c;
             transform: translateY(-2px);
         }
+
+        /* Maintenance Styles */
+        .maintenance-card {
+            transition: all 0.3s ease;
+        }
+        .maintenance-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .maintenance-status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .maintenance-priority-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .maintenance-comment {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+        }
+        .maintenance-comment .comment-author {
+            font-weight: 600;
+            color: #333;
+        }
+        .maintenance-comment .comment-time {
+            font-size: 0.75rem;
+            color: #999;
+        }
+        .maintenance-comment .comment-text {
+            margin-top: 5px;
+            color: #555;
+        }
+        .maintenance-modal .modal-dialog {
+            max-width: 800px;
+        }
+        .maintenance-image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .maintenance-stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .maintenance-stats-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .maintenance-stats-card .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
     </style>
 </head>
 
@@ -1830,7 +1995,6 @@
         e.preventDefault();
         deferredPrompt = e;
         
-        // Show a custom install button
         const installBtn = document.createElement('button');
         installBtn.textContent = '📱 Install Tolleya App';
         installBtn.style.cssText = `
@@ -1864,12 +2028,12 @@
 
     window.addEventListener('appinstalled', () => {
         console.log('🎉 App installed successfully!');
-        // Remove the install button
         document.querySelectorAll('button').forEach(btn => {
             if (btn.textContent.includes('Install Tolleya')) btn.remove();
         });
     });
     </script>
+    
     <!-- Desktop Icon Bar -->
     <div class="desktop-icon-bar">
         {% if user.is_authenticated %}
@@ -1969,6 +2133,13 @@
                                 <li>
                                     <a href="/messaging/" title="Messages">
                                         <i class="fas fa-comment-dots"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Apps Sticker - Chrome-like on top right -->
+                                <li>
+                                    <a href="#" class="apps-sticker" onclick="showAppsModal()" title="Apps">
+                                        <i class="fas fa-th"></i> Apps
                                     </a>
                                 </li>
 
@@ -2109,13 +2280,16 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Tabs Navigation -->
+            <!-- Tabs Navigation - ORDER: Property, Maintenance, Jobs -->
             <div class="tabs-nav">
-                <button class="tab-btn active" onclick="switchTab('jobs')">
-                    <i class="fas fa-briefcase me-2"></i>Jobs
+                <button class="tab-btn active" onclick="switchTab('properties')">
+                    <i class="fas fa-home me-2"></i>Property
                 </button>
-                <button class="tab-btn" onclick="switchTab('properties')">
-                    <i class="fas fa-home me-2"></i>Properties
+                <button class="tab-btn" onclick="switchTab('maintenance')">
+                    <i class="fas fa-tools me-2"></i>Maintenance
+                </button>
+                <button class="tab-btn" onclick="switchTab('jobs')">
+                    <i class="fas fa-briefcase me-2"></i>Jobs
                 </button>
                 <button class="tab-btn" onclick="switchTab('featured')">
                     <i class="fas fa-star me-2"></i>Featured
@@ -2177,14 +2351,71 @@
                 </div>
             </div>
 
-            <!-- Jobs Tab -->
-            <div id="jobsTab" class="tab-content active">
-                <div id="jobsContainer"></div>
+            <!-- Properties Tab (First/Landing) -->
+            <div id="propertiesTab" class="tab-content active">
+                <div id="propertiesContainer"></div>
             </div>
 
-            <!-- Properties Tab -->
-            <div id="propertiesTab" class="tab-content">
-                <div id="propertiesContainer"></div>
+            <!-- Maintenance Tab (Second) -->
+            <div id="maintenanceTab" class="tab-content">
+                <!-- Maintenance Stats -->
+                <div class="row g-3 mb-4" id="maintenanceStats">
+                    <div class="col-md-3 col-6">
+                        <div class="maintenance-stats-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <div class="stat-number" id="totalMaintenance">0</div>
+                            <div class="stat-label">Total Requests</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="maintenance-stats-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            <div class="stat-number" id="pendingMaintenance">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="maintenance-stats-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            <div class="stat-number" id="inProgressMaintenance">0</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="maintenance-stats-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                            <div class="stat-number" id="completedMaintenance">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Filter -->
+                <div class="filter-section" id="maintenanceFilter">
+                    <div class="filter-row">
+                        <select id="maintenanceStatusFilter" onchange="filterMaintenanceRequests()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <select id="maintenancePriorityFilter" onchange="filterMaintenanceRequests()">
+                            <option value="all">All Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                        <button class="filter-btn" onclick="showCreateMaintenanceModal()">
+                            <i class="fas fa-plus me-2"></i>New Request
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Maintenance List -->
+                <div id="maintenanceContainer"></div>
+            </div>
+
+            <!-- Jobs Tab (Third/Last) -->
+            <div id="jobsTab" class="tab-content">
+                <div id="jobsContainer"></div>
             </div>
 
             <!-- Featured Tab -->
@@ -2372,6 +2603,158 @@
         </div>
     </div>
 
+    <!-- Maintenance Create/Edit Modal -->
+    <div class="modal fade" id="maintenanceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="maintenanceModalTitle">Create Maintenance Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="maintenanceForm">
+                        <input type="hidden" id="maintenanceRequestId" name="request_id">
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Title *</label>
+                                    <input type="text" class="form-control" id="maintenanceTitle" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description *</label>
+                                    <textarea class="form-control" id="maintenanceDescription" name="description" rows="4" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Priority *</label>
+                                    <select class="form-control" id="maintenancePriority" name="priority" required>
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-control" id="maintenanceStatus" name="status">
+                                        <option value="pending">Pending</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="maintenanceLocation" name="location" placeholder="e.g., Kitchen, Bathroom">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Date</label>
+                                    <input type="date" class="form-control" id="maintenancePreferredDate" name="preferred_date">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Estimated Cost</label>
+                                    <input type="number" class="form-control" id="maintenanceEstimatedCost" name="estimated_cost" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Actual Cost</label>
+                                    <input type="number" class="form-control" id="maintenanceActualCost" name="actual_cost" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="maintenanceNotes" name="notes" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Image</label>
+                            <input type="file" class="form-control" id="maintenanceImage" name="image" accept="image/*">
+                            <div id="maintenanceImagePreview"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMaintenanceRequest()" style="background: var(--primary-color);">
+                        <i class="fas fa-save me-2"></i>Save Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Detail Modal -->
+    <div class="modal fade" id="maintenanceDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="maintenanceDetailTitle">Maintenance Request Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="maintenanceDetailBody">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Apps Modal - Chrome-like grid with all icons -->
+    <div class="modal fade" id="appsModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-th me-2"></i>Apps</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="apps-grid">
+                        <a href="#" onclick="switchTab('properties'); closeAppsModal()">
+                            <i class="fas fa-home"></i>Property
+                        </a>
+                        <a href="#" onclick="switchTab('maintenance'); closeAppsModal()">
+                            <i class="fas fa-tools"></i>Maint.
+                        </a>
+                        <a href="#" onclick="switchTab('jobs'); closeAppsModal()">
+                            <i class="fas fa-briefcase"></i>Jobs
+                        </a>
+                        <a href="#" onclick="switchTab('videos'); closeAppsModal()">
+                            <i class="fas fa-video"></i>Videos
+                        </a>
+                        <a href="#" onclick="switchTab('feed'); closeAppsModal()">
+                            <i class="fas fa-newspaper"></i>Feed
+                        </a>
+                        <a href="#" onclick="switchTab('featured'); closeAppsModal()">
+                            <i class="fas fa-star"></i>Featured
+                        </a>
+                        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                        <a href="#" onclick="switchTab('management'); closeAppsModal()">
+                            <i class="fas fa-cog"></i>Manage
+                        </a>
+                        {% endif %}
+                        <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
+                        <a href="/settings/"><i class="fas fa-cog"></i>Settings</a>
+                        <a href="/alerts/"><i class="fas fa-bell"></i>Alerts</a>
+                        <a href="/bookings/"><i class="fas fa-calendar"></i>Bookings</a>
+                        <a href="/applications/"><i class="fas fa-file-alt"></i>Apps</a>
+                        <a href="/analytics/"><i class="fas fa-chart-bar"></i>Analytics</a>
+                        <a href="/messaging/"><i class="fas fa-envelope"></i>Messages</a>
+                        <a href="/favorites/"><i class="fas fa-star"></i>Favorites</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Feed Toggle Button -->
     {% if user.is_authenticated %}
     <button class="feed-toggle-btn" onclick="toggleFeed()">
@@ -2379,57 +2762,28 @@
     </button>
     {% endif %}
 
-    <!-- Mobile Bottom Navigation -->
+    <!-- Mobile Bottom Navigation - CLEAN 5 ICONS: Property, Maintenance, Jobs, Videos, Profile -->
     <nav class="mobile-bottom-nav">
-        <a href="#" class="active" onclick="switchTab('jobs')">
+        <a href="#" onclick="switchTab('properties')" class="active">
+            <i class="fas fa-home"></i>
+            <span>Property</span>
+        </a>
+        <a href="#" onclick="switchTab('maintenance')">
+            <i class="fas fa-tools"></i>
+            <span>Maint.</span>
+        </a>
+        <a href="#" onclick="switchTab('jobs')">
             <i class="fas fa-briefcase"></i>
             <span>Jobs</span>
         </a>
-        <a href="#" onclick="switchTab('properties')">
-            <i class="fas fa-home"></i>
-            <span>Properties</span>
+        <a href="#" onclick="switchTab('videos')">
+            <i class="fas fa-video"></i>
+            <span>Videos</span>
         </a>
-        <a href="#" onclick="switchTab('featured')">
-            <i class="fas fa-star"></i>
-            <span>Featured</span>
+        <a href="/profile/">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
         </a>
-        
-        {% if user.is_authenticated %}
-            <a href="#" onclick="switchTab('feed')">
-                <i class="fas fa-newspaper"></i>
-                <span>Feed</span>
-            </a>
-            <a href="#" onclick="switchTab('videos')">
-                <i class="fas fa-video"></i>
-                <span>Videos</span>
-            </a>
-            
-            {% if user.user_type == 'admin' or user.is_superuser %}
-            <a href="#" onclick="switchTab('management')">
-                <i class="fas fa-cog"></i>
-                <span>Manage</span>
-            </a>
-            {% endif %}
-            
-            <a href="#" onclick="showPostModal()">
-                <i class="fas fa-plus"></i>
-                <span>Create</span>
-            </a>
-            
-            <a href="/profile/">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </a>
-        {% else %}
-            <a href="#" onclick="showLogin()">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Login</span>
-            </a>
-            <a href="#" onclick="showSignup()">
-                <i class="fas fa-user-plus"></i>
-                <span>Sign Up</span>
-            </a>
-        {% endif %}
     </nav>
 
     <!-- Toast Container -->
@@ -2605,400 +2959,1204 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- ===== PWA SETUP ===== -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Register Service Worker - using django-pwa's serviceworker.js
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/serviceworker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered successfully:', registration);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            }
+    // ===== PWA SETUP =====
+    document.addEventListener('DOMContentLoaded', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/serviceworker.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered successfully:', registration);
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
 
-            // Install prompt
-            let deferredPrompt;
-            const installBtn = document.createElement('button');
-            installBtn.style.cssText = `
-                position: fixed;
-                bottom: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #c62828;
-                color: white;
-                border: none;
-                padding: 12px 24px;
-                border-radius: 30px;
-                font-weight: 600;
-                z-index: 9999;
-                display: none;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-                cursor: pointer;
-            `;
-            installBtn.innerHTML = '📱 Install Tolleya App';
-            document.body.appendChild(installBtn);
+        let deferredPrompt;
+        const installBtn = document.createElement('button');
+        installBtn.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+        `;
+        installBtn.innerHTML = '📱 Install Tolleya App';
+        document.body.appendChild(installBtn);
 
-            window.addEventListener('beforeinstallprompt', function(e) {
-                e.preventDefault();
-                deferredPrompt = e;
-                installBtn.style.display = 'block';
-            });
-
-            installBtn.addEventListener('click', function() {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then(function(choiceResult) {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the install prompt');
-                        } else {
-                            console.log('User dismissed the install prompt');
-                        }
-                        installBtn.style.display = 'none';
-                        deferredPrompt = null;
-                    });
-                }
-            });
-
-            window.addEventListener('appinstalled', function() {
-                console.log('App installed successfully!');
-                installBtn.style.display = 'none';
-            });
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
         });
-    </script>
 
-    <!-- Your existing JavaScript -->
-    <script>
-        // ===== VIDEO FEED STATE =====
-        let videoState = {
-            videos: [],
-            currentVideoId: null,
-            currentPage: 1,
-            hasMore: true,
-            isLoading: false
-        };
-
-        // ===== VIDEO FEED FUNCTIONS =====
-        async function loadVideos(page = 1) {
-            if (videoState.isLoading) return;
-            videoState.isLoading = true;
-
-            const container = document.getElementById('videoFeedContainer');
-            if (page === 1) {
-                container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-white">Loading videos...</p></div>';
-            }
-
-            try {
-                const response = await fetch(`/api/videos/feed/?page=${page}&page_size=10`);
-                const data = await response.json();
-
-                if (data.success) {
-                    const newVideos = data.videos || [];
-                    videoState.videos = page === 1 ? newVideos : [...videoState.videos, ...newVideos];
-                    videoState.hasMore = data.pagination && data.pagination.has_next;
-                    videoState.currentPage = page;
-
-                    if (page === 1) {
-                        renderVideos(newVideos);
+        installBtn.addEventListener('click', function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
                     } else {
-                        appendVideos(newVideos);
+                        console.log('User dismissed the install prompt');
                     }
-                } else {
-                    container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-video"></i><h4>No Videos Available</h4><p>Check back later for new content</p></div>';
-                }
-            } catch (error) {
-                console.error('Error loading videos:', error);
-                container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Videos</h4><p>Please refresh the page</p></div>';
-            } finally {
-                videoState.isLoading = false;
+                    installBtn.style.display = 'none';
+                    deferredPrompt = null;
+                });
             }
+        });
+
+        window.addEventListener('appinstalled', function() {
+            console.log('App installed successfully!');
+            installBtn.style.display = 'none';
+        });
+    });
+
+    // ===== STATE VARIABLES =====
+    let currentTab = 'properties';
+    let allPosts = [];
+    let allJobs = [];
+    let allProperties = [];
+    let filteredProperties = [];
+    let allMaintenanceRequests = [];
+    let appsModal = null;
+    
+    let videoState = {
+        videos: [],
+        currentVideoId: null,
+        currentPage: 1,
+        hasMore: true,
+        isLoading: false
+    };
+
+    // ===== HELPER FUNCTIONS =====
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') return decodeURIComponent(value);
         }
+        return null;
+    }
 
-        function renderVideos(videosList) {
-            const container = document.getElementById('videoFeedContainer');
-            container.innerHTML = '';
-            videosList.forEach((video, index) => {
-                container.appendChild(createVideoElement(video, index));
-            });
-            setupVideoObserver();
-        }
-
-        function appendVideos(videosList) {
-            const container = document.getElementById('videoFeedContainer');
-            videosList.forEach((video) => {
-                container.appendChild(createVideoElement(video, container.children.length));
-            });
-        }
-
-        function createVideoElement(video, index) {
-            const div = document.createElement('div');
-            div.className = 'video-item';
-            div.dataset.index = index;
-            div.dataset.videoId = video.id;
-
-            const videoEl = document.createElement('video');
-            videoEl.src = video.video_url;
-            videoEl.loop = true;
-            videoEl.muted = true;
-            videoEl.playsInline = true;
-
-            videoEl.addEventListener('click', () => {
-                if (videoEl.paused) {
-                    videoEl.play();
-                } else {
-                    videoEl.pause();
-                }
-            });
-
-            div.appendChild(videoEl);
-
-            const overlay = document.createElement('div');
-            overlay.className = 'video-overlay';
-            overlay.innerHTML = `
-                <div class="video-author">
-                    <span class="avatar">${(video.author_name || 'U')[0].toUpperCase()}</span>
-                    <span>${video.author_name || 'Unknown User'}</span>
+    function showToast(message, type = 'success') {
+        const toastContainer = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast show align-items-center text-bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                    ${message}
                 </div>
-                <div class="video-title">${video.title || 'Untitled'}</div>
-                ${video.description ? `<div class="video-description">${video.description}</div>` : ''}
-            `;
-            div.appendChild(overlay);
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+            </div>
+        `;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
 
-            const actions = document.createElement('div');
-            actions.className = 'video-actions';
-            actions.innerHTML = `
-                <button class="video-action-btn" onclick="handleVideoLike('${video.id}')">
-                    <div class="icon-circle ${video.has_liked ? 'liked' : ''}">
-                        <i class="${video.has_liked ? 'fas' : 'far'} fa-heart"></i>
-                    </div>
-                    <span class="count" id="video-likes-${video.id}">${video.likes_count || 0}</span>
-                </button>
-                <button class="video-action-btn" onclick="openVideoComments('${video.id}')">
-                    <div class="icon-circle">
-                        <i class="far fa-comment"></i>
-                    </div>
-                    <span class="count">${video.comments_count || 0}</span>
-                </button>
-                <button class="video-action-btn" onclick="handleVideoShare('${video.id}')">
-                    <div class="icon-circle">
-                        <i class="fas fa-share-alt"></i>
-                    </div>
-                    <span class="count">${video.shares || 0}</span>
-                </button>
-            `;
-            div.appendChild(actions);
-
-            return div;
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
+    }
 
-        function setupVideoObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const videoEl = entry.target.querySelector('video');
-                        if (videoEl) {
-                            videoEl.play();
-                            const index = parseInt(entry.target.dataset.index);
-                            if (index >= videoState.videos.length - 3 && videoState.hasMore && !videoState.isLoading) {
-                                loadVideos(videoState.currentPage + 1);
-                            }
-                        }
-                    } else {
-                        const videoEl = entry.target.querySelector('video');
-                        if (videoEl) {
-                            videoEl.pause();
-                        }
-                    }
-                });
-            }, {
-                threshold: 0.6
-            });
+    function closeAllDropdowns() {
+        document.querySelectorAll('.profile-menu, .menu-content, .share-dropdown').forEach(el => el.classList.remove('show'));
+    }
 
-            document.querySelectorAll('.video-item').forEach(item => {
-                observer.observe(item);
-            });
+    function toggleProfileMenu() {
+        closeAllDropdowns();
+        document.getElementById('profileMenu').classList.toggle('show');
+    }
+
+    function toggleThreeDotMenu(button) {
+        closeAllDropdowns();
+        button.parentElement.querySelector('.menu-content').classList.toggle('show');
+    }
+
+    function toggleShareDropdown(button) {
+        closeAllDropdowns();
+        button.nextElementSibling.classList.toggle('show');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.profile-dropdown') && !e.target.closest('.three-dot-menu') && !e.target.closest('.share-button-container')) {
+            closeAllDropdowns();
         }
+    });
 
-        async function handleVideoLike(videoId) {
-            try {
-                const response = await fetch(`/api/videos/${videoId}/like/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
-                    body: JSON.stringify({ action: 'like' })
-                });
-                const data = await response.json();
+    // ===== APPS MODAL =====
+    function showAppsModal() {
+        if (!appsModal) {
+            appsModal = new bootstrap.Modal(document.getElementById('appsModal'));
+        }
+        appsModal.show();
+    }
 
-                if (data.success) {
-                    const likesCount = document.getElementById(`video-likes-${videoId}`);
-                    if (likesCount) {
-                        likesCount.textContent = data.likes_count;
-                    }
+    function closeAppsModal() {
+        if (appsModal) {
+            appsModal.hide();
+        }
+    }
 
-                    const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
-                    if (videoItem) {
-                        const iconCircle = videoItem.querySelector('.video-action-btn:first-child .icon-circle');
-                        if (iconCircle) {
-                            const icon = iconCircle.querySelector('i');
-                            if (data.liked) {
-                                icon.className = 'fas fa-heart';
-                                iconCircle.classList.add('liked');
-                            } else {
-                                icon.className = 'far fa-heart';
-                                iconCircle.classList.remove('liked');
-                            }
-                        }
-                    }
+    // ===== TAB SWITCHING =====
+    function switchTab(tabName) {
+        currentTab = tabName;
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.mobile-bottom-nav a').forEach(btn => btn.classList.remove('active'));
+        
+        document.querySelectorAll(`.tab-btn[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
+        document.querySelectorAll(`.mobile-bottom-nav a[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
+        
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        const tabElement = document.getElementById(tabName + 'Tab');
+        if (tabElement) {
+            tabElement.classList.add('active');
+        }
+        
+        const createPostCard = document.getElementById('createPostCard');
+        if (createPostCard) {
+            createPostCard.classList.toggle('hidden', tabName !== 'feed' && tabName !== 'myPosts');
+        }
+        
+        const propertyFilter = document.getElementById('propertyFilter');
+        if (propertyFilter) {
+            propertyFilter.style.display = (tabName === 'properties' || tabName === 'featured') ? 'block' : 'none';
+        }
+        
+        const maintenanceFilter = document.getElementById('maintenanceFilter');
+        if (maintenanceFilter) {
+            maintenanceFilter.style.display = tabName === 'maintenance' ? 'block' : 'none';
+        }
+        
+        switch(tabName) {
+            case 'jobs': loadJobs(); break;
+            case 'properties': loadProperties(); break;
+            case 'featured': loadFeatured(); break;
+            case 'feed': loadFeedPosts(); break;
+            case 'videos': 
+                if (videoState.videos.length === 0) loadVideos(1); 
+                break;
+            case 'maintenance': loadMaintenanceRequests(); break;
+            case 'management': break;
+        }
+    }
 
-                    const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
-                    if (videoIndex !== -1) {
-                        videoState.videos[videoIndex].likes_count = data.likes_count;
-                        videoState.videos[videoIndex].has_liked = data.liked;
-                    }
-                }
-            } catch (error) {
-                console.error('Error liking video:', error);
+    // ===== POST FUNCTIONS =====
+    function showPostModal() {
+        {% if user.is_authenticated %}
+        document.getElementById('postModal').classList.add('show');
+        document.getElementById('postTextarea').focus();
+        {% else %}
+        showLogin();
+        {% endif %}
+    }
+
+    function hidePostModal() {
+        document.getElementById('postModal').classList.remove('show');
+        document.getElementById('postTextarea').value = '';
+        document.getElementById('mediaPreview').style.display = 'none';
+        document.getElementById('previewImage').src = '';
+    }
+
+    function previewMedia(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('mediaPreview');
+            const img = document.getElementById('previewImage');
+            img.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function createPost() {
+        const content = document.getElementById('postTextarea').value.trim();
+        const mediaInput = document.getElementById('mediaInput');
+        
+        if (!content && !mediaInput.files[0]) {
+            showToast('Please add some text or media', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('content', content);
+        if (mediaInput.files[0]) {
+            formData.append('image', mediaInput.files[0]);
+        }
+        
+        const btn = document.getElementById('createPostBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span>';
+        btn.disabled = true;
+        
+        fetch('/api/posts/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCSRFToken() },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (data.success) {
+                showToast('Post created successfully!', 'success');
+                hidePostModal();
+                if (currentTab === 'feed') loadFeedPosts();
+            } else {
+                showToast(data.error || 'Failed to create post', 'error');
             }
-        }
+        })
+        .catch(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            showToast('Error creating post', 'error');
+        });
+    }
 
-        async function handleVideoShare(videoId) {
-            try {
-                const response = await fetch(`/api/videos/${videoId}/share/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    const url = `${window.location.origin}/video/${videoId}/`;
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(url);
-                        showToast('Video link copied to clipboard!', 'success');
-                    } else {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = url;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        showToast('Video link copied to clipboard!', 'success');
-                    }
-
-                    const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
-                    if (videoItem) {
-                        const shareBtn = videoItem.querySelector('.video-action-btn:last-child .count');
-                        if (shareBtn) {
-                            shareBtn.textContent = data.shares_count;
-                        }
-                    }
-
-                    const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
-                    if (videoIndex !== -1) {
-                        videoState.videos[videoIndex].shares = data.shares_count;
-                    }
-                }
-            } catch (error) {
-                console.error('Error sharing video:', error);
-                showToast('Failed to share video', 'error');
-            }
-        }
-
-        // ===== VIDEO COMMENTS =====
-        function openVideoComments(videoId) {
-            videoState.currentVideoId = videoId;
-            document.getElementById('videoCommentPopup').classList.add('open');
-            loadVideoComments(videoId);
-            document.getElementById('videoCommentInput').focus();
-        }
-
-        function closeVideoComments() {
-            document.getElementById('videoCommentPopup').classList.remove('open');
-            videoState.currentVideoId = null;
-        }
-
-        async function loadVideoComments(videoId) {
-            const container = document.getElementById('videoCommentList');
-            container.innerHTML = '<div class="text-center text-muted py-3">Loading comments...</div>';
-
-            try {
-                const response = await fetch(`/api/videos/${videoId}/comments/?page=1&page_size=20`, {
-                    headers: { 'X-CSRFToken': getCSRFToken() }
-                });
-                const data = await response.json();
-
-                if (data.success && data.comments) {
-                    renderVideoComments(data.comments);
+    function loadFeedPosts() {
+        const container = document.getElementById('feedContainer');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading posts...</p></div>';
+        
+        fetch('/api/posts/feed/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.posts) {
+                    allPosts = data.posts;
+                    renderPosts(data.posts, 'feedContainer');
+                    updateStats();
                 } else {
-                    container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts Yet</h4><p>Be the first to share something!</p></div>';
                 }
-            } catch (error) {
-                console.error('Error loading comments:', error);
-                container.innerHTML = '<div class="text-center text-muted py-3">Error loading comments</div>';
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Posts</h4><p>Please refresh the page</p></div>';
+            });
+    }
+
+    function renderPosts(posts, containerId) {
+        const container = document.getElementById(containerId);
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts</h4><p>Check back later</p></div>';
+            return;
+        }
+        
+        container.innerHTML = posts.map(post => `
+            <div class="post-card" id="post-${post.id}">
+                <div class="post-header">
+                    <div class="user-avatar">${post.author?.username?.charAt(0)?.toUpperCase() || 'U'}</div>
+                    <div class="post-user-info">
+                        <span class="post-username">${post.author?.username || 'Unknown'}</span>
+                        <span class="post-time">${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently'}</span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p class="post-text">${post.content || ''}</p>
+                    ${post.image ? `<img src="${post.image}" class="post-image" alt="Post image">` : ''}
+                </div>
+                <div class="post-stats">
+                    <span>${post.likes_count || 0} likes</span>
+                    <span>${post.comments_count || 0} comments</span>
+                </div>
+                <div class="post-actions-bar">
+                    <button class="post-action ${post.user_has_liked ? 'liked' : ''}" onclick="likePost(${post.id}, this)">
+                        <i class="fas fa-heart"></i> Like
+                    </button>
+                    <button class="post-action" onclick="toggleComments(${post.id})">
+                        <i class="fas fa-comment"></i> Comment
+                    </button>
+                </div>
+                <div id="comments-${post.id}" class="comments-section">
+                    <div class="comment-input-row">
+                        <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a comment...">
+                        <button class="comment-btn" onclick="addComment(${post.id})">Post</button>
+                    </div>
+                    <div id="comments-list-${post.id}" class="comments-list"></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function likePost(postId, button) {
+        fetch(`/api/posts/${postId}/like-dislike/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify({ action: 'like' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.classList.toggle('liked');
+                const postCard = document.getElementById(`post-${postId}`);
+                if (postCard) {
+                    const stats = postCard.querySelector('.post-stats');
+                    if (stats) {
+                        const likesSpan = stats.querySelector('span');
+                        if (likesSpan) {
+                            likesSpan.textContent = `${data.likes_count} likes`;
+                        }
+                    }
+                }
+            }
+        })
+        .catch(() => showToast('Failed to like post', 'error'));
+    }
+
+    function toggleComments(postId) {
+        const commentsSection = document.getElementById(`comments-${postId}`);
+        if (commentsSection) {
+            commentsSection.classList.toggle('show');
+            if (commentsSection.classList.contains('show')) {
+                loadComments(postId);
             }
         }
+    }
 
-        function renderVideoComments(comments) {
-            const container = document.getElementById('videoCommentList');
-            if (!comments || comments.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
-                return;
+    function loadComments(postId) {
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        if (!commentsList) return;
+        
+        commentsList.innerHTML = '<div class="text-center text-muted"><small>Loading comments...</small></div>';
+        
+        fetch(`/api/post-comments/${postId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.comments) {
+                    commentsList.innerHTML = data.comments.map(comment => `
+                        <div class="comment-item mb-2 p-2 border-bottom">
+                            <div class="comment-author fw-bold">${comment.author?.username || 'User'}</div>
+                            <div class="comment-text">${comment.content}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    commentsList.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
+                }
+            })
+            .catch(() => {
+                commentsList.innerHTML = '<p class="text-muted text-center">Error loading comments</p>';
+            });
+    }
+
+    function addComment(postId) {
+        const input = document.getElementById(`comment-input-${postId}`);
+        if (!input) return;
+        const content = input.value.trim();
+        if (!content) return;
+        
+        fetch(`/api/post-comments/${postId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify({ content: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                input.value = '';
+                loadComments(postId);
+                showToast('Comment added!', 'success');
+            } else {
+                showToast('Failed to add comment', 'error');
             }
+        })
+        .catch(() => showToast('Error adding comment', 'error'));
+    }
 
-            container.innerHTML = comments.map(comment => `
-                <div class="video-comment-item" data-comment-id="${comment.id}">
-                    <div class="comment-avatar">${(comment.author_name || 'U')[0].toUpperCase()}</div>
-                    <div class="comment-body">
-                        <div>
-                            <span class="comment-author">${comment.author_name}</span>
-                            <span class="comment-time">${comment.time_ago || 'Just now'}</span>
-                        </div>
-                        <div class="comment-text">${comment.content}</div>
-                        <div class="comment-actions">
-                            <button onclick="likeVideoComment('${comment.id}')" class="${comment.has_liked ? 'liked' : ''}">
-                                <i class="${comment.has_liked ? 'fas' : 'far'} fa-heart"></i>
-                                <span id="vcomment-likes-${comment.id}">${comment.likes_count || 0}</span>
+    // ===== JOB FUNCTIONS =====
+    function loadJobs() {
+        const container = document.getElementById('jobsContainer');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading jobs...</p></div>';
+        
+        fetch('/api/jobs/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.jobs && data.jobs.length > 0) {
+                    allJobs = data.jobs;
+                    renderJobs(data.jobs);
+                    renderTrendingJobs(data.jobs.slice(0, 3));
+                    updateStats();
+                } else {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-briefcase"></i><h4>No Jobs Available</h4><p>Check back later for new opportunities</p></div>';
+                }
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Jobs</h4><p>Please refresh the page</p></div>';
+            });
+    }
+
+    function renderCompanyLogo(job) {
+        if (job.company_logo) {
+            return `<img src="${job.company_logo}" class="company-logo-small" alt="${job.company_name || 'Company'}">`;
+        }
+        return `<div class="company-logo-placeholder"><i class="fas fa-building"></i></div>`;
+    }
+
+    function renderJobs(jobs) {
+        const container = document.getElementById('jobsContainer');
+        container.innerHTML = jobs.map(job => {
+            let statusBadge = '';
+            let statusClass = 'status-published';
+            let statusText = 'Active';
+            
+            if (job.apply_by) {
+                const applyBy = new Date(job.apply_by);
+                const today = new Date();
+                const daysUntilDeadline = Math.ceil((applyBy - today) / (1000 * 60 * 60 * 24));
+                
+                if (daysUntilDeadline <= 3 && daysUntilDeadline >= 0) {
+                    statusClass = 'status-urgent';
+                    statusText = 'Urgent';
+                } else if (daysUntilDeadline < 0) {
+                    statusClass = 'status-urgent';
+                    statusText = 'Expired';
+                }
+            }
+            
+            if (job.is_featured) {
+                statusClass = 'status-featured';
+                statusText = 'Featured';
+            }
+            
+            statusBadge = `<span class="job-status-badge ${statusClass}">${statusText}</span>`;
+            
+            const hasApplied = job.user_has_applied || false;
+            const applyButton = hasApplied ? 
+                `<button class="btn btn-applied" disabled><i class="fas fa-check"></i> Applied</button>` :
+                `{% if user.is_authenticated %}
+                <button class="btn btn-apply" onclick="applyForJob('${job.id}', this)"><i class="fas fa-paper-plane me-1"></i> Apply</button>
+                {% else %}
+                <button class="btn btn-apply" onclick="showLogin()"><i class="fas fa-sign-in-alt me-1"></i> Login to Apply</button>
+                {% endif %}`;
+            
+            return `
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <div class="add-post-icon-container">
+                            <button class="add-post-icon" onclick="showPostModal()" title="Create post">
+                                <i class="fas fa-plus"></i>
                             </button>
-                            <button onclick="replyToVideoComment('${comment.id}')">
-                                <i class="far fa-reply"></i> Reply
-                            </button>
                         </div>
-                        ${comment.replies && comment.replies.length > 0 ? `
-                            <div style="margin-top:8px;padding-left:12px;border-left:2px solid rgba(255,255,255,0.1);">
-                                ${comment.replies.map(reply => `
-                                    <div class="video-comment-item" style="padding:8px 0;margin-bottom:8px;background:transparent;">
-                                        <div class="comment-avatar" style="width:28px;height:28px;font-size:11px;">${(reply.author_name || 'U')[0].toUpperCase()}</div>
-                                        <div class="comment-body">
-                                            <div>
-                                                <span class="comment-author" style="font-size:12px;">${reply.author_name}</span>
-                                                <span class="comment-time" style="font-size:10px;">${reply.time_ago || 'Just now'}</span>
-                                            </div>
-                                            <div class="comment-text" style="font-size:13px;">${reply.content}</div>
-                                            <div class="comment-actions">
-                                                <button onclick="likeVideoComment('${reply.id}')" class="${reply.has_liked ? 'liked' : ''}">
-                                                    <i class="${reply.has_liked ? 'fas' : 'far'} fa-heart"></i>
-                                                    <span id="vcomment-likes-${reply.id}">${reply.likes_count || 0}</span>
-                                                </button>
-                                            </div>
+                        <div class="message-icon-container">
+                            <a href="/messaging/" class="message-icon" title="Message employer">
+                                <i class="fas fa-comment-dots"></i>
+                            </a>
+                        </div>
+                        ${statusBadge}
+                        <div class="company-logo-container">
+                            ${renderCompanyLogo(job)}
+                            <div class="company-info">
+                                <h5 class="job-title">${job.title || 'Untitled'}</h5>
+                                <h6 class="company-name">${job.company_name || 'Unknown Company'}</h6>
+                            </div>
+                        </div>
+                        <div class="job-meta">
+                            <div class="job-meta-item"><i class="fas fa-map-marker-alt"></i><span>${job.location || 'N/A'}</span></div>
+                            <div class="job-meta-item"><i class="fas fa-clock"></i><span>${job.employment_type || 'Full-time'}</span></div>
+                            <div class="job-meta-item"><i class="fas fa-money-bill-wave"></i><span>${job.salary || 'Competitive'}</span></div>
+                        </div>
+                    </div>
+                    <div class="job-card-body">
+                        <p class="job-description">${job.position_summary ? job.position_summary.substring(0, 150) + '...' : 'No description available'}</p>
+                        ${job.apply_by ? `<div class="job-meta-item"><i class="fas fa-calendar"></i><span>Apply by: ${new Date(job.apply_by).toLocaleDateString()}</span></div>` : ''}
+                    </div>
+                    <div class="job-card-footer">
+                        <div class="card-footer-content">
+                            <div class="job-actions">
+                                <button class="btn btn-view" onclick="viewJob('${job.id}')"><i class="fas fa-eye me-1"></i> View Details</button>
+                                ${applyButton}
+                            </div>
+                            <div class="share-button-container">
+                                <button class="share-button" onclick="toggleShareDropdown(this)"><i class="fas fa-share-alt me-1"></i> Share</button>
+                                <div class="share-dropdown">
+                                    <a href="#" onclick="shareToFacebook('${job.id}'); return false;"><i class="fab fa-facebook-f"></i> Facebook</a>
+                                    <a href="#" onclick="shareToLinkedIn('${job.id}'); return false;"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+                                    <a href="#" onclick="shareToWhatsApp('${job.id}'); return false;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                                    <a href="#" onclick="shareToTwitter('${job.id}'); return false;"><i class="fab fa-twitter"></i> Twitter</a>
+                                    <a href="#" onclick="shareViaEmail('${job.id}'); return false;"><i class="fas fa-envelope"></i> Email</a>
+                                    <a href="#" onclick="copyLink('${job.id}'); return false;"><i class="fas fa-link"></i> Copy Link</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderTrendingJobs(jobs) {
+        const container = document.getElementById('trendingJobs');
+        if (!container) return;
+        
+        container.innerHTML = jobs.map(job => `
+            <div class="mb-3 p-2 border rounded">
+                <div class="d-flex align-items-center mb-2">
+                    ${renderCompanyLogo(job)}
+                    <div>
+                        <strong>${job.title || 'Untitled'}</strong>
+                        <div class="small text-muted">${job.company_name || 'Unknown'}</div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="viewJob('${job.id}')">View Job</button>
+            </div>
+        `).join('');
+    }
+
+    function viewJob(jobId) {
+        window.location.href = `/jobs/${jobId}/`;
+    }
+
+    function applyForJob(jobId, button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading-spinner"></span>';
+        button.disabled = true;
+        
+        fetch(`/api/jobs/${jobId}/apply/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="fas fa-check"></i> Applied';
+                button.classList.remove('btn-apply');
+                button.classList.add('btn-applied');
+                button.disabled = true;
+                showToast('Application submitted successfully!', 'success');
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showToast(data.error || 'Failed to apply', 'error');
+            }
+        })
+        .catch(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showToast('Error submitting application', 'error');
+        });
+    }
+
+    // ===== SHARE FUNCTIONS =====
+    function shareToFacebook(jobId) {
+        const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareToLinkedIn(jobId) {
+        const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareToWhatsApp(jobId) {
+        const url = `${window.location.origin}/jobs/${jobId}/`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this job! ${url}`)}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareToTwitter(jobId) {
+        const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
+        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${encodeURIComponent('Check out this job opportunity!')}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareViaEmail(jobId) {
+        const url = `${window.location.origin}/jobs/${jobId}/`;
+        window.location.href = `mailto:?subject=Job Opportunity&body=${encodeURIComponent(`I found this job opportunity:\n\n${url}`)}`;
+    }
+
+    function copyLink(jobId) {
+        const url = `${window.location.origin}/jobs/${jobId}/`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+                closeAllDropdowns();
+            }).catch(() => fallbackCopyText(url));
+        } else {
+            fallbackCopyText(url);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = 0;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('Link copied to clipboard!', 'success');
+        } catch (err) {
+            showToast('Failed to copy link', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    // ===== PROPERTY FUNCTIONS =====
+    function loadProperties() {
+        const container = document.getElementById('propertiesContainer');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading properties...</p></div>';
+        
+        fetch('/api/properties/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.properties) {
+                    allProperties = data.properties;
+                    filteredProperties = allProperties;
+                    renderProperties(allProperties, container);
+                    updatePropertyStats(allProperties);
+                    loadPropertyTypes();
+                } else {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Available</h4><p>Check back later for new listings</p></div>';
+                }
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Properties</h4><p>Please refresh the page</p></div>';
+            });
+    }
+
+    function renderProperties(properties, container) {
+        if (!properties || properties.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Found</h4><p>Try adjusting your filters</p></div>';
+            return;
+        }
+        
+        container.innerHTML = properties.map(p => `
+            <div class="property-card">
+                <div class="property-image-container">
+                    <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${p.title || 'Property'}">
+                    ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
+                    ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
+                    ${p.is_online ? '<span class="property-badge online">Available Now</span>' : ''}
+                    ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
+                </div>
+                <div class="p-3">
+                    <h4 class="property-title">${p.title || 'Untitled'}</h4>
+                    <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${p.city || 'Unknown'}, ${p.country || 'SA'}</div>
+                    <div class="property-price">${p.price_currency || 'ZAR'} ${Number(p.price || 0).toLocaleString()}</div>
+                </div>
+                <div class="property-details">
+                    <span class="property-detail-item"><i class="fas fa-bed"></i> ${p.bedrooms || 0}</span>
+                    <span class="property-detail-item"><i class="fas fa-bath"></i> ${p.bathrooms || 0}</span>
+                    <span class="property-detail-item"><i class="fas fa-car"></i> ${p.garages || 0}</span>
+                    <span class="property-detail-item"><i class="fas fa-ruler-combined"></i> ${p.total_area || 'N/A'} m²</span>
+                </div>
+                <div class="property-description">${(p.description || 'No description available').substring(0, 120)}...</div>
+                <div class="property-footer">
+                    <div class="property-actions">
+                        <button class="btn-view-property" onclick="viewProperty('${p.id}')"><i class="fas fa-eye me-1"></i>View Details</button>
+                        ${p.status === 'available' ? `<button class="btn-book" onclick="bookProperty('${p.id}')"><i class="fas fa-calendar-plus me-1"></i>Book Now</button>` : '<button class="btn-book booked" disabled><i class="fas fa-check me-1"></i>Booked</button>'}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadFeatured() {
+        const container = document.getElementById('featuredContainer');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading featured properties...</p></div>';
+        
+        fetch('/api/properties/featured/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.properties) {
+                    renderProperties(data.properties, container);
+                } else {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><h4>No Featured Properties</h4><p>Check back later for featured listings</p></div>';
+                }
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Featured</h4><p>Please refresh the page</p></div>';
+            });
+    }
+
+    function viewProperty(id) {
+        window.location.href = `/properties/${id}/`;
+    }
+
+    function bookProperty(id) {
+        {% if user.is_authenticated %}
+        const btn = event.target.closest('.btn-book');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span>';
+        btn.disabled = true;
+        
+        fetch(`/api/properties/${id}/book/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (data.success) {
+                showToast('Property booked successfully!', 'success');
+                loadProperties();
+            } else {
+                showToast(data.error || 'Booking failed', 'error');
+            }
+        })
+        .catch(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            showToast('Error booking property', 'error');
+        });
+        {% else %}
+        showToast('Please login to book this property', 'error');
+        showLogin();
+        {% endif %}
+    }
+
+    function loadPropertyTypes() {
+        fetch('/api/property-types/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const select = document.getElementById('propertyTypeFilter');
+                    data.types.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.id;
+                        option.textContent = type.name;
+                        select.appendChild(option);
+                    });
+                }
+            })
+            .catch(() => {});
+    }
+
+    function applyFilters() {
+        const type = document.getElementById('propertyTypeFilter').value;
+        const listing = document.getElementById('listingTypeFilter').value;
+        const minPrice = parseFloat(document.getElementById('minPriceFilter').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
+        
+        let filtered = allProperties.filter(p => {
+            if (type && p.property_type_id !== type) return false;
+            if (listing && p.listing_type !== listing) return false;
+            if (p.price < minPrice || p.price > maxPrice) return false;
+            return true;
+        });
+        
+        renderProperties(filtered, document.getElementById('propertiesContainer'));
+    }
+
+    function updatePropertyStats(properties) {
+        document.getElementById('totalProperties').textContent = properties ? properties.length : 0;
+        document.getElementById('availableProperties').textContent = properties ? properties.filter(p => p.status === 'available').length : 0;
+        document.getElementById('todayBookings').textContent = properties ? properties.filter(p => new Date(p.created_at).toDateString() === new Date().toDateString()).length : 0;
+    }
+
+    // ===== VIDEO FUNCTIONS =====
+    async function loadVideos(page = 1) {
+        if (videoState.isLoading) return;
+        videoState.isLoading = true;
+
+        const container = document.getElementById('videoFeedContainer');
+        if (page === 1) {
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-white">Loading videos...</p></div>';
+        }
+
+        try {
+            const response = await fetch(`/api/videos/feed/?page=${page}&page_size=10`);
+            const data = await response.json();
+
+            if (data.success) {
+                const newVideos = data.videos || [];
+                videoState.videos = page === 1 ? newVideos : [...videoState.videos, ...newVideos];
+                videoState.hasMore = data.pagination && data.pagination.has_next;
+                videoState.currentPage = page;
+
+                if (page === 1) {
+                    renderVideos(newVideos);
+                } else {
+                    appendVideos(newVideos);
+                }
+            } else {
+                container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-video"></i><h4>No Videos Available</h4><p>Check back later for new content</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading videos:', error);
+            container.innerHTML = '<div class="empty-state text-white"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Videos</h4><p>Please refresh the page</p></div>';
+        } finally {
+            videoState.isLoading = false;
+        }
+    }
+
+    function renderVideos(videosList) {
+        const container = document.getElementById('videoFeedContainer');
+        container.innerHTML = '';
+        videosList.forEach((video, index) => {
+            container.appendChild(createVideoElement(video, index));
+        });
+        setupVideoObserver();
+    }
+
+    function appendVideos(videosList) {
+        const container = document.getElementById('videoFeedContainer');
+        videosList.forEach((video) => {
+            container.appendChild(createVideoElement(video, container.children.length));
+        });
+    }
+
+    function createVideoElement(video, index) {
+        const div = document.createElement('div');
+        div.className = 'video-item';
+        div.dataset.index = index;
+        div.dataset.videoId = video.id;
+
+        const videoEl = document.createElement('video');
+        videoEl.src = video.video_url;
+        videoEl.loop = true;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+
+        videoEl.addEventListener('click', () => {
+            if (videoEl.paused) {
+                videoEl.play();
+            } else {
+                videoEl.pause();
+            }
+        });
+
+        div.appendChild(videoEl);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'video-overlay';
+        overlay.innerHTML = `
+            <div class="video-author">
+                <span class="avatar">${(video.author_name || 'U')[0].toUpperCase()}</span>
+                <span>${video.author_name || 'Unknown User'}</span>
+            </div>
+            <div class="video-title">${video.title || 'Untitled'}</div>
+            ${video.description ? `<div class="video-description">${video.description}</div>` : ''}
+        `;
+        div.appendChild(overlay);
+
+        const actions = document.createElement('div');
+        actions.className = 'video-actions';
+        actions.innerHTML = `
+            <button class="video-action-btn" onclick="handleVideoLike('${video.id}')">
+                <div class="icon-circle ${video.has_liked ? 'liked' : ''}">
+                    <i class="${video.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                </div>
+                <span class="count" id="video-likes-${video.id}">${video.likes_count || 0}</span>
+            </button>
+            <button class="video-action-btn" onclick="openVideoComments('${video.id}')">
+                <div class="icon-circle">
+                    <i class="far fa-comment"></i>
+                </div>
+                <span class="count">${video.comments_count || 0}</span>
+            </button>
+            <button class="video-action-btn" onclick="handleVideoShare('${video.id}')">
+                <div class="icon-circle">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <span class="count">${video.shares || 0}</span>
+            </button>
+        `;
+        div.appendChild(actions);
+
+        return div;
+    }
+
+    function setupVideoObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const videoEl = entry.target.querySelector('video');
+                    if (videoEl) {
+                        videoEl.play();
+                        const index = parseInt(entry.target.dataset.index);
+                        if (index >= videoState.videos.length - 3 && videoState.hasMore && !videoState.isLoading) {
+                            loadVideos(videoState.currentPage + 1);
+                        }
+                    }
+                } else {
+                    const videoEl = entry.target.querySelector('video');
+                    if (videoEl) {
+                        videoEl.pause();
+                    }
+                }
+            });
+        }, {
+            threshold: 0.6
+        });
+
+        document.querySelectorAll('.video-item').forEach(item => {
+            observer.observe(item);
+        });
+    }
+
+    async function handleVideoLike(videoId) {
+        try {
+            const response = await fetch(`/api/videos/${videoId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ action: 'like' })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const likesCount = document.getElementById(`video-likes-${videoId}`);
+                if (likesCount) {
+                    likesCount.textContent = data.likes_count;
+                }
+
+                const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
+                if (videoItem) {
+                    const iconCircle = videoItem.querySelector('.video-action-btn:first-child .icon-circle');
+                    if (iconCircle) {
+                        const icon = iconCircle.querySelector('i');
+                        if (data.liked) {
+                            icon.className = 'fas fa-heart';
+                            iconCircle.classList.add('liked');
+                        } else {
+                            icon.className = 'far fa-heart';
+                            iconCircle.classList.remove('liked');
+                        }
+                    }
+                }
+
+                const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
+                if (videoIndex !== -1) {
+                    videoState.videos[videoIndex].likes_count = data.likes_count;
+                    videoState.videos[videoIndex].has_liked = data.liked;
+                }
+            }
+        } catch (error) {
+            console.error('Error liking video:', error);
+        }
+    }
+
+    async function handleVideoShare(videoId) {
+        try {
+            const response = await fetch(`/api/videos/${videoId}/share/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const url = `${window.location.origin}/video/${videoId}/`;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Video link copied to clipboard!', 'success');
+                } else {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast('Video link copied to clipboard!', 'success');
+                }
+
+                const videoItem = document.querySelector(`[data-video-id="${videoId}"]`);
+                if (videoItem) {
+                    const shareBtn = videoItem.querySelector('.video-action-btn:last-child .count');
+                    if (shareBtn) {
+                        shareBtn.textContent = data.shares_count;
+                    }
+                }
+
+                const videoIndex = videoState.videos.findIndex(v => v.id === videoId);
+                if (videoIndex !== -1) {
+                    videoState.videos[videoIndex].shares = data.shares_count;
+                }
+            }
+        } catch (error) {
+            console.error('Error sharing video:', error);
+            showToast('Failed to share video', 'error');
+        }
+    }
+
+    function openVideoComments(videoId) {
+        videoState.currentVideoId = videoId;
+        document.getElementById('videoCommentPopup').classList.add('open');
+        loadVideoComments(videoId);
+        document.getElementById('videoCommentInput').focus();
+    }
+
+    function closeVideoComments() {
+        document.getElementById('videoCommentPopup').classList.remove('open');
+        videoState.currentVideoId = null;
+    }
+
+    async function loadVideoComments(videoId) {
+        const container = document.getElementById('videoCommentList');
+        container.innerHTML = '<div class="text-center text-muted py-3">Loading comments...</div>';
+
+        try {
+            const response = await fetch(`/api/videos/${videoId}/comments/?page=1&page_size=20`, {
+                headers: { 'X-CSRFToken': getCSRFToken() }
+            });
+            const data = await response.json();
+
+            if (data.success && data.comments) {
+                renderVideoComments(data.comments);
+            } else {
+                container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
+            }
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            container.innerHTML = '<div class="text-center text-muted py-3">Error loading comments</div>';
+        }
+    }
+
+    function renderVideoComments(comments) {
+        const container = document.getElementById('videoCommentList');
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted py-3">No comments yet. Be the first!</div>';
+            return;
+        }
+
+        container.innerHTML = comments.map(comment => `
+            <div class="video-comment-item" data-comment-id="${comment.id}">
+                <div class="comment-avatar">${(comment.author_name || 'U')[0].toUpperCase()}</div>
+                <div class="comment-body">
+                    <div>
+                        <span class="comment-author">${comment.author_name}</span>
+                        <span class="comment-time">${comment.time_ago || 'Just now'}</span>
+                    </div>
+                    <div class="comment-text">${comment.content}</div>
+                    <div class="comment-actions">
+                        <button onclick="likeVideoComment('${comment.id}')" class="${comment.has_liked ? 'liked' : ''}">
+                            <i class="${comment.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                            <span id="vcomment-likes-${comment.id}">${comment.likes_count || 0}</span>
+                        </button>
+                        <button onclick="replyToVideoComment('${comment.id}')">
+                            <i class="far fa-reply"></i> Reply
+                        </button>
+                    </div>
+                    ${comment.replies && comment.replies.length > 0 ? `
+                        <div style="margin-top:8px;padding-left:12px;border-left:2px solid rgba(255,255,255,0.1);">
+                            ${comment.replies.map(reply => `
+                                <div class="video-comment-item" style="padding:8px 0;margin-bottom:8px;background:transparent;">
+                                    <div class="comment-avatar" style="width:28px;height:28px;font-size:11px;">${(reply.author_name || 'U')[0].toUpperCase()}</div>
+                                    <div class="comment-body">
+                                        <div>
+                                            <span class="comment-author" style="font-size:12px;">${reply.author_name}</span>
+                                            <span class="comment-time" style="font-size:10px;">${reply.time_ago || 'Just now'}</span>
+                                        </div>
+                                        <div class="comment-text" style="font-size:13px;">${reply.content}</div>
+                                        <div class="comment-actions">
+                                            <button onclick="likeVideoComment('${reply.id}')" class="${reply.has_liked ? 'liked' : ''}">
+                                                <i class="${reply.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                                                <span id="vcomment-likes-${reply.id}">${reply.likes_count || 0}</span>
+                                            </button>
                                         </div>
                                     </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
-            `).join('');
-        }
+            </div>
+        `).join('');
+    }
 
-        async function postVideoComment() {
-            const input = document.getElementById('videoCommentInput');
+    async function postVideoComment() {
+        const input = document.getElementById('videoCommentInput');
+        const content = input.value.trim();
+        if (!content || !videoState.currentVideoId) return;
+
+        try {
+            const response = await fetch(`/api/videos/${videoState.currentVideoId}/comments/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ content })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                input.value = '';
+                loadVideoComments(videoState.currentVideoId);
+
+                const videoItem = document.querySelector(`[data-video-id="${videoState.currentVideoId}"]`);
+                if (videoItem) {
+                    const commentBtn = videoItem.querySelector('.video-action-btn:nth-child(2) .count');
+                    if (commentBtn) {
+                        const currentCount = parseInt(commentBtn.textContent) || 0;
+                        commentBtn.textContent = currentCount + 1;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            showToast('Failed to post comment', 'error');
+        }
+    }
+
+    async function likeVideoComment(commentId) {
+        try {
+            const response = await fetch(`/api/comments/${commentId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ action: 'like' })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const likesSpan = document.getElementById(`vcomment-likes-${commentId}`);
+                if (likesSpan) {
+                    likesSpan.textContent = data.likes_count;
+                }
+
+                const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentItem) {
+                    const likeBtn = commentItem.querySelector('.comment-actions button:first-child');
+                    if (likeBtn) {
+                        if (data.liked) {
+                            likeBtn.classList.add('liked');
+                            likeBtn.querySelector('i').className = 'fas fa-heart';
+                        } else {
+                            likeBtn.classList.remove('liked');
+                            likeBtn.querySelector('i').className = 'far fa-heart';
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error liking comment:', error);
+        }
+    }
+
+    function replyToVideoComment(commentId) {
+        const input = document.getElementById('videoCommentInput');
+        input.placeholder = `Reply to comment...`;
+        input.focus();
+        input.dataset.replyTo = commentId;
+
+        window.postVideoComment = async function() {
             const content = input.value.trim();
+            const parentId = input.dataset.replyTo;
             if (!content || !videoState.currentVideoId) return;
 
             try {
@@ -3008,1095 +4166,851 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCSRFToken()
                     },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({ content, parent_comment_id: parentId })
                 });
                 const data = await response.json();
 
                 if (data.success) {
                     input.value = '';
+                    input.placeholder = 'Add a comment...';
+                    delete input.dataset.replyTo;
                     loadVideoComments(videoState.currentVideoId);
-
-                    const videoItem = document.querySelector(`[data-video-id="${videoState.currentVideoId}"]`);
-                    if (videoItem) {
-                        const commentBtn = videoItem.querySelector('.video-action-btn:nth-child(2) .count');
-                        if (commentBtn) {
-                            const currentCount = parseInt(commentBtn.textContent) || 0;
-                            commentBtn.textContent = currentCount + 1;
-                        }
-                    }
                 }
             } catch (error) {
-                console.error('Error posting comment:', error);
-                showToast('Failed to post comment', 'error');
+                console.error('Error posting reply:', error);
+                showToast('Failed to post reply', 'error');
             }
+        };
+    }
+
+    async function uploadVideo(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        if (file.size > 100 * 1024 * 1024) {
+            showToast('Video file too large. Max 100MB.', 'error');
+            input.value = '';
+            return;
         }
 
-        async function likeVideoComment(commentId) {
-            try {
-                const response = await fetch(`/api/comments/${commentId}/like/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
-                    body: JSON.stringify({ action: 'like' })
-                });
-                const data = await response.json();
+        const formData = new FormData();
+        formData.append('video_file', file);
+        formData.append('title', prompt('Enter a title for your video:', file.name) || file.name);
+        formData.append('description', prompt('Enter a description (optional):', ''));
 
-                if (data.success) {
-                    const likesSpan = document.getElementById(`vcomment-likes-${commentId}`);
-                    if (likesSpan) {
-                        likesSpan.textContent = data.likes_count;
-                    }
+        showToast('Uploading video...', 'info');
 
-                    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
-                    if (commentItem) {
-                        const likeBtn = commentItem.querySelector('.comment-actions button:first-child');
-                        if (likeBtn) {
-                            if (data.liked) {
-                                likeBtn.classList.add('liked');
-                                likeBtn.querySelector('i').className = 'fas fa-heart';
-                            } else {
-                                likeBtn.classList.remove('liked');
-                                likeBtn.querySelector('i').className = 'far fa-heart';
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error liking comment:', error);
-            }
-        }
-
-        function replyToVideoComment(commentId) {
-            const input = document.getElementById('videoCommentInput');
-            input.placeholder = `Reply to comment...`;
-            input.focus();
-            input.dataset.replyTo = commentId;
-
-            window.postVideoComment = async function() {
-                const content = input.value.trim();
-                const parentId = input.dataset.replyTo;
-                if (!content || !videoState.currentVideoId) return;
-
-                try {
-                    const response = await fetch(`/api/videos/${videoState.currentVideoId}/comments/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCSRFToken()
-                        },
-                        body: JSON.stringify({ content, parent_comment_id: parentId })
-                    });
-                    const data = await response.json();
-
-                    if (data.success) {
-                        input.value = '';
-                        input.placeholder = 'Add a comment...';
-                        delete input.dataset.replyTo;
-                        loadVideoComments(videoState.currentVideoId);
-                    }
-                } catch (error) {
-                    console.error('Error posting reply:', error);
-                    showToast('Failed to post reply', 'error');
-                }
-            };
-        }
-
-        // ===== VIDEO UPLOAD =====
-        async function uploadVideo(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            if (file.size > 100 * 1024 * 1024) {
-                showToast('Video file too large. Max 100MB.', 'error');
-                input.value = '';
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('video_file', file);
-            formData.append('title', prompt('Enter a title for your video:', file.name) || file.name);
-            formData.append('description', prompt('Enter a description (optional):', ''));
-
-            showToast('Uploading video...', 'info');
-
-            try {
-                const response = await fetch('/api/videos/upload/', {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': getCSRFToken() },
-                    body: formData
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    showToast('Video uploaded successfully!', 'success');
-                    input.value = '';
-                    videoState.videos = [];
-                    videoState.currentPage = 1;
-                    loadVideos(1);
-                } else {
-                    showToast(data.error || 'Upload failed', 'error');
-                }
-            } catch (error) {
-                console.error('Error uploading video:', error);
-                showToast('Error uploading video', 'error');
-            }
-        }
-
-        // ===== HELPER FUNCTIONS =====
-        function getCSRFToken() {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [name, value] = cookie.trim().split('=');
-                if (name === 'csrftoken') return decodeURIComponent(value);
-            }
-            return null;
-        }
-
-        function showToast(message, type = 'success') {
-            const toastContainer = document.querySelector('.toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast show align-items-center text-bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
-            toast.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
-                </div>
-            `;
-            toastContainer.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
-        }
-
-        function togglePassword(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
-        }
-
-        function closeAllDropdowns() {
-            document.querySelectorAll('.profile-menu, .menu-content, .share-dropdown').forEach(el => el.classList.remove('show'));
-        }
-
-        function toggleProfileMenu() {
-            closeAllDropdowns();
-            document.getElementById('profileMenu').classList.toggle('show');
-        }
-
-        function toggleThreeDotMenu(button) {
-            closeAllDropdowns();
-            button.parentElement.querySelector('.menu-content').classList.toggle('show');
-        }
-
-        function toggleShareDropdown(button) {
-            closeAllDropdowns();
-            button.nextElementSibling.classList.toggle('show');
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.profile-dropdown') && !e.target.closest('.three-dot-menu') && !e.target.closest('.share-button-container')) {
-                closeAllDropdowns();
-            }
-        });
-
-        // ===== TAB SWITCHING =====
-        let currentTab = 'jobs';
-        let allPosts = [];
-        let allJobs = [];
-        let allProperties = [];
-        let filteredProperties = [];
-
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.mobile-bottom-nav a').forEach(btn => btn.classList.remove('active'));
-            
-            document.querySelectorAll(`.tab-btn[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
-            document.querySelectorAll(`.mobile-bottom-nav a[onclick*="${tabName}"]`).forEach(btn => btn.classList.add('active'));
-            
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            const createPostCard = document.getElementById('createPostCard');
-            if (createPostCard) {
-                createPostCard.classList.toggle('hidden', tabName !== 'feed' && tabName !== 'myPosts');
-            }
-            
-            const propertyFilter = document.getElementById('propertyFilter');
-            if (propertyFilter) {
-                propertyFilter.style.display = (tabName === 'properties' || tabName === 'featured') ? 'block' : 'none';
-            }
-            
-            switch(tabName) {
-                case 'jobs': loadJobs(); break;
-                case 'properties': loadProperties(); break;
-                case 'featured': loadFeatured(); break;
-                case 'feed': loadFeedPosts(); break;
-                case 'videos': 
-                    if (videoState.videos.length === 0) loadVideos(1); 
-                    break;
-                case 'management': break;
-            }
-        }
-
-        // ===== POST FUNCTIONS =====
-        function showPostModal() {
-            {% if user.is_authenticated %}
-            document.getElementById('postModal').classList.add('show');
-            document.getElementById('postTextarea').focus();
-            {% else %}
-            showLogin();
-            {% endif %}
-        }
-
-        function hidePostModal() {
-            document.getElementById('postModal').classList.remove('show');
-            document.getElementById('postTextarea').value = '';
-            document.getElementById('mediaPreview').style.display = 'none';
-            document.getElementById('previewImage').src = '';
-        }
-
-        function previewMedia(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('mediaPreview');
-                const img = document.getElementById('previewImage');
-                img.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function createPost() {
-            const content = document.getElementById('postTextarea').value.trim();
-            const mediaInput = document.getElementById('mediaInput');
-            
-            if (!content && !mediaInput.files[0]) {
-                showToast('Please add some text or media', 'error');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('content', content);
-            if (mediaInput.files[0]) {
-                formData.append('image', mediaInput.files[0]);
-            }
-            
-            const btn = document.getElementById('createPostBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner"></span>';
-            btn.disabled = true;
-            
-            fetch('/api/posts/', {
+        try {
+            const response = await fetch('/api/videos/upload/', {
                 method: 'POST',
                 headers: { 'X-CSRFToken': getCSRFToken() },
                 body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                if (data.success) {
-                    showToast('Post created successfully!', 'success');
-                    hidePostModal();
-                    if (currentTab === 'feed') loadFeedPosts();
-                } else {
-                    showToast(data.error || 'Failed to create post', 'error');
-                }
-            })
-            .catch(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                showToast('Error creating post', 'error');
             });
-        }
+            const data = await response.json();
 
-        function loadFeedPosts() {
-            const container = document.getElementById('feedContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading posts...</p></div>';
-            
-            fetch('/api/posts/feed/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.posts) {
-                        allPosts = data.posts;
-                        renderPosts(data.posts, 'feedContainer');
-                        updateStats();
-                    } else {
-                        container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts Yet</h4><p>Be the first to share something!</p></div>';
-                    }
-                })
-                .catch(() => {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Posts</h4><p>Please refresh the page</p></div>';
-                });
-        }
-
-        function renderPosts(posts, containerId) {
-            const container = document.getElementById(containerId);
-            if (!posts || posts.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No Posts</h4><p>Check back later</p></div>';
-                return;
+            if (data.success) {
+                showToast('Video uploaded successfully!', 'success');
+                input.value = '';
+                videoState.videos = [];
+                videoState.currentPage = 1;
+                loadVideos(1);
+            } else {
+                showToast(data.error || 'Upload failed', 'error');
             }
+        } catch (error) {
+            console.error('Error uploading video:', error);
+            showToast('Error uploading video', 'error');
+        }
+    }
+
+    // ===== MAINTENANCE REQUEST FUNCTIONS =====
+    let maintenanceModal = null;
+    let maintenanceDetailModal = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        maintenanceModal = new bootstrap.Modal(document.getElementById('maintenanceModal'));
+        maintenanceDetailModal = new bootstrap.Modal(document.getElementById('maintenanceDetailModal'));
+        
+        document.getElementById('maintenanceImage')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('maintenanceImagePreview');
+                    preview.innerHTML = `<img src="${event.target.result}" class="maintenance-image-preview" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    async function loadMaintenanceRequests() {
+        const container = document.getElementById('maintenanceContainer');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading maintenance requests...</p></div>';
+        
+        try {
+            const response = await fetch('/api/maintenance/requests/');
+            const data = await response.json();
             
-            container.innerHTML = posts.map(post => `
-                <div class="post-card" id="post-${post.id}">
-                    <div class="post-header">
-                        <div class="user-avatar">${post.author?.username?.charAt(0)?.toUpperCase() || 'U'}</div>
-                        <div class="post-user-info">
-                            <span class="post-username">${post.author?.username || 'Unknown'}</span>
-                            <span class="post-time">${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently'}</span>
+            if (data.success) {
+                allMaintenanceRequests = data.requests || [];
+                updateMaintenanceStats();
+                renderMaintenanceRequests(allMaintenanceRequests);
+            } else {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-tools"></i><h4>No Maintenance Requests</h4><p>Create your first maintenance request</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading maintenance requests:', error);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Requests</h4><p>Please refresh the page</p></div>';
+        }
+    }
+
+    function updateMaintenanceStats() {
+        const total = allMaintenanceRequests.length;
+        const pending = allMaintenanceRequests.filter(r => r.status === 'pending').length;
+        const inProgress = allMaintenanceRequests.filter(r => r.status === 'in_progress').length;
+        const completed = allMaintenanceRequests.filter(r => r.status === 'completed').length;
+        
+        document.getElementById('totalMaintenance').textContent = total;
+        document.getElementById('pendingMaintenance').textContent = pending;
+        document.getElementById('inProgressMaintenance').textContent = inProgress;
+        document.getElementById('completedMaintenance').textContent = completed;
+    }
+
+    function renderMaintenanceRequests(requests) {
+        const container = document.getElementById('maintenanceContainer');
+        if (!container) return;
+        
+        if (!requests || requests.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-tools"></i><h4>No Maintenance Requests Found</h4><p>Create your first maintenance request</p></div>';
+            return;
+        }
+        
+        const priorityColors = {
+            'low': 'success',
+            'medium': 'warning',
+            'high': 'danger',
+            'urgent': 'danger'
+        };
+        
+        const statusColors = {
+            'pending': 'secondary',
+            'in_progress': 'primary',
+            'completed': 'success',
+            'cancelled': 'danger'
+        };
+        
+        const priorityIcons = {
+            'low': 'fa-arrow-down',
+            'medium': 'fa-minus',
+            'high': 'fa-arrow-up',
+            'urgent': 'fa-exclamation'
+        };
+        
+        container.innerHTML = requests.map(request => `
+            <div class="maintenance-card mb-3" data-request-id="${request.id}">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h5 class="mb-0">
+                                #${request.id} - ${request.title}
+                            </h5>
+                            <small class="text-muted">${request.location || 'No location specified'}</small>
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <span class="maintenance-priority-badge bg-${priorityColors[request.priority] || 'secondary'} text-white me-2">
+                                <i class="fas ${priorityIcons[request.priority] || 'fa-flag'}"></i>
+                                ${request.priority.charAt(0).toUpperCase() + request.priority.slice(1)}
+                            </span>
+                            <span class="maintenance-status-badge bg-${statusColors[request.status] || 'secondary'} text-white">
+                                ${request.status.replace('_', ' ').charAt(0).toUpperCase() + request.status.replace('_', ' ').slice(1)}
+                            </span>
                         </div>
                     </div>
-                    <div class="post-content">
-                        <p class="post-text">${post.content || ''}</p>
-                        ${post.image ? `<img src="${post.image}" class="post-image" alt="Post image">` : ''}
-                    </div>
-                    <div class="post-stats">
-                        <span>${post.likes_count || 0} likes</span>
-                        <span>${post.comments_count || 0} comments</span>
-                    </div>
-                    <div class="post-actions-bar">
-                        <button class="post-action ${post.user_has_liked ? 'liked' : ''}" onclick="likePost(${post.id}, this)">
-                            <i class="fas fa-heart"></i> Like
-                        </button>
-                        <button class="post-action" onclick="toggleComments(${post.id})">
-                            <i class="fas fa-comment"></i> Comment
-                        </button>
-                    </div>
-                    <div id="comments-${post.id}" class="comments-section">
-                        <div class="comment-input-row">
-                            <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a comment...">
-                            <button class="comment-btn" onclick="addComment(${post.id})">Post</button>
-                        </div>
-                        <div id="comments-list-${post.id}" class="comments-list"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function likePost(postId, button) {
-            fetch(`/api/posts/${postId}/like-dislike/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ action: 'like' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    button.classList.toggle('liked');
-                    const postCard = document.getElementById(`post-${postId}`);
-                    if (postCard) {
-                        const stats = postCard.querySelector('.post-stats');
-                        if (stats) {
-                            const likesSpan = stats.querySelector('span');
-                            if (likesSpan) {
-                                likesSpan.textContent = `${data.likes_count} likes`;
-                            }
-                        }
-                    }
-                }
-            })
-            .catch(() => showToast('Failed to like post', 'error'));
-        }
-
-        function toggleComments(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            if (commentsSection) {
-                commentsSection.classList.toggle('show');
-                if (commentsSection.classList.contains('show')) {
-                    loadComments(postId);
-                }
-            }
-        }
-
-        function loadComments(postId) {
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            if (!commentsList) return;
-            
-            commentsList.innerHTML = '<div class="text-center text-muted"><small>Loading comments...</small></div>';
-            
-            fetch(`/api/post-comments/${postId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.comments) {
-                        commentsList.innerHTML = data.comments.map(comment => `
-                            <div class="comment-item mb-2 p-2 border-bottom">
-                                <div class="comment-author fw-bold">${comment.author?.username || 'User'}</div>
-                                <div class="comment-text">${comment.content}</div>
+                    <div class="card-body">
+                        <p class="card-text">${request.description || 'No description provided'}</p>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="d-flex gap-3 flex-wrap">
+                                    ${request.estimated_cost ? `
+                                        <div>
+                                            <small class="text-muted">Estimated Cost:</small>
+                                            <span class="fw-bold">$${parseFloat(request.estimated_cost).toFixed(2)}</span>
+                                        </div>
+                                    ` : ''}
+                                    ${request.actual_cost ? `
+                                        <div>
+                                            <small class="text-muted">Actual Cost:</small>
+                                            <span class="fw-bold">$${parseFloat(request.actual_cost).toFixed(2)}</span>
+                                        </div>
+                                    ` : ''}
+                                    ${request.preferred_date ? `
+                                        <div>
+                                            <small class="text-muted">Preferred Date:</small>
+                                            <span>${new Date(request.preferred_date).toLocaleDateString()}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
                             </div>
-                        `).join('');
-                    } else {
-                        commentsList.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
-                    }
-                })
-                .catch(() => {
-                    commentsList.innerHTML = '<p class="text-muted text-center">Error loading comments</p>';
-                });
-        }
-
-        function addComment(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            if (!input) return;
-            const content = input.value.trim();
-            if (!content) return;
-            
-            fetch(`/api/post-comments/${postId}/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ content: content })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    input.value = '';
-                    loadComments(postId);
-                    showToast('Comment added!', 'success');
-                } else {
-                    showToast('Failed to add comment', 'error');
-                }
-            })
-            .catch(() => showToast('Error adding comment', 'error'));
-        }
-
-        // ===== JOB FUNCTIONS =====
-        function loadJobs() {
-            const container = document.getElementById('jobsContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading jobs...</p></div>';
-            
-            fetch('/api/jobs/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.jobs && data.jobs.length > 0) {
-                        allJobs = data.jobs;
-                        renderJobs(data.jobs);
-                        renderTrendingJobs(data.jobs.slice(0, 3));
-                        updateStats();
-                    } else {
-                        container.innerHTML = '<div class="empty-state"><i class="fas fa-briefcase"></i><h4>No Jobs Available</h4><p>Check back later for new opportunities</p></div>';
-                    }
-                })
-                .catch(() => {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Jobs</h4><p>Please refresh the page</p></div>';
-                });
-        }
-
-        function renderCompanyLogo(job) {
-            if (job.company_logo) {
-                return `<img src="${job.company_logo}" class="company-logo-small" alt="${job.company_name || 'Company'}">`;
-            }
-            return `<div class="company-logo-placeholder"><i class="fas fa-building"></i></div>`;
-        }
-
-        function renderJobs(jobs) {
-            const container = document.getElementById('jobsContainer');
-            container.innerHTML = jobs.map(job => {
-                let statusBadge = '';
-                let statusClass = 'status-published';
-                let statusText = 'Active';
-                
-                if (job.apply_by) {
-                    const applyBy = new Date(job.apply_by);
-                    const today = new Date();
-                    const daysUntilDeadline = Math.ceil((applyBy - today) / (1000 * 60 * 60 * 24));
-                    
-                    if (daysUntilDeadline <= 3 && daysUntilDeadline >= 0) {
-                        statusClass = 'status-urgent';
-                        statusText = 'Urgent';
-                    } else if (daysUntilDeadline < 0) {
-                        statusClass = 'status-urgent';
-                        statusText = 'Expired';
-                    }
-                }
-                
-                if (job.is_featured) {
-                    statusClass = 'status-featured';
-                    statusText = 'Featured';
-                }
-                
-                statusBadge = `<span class="job-status-badge ${statusClass}">${statusText}</span>`;
-                
-                const hasApplied = job.user_has_applied || false;
-                const applyButton = hasApplied ? 
-                    `<button class="btn btn-applied" disabled><i class="fas fa-check"></i> Applied</button>` :
-                    `{% if user.is_authenticated %}
-                    <button class="btn btn-apply" onclick="applyForJob('${job.id}', this)"><i class="fas fa-paper-plane me-1"></i> Apply</button>
-                    {% else %}
-                    <button class="btn btn-apply" onclick="showLogin()"><i class="fas fa-sign-in-alt me-1"></i> Login to Apply</button>
-                    {% endif %}`;
-                
-                return `
-                    <div class="job-card">
-                        <div class="job-card-header">
-                            <div class="add-post-icon-container">
-                                <button class="add-post-icon" onclick="showPostModal()" title="Create post">
-                                    <i class="fas fa-plus"></i>
+                            <div class="col-md-6 text-md-end">
+                                <small class="text-muted">
+                                    Created: ${request.created_at ? new Date(request.created_at).toLocaleDateString() : 'Unknown'}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        ${request.image ? `
+                            <div class="mt-3">
+                                <img src="${request.image}" class="maintenance-image-preview" alt="Maintenance image" style="max-height: 150px;">
+                            </div>
+                        ` : ''}
+                        
+                        ${request.notes ? `
+                            <div class="mt-3">
+                                <small class="text-muted">Notes:</small>
+                                <p class="mb-0">${request.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewMaintenanceDetail('${request.id}')">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="editMaintenanceRequest('${request.id}')">
+                                    <i class="fas fa-edit me-1"></i>Edit
                                 </button>
                             </div>
-                            <div class="message-icon-container">
-                                <a href="/messaging/" class="message-icon" title="Message employer">
-                                    <i class="fas fa-comment-dots"></i>
-                                </a>
+                            <div>
+                                ${request.status === 'pending' ? `
+                                    <button class="btn btn-sm btn-primary" onclick="updateMaintenanceStatus('${request.id}', 'in_progress')">
+                                        <i class="fas fa-play me-1"></i>Start
+                                    </button>
+                                ` : ''}
+                                ${request.status === 'in_progress' ? `
+                                    <button class="btn btn-sm btn-success" onclick="updateMaintenanceStatus('${request.id}', 'completed')">
+                                        <i class="fas fa-check me-1"></i>Complete
+                                    </button>
+                                ` : ''}
+                                ${request.status !== 'cancelled' && request.status !== 'completed' ? `
+                                    <button class="btn btn-sm btn-danger" onclick="updateMaintenanceStatus('${request.id}', 'cancelled')">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-sm btn-danger" onclick="deleteMaintenanceRequest('${request.id}')">
+                                    <i class="fas fa-trash me-1"></i>
+                                </button>
                             </div>
-                            ${statusBadge}
-                            <div class="company-logo-container">
-                                ${renderCompanyLogo(job)}
-                                <div class="company-info">
-                                    <h5 class="job-title">${job.title || 'Untitled'}</h5>
-                                    <h6 class="company-name">${job.company_name || 'Unknown Company'}</h6>
-                                </div>
-                            </div>
-                            <div class="job-meta">
-                                <div class="job-meta-item"><i class="fas fa-map-marker-alt"></i><span>${job.location || 'N/A'}</span></div>
-                                <div class="job-meta-item"><i class="fas fa-clock"></i><span>${job.employment_type || 'Full-time'}</span></div>
-                                <div class="job-meta-item"><i class="fas fa-money-bill-wave"></i><span>${job.salary || 'Competitive'}</span></div>
-                            </div>
-                        </div>
-                        <div class="job-card-body">
-                            <p class="job-description">${job.position_summary ? job.position_summary.substring(0, 150) + '...' : 'No description available'}</p>
-                            ${job.apply_by ? `<div class="job-meta-item"><i class="fas fa-calendar"></i><span>Apply by: ${new Date(job.apply_by).toLocaleDateString()}</span></div>` : ''}
-                        </div>
-                        <div class="job-card-footer">
-                            <div class="card-footer-content">
-                                <div class="job-actions">
-                                    <button class="btn btn-view" onclick="viewJob('${job.id}')"><i class="fas fa-eye me-1"></i> View Details</button>
-                                    ${applyButton}
-                                </div>
-                                <div class="share-button-container">
-                                    <button class="share-button" onclick="toggleShareDropdown(this)"><i class="fas fa-share-alt me-1"></i> Share</button>
-                                    <div class="share-dropdown">
-                                        <a href="#" onclick="shareToFacebook('${job.id}'); return false;"><i class="fab fa-facebook-f"></i> Facebook</a>
-                                        <a href="#" onclick="shareToLinkedIn('${job.id}'); return false;"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
-                                        <a href="#" onclick="shareToWhatsApp('${job.id}'); return false;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                                        <a href="#" onclick="shareToTwitter('${job.id}'); return false;"><i class="fab fa-twitter"></i> Twitter</a>
-                                        <a href="#" onclick="shareViaEmail('${job.id}'); return false;"><i class="fas fa-envelope"></i> Email</a>
-                                        <a href="#" onclick="copyLink('${job.id}'); return false;"><i class="fas fa-link"></i> Copy Link</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderTrendingJobs(jobs) {
-            const container = document.getElementById('trendingJobs');
-            if (!container) return;
-            
-            container.innerHTML = jobs.map(job => `
-                <div class="mb-3 p-2 border rounded">
-                    <div class="d-flex align-items-center mb-2">
-                        ${renderCompanyLogo(job)}
-                        <div>
-                            <strong>${job.title || 'Untitled'}</strong>
-                            <div class="small text-muted">${job.company_name || 'Unknown'}</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="viewJob('${job.id}')">View Job</button>
-                </div>
-            `).join('');
-        }
-
-        function viewJob(jobId) {
-            window.location.href = `/jobs/${jobId}/`;
-        }
-
-        function applyForJob(jobId, button) {
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span class="loading-spinner"></span>';
-            button.disabled = true;
-            
-            fetch(`/api/jobs/${jobId}/apply/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    button.innerHTML = '<i class="fas fa-check"></i> Applied';
-                    button.classList.remove('btn-apply');
-                    button.classList.add('btn-applied');
-                    button.disabled = true;
-                    showToast('Application submitted successfully!', 'success');
-                } else {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    showToast(data.error || 'Failed to apply', 'error');
-                }
-            })
-            .catch(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                showToast('Error submitting application', 'error');
-            });
-        }
-
-        // ===== SHARE FUNCTIONS =====
-        function shareToFacebook(jobId) {
-            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-        }
-
-        function shareToLinkedIn(jobId) {
-            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=400');
-        }
-
-        function shareToWhatsApp(jobId) {
-            const url = `${window.location.origin}/jobs/${jobId}/`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this job! ${url}`)}`, '_blank', 'width=600,height=400');
-        }
-
-        function shareToTwitter(jobId) {
-            const url = encodeURIComponent(`${window.location.origin}/jobs/${jobId}/`);
-            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${encodeURIComponent('Check out this job opportunity!')}`, '_blank', 'width=600,height=400');
-        }
-
-        function shareViaEmail(jobId) {
-            const url = `${window.location.origin}/jobs/${jobId}/`;
-            window.location.href = `mailto:?subject=Job Opportunity&body=${encodeURIComponent(`I found this job opportunity:\n\n${url}`)}`;
-        }
-
-        function copyLink(jobId) {
-            const url = `${window.location.origin}/jobs/${jobId}/`;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(() => {
-                    showToast('Link copied to clipboard!', 'success');
-                    closeAllDropdowns();
-                }).catch(() => fallbackCopyText(url));
-            } else {
-                fallbackCopyText(url);
-            }
-        }
-
-        function fallbackCopyText(text) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.opacity = 0;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast('Link copied to clipboard!', 'success');
-            } catch (err) {
-                showToast('Failed to copy link', 'error');
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // ===== PROPERTY FUNCTIONS =====
-        function loadProperties() {
-            const container = document.getElementById('propertiesContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading properties...</p></div>';
-            
-            fetch('/api/properties/')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.properties) {
-                        allProperties = data.properties;
-                        filteredProperties = allProperties;
-                        renderProperties(allProperties, container);
-                        updatePropertyStats(allProperties);
-                        loadPropertyTypes();
-                    } else {
-                        container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Available</h4><p>Check back later for new listings</p></div>';
-                    }
-                })
-                .catch(() => {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Properties</h4><p>Please refresh the page</p></div>';
-                });
-        }
-
-        function renderProperties(properties, container) {
-            if (!properties || properties.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4>No Properties Found</h4><p>Try adjusting your filters</p></div>';
-                return;
-            }
-            
-            container.innerHTML = properties.map(p => `
-                <div class="property-card">
-                    <div class="property-image-container">
-                        <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${p.title || 'Property'}">
-                        ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
-                        ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
-                        ${p.is_online ? '<span class="property-badge online">Available Now</span>' : ''}
-                        ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
-                    </div>
-                    <div class="p-3">
-                        <h4 class="property-title">${p.title || 'Untitled'}</h4>
-                        <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${p.city || 'Unknown'}, ${p.country || 'SA'}</div>
-                        <div class="property-price">${p.price_currency || 'ZAR'} ${Number(p.price || 0).toLocaleString()}</div>
-                    </div>
-                    <div class="property-details">
-                        <span class="property-detail-item"><i class="fas fa-bed"></i> ${p.bedrooms || 0}</span>
-                        <span class="property-detail-item"><i class="fas fa-bath"></i> ${p.bathrooms || 0}</span>
-                        <span class="property-detail-item"><i class="fas fa-car"></i> ${p.garages || 0}</span>
-                        <span class="property-detail-item"><i class="fas fa-ruler-combined"></i> ${p.total_area || 'N/A'} m²</span>
-                    </div>
-                    <div class="property-description">${(p.description || 'No description available').substring(0, 120)}...</div>
-                    <div class="property-footer">
-                        <div class="property-actions">
-                            <button class="btn-view-property" onclick="viewProperty('${p.id}')"><i class="fas fa-eye me-1"></i>View Details</button>
-                            ${p.status === 'available' ? `<button class="btn-book" onclick="bookProperty('${p.id}')"><i class="fas fa-calendar-plus me-1"></i>Book Now</button>` : '<button class="btn-book booked" disabled><i class="fas fa-check me-1"></i>Booked</button>'}
                         </div>
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        `).join('');
+    }
 
-        function loadFeatured() {
-            const container = document.getElementById('featuredContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading featured properties...</p></div>';
+    function filterMaintenanceRequests() {
+        const statusFilter = document.getElementById('maintenanceStatusFilter').value;
+        const priorityFilter = document.getElementById('maintenancePriorityFilter').value;
+        
+        let filtered = allMaintenanceRequests;
+        
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(r => r.status === statusFilter);
+        }
+        
+        if (priorityFilter !== 'all') {
+            filtered = filtered.filter(r => r.priority === priorityFilter);
+        }
+        
+        renderMaintenanceRequests(filtered);
+    }
+
+    function showCreateMaintenanceModal() {
+        document.getElementById('maintenanceModalTitle').textContent = 'Create Maintenance Request';
+        document.getElementById('maintenanceForm').reset();
+        document.getElementById('maintenanceRequestId').value = '';
+        document.getElementById('maintenanceImagePreview').innerHTML = '';
+        document.getElementById('maintenanceStatus').value = 'pending';
+        maintenanceModal.show();
+    }
+
+    async function editMaintenanceRequest(requestId) {
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/`);
+            const data = await response.json();
             
-            fetch('/api/properties/featured/')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.properties) {
-                        renderProperties(data.properties, container);
-                    } else {
-                        container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><h4>No Featured Properties</h4><p>Check back later for featured listings</p></div>';
-                    }
-                })
-                .catch(() => {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4>Error Loading Featured</h4><p>Please refresh the page</p></div>';
-                });
-        }
-
-        function viewProperty(id) {
-            window.location.href = `/properties/${id}/`;
-        }
-
-        function bookProperty(id) {
-            {% if user.is_authenticated %}
-            const btn = event.target.closest('.btn-book');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner"></span>';
-            btn.disabled = true;
-            
-            fetch(`/api/properties/${id}/book/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                if (data.success) {
-                    showToast('Property booked successfully!', 'success');
-                    loadProperties();
-                } else {
-                    showToast(data.error || 'Booking failed', 'error');
+            if (data.success) {
+                const request = data.request;
+                document.getElementById('maintenanceModalTitle').textContent = 'Edit Maintenance Request';
+                document.getElementById('maintenanceRequestId').value = request.id;
+                document.getElementById('maintenanceTitle').value = request.title || '';
+                document.getElementById('maintenanceDescription').value = request.description || '';
+                document.getElementById('maintenancePriority').value = request.priority || 'medium';
+                document.getElementById('maintenanceStatus').value = request.status || 'pending';
+                document.getElementById('maintenanceLocation').value = request.location || '';
+                document.getElementById('maintenancePreferredDate').value = request.preferred_date || '';
+                document.getElementById('maintenanceEstimatedCost').value = request.estimated_cost || '';
+                document.getElementById('maintenanceActualCost').value = request.actual_cost || '';
+                document.getElementById('maintenanceNotes').value = request.notes || '';
+                
+                if (request.image) {
+                    document.getElementById('maintenanceImagePreview').innerHTML = `
+                        <img src="${request.image}" class="maintenance-image-preview" alt="Current image">
+                        <p class="text-muted small">Current image</p>
+                    `;
                 }
-            })
-            .catch(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                showToast('Error booking property', 'error');
-            });
-            {% else %}
-            showToast('Please login to book this property', 'error');
-            showLogin();
-            {% endif %}
-        }
-
-        function loadPropertyTypes() {
-            fetch('/api/property-types/')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const select = document.getElementById('propertyTypeFilter');
-                        data.types.forEach(type => {
-                            const option = document.createElement('option');
-                            option.value = type.id;
-                            option.textContent = type.name;
-                            select.appendChild(option);
-                        });
-                    }
-                })
-                .catch(() => {});
-        }
-
-        function applyFilters() {
-            const type = document.getElementById('propertyTypeFilter').value;
-            const listing = document.getElementById('listingTypeFilter').value;
-            const minPrice = parseFloat(document.getElementById('minPriceFilter').value) || 0;
-            const maxPrice = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
-            
-            let filtered = allProperties.filter(p => {
-                if (type && p.property_type_id !== type) return false;
-                if (listing && p.listing_type !== listing) return false;
-                if (p.price < minPrice || p.price > maxPrice) return false;
-                return true;
-            });
-            
-            renderProperties(filtered, document.getElementById('propertiesContainer'));
-        }
-
-        function updatePropertyStats(properties) {
-            document.getElementById('totalProperties').textContent = properties ? properties.length : 0;
-            document.getElementById('availableProperties').textContent = properties ? properties.filter(p => p.status === 'available').length : 0;
-            document.getElementById('todayBookings').textContent = properties ? properties.filter(p => new Date(p.created_at).toDateString() === new Date().toDateString()).length : 0;
-        }
-
-        // ===== UPDATE STATS =====
-        function updateStats() {
-            const jobsCount = document.getElementById('jobsCount');
-            if (jobsCount) jobsCount.textContent = allJobs.length;
-            
-            const postsCount = document.getElementById('postsCount');
-            if (postsCount) postsCount.textContent = allPosts.length;
-        }
-
-        function loadBusinessStats() {
-            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-            fetch('/api/business-stats/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('activeJobsCount').textContent = data.stats.active_jobs || '0';
-                        document.getElementById('totalApplications').textContent = data.stats.total_applications || '0';
-                        document.getElementById('profileViews').textContent = data.stats.profile_views || '0';
-                    }
-                })
-                .catch(() => {});
-            {% endif %}
-        }
-
-        function toggleFeed() {
-            if (currentTab === 'feed') {
-                switchTab('jobs');
-                document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-newspaper"></i> Feed';
-            } else {
-                switchTab('feed');
-                document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-briefcase"></i> Jobs';
+                
+                maintenanceModal.show();
             }
+        } catch (error) {
+            console.error('Error loading maintenance request:', error);
+            showToast('Error loading request details', 'error');
         }
+    }
 
-        // ===== AUTH FUNCTIONS =====
-        function showLogin() {
-            new bootstrap.Modal(document.getElementById('loginModal')).show();
+    async function saveMaintenanceRequest() {
+        const form = document.getElementById('maintenanceForm');
+        const formData = new FormData(form);
+        const requestId = document.getElementById('maintenanceRequestId').value;
+        
+        const title = formData.get('title');
+        const description = formData.get('description');
+        
+        if (!title || !description) {
+            showToast('Please fill in all required fields', 'error');
+            return;
         }
-
-        function showSignup() {
-            new bootstrap.Modal(document.getElementById('signupModal')).show();
-        }
-
-        function showBusinessSignup() {
-            loadBusinessFormData();
-            new bootstrap.Modal(document.getElementById('businessSignupModal')).show();
-        }
-
-        function loadBusinessFormData() {
-            fetch('/api/industries/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const select = document.getElementById('industrySelect');
-                        select.innerHTML = '<option value="">Select Industry</option>';
-                        data.industries.forEach(industry => {
-                            const option = document.createElement('option');
-                            option.value = industry.id;
-                            option.textContent = industry.name;
-                            select.appendChild(option);
-                        });
-                    }
-                })
-                .catch(() => {});
-            
-            fetch('/api/company-sizes/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const select = document.getElementById('companySizeSelect');
-                        select.innerHTML = '<option value="">Select Company Size</option>';
-                        data.company_sizes.forEach(size => {
-                            const option = document.createElement('option');
-                            option.value = size.id;
-                            option.textContent = size.size_range;
-                            select.appendChild(option);
-                        });
-                    }
-                })
-                .catch(() => {});
-        }
-
-        // ===== LOGIN FORM =====
-        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            const btn = this.querySelector('button[type="submit"]');
-            const original = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
-            btn.disabled = true;
-            
-            fetch('/api/auth/login/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.innerHTML = original;
-                btn.disabled = false;
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
-                    showToast('Login successful!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.error || 'Login failed', 'error');
-                }
-            })
-            .catch(() => {
-                btn.innerHTML = original;
-                btn.disabled = false;
-                showToast('Login failed', 'error');
-            });
-        });
-
-        // ===== SIGNUP FORM =====
-        document.getElementById('signupForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            const btn = this.querySelector('button[type="submit"]');
-            const original = btn.innerHTML;
-            
-            if (data.password !== data.password_confirm) {
-                showToast('Passwords do not match', 'error');
-                return;
-            }
-            
-            btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
-            btn.disabled = true;
-            
-            fetch('/api/auth/signup/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.innerHTML = original;
-                btn.disabled = false;
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
-                    showToast('Account created! Please login.', 'success');
-                    setTimeout(() => showLogin(), 1000);
-                } else {
-                    showToast(data.error || data.message || 'Signup failed', 'error');
-                }
-            })
-            .catch(() => {
-                btn.innerHTML = original;
-                btn.disabled = false;
-                showToast('Signup failed', 'error');
-            });
-        });
-
-        // ===== BUSINESS SIGNUP FORM =====
-        document.getElementById('businessSignupForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const btn = document.getElementById('businessSignupBtn');
-            const textSpan = document.getElementById('businessSignupBtnText');
-            const originalText = textSpan.textContent;
-            
-            const password = document.getElementById('businessPassword').value;
-            const confirm = document.getElementById('businessConfirmPassword').value;
-            if (password !== confirm) {
-                showToast('Passwords do not match', 'error');
-                return;
-            }
-            
-            textSpan.textContent = 'Creating account...';
-            btn.disabled = true;
-            
-            fetch('/api/business-signup/', {
-                method: 'POST',
+        
+        const url = requestId ? `/api/maintenance/requests/${requestId}/update/` : '/api/maintenance/requests/create/';
+        const method = requestId ? 'PUT' : 'POST';
+        
+        formData.append('user_id', '{{ user.id }}');
+        formData.append('property_id', '1');
+        
+        try {
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'X-CSRFToken': getCSRFToken()
                 },
                 body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                textSpan.textContent = originalText;
-                btn.disabled = false;
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                maintenanceModal.hide();
+                showToast(requestId ? 'Request updated successfully!' : 'Request created successfully!', 'success');
+                loadMaintenanceRequests();
+            } else {
+                showToast(data.error || 'Failed to save request', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving maintenance request:', error);
+            showToast('Error saving request', 'error');
+        }
+    }
+
+    async function viewMaintenanceDetail(requestId) {
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const request = data.request;
+                document.getElementById('maintenanceDetailTitle').textContent = `Request #${request.id} - ${request.title}`;
                 
+                const priorityColors = {
+                    'low': 'success',
+                    'medium': 'warning',
+                    'high': 'danger',
+                    'urgent': 'danger'
+                };
+                
+                const statusColors = {
+                    'pending': 'secondary',
+                    'in_progress': 'primary',
+                    'completed': 'success',
+                    'cancelled': 'danger'
+                };
+                
+                let html = `
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <h6>Description</h6>
+                            <p>${request.description || 'No description provided'}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2">
+                                <span class="badge bg-${priorityColors[request.priority]}">Priority: ${request.priority.charAt(0).toUpperCase() + request.priority.slice(1)}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-${statusColors[request.status]}">Status: ${request.status.replace('_', ' ').charAt(0).toUpperCase() + request.status.replace('_', ' ').slice(1)}</span>
+                            </div>
+                            ${request.location ? `<div><strong>Location:</strong> ${request.location}</div>` : ''}
+                            ${request.preferred_date ? `<div><strong>Preferred Date:</strong> ${new Date(request.preferred_date).toLocaleDateString()}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            ${request.estimated_cost ? `<div><strong>Estimated Cost:</strong> $${parseFloat(request.estimated_cost).toFixed(2)}</div>` : ''}
+                            ${request.actual_cost ? `<div><strong>Actual Cost:</strong> $${parseFloat(request.actual_cost).toFixed(2)}</div>` : ''}
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div><strong>Created:</strong> ${request.created_at ? new Date(request.created_at).toLocaleString() : 'Unknown'}</div>
+                            ${request.completed_at ? `<div><strong>Completed:</strong> ${new Date(request.completed_at).toLocaleString()}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${request.notes ? `
+                        <div class="mb-3">
+                            <strong>Notes:</strong>
+                            <p>${request.notes}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${request.image ? `
+                        <div class="mb-3">
+                            <strong>Image:</strong>
+                            <img src="${request.image}" class="maintenance-image-preview" alt="Maintenance image">
+                        </div>
+                    ` : ''}
+                `;
+                
+                html += `
+                    <hr>
+                    <h6 class="mb-3"><i class="fas fa-comments me-2"></i>Comments</h6>
+                    <div id="maintenanceCommentsContainer">
+                        <div class="text-center text-muted">Loading comments...</div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="maintenanceCommentInput" placeholder="Add a comment...">
+                            <button class="btn btn-primary" onclick="addMaintenanceComment('${request.id}')" style="background: var(--primary-color);">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('maintenanceDetailBody').innerHTML = html;
+                maintenanceDetailModal.show();
+                
+                loadMaintenanceComments(request.id);
+            }
+        } catch (error) {
+            console.error('Error loading maintenance detail:', error);
+            showToast('Error loading request details', 'error');
+        }
+    }
+
+    async function loadMaintenanceComments(requestId) {
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/comments/`);
+            const data = await response.json();
+            
+            const container = document.getElementById('maintenanceCommentsContainer');
+            if (data.success && data.comments) {
+                if (data.comments.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">No comments yet</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.comments.map(comment => `
+                    <div class="maintenance-comment">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="comment-author">${comment.author_name || 'User'}</span>
+                                <span class="comment-time">${comment.created_at ? new Date(comment.created_at).toLocaleString() : 'Just now'}</span>
+                            </div>
+                            ${comment.is_author ? `
+                                <button class="btn btn-sm btn-danger" onclick="deleteMaintenanceComment('${comment.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                        <div class="comment-text">${comment.content}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div class="text-center text-muted">No comments yet</div>';
+            }
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            document.getElementById('maintenanceCommentsContainer').innerHTML = '<div class="text-center text-danger">Error loading comments</div>';
+        }
+    }
+
+    async function addMaintenanceComment(requestId) {
+        const input = document.getElementById('maintenanceCommentInput');
+        const content = input.value.trim();
+        
+        if (!content) {
+            showToast('Please enter a comment', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/comments/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ content })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                input.value = '';
+                loadMaintenanceComments(requestId);
+                showToast('Comment added successfully!', 'success');
+            } else {
+                showToast(data.error || 'Failed to add comment', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            showToast('Error adding comment', 'error');
+        }
+    }
+
+    async function deleteMaintenanceComment(commentId) {
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+        
+        try {
+            const response = await fetch(`/api/maintenance/comments/${commentId}/delete/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast('Comment deleted successfully!', 'success');
+                const requestId = document.getElementById('maintenanceDetailTitle').textContent.split('#')[1]?.split(' ')[0];
+                if (requestId) {
+                    loadMaintenanceComments(requestId);
+                }
+            } else {
+                showToast(data.error || 'Failed to delete comment', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            showToast('Error deleting comment', 'error');
+        }
+    }
+
+    async function updateMaintenanceStatus(requestId, status) {
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/update-status/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ status })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast(`Request status updated to ${status.replace('_', ' ')}`, 'success');
+                loadMaintenanceRequests();
+            } else {
+                showToast(data.error || 'Failed to update status', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showToast('Error updating status', 'error');
+        }
+    }
+
+    async function deleteMaintenanceRequest(requestId) {
+        if (!confirm('Are you sure you want to delete this maintenance request? This action cannot be undone.')) return;
+        
+        try {
+            const response = await fetch(`/api/maintenance/requests/${requestId}/delete/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast('Request deleted successfully!', 'success');
+                loadMaintenanceRequests();
+            } else {
+                showToast(data.error || 'Failed to delete request', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting request:', error);
+            showToast('Error deleting request', 'error');
+        }
+    }
+
+    // ===== UPDATE STATS =====
+    function updateStats() {
+        const jobsCount = document.getElementById('jobsCount');
+        if (jobsCount) jobsCount.textContent = allJobs.length;
+        
+        const postsCount = document.getElementById('postsCount');
+        if (postsCount) postsCount.textContent = allPosts.length;
+    }
+
+    function loadBusinessStats() {
+        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+        fetch('/api/business-stats/')
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'));
-                    if (modal) modal.hide();
-                    
-                    showToast('Business account created successfully!', 'success');
-                    
-                    setTimeout(() => {
-                        window.location.href = data.redirect_to || '/admin-portal/';
-                    }, 2000);
-                } else {
-                    showToast(data.error || data.message || 'Signup failed', 'error');
+                    document.getElementById('activeJobsCount').textContent = data.stats.active_jobs || '0';
+                    document.getElementById('totalApplications').textContent = data.stats.total_applications || '0';
+                    document.getElementById('profileViews').textContent = data.stats.profile_views || '0';
                 }
             })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                textSpan.textContent = originalText;
-                btn.disabled = false;
-                showToast('Network error. Please check your connection.', 'error');
-            });
-        });
+            .catch(() => {});
+        {% endif %}
+    }
 
-        // ===== KEYBOARD SHORTCUTS =====
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeVideoComments();
-                closeAllDropdowns();
-                hidePostModal();
-            }
-            
-            if (event.target.classList.contains('comment-input') && event.key === 'Enter') {
-                const postId = event.target.id.split('-')[2];
-                addComment(postId);
-            }
-            
-            if (event.target.id === 'videoCommentInput' && event.key === 'Enter') {
-                postVideoComment();
-            }
-        });
-
-        // ===== INIT =====
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('postModal').addEventListener('click', function(event) {
-                if (event.target === this) hidePostModal();
-            });
-            
+    function toggleFeed() {
+        if (currentTab === 'feed') {
             switchTab('jobs');
+            document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-newspaper"></i> Feed';
+        } else {
+            switchTab('feed');
+            document.querySelector('.feed-toggle-btn').innerHTML = '<i class="fas fa-briefcase"></i> Jobs';
+        }
+    }
+
+    // ===== AUTH FUNCTIONS =====
+    function showLogin() {
+        new bootstrap.Modal(document.getElementById('loginModal')).show();
+    }
+
+    function showSignup() {
+        new bootstrap.Modal(document.getElementById('signupModal')).show();
+    }
+
+    function showBusinessSignup() {
+        loadBusinessFormData();
+        new bootstrap.Modal(document.getElementById('businessSignupModal')).show();
+    }
+
+    function loadBusinessFormData() {
+        fetch('/api/industries/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const select = document.getElementById('industrySelect');
+                    select.innerHTML = '<option value="">Select Industry</option>';
+                    data.industries.forEach(industry => {
+                        const option = document.createElement('option');
+                        option.value = industry.id;
+                        option.textContent = industry.name;
+                        select.appendChild(option);
+                    });
+                }
+            })
+            .catch(() => {});
+        
+        fetch('/api/company-sizes/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const select = document.getElementById('companySizeSelect');
+                    select.innerHTML = '<option value="">Select Company Size</option>';
+                    data.company_sizes.forEach(size => {
+                        const option = document.createElement('option');
+                        option.value = size.id;
+                        option.textContent = size.size_range;
+                        select.appendChild(option);
+                    });
+                }
+            })
+            .catch(() => {});
+    }
+
+    // ===== LOGIN FORM =====
+    document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        const btn = this.querySelector('button[type="submit"]');
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+        btn.disabled = true;
+        
+        fetch('/api/auth/login/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                showToast('Login successful!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.error || 'Login failed', 'error');
+            }
+        })
+        .catch(() => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            showToast('Login failed', 'error');
+        });
+    });
+
+    // ===== SIGNUP FORM =====
+    document.getElementById('signupForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        const btn = this.querySelector('button[type="submit"]');
+        const original = btn.innerHTML;
+        
+        if (data.password !== data.password_confirm) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+        
+        btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+        btn.disabled = true;
+        
+        fetch('/api/auth/signup/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
+                showToast('Account created! Please login.', 'success');
+                setTimeout(() => showLogin(), 1000);
+            } else {
+                showToast(data.error || data.message || 'Signup failed', 'error');
+            }
+        })
+        .catch(() => {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            showToast('Signup failed', 'error');
+        });
+    });
+
+    // ===== BUSINESS SIGNUP FORM =====
+    document.getElementById('businessSignupForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const btn = document.getElementById('businessSignupBtn');
+        const textSpan = document.getElementById('businessSignupBtnText');
+        const originalText = textSpan.textContent;
+        
+        const password = document.getElementById('businessPassword').value;
+        const confirm = document.getElementById('businessConfirmPassword').value;
+        if (password !== confirm) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+        
+        textSpan.textContent = 'Creating account...';
+        btn.disabled = true;
+        
+        fetch('/api/business-signup/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            textSpan.textContent = originalText;
+            btn.disabled = false;
             
-            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-            loadBusinessStats();
-            setInterval(loadBusinessStats, 30000);
-            {% endif %}
-            
-            document.querySelectorAll('.mobile-bottom-nav a').forEach(link => {
-                link.addEventListener('click', function() {
-                    document.querySelectorAll('.mobile-bottom-nav a').forEach(a => a.classList.remove('active'));
-                    this.classList.add('active');
-                });
+            if (data.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'));
+                if (modal) modal.hide();
+                
+                showToast('Business account created successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = data.redirect_to || '/admin-portal/';
+                }, 2000);
+            } else {
+                showToast(data.error || data.message || 'Signup failed', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            textSpan.textContent = originalText;
+            btn.disabled = false;
+            showToast('Network error. Please check your connection.', 'error');
+        });
+    });
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeVideoComments();
+            closeAllDropdowns();
+            hidePostModal();
+        }
+        
+        if (event.target.classList.contains('comment-input') && event.key === 'Enter') {
+            const postId = event.target.id.split('-')[2];
+            addComment(postId);
+        }
+        
+        if (event.target.id === 'videoCommentInput' && event.key === 'Enter') {
+            postVideoComment();
+        }
+        
+        if (event.target.id === 'maintenanceCommentInput' && event.key === 'Enter') {
+            const requestId = document.getElementById('maintenanceDetailTitle').textContent.split('#')[1]?.split(' ')[0];
+            if (requestId) {
+                addMaintenanceComment(requestId);
+            }
+        }
+    });
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('postModal').addEventListener('click', function(event) {
+            if (event.target === this) hidePostModal();
+        });
+        
+        // Start with Properties tab (landing)
+        switchTab('properties');
+        
+        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+        loadBusinessStats();
+        setInterval(loadBusinessStats, 30000);
+        {% endif %}
+        
+        document.querySelectorAll('.mobile-bottom-nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.mobile-bottom-nav a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
             });
         });
+    });
     </script>
 </body>
 </html>

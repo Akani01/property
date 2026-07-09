@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('pwa.urls')),
     path('', include('hiring.urls')),  # Your hiring app
     path('', include('realestate.urls')),  # Real estate app
+    path('api/', include('realestate.urls')),
 ]
 
 # Serve media and static files in development

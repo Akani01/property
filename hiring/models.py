@@ -1170,3 +1170,5 @@ class PushSubscription(models.Model):
     
     def __str__(self):
         return f"Subscription for {self.user or 'Anonymous'}"
+
+
