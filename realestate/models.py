@@ -880,7 +880,7 @@ class MaintenanceCategory(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+     
     class Meta:
         ordering = ['name']
         verbose_name_plural = "Maintenance Categories"

@@ -48,6 +48,7 @@ urlpatterns = [
     path('alerts/', views.alerts_page, name='alerts_page'),
     path('preferences/', views.preferences_page, name='preferences_page'),
     path('logout/', views.custom_logout, name='logout_page'),
+    path('analytics/', views.analytics_page, name='analytics'),
 
     # ===================== MESSAGING PAGES =====================
     path('messaging/', views.messaging_page, name='messaging_page'),
@@ -77,6 +78,11 @@ urlpatterns = [
     # Business document access URLs
     path('api/business/applications/documents/', views.api_business_applications_with_documents, name='business_applications_documents'),
     path('api/business/applications/<uuid:application_id>/documents/', views.api_business_applicant_documents, name='business_applicant_documents'),
+   
+    # In urls.py
+    path('settings/', views.settings_page, name='settings'),
+    # search
+    path('api/search/', views.unified_search, name='unified_search'),
 
     # Documents
     path('api/profile/documents/', views.api_documents, name='api_documents'),

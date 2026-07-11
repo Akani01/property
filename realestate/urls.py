@@ -32,7 +32,8 @@ urlpatterns = [
     
     # ===== PROPERTY TYPES (Custom endpoint) =====
     path('property-types/', views.get_property_types, name='property_types'),
-    
+    path('api/properties/<str:pk>/', views.PropertyViewSet.as_view({'get': 'retrieve'}), name='property-detail'),
+    path('api/properties/', views.PropertyViewSet.as_view({'get': 'list'}), name='property-list'),
     # ===== MAINTENANCE - Additional custom endpoints =====
     # These are for frontend compatibility with your existing JS
     path('maintenance/requests/stats/', views.MaintenanceRequestViewSet.as_view({'get': 'stats'}), name='maintenance_stats'),

@@ -57,6 +57,7 @@ CSRF_TRUSTED_ORIGINS = [
     # Railway wildcards
     'https://*.up.railway.app',
     'https://*.railway.app',
+    
 ]
 
 # ============================================
@@ -111,6 +112,7 @@ INSTALLED_APPS = [
     'whitenoise',
     'hiring',
     'realestate',
+    'core',
 ]
 
 AUTH_USER_MODEL = 'hiring.CustomUser'
@@ -205,7 +207,9 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+#Deepseek api key
 
+DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 # -------------------------------------------------------------------
 # STATIC & MEDIA FILES
 # -------------------------------------------------------------------
@@ -224,6 +228,7 @@ if not DEBUG:
 else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # File upload settings
 MAX_UPLOAD_SIZE = 314572800  # 300MB

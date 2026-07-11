@@ -8,6 +8,8 @@ from django.views.decorators.http import require_http_methods  # <-- ADD THIS LI
 from django.http import JsonResponse, HttpResponseForbidden
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.decorators import permission_classes, api_view, action
 import psutil  # for system health check
 # hiring/views.py - Add this at the top with other imports
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -57,7 +59,24 @@ from django.db import transaction
 import logging
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
+from realestate.serializers import (
+    PropertyCategorySerializer,
+    PropertyTypeSerializer,
+    PropertyFeatureSerializer,
+    PropertySerializer,
+    RoomSerializer,
+    BookingSerializer,
+    AvailabilityCalendarSerializer,
+    BookingInquirySerializer,
+    PropertyReviewSerializer,
+    WishlistSerializer,
+    PropertyAnalyticsSerializer,
+    MaintenanceCategorySerializer,  # <-- ADD THIS
+    MaintenanceRequestSerializer,   # <-- ADD THIS
+    MaintenanceCommentSerializer,   # <-- ADD THIS
+    DriverLocationSerializer,
 
+)
 
 logger = logging.getLogger(__name__)
 
@@ -10492,3 +10511,184 @@ def subscribe_to_notifications(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+    
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def unified_search(request):
+    """Search across jobs, properties, and maintenance requests"""
+    query = request.GET.get('q', '').strip()
+    
+    if not query:
+        return Response({
+            'success': False,
+            'error': 'Search query is required'
+        }, status=400)
+    
+    results = {
+        'jobs': [],
+        'properties': [],
+        'maintenance': []
+    }
+    
+    # Search jobs
+    jobs = JobListing.objects.filter(
+        Q(title__icontains=query) |
+        Q(company_name__icontains=query) |
+        Q(location__icontains=query) |
+        Q(description__icontains=query),
+        status='published'
+    )[:10]
+    
+    for job in jobs:
+        results['jobs'].append({
+            'id': str(job.id),
+            'title': job.title,
+            'company': job.company_name,
+            'location': job.location,
+            'type': 'job',
+            'url': f'/jobs/{job.id}/'
+        })
+    
+    # Search properties
+    properties = Property.objects.filter(
+        Q(title__icontains=query) |
+        Q(city__icontains=query) |
+        Q(address__icontains=query) |
+        Q(description__icontains=query),
+        is_active=True
+    )[:10]
+    
+    for prop in properties:
+        results['properties'].append({
+            'id': str(prop.id),
+            'title': prop.title,
+            'city': prop.city,
+            'price': str(prop.base_price),
+            'type': 'property',
+            'url': f'/properties/{prop.id}/'
+        })
+    
+    # Search maintenance requests (if user is authenticated)
+    if request.user.is_authenticated:
+        maintenance = MaintenanceRequest.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query),
+            tenant=request.user
+        )[:10]
+        
+        for req in maintenance:
+            results['maintenance'].append({
+                'id': str(req.id),
+                'title': req.title,
+                'status': req.status,
+                'type': 'maintenance',
+                'url': f'/maintenance/{req.id}/'
+            })
+    
+    return Response({
+        'success': True,
+        'results': results,
+        'total': sum(len(v) for v in results.values())
+    })
+
+
+# In hiring/views.py
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_favorites(request):
+    """Get user's favorite properties"""
+    wishlist = Wishlist.objects.filter(
+        user=request.user,
+        is_default=True
+    ).first()
+    
+    if not wishlist:
+        return Response({
+            'success': True,
+            'favorites': [],
+            'count': 0
+        })
+    
+    properties = wishlist.properties.filter(is_active=True)
+    serializer = PropertySerializer(properties, many=True, context={'request': request})
+    
+    return Response({
+        'success': True,
+        'favorites': serializer.data,
+        'count': len(serializer.data)
+    })
+
+
+# hiring/views.py - Add this near your other page views
+
+@login_required
+def settings_page(request):
+    """User settings page - works for all user types"""
+    context = {
+        'user': request.user,
+        'user_type': request.user.user_type,
+        'page_title': 'Settings',
+    }
+    
+    # Add user-specific context
+    if request.user.user_type == 'applicant':
+        try:
+            profile = ApplicantProfile.objects.get(user=request.user)
+            context['profile'] = profile
+            context['profile_completeness'] = profile.profile_completeness
+        except ApplicantProfile.DoesNotExist:
+            pass
+    elif request.user.user_type == 'admin':
+        try:
+            business_profile = BusinessProfile.objects.get(user=request.user)
+            context['business_profile'] = business_profile
+        except BusinessProfile.DoesNotExist:
+            pass
+    
+    return render(request, 'hiring/settings.html', context)
+
+
+# hiring/views.py - Add these page views
+
+@login_required
+def notifications_page(request):
+    """User notifications page"""
+    return render(request, 'hiring/notifications.html', {
+        'user': request.user,
+        'page_title': 'Notifications'
+    })
+
+@login_required
+def privacy_page(request):
+    """Privacy settings page"""
+    return render(request, 'hiring/privacy.html', {
+        'user': request.user,
+        'page_title': 'Privacy Settings'
+    })
+
+@login_required
+def security_page(request):
+    """Security settings page"""
+    return render(request, 'hiring/security.html', {
+        'user': request.user,
+        'page_title': 'Security Settings'
+    })
+
+@login_required
+def account_page(request):
+    """Account settings page"""
+    return render(request, 'hiring/account.html', {
+        'user': request.user,
+        'page_title': 'Account Settings'
+    })
+
+# hiring/views.py
+
+@login_required
+def analytics_page(request):
+    """Analytics dashboard page"""
+    return render(request, 'hiring/analytics.html', {
+        'page_title': 'Analytics Dashboard'
+    })

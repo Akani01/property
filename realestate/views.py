@@ -8,7 +8,9 @@ from rest_framework.decorators import api_view
 from django.db.models import Q, Count
 from django.utils import timezone
 from django.conf import settings
-
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.decorators import permission_classes, api_view, action
 # At the top of your views.py, add these imports if they don't exist:
 from .models import (
     PropertyCategory,
@@ -26,6 +28,7 @@ from .models import (
     MaintenanceRequest,  # <-- ADD THIS
     MaintenanceComment,  # <-- ADD THIS
     DriverLocation,  # <-- ADD THIS
+    
 )
 
 # Also make sure you have these serializers imported:
@@ -480,3 +483,44 @@ def get_property_types(request):
         'success': True,
         'types': serializer.data
     })
+
+
+# In hiring/views.py
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_business_bookings(request):
+    """Get bookings for business admin"""
+    if request.user.user_type != 'admin':
+        return Response({'error': 'Unauthorized'}, status=403)
+    
+    try:
+        business_profile = request.user.business_profile
+        properties = Property.objects.filter(company=business_profile)
+        bookings = Booking.objects.filter(property__in=properties).select_related(
+            'property', 'guest'
+        ).order_by('-created_at')
+        
+        booking_data = []
+        for booking in bookings:
+            booking_data.append({
+                'id': str(booking.id),
+                'property_title': booking.property.title,
+                'guest_name': f"{booking.guest.first_name} {booking.guest.last_name}",
+                'guest_email': booking.guest.email,
+                'check_in': booking.check_in,
+                'check_out': booking.check_out,
+                'status': booking.status,
+                'total_amount': str(booking.total_amount),
+                'booking_reference': booking.booking_reference
+            })
+        
+        return Response({
+            'success': True,
+            'bookings': booking_data,
+            'count': len(booking_data)
+        })
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=500)

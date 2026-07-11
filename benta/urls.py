@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('hiring.urls')),  # Your hiring app
     path('', include('realestate.urls')),  # Real estate app
     path('api/', include('realestate.urls')),
+    path('', include('core.urls')),
 ]
 
 # Serve media and static files in development

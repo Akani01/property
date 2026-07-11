@@ -38,6 +38,13 @@ class CustomUser(AbstractUser):
     def get_short_name(self):
         return self.first_name or self.username
 
+        # ✅ ADD THIS PROPERTY
+    @property
+    def liked_posts(self):
+        """Return posts liked by this user"""
+        return self.post_likes.all()
+
+
 
 # ===== APPLICANT PROFILE MODELS =====
 
