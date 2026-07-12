@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 # URL patterns for messaging - use this as a separate include
 message_urlpatterns = [
     # PWA URLs
+    path('black-theme/', views.black_theme_settings, name='black_theme'),
     path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
     path('sw.js', views.pwa_sw, name='pwa_sw'),
     path('offline/', views.offline_page, name='offline'),

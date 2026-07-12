@@ -10692,3 +10692,8 @@ def analytics_page(request):
     return render(request, 'hiring/analytics.html', {
         'page_title': 'Analytics Dashboard'
     })
+
+@login_required
+def black_theme_settings(request):
+    """Black Theme Settings Page"""
+    return render(request, 'black-theme.html')
