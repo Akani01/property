@@ -162,7 +162,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # ✅ ADD THIS
+                'django.template.context_processors.media',
                 'core.context_processors.google_maps_api_key',
             ],
         },
@@ -194,14 +194,22 @@ else:
 DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 
 # -------------------------------------------------------------------
-# STATIC & MEDIA FILES - FIXED
+# STATIC & MEDIA FILES - FULLY FIXED
 # -------------------------------------------------------------------
-STATIC_URL = '/static/'  # ✅ FIXED: Added leading slash
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'hiring', 'static'),
 ]
+
+# ✅ Auto-create static directories
+for directory in STATICFILES_DIRS:
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+if not os.path.exists(STATIC_ROOT):
+    os.makedirs(STATIC_ROOT, exist_ok=True)
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MAX_UPLOAD_SIZE = 314572800
@@ -227,12 +235,11 @@ USE_I18N = True
 USE_TZ = True
 
 # -------------------------------------------------------------------
-# ALLAUTH
+# ALLAUTH SETTINGS - UPDATED (Fixed deprecation warnings)
 # -------------------------------------------------------------------
 SITE_ID = 1
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}  # ✅ NEW
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']  # ✅ NEW
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
@@ -346,7 +353,7 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 # ============================================
-# GOOGLE CLOUD STORAGE - FULLY FIXED WITH PUBLIC ACCESS
+# GOOGLE CLOUD STORAGE - UNIFORM BUCKET ACCESS (FIXED)
 # ============================================
 
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'tolleya-storage')
@@ -393,11 +400,10 @@ def get_google_credentials():
 GS_CREDENTIALS = get_google_credentials()
 
 # ============================================
-# STORAGES SETTINGS - FIXED WITH PUBLIC ACCESS
+# STORAGES SETTINGS - UNIFORM BUCKET ACCESS (FIXED)
 # ============================================
 
-# ✅ IMPORTANT: Make files publicly readable
-GS_DEFAULT_ACL = 'publicRead'  # ✅ CHANGED: From None to 'publicRead'
+# ✅ No GS_DEFAULT_ACL - uniform bucket access handles permissions
 GS_FILE_OVERWRITE = False
 GS_QUERYSTRING_AUTH = False
 
@@ -408,19 +414,17 @@ if GS_CREDENTIALS and GS_BUCKET_NAME:
             "OPTIONS": {
                 "bucket_name": GS_BUCKET_NAME,
                 "credentials": GS_CREDENTIALS,
-                "default_acl": GS_DEFAULT_ACL,  # ✅ Now 'publicRead'
+                # ✅ No default_acl - bucket is public via IAM
                 "file_overwrite": GS_FILE_OVERWRITE,
                 "querystring_auth": GS_QUERYSTRING_AUTH,
             },
         },
         "staticfiles": {
-            # ✅ Keep static files with WhiteNoise
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
-    # ✅ MEDIA_URL for public access
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-    print(f"✅ Google Cloud Storage configured with public access: {GS_BUCKET_NAME}")
+    print(f"✅ Google Cloud Storage configured with uniform bucket-level access: {GS_BUCKET_NAME}")
 else:
     # Fallback to local storage if no credentials
     STORAGES = {
