@@ -524,6 +524,146 @@
             box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
         }
 
+        /* ===== LOCATION PREVIEW ===== */
+        .location-preview {
+            height: 200px;
+            background: var(--light-gray);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            transition: var(--transition);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .location-preview.has-location {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .location-preview .location-status {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .location-preview .location-status i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .location-preview .location-status .status-text {
+            font-weight: 500;
+        }
+
+        .location-preview .location-status .status-detail {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+
+        .location-found {
+            display: none;
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: var(--radius-sm);
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+
+        .location-found.show {
+            display: block;
+        }
+
+        .location-found i {
+            color: #4caf50;
+            margin-right: 8px;
+        }
+
+        .btn-geocode {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-geocode:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-geocode:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-geocode .loading-spinner-small {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn-geocode.loading .loading-spinner-small {
+            display: inline-block;
+        }
+
+        .btn-geocode.loading .btn-text {
+            display: none;
+        }
+
+        .address-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .address-hint i {
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        .clear-location-btn {
+            margin-top: 8px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            color: white;
+            font-size: 13px;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .clear-location-btn:hover {
+            background: #d33426;
+            opacity: 0.9;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* ===== BUTTONS ===== */
         .btn {
             padding: 10px 24px;
@@ -606,10 +746,6 @@
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .form-actions {
@@ -786,6 +922,7 @@
             .toast-item { min-width: auto; width: calc(100vw - 40px); }
             .features-header { flex-direction: column; align-items: stretch; }
             .feature-search { min-width: auto; width: 100%; }
+            .location-preview { height: 150px; }
         }
 
         /* ===== UTILITIES ===== */
@@ -831,6 +968,10 @@
             <i class="fas fa-calendar-check"></i>
             <span class="tooltip-text">Bookings</span>
         </a>
+        <a href="/property-map/" class="nav-link" title="Map View">
+            <i class="fas fa-map"></i>
+            <span class="tooltip-text">Map View</span>
+        </a>
     </nav>
 
     <!-- ===== HEADER ===== -->
@@ -854,6 +995,7 @@
                     <a href="/properties/add/" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Property</a>
                     <a href="/features/manage/" class="dropdown-item"><i class="fas fa-star"></i> Features</a>
                     <a href="/properties/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
+                    <a href="/property-map/" class="dropdown-item"><i class="fas fa-map"></i> Map View</a>
                     <div class="dropdown-divider"></div>
                     <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
@@ -898,20 +1040,20 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label>Property Title <span class="required">*</span></label>
-                        <input type="text" class="form-control" name="title" placeholder="e.g., Modern 3-Bedroom Apartment in Sandton" required>
+                        <input type="text" class="form-control" name="title" id="propertyTitle" placeholder="e.g., Modern 3-Bedroom Apartment in Sandton" required>
                         <div class="help-text">A clear, descriptive title for your property listing</div>
                     </div>
 
                     <div class="form-group">
                         <label>Description <span class="required">*</span></label>
-                        <textarea class="form-control" name="description" placeholder="Describe your property in detail..." required></textarea>
+                        <textarea class="form-control" name="description" id="propertyDescription" placeholder="Describe your property in detail..." required></textarea>
                         <div class="help-text">Include features, amenities, and any special highlights</div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Listing Type <span class="required">*</span></label>
-                            <select class="form-control" name="listing_type" required>
+                            <select class="form-control" name="listing_type" id="listingType" required>
                                 <option value="">Select type...</option>
                                 {% for value, label in listing_types %}
                                 <option value="{{ value }}">{{ label }}</option>
@@ -937,35 +1079,81 @@
                 </div>
             </div>
 
-            <!-- Location -->
+            <!-- ===== LOCATION WITH AUTO-GEOCODE ===== -->
             <div class="form-card">
-                <div class="card-header"><i class="fas fa-map-marker-alt"></i> Location</div>
+                <div class="card-header"><i class="fas fa-map-marker-alt"></i> Location <span style="font-weight:400;font-size:13px;color:var(--gray);">(We'll find the coordinates automatically)</span></div>
                 <div class="card-body">
-                    <div class="form-group">
-                        <label>Address <span class="required">*</span></label>
-                        <input type="text" class="form-control" name="address" placeholder="e.g., 123 Main Street" required>
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column:1 / -1;">
+                            <label>Street Address <span class="required">*</span></label>
+                            <div class="d-flex gap-2" style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <input type="text" class="form-control" name="address" id="streetAddress" placeholder="e.g., 123 Main Street, Building Name, Landmark" required style="flex:1;min-width:200px;">
+                                <input type="text" class="form-control" name="city" id="city" placeholder="City *" required style="flex:0 0 180px;">
+                            </div>
+                            <div class="address-hint">
+                                <i class="fas fa-info-circle"></i> 
+                                Enter street number, street name, building name, or landmark. We'll find it on the map automatically.
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>City <span class="required">*</span></label>
-                            <input type="text" class="form-control" name="city" placeholder="e.g., Cape Town" required>
-                        </div>
                         <div class="form-group">
                             <label>State/Province</label>
-                            <input type="text" class="form-control" name="state" placeholder="e.g., Western Cape">
+                            <input type="text" class="form-control" name="state" id="state" placeholder="e.g., Western Cape">
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <input type="text" class="form-control" name="country" id="country" placeholder="South Africa" value="South Africa">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Country</label>
-                            <input type="text" class="form-control" name="country" placeholder="South Africa" value="South Africa">
+                            <label>Postal Code</label>
+                            <input type="text" class="form-control" name="postal_code" id="postalCode" placeholder="e.g., 8001">
                         </div>
                         <div class="form-group">
-                            <label>Postal Code</label>
-                            <input type="text" class="form-control" name="postal_code" placeholder="e.g., 8001">
+                            <label>Neighborhood / Suburb</label>
+                            <input type="text" class="form-control" name="neighborhood" id="neighborhood" placeholder="e.g., Sandton, Rosebank">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Landmark (Optional)</label>
+                        <input type="text" class="form-control" name="landmark" id="landmark" placeholder="e.g., Near Mall, Opposite Park">
+                    </div>
+
+                    <!-- Geocode Section -->
+                    <div class="mt-3">
+                        <div class="d-flex gap-2" style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button type="button" class="btn-geocode" id="geocodeBtn" onclick="geocodeAddress()" style="flex:1;min-width:150px;">
+                                <span class="btn-text"><i class="fas fa-search-location"></i> Find on Map</span>
+                                <span class="loading-spinner-small"></span>
+                            </button>
+                            <button type="button" class="clear-location-btn" id="clearLocationBtn" onclick="clearLocation()" style="display:none;">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                        
+                        <div class="location-preview" id="locationPreview">
+                            <div class="location-status">
+                                <i class="fas fa-map-marker-alt" style="color:#ccc;"></i>
+                                <div class="status-text">Enter address and click "Find on Map"</div>
+                                <div class="status-detail">We'll automatically get the coordinates for you</div>
+                            </div>
+                        </div>
+
+                        <div class="location-found" id="locationFound">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="locationFoundText">Location found!</span>
+                        </div>
+
+                        <!-- Hidden fields for coordinates -->
+                        <input type="hidden" name="latitude" id="latitude" value="">
+                        <input type="hidden" name="longitude" id="longitude" value="">
+                        <input type="hidden" name="formatted_address" id="formattedAddress" value="">
+                        <input type="hidden" name="place_id" id="placeId" value="">
                     </div>
                 </div>
             </div>
@@ -993,6 +1181,10 @@
                         <div class="form-group">
                             <label>Total Area (m²)</label>
                             <input type="number" class="form-control" name="total_area" min="0" step="0.01" placeholder="e.g., 150">
+                        </div>
+                        <div class="form-group">
+                            <label>Parking Spaces</label>
+                            <input type="number" class="form-control" name="parking_spaces" min="0" value="0">
                         </div>
                     </div>
                 </div>
@@ -1211,6 +1403,153 @@
             return null;
         }
 
+        // ============================================
+        // GEOCODING - AUTO LOCATION (USER FRIENDLY!)
+        // ============================================
+        function geocodeAddress() {
+            const address = document.getElementById('streetAddress').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const country = document.getElementById('country').value.trim() || 'South Africa';
+            
+            if (!address) {
+                showToast('Please enter a street address first', 'error');
+                document.getElementById('streetAddress').focus();
+                return;
+            }
+            
+            if (!city) {
+                showToast('Please enter a city', 'error');
+                document.getElementById('city').focus();
+                return;
+            }
+            
+            const btn = document.getElementById('geocodeBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            const preview = document.getElementById('locationPreview');
+            preview.innerHTML = `
+                <div class="location-status">
+                    <i class="fas fa-spinner fa-spin" style="color:var(--primary);font-size:32px;"></i>
+                    <div class="status-text">Finding location...</div>
+                    <div class="status-detail">Please wait while we locate your address</div>
+                </div>
+            `;
+            
+            const fullAddress = `${address}, ${city}, ${country}`;
+            
+            fetch('/api/geocode/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ 
+                    address: address,
+                    city: city,
+                    country: country
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                
+                if (data.success) {
+                    // Set coordinates
+                    document.getElementById('latitude').value = data.lat;
+                    document.getElementById('longitude').value = data.lng;
+                    document.getElementById('formattedAddress').value = data.formatted_address;
+                    document.getElementById('placeId').value = data.place_id;
+                    
+                    // Update preview
+                    preview.innerHTML = `
+                        <div class="location-status" style="color:#2e7d32;">
+                            <i class="fas fa-check-circle" style="color:#4caf50;font-size:32px;"></i>
+                            <div class="status-text" style="font-weight:600;color:#2e7d32;">✅ Location Found!</div>
+                            <div class="status-detail">${data.formatted_address}</div>
+                            <div class="status-detail" style="font-size:11px;color:#999;margin-top:4px;">
+                                ${parseFloat(data.lat).toFixed(6)}, ${parseFloat(data.lng).toFixed(6)}
+                            </div>
+                        </div>
+                    `;
+                    preview.classList.add('has-location');
+                    
+                    // Show success message
+                    const foundDiv = document.getElementById('locationFound');
+                    foundDiv.classList.add('show');
+                    document.getElementById('locationFoundText').textContent = 
+                        `📍 Location found: ${data.formatted_address}`;
+                    
+                    document.getElementById('clearLocationBtn').style.display = 'inline-flex';
+                    
+                    showToast('📍 Location found successfully!', 'success');
+                } else {
+                    preview.innerHTML = `
+                        <div class="location-status" style="color:#c62828;">
+                            <i class="fas fa-exclamation-circle" style="color:#c62828;font-size:32px;"></i>
+                            <div class="status-text" style="font-weight:600;color:#c62828;">Location Not Found</div>
+                            <div class="status-detail">Please check the address and try again</div>
+                            <div class="status-detail" style="font-size:11px;color:#999;margin-top:4px;">
+                                Tip: Include street number and city
+                            </div>
+                        </div>
+                    `;
+                    showToast(data.error || 'Address not found. Please check and try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Geocoding error:', error);
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                
+                preview.innerHTML = `
+                    <div class="location-status" style="color:#c62828;">
+                        <i class="fas fa-exclamation-triangle" style="color:#c62828;font-size:32px;"></i>
+                        <div class="status-text" style="font-weight:600;color:#c62828;">Connection Error</div>
+                        <div class="status-detail">Please check your internet connection</div>
+                    </div>
+                `;
+                showToast('Error connecting to location service', 'error');
+            });
+        }
+
+        function clearLocation() {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('formattedAddress').value = '';
+            document.getElementById('placeId').value = '';
+            
+            const preview = document.getElementById('locationPreview');
+            preview.innerHTML = `
+                <div class="location-status">
+                    <i class="fas fa-map-marker-alt" style="color:#ccc;font-size:32px;"></i>
+                    <div class="status-text">Enter address and click "Find on Map"</div>
+                    <div class="status-detail">We'll automatically get the coordinates for you</div>
+                </div>
+            `;
+            preview.classList.remove('has-location');
+            
+            document.getElementById('locationFound').classList.remove('show');
+            document.getElementById('clearLocationBtn').style.display = 'none';
+            showToast('Location cleared', 'info');
+        }
+
+        // Enter key triggers geocode
+        document.getElementById('streetAddress').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                geocodeAddress();
+            }
+        });
+        
+        document.getElementById('city').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                geocodeAddress();
+            }
+        });
+
         // ===== ADD NEW TYPE MODAL =====
         function showAddTypeModal() {
             document.getElementById('addTypeModal').classList.add('show');
@@ -1257,7 +1596,6 @@
                     showToast(`Type "${name}" added successfully!`, 'success');
                     closeAddTypeModal();
                     
-                    // Add to dropdown
                     const select = document.getElementById('propertyTypeSelect');
                     const option = document.createElement('option');
                     option.value = data.type.id;
@@ -1275,12 +1613,10 @@
             });
         }
 
-        // Close modal on outside click
         document.getElementById('addTypeModal').addEventListener('click', function(e) {
             if (e.target === this) closeAddTypeModal();
         });
 
-        // Close modal on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeAddTypeModal();
         });
@@ -1581,7 +1917,31 @@
                 uploadedFiles = [];
                 previewGrid.innerHTML = '';
                 fileInput.value = '';
+                clearLocation();
                 showToast('Form reset', 'info');
+            }
+        });
+
+        // ===== CHECK IF LOCATION ALREADY EXISTS (for edit mode) =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+            if (lat && lng) {
+                const preview = document.getElementById('locationPreview');
+                preview.innerHTML = `
+                    <div class="location-status" style="color:#2e7d32;">
+                        <i class="fas fa-check-circle" style="color:#4caf50;font-size:32px;"></i>
+                        <div class="status-text" style="font-weight:600;color:#2e7d32;">✅ Location Set</div>
+                        <div class="status-detail">${document.getElementById('formattedAddress').value || 'Location already saved'}</div>
+                        <div class="status-detail" style="font-size:11px;color:#999;margin-top:4px;">
+                            ${parseFloat(lat).toFixed(6)}, ${parseFloat(lng).toFixed(6)}
+                        </div>
+                    </div>
+                `;
+                preview.classList.add('has-location');
+                document.getElementById('locationFound').classList.add('show');
+                document.getElementById('locationFoundText').textContent = '📍 Location already set';
+                document.getElementById('clearLocationBtn').style.display = 'inline-flex';
             }
         });
     </script>

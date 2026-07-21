@@ -3,17 +3,16 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-import uuid  # Add this import
-from django.views.decorators.http import require_http_methods  # <-- ADD THIS LINE
+import uuid
+from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.decorators import permission_classes, api_view, action
-import psutil  # for system health check
-# hiring/views.py - Add this at the top with other imports
+import psutil
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Avg, F
 from django.utils import timezone
 from decimal import Decimal 
 from django.core.cache import cache
@@ -21,7 +20,6 @@ from rest_framework.response import Response
 from rest_framework import status
 import time
 from rest_framework.parsers import FormParser
-from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -31,30 +29,25 @@ from django.shortcuts import get_object_or_404, render
 from django.db.models import Count, Q, Avg
 from django.db import connection
 from datetime import datetime, timedelta
-# ===== ADD THE ADMIN_REQUIRED DECORATOR HERE =====
 from functools import wraps
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
-# ===== END ======
 from realestate.models import (
     Property, 
     PropertyType, 
     PropertyCategory, 
-    PropertyFeature,  # ADD THIS - you have this model
-    Booking,          # ADD THIS - you have this model
-    Room,             # ADD THIS - you have this model
-    PropertyAnalytics, # ADD THIS - you have this model
-    PropertyReview,   # ADD THIS - you have this model
-    Wishlist,         # ADD THIS - you have this model
-    BookingInquiry,   # ADD THIS - you have this model
-    AvailabilityCalendar, # ADD THIS - you have this model
-    DriverLocation,   # ADD THIS - you have this model
+    PropertyFeature,
+    Booking,
+    Room,
+    PropertyAnalytics,
+    PropertyReview,
+    Wishlist,
+    BookingInquiry,
+    AvailabilityCalendar,
+    DriverLocation,
 )
 from realestate.models import PropertyAnalytics
 from hiring.models import CustomUser, ApplicantProfile, BusinessProfile
-import json
-from django.http import JsonResponse
-from django.utils import timezone
 from django.db import transaction
 import logging
 from .models import *
@@ -71,19 +64,16 @@ from realestate.serializers import (
     PropertyReviewSerializer,
     WishlistSerializer,
     PropertyAnalyticsSerializer,
-    MaintenanceCategorySerializer,  # <-- ADD THIS
-    MaintenanceRequestSerializer,   # <-- ADD THIS
-    MaintenanceCommentSerializer,   # <-- ADD THIS
+    MaintenanceCategorySerializer,
+    MaintenanceRequestSerializer,
+    MaintenanceCommentSerializer,
     DriverLocationSerializer,
-
 )
 
 logger = logging.getLogger(__name__)
 
-# Import utils first to avoid circular imports
 from .utils import calculate_profile_completeness
 
-# Import models
 from .models import (
     CustomUser, ApplicantProfile, JobListing, Application, Alert, 
     Skill, EmploymentHistory, Education, Document, 
@@ -91,74 +81,44 @@ from .models import (
     Industry, CompanySize, JobCategory
 )
 
-# Import serializers
 from .serializers import *
 
 # ===== FIXED ADMIN ACCESS CONTROL FUNCTIONS =====
 def has_admin_access(user):
-    """
-    Check if user has admin access:
-    - Superusers and staff have full access
-    - Business admins (user_type='admin') have business-level access
-    - Applicants (user_type='applicant') have no admin access
-    """
     if not user.is_authenticated:
         return False
-    
-    # Superusers and staff have full admin access
     if user.is_superuser or user.is_staff:
         return True
-    
-    # Business admins have business-level access
     if user.user_type == 'admin':
         return True
-    
     return False
 
 def has_business_access(user):
-    """
-    Check if user has business-specific access (for business data filtering)
-    """
     return user.is_authenticated and user.user_type == 'admin'
 
 def has_superuser_access(user):
-    """
-    Check if user has superuser access (for system-wide admin functions)
-    """
     return user.is_authenticated and (user.is_superuser or user.is_staff)
 
 def admin_required(view_func):
-    """
-    Decorator for views that checks that the user is logged in and is an admin/staff,
-    or has business admin access (user_type='admin').
-    """
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        # Check if user is authenticated
         if not request.user.is_authenticated:
             return redirect('/')
-        
-        # Check if user has admin access (superuser, staff, or business admin)
         if not has_admin_access(request.user):
             return HttpResponseForbidden("You don't have permission to access this page.")
-        
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
 def superuser_required(view_func):
-    """
-    Decorator for views that require superuser access
-    """
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('/')
-        
         if not has_superuser_access(request.user):
             return HttpResponseForbidden("You don't have permission to access this page.")
-        
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
 # ===== END OF UPDATED ADMIN_REQUIRED DECORATOR =====
 
 # Create a simple notification service inline to avoid missing imports
@@ -352,6 +312,9 @@ def property_add(request):
             # Features
             features = request.POST.getlist('features')
             
+            # ✅ HANDLE IMAGE UPLOADS
+            main_image = request.FILES.get('main_image') if 'main_image' in request.FILES else None
+            
             # Create property
             property_obj = Property.objects.create(
                 title=title,
@@ -377,6 +340,34 @@ def property_add(request):
                 owner=request.user,
                 listing_agent=request.user,
             )
+            
+            # ✅ SET MAIN IMAGE
+            if main_image:
+                property_obj.main_image = main_image
+                property_obj.save(update_fields=['main_image'])
+            
+            # ✅ HANDLE ADDITIONAL IMAGES
+            if 'images' in request.FILES:
+                additional_images = request.FILES.getlist('images')
+                image_urls = []
+                from django.core.files.storage import default_storage
+                from django.core.files.base import ContentFile
+                import os
+                
+                for img in additional_images:
+                    ext = os.path.splitext(img.name)[1]
+                    filename = f"property_{uuid.uuid4().hex[:8]}{ext}"
+                    path = f"properties/additional/{timezone.now().strftime('%Y/%m/%d')}/{filename}"
+                    saved_path = default_storage.save(path, ContentFile(img.read()))
+                    try:
+                        file_url = default_storage.url(saved_path)
+                    except:
+                        file_url = f"/media/{saved_path}"
+                    image_urls.append(file_url)
+                
+                if image_urls:
+                    property_obj.additional_images = image_urls
+                    property_obj.save(update_fields=['additional_images'])
             
             # Add features
             if features:
@@ -1207,11 +1198,45 @@ def property_detail(request, property_id):
         status='available'
     ).exclude(id=property_obj.id)[:4]
     
+    # ✅ GET PROPER IMAGE URLS (FIXED FOR GCS)
+    main_image = property_obj.get_main_image_url()
+    property_features = property_obj.features.all()
+    
+    # ✅ Get additional images with proper URLs
+    additional_images = property_obj.additional_images or []
+    if additional_images:
+        from django.core.files.storage import default_storage
+        formatted_images = []
+        for img in additional_images:
+            if img and not img.startswith('http'):
+                try:
+                    formatted_images.append(default_storage.url(img))
+                except:
+                    formatted_images.append(img)
+            else:
+                formatted_images.append(img)
+        additional_images = formatted_images
+    
+    total_rooms = rooms.count()
+    available_rooms = rooms.filter(room_status='available').count()
+    total_bookings = property_obj.bookings.count()
+    total_views = property_obj.views_count
+    
+    google_maps_api_key = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+    
     context = {
         'property': property_obj,
         'rooms': rooms,
         'reviews': reviews,
         'similar_properties': similar_properties,
+        'property_features': property_features,
+        'total_rooms': total_rooms,
+        'available_rooms': available_rooms,
+        'total_bookings': total_bookings,
+        'total_views': total_views,
+        'main_image': main_image,
+        'property_images': additional_images,
+        'GOOGLE_MAPS_API_KEY': google_maps_api_key,
         'is_wishlisted': False,
         'user_review': None,
         'can_manage': request.user.is_authenticated and (
@@ -5861,10 +5886,20 @@ def api_admin_application_status(request, application_id):
             title="Application Status Updated",
             message=f"Your application for {application.job_listing.title} has been updated from {old_status} to {new_status}."
         )
+        
+        # Also create a sent notification
+        SentNotification.objects.create(
+            applicant=application.applicant,
+            notification_type='application_status_update',
+            subject="Application Status Update",
+            message=f"Your application status for {application.job_listing.title} at {application.job_listing.company_name} has been changed to {new_status.replace('_', ' ').title()}.",
+            sent_via='in_app'
+        )
+        
     except Exception as e:
         logger.error(f"Failed to send notification for application status update: {str(e)}")
     
-    logger.info(f"Admin {request.user.username} updated application {application_id} status to {new_status}")
+    logger.info(f"Admin {request.user.username} updated application {application_id} status from {old_status} to {new_status}")
     
     return Response({
         'success': True,
@@ -10537,7 +10572,7 @@ def unified_search(request):
         Q(title__icontains=query) |
         Q(company_name__icontains=query) |
         Q(location__icontains=query) |
-        Q(description__icontains=query),
+        Q(position_summary__icontains=query),
         status='published'
     )[:10]
     

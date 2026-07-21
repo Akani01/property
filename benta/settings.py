@@ -3,6 +3,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 from decouple import config
+import json
+from google.oauth2 import service_account
 
 load_dotenv()
 
@@ -15,49 +17,30 @@ SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ============================================
-# ALLOWED HOSTS - ADD YOUR EXACT RAILWAY URL
+# ALLOWED HOSTS
 # ============================================
 ALLOWED_HOSTS = [
-    # Local development
     '127.0.0.1',
     'localhost',
     '0.0.0.0',
-    
-    # Railway internal
     'property.railway.internal',
     '*.railway.internal',
-    
-    # === YOUR EXACT RAILWAY URL ===
     'property-production-61c8.up.railway.app',
-    
-    # Railway wildcards (covers all subdomains)
     '*.up.railway.app',
     '*.railway.app',
-    
-    # Your custom domains (when you add them)
-    # 'propertyfinder.com',
-    # 'www.propertyfinder.com',
 ]
 
 # ============================================
 # CSRF TRUSTED ORIGINS
 # ============================================
 CSRF_TRUSTED_ORIGINS = [
-    # Local
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    
-    # Railway internal
     'http://property.railway.internal',
     'https://property.railway.internal',
-    
-    # === YOUR EXACT RAILWAY URL ===
     'https://property-production-61c8.up.railway.app',
-    
-    # Railway wildcards
     'https://*.up.railway.app',
     'https://*.railway.app',
-    
 ]
 
 # ============================================
@@ -78,9 +61,7 @@ CORS_ALLOW_CREDENTIALS = True
 # SSL/Proxy Settings
 # -------------------------------------------------------------------
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = False  # Set to True only if you have SSL properly configured
-
-# Since you're on Railway with HTTPS, keep these
+SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
@@ -181,6 +162,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # ✅ ADD THIS
+                'core.context_processors.google_maps_api_key',
             ],
         },
     },
@@ -190,7 +173,7 @@ WSGI_APPLICATION = 'benta.wsgi.application'
 ASGI_APPLICATION = 'benta.asgi.application'
 
 # -------------------------------------------------------------------
-# DATABASE - Railway PostgreSQL
+# DATABASE
 # -------------------------------------------------------------------
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
@@ -207,13 +190,13 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-#Deepseek api key
 
 DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
+
 # -------------------------------------------------------------------
-# STATIC & MEDIA FILES
+# STATIC & MEDIA FILES - FIXED
 # -------------------------------------------------------------------
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # ✅ FIXED: Added leading slash
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -221,17 +204,7 @@ STATICFILES_DIRS = [
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files
-if not DEBUG:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = '/app/storage/media/'
-else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-# File upload settings
-MAX_UPLOAD_SIZE = 314572800  # 300MB
+MAX_UPLOAD_SIZE = 314572800
 DATA_UPLOAD_MAX_MEMORY_SIZE = 314572800
 FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 
@@ -239,10 +212,10 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 # PASSWORD VALIDATION
 # -------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # -------------------------------------------------------------------
@@ -322,11 +295,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # -------------------------------------------------------------------
 REALESTATE_SETTINGS = {
     'ENABLE_REAL_TIME_TRACKING': False,
-    'ENABLE_GOOGLE_MAPS': False,
-    'GOOGLE_MAPS_API_KEY': '',
-    'MAX_NEARBY_RADIUS': 10,
+    'ENABLE_GOOGLE_MAPS': True,
+    'GOOGLE_MAPS_API_KEY': os.environ.get('GOOGLE_MAPS_API_KEY', ''),
+    'MAX_NEARBY_RADIUS': 20,
     'DEFAULT_BOOKING_MODE': 'traditional',
 }
+
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
 
 # -------------------------------------------------------------------
 # CHANNELS (WebSocket)
@@ -369,3 +344,93 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# ============================================
+# GOOGLE CLOUD STORAGE - FULLY FIXED WITH PUBLIC ACCESS
+# ============================================
+
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'tolleya-storage')
+
+def get_google_credentials():
+    """Get Google Cloud credentials from multiple sources"""
+    
+    # From environment variable as JSON string (Railway)
+    if 'GS_CREDENTIALS_JSON' in os.environ:
+        try:
+            creds_json = json.loads(os.environ['GS_CREDENTIALS_JSON'])
+            return service_account.Credentials.from_service_account_info(creds_json)
+        except Exception as e:
+            print(f"Error loading GS_CREDENTIALS_JSON: {e}")
+    
+    # From GOOGLE_APPLICATION_CREDENTIALS
+    if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+        cred_path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+        if os.path.exists(cred_path):
+            try:
+                return service_account.Credentials.from_service_account_file(cred_path)
+            except Exception as e:
+                print(f"Error loading GOOGLE_APPLICATION_CREDENTIALS: {e}")
+    
+    # From GS_CREDENTIALS
+    if 'GS_CREDENTIALS' in os.environ:
+        cred_path = os.environ['GS_CREDENTIALS']
+        if os.path.exists(cred_path):
+            try:
+                return service_account.Credentials.from_service_account_file(cred_path)
+            except Exception as e:
+                print(f"Error loading GS_CREDENTIALS: {e}")
+    
+    # From local credentials folder (development)
+    local_cred_path = os.path.join(BASE_DIR, 'credentials', 'service-account-key.json')
+    if os.path.exists(local_cred_path):
+        try:
+            return service_account.Credentials.from_service_account_file(local_cred_path)
+        except Exception as e:
+            print(f"Error loading local credentials: {e}")
+    
+    return None
+
+GS_CREDENTIALS = get_google_credentials()
+
+# ============================================
+# STORAGES SETTINGS - FIXED WITH PUBLIC ACCESS
+# ============================================
+
+# ✅ IMPORTANT: Make files publicly readable
+GS_DEFAULT_ACL = 'publicRead'  # ✅ CHANGED: From None to 'publicRead'
+GS_FILE_OVERWRITE = False
+GS_QUERYSTRING_AUTH = False
+
+if GS_CREDENTIALS and GS_BUCKET_NAME:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "bucket_name": GS_BUCKET_NAME,
+                "credentials": GS_CREDENTIALS,
+                "default_acl": GS_DEFAULT_ACL,  # ✅ Now 'publicRead'
+                "file_overwrite": GS_FILE_OVERWRITE,
+                "querystring_auth": GS_QUERYSTRING_AUTH,
+            },
+        },
+        "staticfiles": {
+            # ✅ Keep static files with WhiteNoise
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+    # ✅ MEDIA_URL for public access
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+    print(f"✅ Google Cloud Storage configured with public access: {GS_BUCKET_NAME}")
+else:
+    # Fallback to local storage if no credentials
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    print("⚠️ Using local file storage (Google Cloud credentials not found)")

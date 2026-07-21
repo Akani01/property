@@ -267,4 +267,6 @@ urlpatterns = [
     
     # Video page
     path('videos/', views.video_feed_page, name='video_feed'),
+        # ============================================
+    
 ]

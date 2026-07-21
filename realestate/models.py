@@ -353,12 +353,64 @@ class Property(models.Model):
     def __str__(self):
         return f"{self.title} - {self.company.company_name if self.company else 'No Company'}"
     
+    # ============================================
+    # ✅ FIXED SAVE METHOD - KEEPS YOUR ORIGINAL
+    # ============================================
     def save(self, *args, **kwargs):
         if not self.property_reference:
             year = timezone.now().year
             random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             self.property_reference = f"PROP-{year}-{random_chars}"
+        
+        # ✅ AUTO-GEOCODE IF ADDRESS EXISTS BUT NO COORDINATES
+        if self.address and (not self.latitude or not self.longitude):
+            self.geocode_address()
+        
         super().save(*args, **kwargs)
+    
+    # ============================================
+    # ✅ GEOCODING METHOD - NEW
+    # ============================================
+    def geocode_address(self):
+        """Convert address to latitude/longitude automatically"""
+        from django.conf import settings
+        
+        google_api_key = getattr(settings, 'GOOGLE_MAPS_API_KEY', None)
+        
+        if not google_api_key:
+            print("⚠️ Google Maps API key not configured for geocoding")
+            return
+        
+        # Build full address
+        address_parts = [
+            self.address,
+            self.city,
+            self.state,
+            self.country,
+            self.postal_code
+        ]
+        full_address = ', '.join([p for p in address_parts if p])
+        
+        if not full_address:
+            return
+        
+        try:
+            import requests
+            url = f'https://maps.googleapis.com/maps/api/geocode/json?address={requests.utils.quote(full_address)}&key={google_api_key}'
+            response = requests.get(url, timeout=10)
+            data = response.json()
+            
+            if data['status'] == 'OK' and data['results']:
+                location = data['results'][0]['geometry']['location']
+                self.latitude = location['lat']
+                self.longitude = location['lng']
+                self.formatted_address = data['results'][0]['formatted_address']
+                self.place_id = data['results'][0]['place_id']
+                print(f"✅ Geocoded: {self.title} → {self.latitude}, {self.longitude}")
+            else:
+                print(f"❌ Geocoding failed for: {full_address}")
+        except Exception as e:
+            print(f"❌ Geocoding error: {e}")
     
     def get_main_image_url(self):
         if self.main_image:

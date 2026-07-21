@@ -53,4 +53,25 @@ urlpatterns = [
     path('maintenance/requests/<int:request_id>/add-comment/', views.MaintenanceRequestViewSet.as_view({
         'post': 'add_comment'
     }), name='maintenance_add_comment'),
+    # 🗺️ Location/Geocoding endpoints
+    path('api/geocode/', views.geocode_address_api, name='geocode_api'),
+    path('api/properties/nearby/', views.nearby_properties, name='nearby_properties'),
+    
+    # ============================================
+    # IMAGE MANAGEMENT ENDPOINTS
+    # ============================================
+    path('api/properties/<uuid:pk>/update-image/', views.PropertyViewSet.as_view({'post': 'update_image'}), name='property_update_image'),
+    path('api/properties/<uuid:pk>/remove-image/', views.PropertyViewSet.as_view({'post': 'remove_image'}), name='property_remove_image'),
+    path('api/properties/<uuid:pk>/add-additional-image/', views.PropertyViewSet.as_view({'post': 'add_additional_image'}), name='property_add_additional_image'),
+    path('api/properties/<uuid:pk>/remove-additional-image/', views.PropertyViewSet.as_view({'post': 'remove_additional_image'}), name='property_remove_additional_image'),
+    
+
+
+    # ➕ Add endpoints
+    path('api/property-types/add/', views.add_property_type_api, name='add_property_type_api'),
+    path('api/features/add/', views.add_feature_api, name='add_feature_api'),
+    
+    # 🗑️ Delete property
+    path('api/properties/<uuid:pk>/delete/', views.PropertyViewSet.as_view({'post': 'delete'}), name='property_delete'),
 ]
+   

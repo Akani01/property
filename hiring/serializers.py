@@ -2,6 +2,8 @@
 from rest_framework import serializers
 from .models import *
 import os
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 # Define the choices that are missing
 SKILL_PROFICIENCY_LEVELS = [
@@ -31,6 +33,36 @@ def has_business_access(user):
         return True
         
     return False
+
+
+# ============================================
+# HELPER: GET IMAGE URL FROM GCS OR LOCAL
+# ============================================
+def get_image_url(image_field):
+    """Safely get image URL from any storage backend (GCS or local)"""
+    if not image_field:
+        return None
+    
+    try:
+        # If it's a Django ImageField with a url property
+        if hasattr(image_field, 'url'):
+            request = None
+            # Try to get request from context if available
+            return image_field.url
+        # If it's a string path
+        elif isinstance(image_field, str):
+            if image_field.startswith('http'):
+                return image_field
+            try:
+                return default_storage.url(image_field)
+            except:
+                return f'/media/{image_field}'
+    except Exception as e:
+        print(f"Error getting image URL: {e}")
+    
+    return None
+
+
 # ==================== USER SERIALIZERS ====================
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -43,7 +75,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
                  'mobile_phone', 'display_name', 'is_online']
     
     def get_display_name(self, obj):
-        """Get display name from ApplicantProfile if available"""
         if hasattr(obj, 'applicantprofile') and obj.applicantprofile:
             profile = obj.applicantprofile
             full_name = f"{profile.first_name} {profile.last_name}".strip()
@@ -52,10 +83,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return obj.username
     
     def get_is_online(self, obj):
-        """Get online status from UserProfile"""
         if hasattr(obj, 'profile'):
             return obj.profile.is_online
         return False
+
 
 class SimpleUserSerializer(serializers.ModelSerializer):
     display_name = serializers.SerializerMethodField()
@@ -66,7 +97,6 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'display_name', 'is_online']
     
     def get_display_name(self, obj):
-        """Get display name from ApplicantProfile if available"""
         if hasattr(obj, 'applicantprofile') and obj.applicantprofile:
             profile = obj.applicantprofile
             full_name = f"{profile.first_name} {profile.last_name}".strip()
@@ -75,10 +105,10 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         return obj.username
     
     def get_is_online(self, obj):
-        """Get online status from UserProfile"""
         if hasattr(obj, 'profile'):
             return obj.profile.is_online
         return False
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,6 +122,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
+
 
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -164,6 +195,7 @@ class ApplicantProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('user', 'profile_completeness', 'created_at', 'updated_at')
 
+
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicantProfile
@@ -202,13 +234,11 @@ class SkillSerializer(serializers.ModelSerializer):
         read_only_fields = ('profile',)
     
     def get_recommended_by_company(self, obj):
-        """Get company name if this is a business-recommended skill"""
         if obj.is_business_recommended and obj.recommended_by_business:
             return obj.recommended_by_business.company_name
         return None
     
     def get_recommended_by_business_info(self, obj):
-        """Get business info if this is a business-recommended skill"""
         if obj.is_business_recommended and obj.recommended_by_business:
             return {
                 'company_name': obj.recommended_by_business.company_name,
@@ -216,10 +246,12 @@ class SkillSerializer(serializers.ModelSerializer):
             }
         return None
 
+
 class SkillCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
         fields = ['skill_name', 'proficiency']
+
 
 class BusinessSkillCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
@@ -233,14 +265,13 @@ class BusinessSkillCreateSerializer(serializers.Serializer):
     category = serializers.CharField(required=False, allow_blank=True)
     
     def validate_name(self, value):
-        # Ensure skill name is not empty
         if not value.strip():
             raise serializers.ValidationError("Skill name cannot be empty")
         return value.strip()
 
+
 # ==================== EMPLOYMENT SERIALIZERS ====================
 
-# serializers.py
 class BusinessEmploymentPreferenceSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='business_profile.company_name', read_only=True)
     
@@ -253,6 +284,7 @@ class BusinessEmploymentPreferenceSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('business_profile',)
 
+
 class BusinessEmploymentPreferenceCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusinessEmploymentPreference
@@ -262,10 +294,10 @@ class BusinessEmploymentPreferenceCreateSerializer(serializers.ModelSerializer):
         ]
     
     def validate_job_title_keywords(self, value):
-        """Ensure job_title_keywords is a list of strings"""
         if not isinstance(value, list):
             raise serializers.ValidationError("Job title keywords must be a list.")
         return [keyword.strip().lower() for keyword in value if keyword.strip()]
+
 
 class EmploymentHistorySerializer(serializers.ModelSerializer):
     experience_months = serializers.ReadOnlyField()
@@ -274,6 +306,7 @@ class EmploymentHistorySerializer(serializers.ModelSerializer):
         model = EmploymentHistory
         exclude = ['created_at', 'updated_at']
         read_only_fields = ('profile',)
+
 
 class EmploymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -284,25 +317,21 @@ class EmploymentCreateSerializer(serializers.ModelSerializer):
         ]
     
     def validate_contract_type(self, value):
-        """Allow None/empty values for contract_type"""
         if value == '' or value is None:
             return None
         return value
     
     def validate_location(self, value):
-        """Allow None/empty values for location"""
         if value == '':
             return None
         return value
     
     def validate_description(self, value):
-        """Allow None/empty values for description"""
         if value == '':
             return None
         return value
     
     def validate(self, data):
-        """Validate employment dates and logic"""
         if not data.get('start_date'):
             raise serializers.ValidationError({"start_date": "Start date is required."})
         
@@ -313,7 +342,8 @@ class EmploymentCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"end_date": "Cannot have end date when currently working."})
         
         return data
-    
+
+
 # ==================== EDUCATION SERIALIZERS ====================
 
 class EducationSerializer(serializers.ModelSerializer):
@@ -322,13 +352,13 @@ class EducationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('profile',)
 
+
 class EducationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
         fields = ['qualification', 'institution', 'completion_year', 'major_subject', 'grade']
     
     def validate_completion_year(self, value):
-        """Validate completion year"""
         from django.utils import timezone
         current_year = timezone.now().year
         if value < 1900 or value > current_year + 5:
@@ -336,7 +366,6 @@ class EducationCreateSerializer(serializers.ModelSerializer):
         return value
 
 
-# serializers.py
 class BusinessPreferenceSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='business_profile.company_name', read_only=True)
     criteria_summary = serializers.ReadOnlyField()
@@ -350,6 +379,7 @@ class BusinessPreferenceSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('business_profile',)
 
+
 class BusinessPreferenceCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusinessPreference
@@ -359,19 +389,24 @@ class BusinessPreferenceCreateSerializer(serializers.ModelSerializer):
         ]
     
     def validate_criteria(self, value):
-        """Ensure criteria is a dictionary"""
         if not isinstance(value, dict):
             raise serializers.ValidationError("Criteria must be a dictionary.")
         return value
-    
+
 
 # ==================== DOCUMENTS SERIALIZERS ====================
 
 class DocumentSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = Document
         fields = '__all__'
         read_only_fields = ('profile', 'file_name', 'uploaded_at')
+    
+    def get_file_url(self, obj):
+        return get_image_url(obj.file)
+
 
 class DocumentCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -379,7 +414,6 @@ class DocumentCreateSerializer(serializers.ModelSerializer):
         fields = ['document_type', 'file']
     
     def validate_file(self, value):
-        """Validate file size and type"""
         max_size = 5 * 1024 * 1024  # 5MB
         if value.size > max_size:
             raise serializers.ValidationError("File size cannot exceed 5MB.")
@@ -404,18 +438,17 @@ class JobListingSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at')
     
     def get_company_logo_url(self, obj):
-        request = self.context.get('request')
         if obj.company_logo:
-            if request:
-                return request.build_absolute_uri(obj.company_logo.url)
-            return obj.company_logo.url
-        if request:
-            return request.build_absolute_uri('/static/hiring/images/default-company-logo.png')
+            try:
+                return obj.company_logo.url
+            except:
+                return '/static/hiring/images/default-company-logo.png'
         return '/static/hiring/images/default-company-logo.png'
     
     def get_is_expired(self, obj):
         from django.utils import timezone
         return obj.apply_by < timezone.now().date()
+
 
 class ApplicationSerializer(serializers.ModelSerializer):
     job_listing = JobListingSerializer(read_only=True)
@@ -429,6 +462,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     
     def get_reference_number(self, obj):
         return f"APP-{obj.id.hex[:8].upper()}"
+
 
 class ApplicationCreateSerializer(serializers.ModelSerializer):
     cover_letter = serializers.CharField(required=False, allow_blank=True, max_length=2000)
@@ -453,11 +487,13 @@ class AlertSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('applicant', 'created_at')
 
+
 class SentNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SentNotification
         fields = '__all__'
         read_only_fields = ('applicant', 'sent_at')
+
 
 class NotificationPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -465,11 +501,13 @@ class NotificationPreferenceSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('applicant',)
 
+
 class JobAlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobAlert
         fields = '__all__'
         read_only_fields = ('applicant', 'created_at', 'last_sent')
+
 
 class EmailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -484,10 +522,12 @@ class IndustrySerializer(serializers.ModelSerializer):
         model = Industry
         fields = ['id', 'name', 'description']
 
+
 class CompanySizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanySize
         fields = ['id', 'size_range', 'description', 'min_employees', 'max_employees']
+
 
 class JobCategorySerializer(serializers.ModelSerializer):
     industry_name = serializers.CharField(source='industry.name', read_only=True)
@@ -498,52 +538,6 @@ class JobCategorySerializer(serializers.ModelSerializer):
 
 
 class BusinessSignupSerializer(serializers.Serializer):
-    # User fields
-    username = serializers.CharField(max_length=150)
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True, min_length=8)
-    first_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
-    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
-    phone_number = serializers.CharField(max_length=20, required=False, allow_blank=True)
-    
-    # Business fields
-    company_name = serializers.CharField(max_length=255)
-    company_description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    company_size = serializers.PrimaryKeyRelatedField(
-        queryset=CompanySize.objects.filter(is_active=True), 
-        required=False, 
-        allow_null=True
-    )
-    industry = serializers.PrimaryKeyRelatedField(
-        queryset=Industry.objects.filter(is_active=True), 
-        required=False, 
-        allow_null=True
-    )
-    website = serializers.URLField(required=False, allow_blank=True, allow_null=True)
-    address = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    city = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    country = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    postal_code = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    company_logo = serializers.ImageField(required=False, allow_null=True)
-    
-    def validate(self, data):
-        # Check if passwords match
-        if data.get('password') != data.get('password_confirm'):
-            raise serializers.ValidationError({"password_confirm": "Passwords do not match"})
-        
-        # Check if username already exists
-        if CustomUser.objects.filter(username=data.get('username')).exists():
-            raise serializers.ValidationError({"username": "Username already exists"})
-        
-        # Check if email already exists
-        if CustomUser.objects.filter(email=data.get('email')).exists():
-            raise serializers.ValidationError({"email": "Email already exists"})
-        
-        return data
-    
-
-class BusinessSignupSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150, required=True)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, min_length=8, required=True)
@@ -551,8 +545,6 @@ class BusinessSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
     last_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
     mobile_phone = serializers.CharField(max_length=15, required=False, allow_blank=True)
-    
-    # Business fields
     company_name = serializers.CharField(max_length=200, required=True)
     company_description = serializers.CharField(required=False, allow_blank=True)
     company_size = serializers.PrimaryKeyRelatedField(
@@ -582,7 +574,6 @@ class BusinessSignupSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        # Extract user data
         user_data = {
             'username': validated_data['username'],
             'email': validated_data['email'],
@@ -593,10 +584,8 @@ class BusinessSignupSerializer(serializers.Serializer):
             'user_type': 'admin'
         }
         
-        # Create user
         user = CustomUser.objects.create_user(**user_data)
         
-        # Create business profile
         business_profile_data = {
             'user': user,
             'company_name': validated_data['company_name'],
@@ -613,9 +602,8 @@ class BusinessSignupSerializer(serializers.Serializer):
 
 
 # ==================== ADMIN SERIALIZERS ====================
+
 class AdminJobCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating/updating jobs in admin with all model fields"""
-    
     class Meta:
         model = JobListing
         fields = [
@@ -629,7 +617,6 @@ class AdminJobCreateSerializer(serializers.ModelSerializer):
             'listing_reference': {'required': False},
             'company_name': {'required': False, 'default': 'Benta Group'},
             'ee_position': {'required': False, 'default': True},
-            # Make these fields optional with default values
             'industry': {'required': False, 'allow_blank': True, 'default': ''},
             'job_category': {'required': False, 'allow_blank': True, 'default': ''},
             'contract_type': {'required': False, 'allow_blank': True, 'default': ''},
@@ -642,105 +629,13 @@ class AdminJobCreateSerializer(serializers.ModelSerializer):
         }
 
     def validate_apply_by(self, value):
-        """Validate apply_by date - allow past dates for testing"""
         return value
 
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user if request else None
-        
-        # Define has_business_access locally if not imported
-        def has_business_access(user):
-            if user and user.groups.filter(name='Business').exists():
-                return True
-            # Check for business profile
-            try:
-                from .models import BusinessProfile
-                if BusinessProfile.objects.filter(user=user).exists():
-                    return True
-            except:
-                pass
-            return False
-        
-        # BUSINESS USER: Force company name and logo from business profile
-        if user and has_business_access(user) and not user.is_superuser:
-            try:
-                from .models import BusinessProfile
-                business_profile = BusinessProfile.objects.get(user=user)
-                # Force company name from business profile
-                validated_data['company_name'] = business_profile.company_name
-                
-                # Auto-populate company logo from business profile if not provided
-                if 'company_logo' not in validated_data or not validated_data.get('company_logo'):
-                    if business_profile.company_logo:
-                        validated_data['company_logo'] = business_profile.company_logo
-                    else:
-                        validated_data['company_logo'] = None
-            except BusinessProfile.DoesNotExist:
-                raise serializers.ValidationError({
-                    'company_name': 'Business profile not found. Please complete your business profile first.'
-                })
-        
-        # Generate listing reference if not provided
-        if not validated_data.get('listing_reference'):
-            from datetime import datetime
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            validated_data['listing_reference'] = f"JOB-{timestamp}"
-        
-        # Set default values for optional fields
-        optional_fields = [
-            'industry', 'job_category', 'contract_type', 'company_description',
-            'knowledge_requirements', 'skills_requirements', 'competencies_requirements',
-            'experience_requirements', 'education_requirements'
-        ]
-        
-        for field in optional_fields:
-            if field not in validated_data or validated_data[field] is None:
-                validated_data[field] = ''
-        
-        return super().create(validated_data)
 
-    def update(self, instance, validated_data):
-        request = self.context.get('request')
-        user = request.user if request else None
-        
-        # Define has_business_access locally if not imported
-        def has_business_access(user):
-            if user and user.groups.filter(name='Business').exists():
-                return True
-            # Check for business profile
-            try:
-                from .models import BusinessProfile
-                if BusinessProfile.objects.filter(user=user).exists():
-                    return True
-            except:
-                pass
-            return False
-        
-        # BUSINESS USER: Prevent changing company name and handle logo properly
-        if user and has_business_access(user) and not user.is_superuser:
-            # Remove company_name from validated_data to prevent changes
-            validated_data.pop('company_name', None)
-            
-            # Handle company logo: if being removed, use business profile logo
-            if 'company_logo' in validated_data and validated_data['company_logo'] is None:
-                try:
-                    from .models import BusinessProfile
-                    business_profile = BusinessProfile.objects.get(user=user)
-                    if business_profile.company_logo:
-                        validated_data['company_logo'] = business_profile.company_logo
-                except BusinessProfile.DoesNotExist:
-                    validated_data['company_logo'] = None
-        
-        return super().update(instance, validated_data)
-
-        
 class AdminApplicationStatusSerializer(serializers.Serializer):
-    """Serializer for updating application status"""
     status = serializers.ChoiceField(choices=Application.APPLICATION_STATUS)
 
     def validate_status(self, value):
-        """Validate status value"""
         valid_statuses = [choice[0] for choice in Application.APPLICATION_STATUS]
         if value not in valid_statuses:
             raise serializers.ValidationError(f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
@@ -773,6 +668,7 @@ class MessagingUserSerializer(serializers.ModelSerializer):
     def get_profile_pic(self, obj):
         return None
 
+
 class ConversationSerializer(serializers.ModelSerializer):
     participants = MessagingUserSerializer(many=True, read_only=True)
     last_message = serializers.SerializerMethodField()
@@ -803,12 +699,14 @@ class ConversationSerializer(serializers.ModelSerializer):
                 return MessagingUserSerializer(other_users.first(), context=self.context).data
         return None
 
+
 class MessagePreviewSerializer(serializers.ModelSerializer):
     sender = MessagingUserSerializer(read_only=True)
 
     class Meta:
         model = Message
         fields = ['id', 'sender', 'content', 'message_type', 'file_name', 'created_at']
+
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = MessagingUserSerializer(read_only=True)
@@ -830,49 +728,42 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'sender', 'created_at', 'updated_at']
 
     def get_file_url(self, obj):
-        if obj.file:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.file.url)
-            return obj.file.url
-        return None
+        return get_image_url(obj.file)
 
     def get_file_download_url(self, obj):
         if obj.file:
-            request = self.context.get('request')
-            if request:
-                return f"{request.build_absolute_uri(obj.file.url)}?download=true"
-            return f"{obj.file.url}?download=true"
+            try:
+                return f"{obj.file.url}?download=true"
+            except:
+                return None
         return None
 
     def get_is_image(self, obj):
-        """Check if the file is an image for frontend preview"""
         if obj.message_type == 'image':
             return True
-        
-        # Additional check based on file extension
         if obj.file_name:
             image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.jfif']
             file_extension = os.path.splitext(obj.file_name)[1].lower()
             return file_extension in image_extensions
-        
         return False
+
 
 class MessageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['content', 'message_type', 'parent_message', 'is_forwarded']
 
+
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     message_type = serializers.ChoiceField(choices=Message.MESSAGE_TYPES, default='file')
 
     def validate_file(self, value):
-        # Validate file size (10MB limit)
-        max_size = 10 * 1024 * 1024  # 10MB
+        max_size = 10 * 1024 * 1024
         if value.size > max_size:
             raise serializers.ValidationError(f"File size must be less than 10MB. Current size: {value.size}")
         return value
+
 
 class UserStatusSerializer(serializers.ModelSerializer):
     user = MessagingUserSerializer(read_only=True)
@@ -882,11 +773,9 @@ class UserStatusSerializer(serializers.ModelSerializer):
         fields = ['user', 'is_online', 'last_seen', 'typing_to']
 
 
-
-#====================== Post Comment Serializers ======================
+# ====================== POST COMMENT SERIALIZERS ======================
 
 class PostAuthorSerializer(serializers.ModelSerializer):
-    """Serializer for author information in posts"""
     profile_picture = serializers.SerializerMethodField()
     
     class Meta:
@@ -894,11 +783,10 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'first_name', 'last_name', 'user_type', 'profile_picture']
     
     def get_profile_picture(self, obj):
-        # You can implement profile pictures later
         return None
 
+
 class PostCompanySerializer(serializers.ModelSerializer):
-    """Serializer for company information in posts"""
     logo_url = serializers.SerializerMethodField()
     
     class Meta:
@@ -906,12 +794,8 @@ class PostCompanySerializer(serializers.ModelSerializer):
         fields = ['id', 'company_name', 'logo_url']
     
     def get_logo_url(self, obj):
-        if obj.company_logo:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.company_logo.url)
-            return obj.company_logo.url
-        return None
+        return get_image_url(obj.company_logo)
+
 
 class PostSerializer(serializers.ModelSerializer):
     author = PostAuthorSerializer(read_only=True)
@@ -974,19 +858,12 @@ class PostSerializer(serializers.ModelSerializer):
         return None
     
     def get_image_url(self, obj):
-        if obj.image and hasattr(obj.image, 'url'):
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+        return get_image_url(obj.image)
     
     def get_video_url(self, obj):
-        if obj.video and hasattr(obj.video, 'url'):
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.video.url) if request else obj.video.url
-        return None
+        return get_image_url(obj.video)
     
     def get_tags_list(self, obj):
-        """Convert comma-separated tags to list"""
         if not obj.tags:
             return []
         return [tag.strip() for tag in obj.tags.split(',') if tag.strip()]
@@ -1013,10 +890,7 @@ class PostSerializer(serializers.ModelSerializer):
         return ''
 
 
-#post create serializer
 class PostCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating posts - ULTRA FLEXIBLE VERSION"""
-    
     class Meta:
         model = Post
         fields = [
@@ -1024,7 +898,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'video_url', 'tags', 'visibility', 'is_published'
         ]
         extra_kwargs = {
-            'title': {'required': True},  # But we handle this in the view
+            'title': {'required': True},
             'content': {'required': True},
             'image': {'required': False, 'allow_null': True},
             'video': {'required': False, 'allow_null': True},
@@ -1036,9 +910,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
         }
     
     def validate(self, data):
-        """ULTRA SIMPLE validation - ALL users can post ANYTHING"""
-        
-        # Auto-generate title if somehow missing (should be handled in view)
         if 'title' not in data or not data['title']:
             content = data.get('content', '')
             if content:
@@ -1047,13 +918,11 @@ class PostCreateSerializer(serializers.ModelSerializer):
             else:
                 data['title'] = 'New Post'
         
-        # Ensure content is not empty
         if 'content' not in data or not data['content']:
             raise serializers.ValidationError({
                 'content': 'Post content cannot be empty'
             })
         
-        # Don't allow both video and video_url
         if data.get('video') and data.get('video_url'):
             raise serializers.ValidationError({
                 'video': 'Please upload a video file OR provide a video URL, not both.'
@@ -1062,36 +931,24 @@ class PostCreateSerializer(serializers.ModelSerializer):
         return data
     
     def create(self, validated_data):
-        """Create post - SIMPLE AND WORKS"""
         request = self.context['request']
         user = request.user
         
-        print(f"Creating post for user: {user.username}")
-        print(f"Title: {validated_data.get('title', 'No title')}")
-        print(f"Content length: {len(validated_data.get('content', ''))}")
-        
-        # 1. Set the author
         validated_data['author'] = user
         
-        # 2. Auto-set company if user has business profile
         if hasattr(user, 'business_profile'):
             validated_data['company'] = user.business_profile
-            print(f"Auto-set company: {user.business_profile.company_name}")
         
-        # 3. Create the post
         try:
             post = Post.objects.create(**validated_data)
-            print(f"✓ Post created successfully! ID: {post.id}")
             return post
         except Exception as e:
-            print(f"✗ Error creating post: {str(e)}")
             raise serializers.ValidationError({
                 'non_field_errors': [f"Failed to save post: {str(e)}"]
             })
-        
+
 
 class PostUpdateSerializer(serializers.ModelSerializer):
-    """Serializer for updating posts"""
     class Meta:
         model = Post
         fields = [
@@ -1108,24 +965,22 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         }
     
     def validate(self, data):
-        # Validate file sizes
         request = self.context['request']
         
         if 'image' in request.FILES:
             image = request.FILES['image']
-            if image.size > 314572800:  # 300MB
+            if image.size > 314572800:
                 raise serializers.ValidationError({
                     'image': 'Image file size cannot exceed 300MB'
                 })
         
         if 'video' in request.FILES:
             video = request.FILES['video']
-            if video.size > 314572800:  # 300MB
+            if video.size > 314572800:
                 raise serializers.ValidationError({
                     'video': 'Video file size cannot exceed 300MB'
                 })
         
-        # Don't allow both video file and video URL
         if data.get('video') and data.get('video_url'):
             raise serializers.ValidationError(
                 "Please upload a video file OR provide a video URL, not both."
@@ -1134,32 +989,27 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         return data
     
     def update(self, instance, validated_data):
-        # Handle file uploads/removal
         request = self.context['request']
         
-        # Handle image
         if 'image' in request.FILES:
             validated_data['image'] = request.FILES['image']
         elif 'image' in validated_data and validated_data['image'] is None:
-            # Remove image if explicitly set to null
             validated_data['image'] = None
             if instance.image:
                 instance.image.delete(save=False)
         
-        # Handle video
         if 'video' in request.FILES:
             validated_data['video'] = request.FILES['video']
         elif 'video' in validated_data and validated_data['video'] is None:
-            # Remove video if explicitly set to null
             validated_data['video'] = None
             if instance.video:
                 instance.video.delete(save=False)
         
-        # Mark as edited
         validated_data['is_edited'] = True
         validated_data['edited_at'] = timezone.now()
         
         return super().update(instance, validated_data)
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = PostAuthorSerializer(read_only=True)
@@ -1212,8 +1062,8 @@ class CommentSerializer(serializers.ModelSerializer):
             return timesince(obj.created_at, now).split(',')[0] + ' ago'
         return ''
 
+
 class CommentCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating comments"""
     class Meta:
         model = Comment
         fields = ['content', 'parent_comment']
@@ -1223,7 +1073,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         }
     
     def validate(self, data):
-        # Validate parent comment belongs to same post
         parent_comment = data.get('parent_comment')
         post_id = self.context.get('post_id')
         
@@ -1244,8 +1093,8 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         
         return super().create(validated_data)
 
+
 class RatingSerializer(serializers.ModelSerializer):
-    """Serializer for post ratings"""
     class Meta:
         model = Rating
         fields = ['id', 'post', 'rating', 'created_at']
@@ -1265,33 +1114,25 @@ class RatingSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         post = validated_data['post']
         
-        # Check if user already rated this post
         existing_rating = Rating.objects.filter(user=user, post=post).first()
         if existing_rating:
-            # Update existing rating
             existing_rating.rating = validated_data['rating']
             existing_rating.save()
-            
-            # Update post average rating
             post.update_rating(validated_data['rating'])
-            
             return existing_rating
         else:
-            # Create new rating
             validated_data['user'] = user
             rating = Rating.objects.create(**validated_data)
-            
-            # Update post average rating
             post.update_rating(validated_data['rating'])
-            
             return rating
 
+
 class LikeDislikeSerializer(serializers.Serializer):
-    """Serializer for like/dislike actions"""
     action = serializers.ChoiceField(choices=['like', 'dislike', 'remove'])
     
     def validate(self, data):
         return data
+
 
 class JobInteractionSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.username', read_only=True)
@@ -1307,11 +1148,10 @@ class JobInteractionSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'created_at']
     
     def get_user_avatar(self, obj):
-        # You can customize this to return user avatar URL
         return f"/static/images/avatars/{obj.user.username[:1].upper()}.png"
 
+
 class JobListingInteractionSerializer(serializers.ModelSerializer):
-    """Extended serializer for JobListing with interaction counts"""
     likes_count = serializers.SerializerMethodField()
     dislikes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
@@ -1335,7 +1175,7 @@ class JobListingInteractionSerializer(serializers.ModelSerializer):
         return JobInteraction.objects.filter(
             job_listing=obj, 
             interaction_type='comment',
-            parent_interaction__isnull=True  # Only count parent comments
+            parent_interaction__isnull=True
         ).count()
     
     def get_user_has_liked(self, obj):
@@ -1359,9 +1199,7 @@ class JobListingInteractionSerializer(serializers.ModelSerializer):
         return False
     
     def get_company_logo_url(self, obj):
-        if obj.company_logo:
-            return obj.company_logo.url
-        return '/static/hiring/images/default-company-logo.png'
+        return get_image_url(obj.company_logo)
     
     class Meta:
         model = JobListing
@@ -1375,28 +1213,9 @@ class JobListingInteractionSerializer(serializers.ModelSerializer):
         ]
 
 
-class RatingSerializer(serializers.Serializer):
-    rating = serializers.IntegerField(min_value=1, max_value=5)
-    
-    def validate(self, data):
-        return data
-
-
-class VideoCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Video
-        fields = ['title', 'description', 'tags', 'video_file', 'thumbnail', 'privacy', 'is_published']
-    
-    def create(self, validated_data):
-        request = self.context.get('request')
-        validated_data['author'] = request.user
-        return super().create(validated_data)
-
-
 # ===== VIDEO FEED SERIALIZERS =====
 
 class VideoCommentSerializer(serializers.ModelSerializer):
-    """Serializer for video comments"""
     author_name = serializers.SerializerMethodField()
     author_avatar = serializers.SerializerMethodField()
     author_username = serializers.SerializerMethodField()
@@ -1472,7 +1291,6 @@ class VideoCommentSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    """Serializer for videos"""
     author_name = serializers.SerializerMethodField()
     author_avatar = serializers.SerializerMethodField()
     author_username = serializers.SerializerMethodField()
@@ -1559,17 +1377,12 @@ class VideoSerializer(serializers.ModelSerializer):
             return "Just now"
     
     def get_video_url(self, obj):
-        if obj.video_file:
-            return obj.video_file.url
-        return None
+        return get_image_url(obj.video_file)
     
     def get_thumbnail_url(self, obj):
-        if obj.thumbnail:
-            return obj.thumbnail.url
-        return '/static/images/default-video-thumbnail.jpg'
+        return get_image_url(obj.thumbnail) or '/static/images/default-video-thumbnail.jpg'
     
     def get_comments(self, obj):
-        """Get top-level comments for this video"""
         comments = obj.comments.filter(
             is_active=True, 
             parent_comment__isnull=True
@@ -1583,7 +1396,6 @@ class VideoSerializer(serializers.ModelSerializer):
 
 
 class VideoCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating videos"""
     class Meta:
         model = Video
         fields = ['title', 'description', 'tags', 'video_file', 'thumbnail', 'privacy', 'is_published']

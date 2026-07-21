@@ -3,20 +3,18 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.utils import timezone
 import uuid
-from django.conf import settings  # <-- ADD THIS LINE
+from django.conf import settings
 import os
 from .validators import validate_file_size, validate_video_file_extension, validate_image_file_extension
-# Additions
-from django.db import models
-from django.core.validators import FileExtensionValidator
-from django.utils import timezone
 from django.db.models import Avg, Count
 import json
 from datetime import timedelta
 import re
 from collections import Counter
 
-# ===== USER MANAGEMENT MODELS =====
+# ============================================
+# NO get_user_model() HERE - Use CustomUser directly
+# ============================================
 
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -37,16 +35,12 @@ class CustomUser(AbstractUser):
     
     def get_short_name(self):
         return self.first_name or self.username
-
-        # ✅ ADD THIS PROPERTY
+    
     @property
     def liked_posts(self):
         """Return posts liked by this user"""
         return self.post_likes.all()
 
-
-
-# ===== APPLICANT PROFILE MODELS =====
 
 class ApplicantProfile(models.Model):
     TITLE_CHOICES = (
@@ -104,7 +98,6 @@ class ApplicantProfile(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-
 class Skill(models.Model):
     PROFICIENCY_CHOICES = (
         ('beginner', 'Beginner'), 
@@ -117,17 +110,16 @@ class Skill(models.Model):
         'ApplicantProfile', 
         on_delete=models.CASCADE, 
         related_name='skills',
-        null=True,  # Make it optional for business recommendations
-        blank=True  # Make it optional for business recommendations
+        null=True,
+        blank=True
     )
     skill_name = models.CharField(max_length=100)
     proficiency = models.CharField(max_length=15, choices=PROFICIENCY_CHOICES, default='good')
     
-    # Business recommendation fields
     is_business_recommended = models.BooleanField(default=False)
     recommended_by_business = models.ForeignKey(
         'BusinessProfile', 
-        on_delete=models.CASCADE,  # Changed from SET_NULL to CASCADE
+        on_delete=models.CASCADE,
         null=True, 
         blank=True,
         related_name='recommended_skills'
@@ -140,20 +132,16 @@ class Skill(models.Model):
         return f"{self.skill_name} ({self.proficiency})"
     
     def save(self, *args, **kwargs):
-        # Validate the data before saving
         if self.is_business_recommended:
-            # Business recommendations must have a business and NO profile
             if not self.recommended_by_business:
                 raise ValueError("Business recommended skills must have a business profile")
             if self.profile:
                 raise ValueError("Business recommended skills should not have an applicant profile")
         else:
-            # Applicant skills must have a profile and NO business
             if not self.profile:
                 raise ValueError("Applicant skills must have an applicant profile")
             if self.recommended_by_business:
                 raise ValueError("Applicant skills should not have a business profile")
-        
         super().save(*args, **kwargs)
 
 
@@ -197,8 +185,6 @@ class Document(models.Model):
     def __str__(self):
         return f"{self.file_name} ({self.document_type})"
 
-
-# ===== BUSINESS PROFILE MODELS =====
 
 class Industry(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -262,7 +248,6 @@ class BusinessProfile(models.Model):
     country = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
     
-    # Company Logo
     company_logo = models.ImageField(
         upload_to='company_logos/%Y/%m/%d/', 
         blank=True, 
@@ -270,11 +255,9 @@ class BusinessProfile(models.Model):
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'svg', 'webp'])]
     )
     
-    # Business verification
     is_verified = models.BooleanField(default=False)
     verification_document = models.FileField(upload_to='verification_docs/%Y/%m/%d/', blank=True, null=True)
     
-    # Preferences
     receive_applicant_notifications = models.BooleanField(default=True)
     receive_newsletter = models.BooleanField(default=True)
     
@@ -288,13 +271,11 @@ class BusinessProfile(models.Model):
         return f"{self.company_name} - {self.user.username}"
     
     def get_company_logo_url(self):
-        """Get company logo URL or return default logo"""
         if self.company_logo:
             return self.company_logo.url
         return '/static/hiring/images/default-company-logo.png'
 
 
-# models.py
 class BusinessPreference(models.Model):
     PREFERENCE_TYPES = (
         ('education', 'Education'),
@@ -310,13 +291,11 @@ class BusinessPreference(models.Model):
     
     business_profile = models.ForeignKey(BusinessProfile, on_delete=models.CASCADE, related_name='preferences')
     preference_type = models.CharField(max_length=20, choices=PREFERENCE_TYPES)
-    title = models.CharField(max_length=200)  # e.g., "Senior Developers", "MBA Graduates"
+    title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     
-    # Dynamic criteria storage
-    criteria = models.JSONField(default=dict, blank=True)  # Store any criteria dynamically
+    criteria = models.JSONField(default=dict, blank=True)
     
-    # Common fields
     positions_available = models.PositiveIntegerField(default=1)
     priority_level = models.CharField(max_length=20, choices=(
         ('low', 'Low'),
@@ -338,13 +317,12 @@ class BusinessPreference(models.Model):
     
     @property
     def criteria_summary(self):
-        """Return a human-readable summary of criteria"""
         if not self.criteria:
             return "No specific criteria"
         
         summary = []
         for key, value in self.criteria.items():
-            if value:  # Only include non-empty values
+            if value:
                 if isinstance(value, list):
                     summary.append(f"{key}: {', '.join(str(v) for v in value)}")
                 else:
@@ -353,7 +331,6 @@ class BusinessPreference(models.Model):
         return "; ".join(summary)
 
 
-# models.py - Add BusinessEmploymentPreference model
 class BusinessEmploymentPreference(models.Model):
     CONTRACT_TYPE_CHOICES = (
         ('full_time', 'Full Time'),
@@ -368,7 +345,7 @@ class BusinessEmploymentPreference(models.Model):
     business_profile = models.ForeignKey(BusinessProfile, on_delete=models.CASCADE, related_name='employment_preferences')
     preferred_contract_type = models.CharField(max_length=20, choices=CONTRACT_TYPE_CHOICES)
     positions_available = models.PositiveIntegerField(default=1)
-    job_title_keywords = models.JSONField(default=list, blank=True)  # Store relevant job titles
+    job_title_keywords = models.JSONField(default=list, blank=True)
     required_experience_years = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -381,7 +358,7 @@ class BusinessEmploymentPreference(models.Model):
     def __str__(self):
         return f"{self.get_preferred_contract_type_display()} - {self.positions_available} positions"
 
-# Update EmploymentHistory model to add experience calculation
+
 class EmploymentHistory(models.Model):
     CONTRACT_TYPE_CHOICES = (
         ('full_time', 'Full Time'),
@@ -412,14 +389,11 @@ class EmploymentHistory(models.Model):
     
     @property
     def experience_months(self):
-        """Calculate total months of experience for this position"""
         end_date = self.end_date if not self.currently_working else timezone.now().date()
         if self.start_date and end_date:
             return (end_date.year - self.start_date.year) * 12 + (end_date.month - self.start_date.month)
         return 0
 
-
-# ===== JOB LISTING MODELS =====
 
 class JobListing(models.Model):
     LISTING_STATUS = (
@@ -493,8 +467,6 @@ class Application(models.Model):
     def __str__(self):
         return f"{self.applicant} - {self.job_listing}"
 
-
-# ===== NOTIFICATION AND ALERT MODELS =====
 
 class NotificationPreference(models.Model):
     NOTIFICATION_TYPES = (
@@ -613,10 +585,7 @@ class SearchHistory(models.Model):
         return f"{self.user.username} - {self.query}"
 
 
-# ===== BUSINESS NOTIFICATION MODELS =====
-
 class BusinessNotificationPreference(models.Model):
-    """Notification preferences for business users"""
     business = models.OneToOneField(BusinessProfile, on_delete=models.CASCADE, related_name='notification_preferences')
     email_notifications = models.BooleanField(default=True)
     in_app_notifications = models.BooleanField(default=True)
@@ -635,7 +604,6 @@ class BusinessNotificationPreference(models.Model):
 
 
 class BusinessAlert(models.Model):
-    """Custom alerts for business users"""
     ALERT_TYPES = (
         ('application', 'New Application'),
         ('expiry', 'Job Expiry'),
@@ -661,7 +629,6 @@ class BusinessAlert(models.Model):
 
 
 class BusinessSentNotification(models.Model):
-    """Sent notifications for business users"""
     NOTIFICATION_TYPES = (
         ('application', 'Application Update'),
         ('job', 'Job Update'),
@@ -684,11 +651,9 @@ class BusinessSentNotification(models.Model):
         return f"{self.subject} - {self.business.company_name}"
 
 
-# ===== MESSAGING SYSTEM MODELS =====
-
 class Conversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    participants = models.ManyToManyField('CustomUser', related_name='conversations')
+    participants = models.ManyToManyField(CustomUser, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -713,7 +678,7 @@ class Message(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='sent_messages')
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_messages')
     content = models.TextField(blank=True, null=True)
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='text')
     file = models.FileField(upload_to='message_files/', blank=True, null=True)
@@ -721,14 +686,11 @@ class Message(models.Model):
     file_size = models.BigIntegerField(blank=True, null=True)
     file_mime_type = models.CharField(max_length=100, blank=True, null=True)
     
-    # Reply functionality
     parent_message = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
     
-    # Forward functionality
     is_forwarded = models.BooleanField(default=False)
-    original_sender = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='forwarded_messages')
+    original_sender = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='forwarded_messages')
     
-    # Message status
     is_read = models.BooleanField(default=False)
     delivered_at = models.DateTimeField(null=True, blank=True)
     read_at = models.DateTimeField(null=True, blank=True)
@@ -746,7 +708,7 @@ class Message(models.Model):
 
 class MessageRecipient(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='recipients')
-    recipient = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='received_messages')
+    recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_messages')
     is_read = models.BooleanField(default=False)
     read_at = models.DateTimeField(null=True, blank=True)
 
@@ -756,7 +718,7 @@ class MessageRecipient(models.Model):
 
 
 class UserStatus(models.Model):
-    user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='chat_status')
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='chat_status')
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(auto_now=True)
     typing_to = models.ForeignKey(Conversation, on_delete=models.SET_NULL, null=True, blank=True)
@@ -777,7 +739,6 @@ class BusinessProfileView(models.Model):
     class Meta:
         db_table = 'business_profile_views'
 
-# models.py - Django models
 
 class Post(models.Model):
     POST_TYPES = [
@@ -814,29 +775,24 @@ class Post(models.Model):
         blank=True,
         validators=[validate_file_size, validate_video_file_extension]
     )
-    video_url = models.URLField(blank=True)  # For YouTube/Vimeo links
+    video_url = models.URLField(blank=True)
     tags = models.CharField(max_length=500, blank=True, help_text="Comma-separated tags")
     
-    # Engagement metrics
     views = models.PositiveIntegerField(default=0)
     likes = models.ManyToManyField(CustomUser, related_name='post_likes', blank=True)
     dislikes = models.ManyToManyField(CustomUser, related_name='post_dislikes', blank=True)
     shares = models.PositiveIntegerField(default=0)
-    comment_count = models.PositiveIntegerField(default=0)  # Comment count field
+    comment_count = models.PositiveIntegerField(default=0)
     
-    # Ratings
     average_rating = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
     
-    # Post visibility
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='public')
     
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     edited_at = models.DateTimeField(null=True, blank=True)
     
-    # Status flags
     is_published = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
     
@@ -853,11 +809,9 @@ class Post(models.Model):
         return f"{self.title} by {self.author.username}"
     
     def total_engagement(self):
-        """Calculate total engagement score"""
         return self.likes.count() + self.comment_count + self.shares
     
     def update_comment_count(self):
-        """Update comment count from related comments"""
         count = self.comments.count()
         if self.comment_count != count:
             self.comment_count = count
@@ -865,50 +819,31 @@ class Post(models.Model):
         return count
 
     def get_tags_list(self):
-        """Convert comma-separated tags string to list"""
         if not self.tags:
             return []
-        # Split by comma and clean up whitespace
         tag_list = [tag.strip() for tag in self.tags.split(',') if tag.strip()]
         return tag_list
     
-    # You might also want to add a setter method
     def set_tags_list(self, tag_list):
-        """Convert list to comma-separated string"""
         if tag_list:
             self.tags = ', '.join([str(tag).strip() for tag in tag_list])
         else:
             self.tags = ''
 
-    def get_tags_list(self, obj):
-        # Safe version that handles missing method
-        try:
-            return obj.get_tags_list()
-        except AttributeError:
-            # Fallback if method doesn't exist
-            if obj.tags:
-                return [tag.strip() for tag in obj.tags.split(',') if tag.strip()]
-            return []
-        
 
 class Comment(models.Model):
-    # Foreign keys to content types
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True, blank=True)
     job_listing = models.ForeignKey(JobListing, on_delete=models.CASCADE, related_name='comments', null=True, blank=True)
     
-    # Comment content and author
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     
-    # Engagement
     likes = models.ManyToManyField(CustomUser, related_name='comment_likes', blank=True)
     
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # Status flags
     is_edited = models.BooleanField(default=False)
     
     class Meta:
@@ -922,17 +857,12 @@ class Comment(models.Model):
         return f"Comment by {self.author.username}"
     
     def clean(self):
-        """
-        Ensure comment is attached to either a post OR a job listing, not both.
-        Raises ValidationError if constraints are violated.
-        """
         if not self.post and not self.job_listing:
             raise ValidationError("Comment must be attached to either a post or a job listing")
         if self.post and self.job_listing:
             raise ValidationError("Comment cannot be attached to both a post and a job listing")
     
     def save(self, *args, **kwargs):
-        """Override save to run validation before saving"""
         self.clean()
         super().save(*args, **kwargs)
 
@@ -966,7 +896,6 @@ class PostView(models.Model):
 
 
 class JobInteraction(models.Model):
-    """Separate model for job likes, dislikes, and comments"""
     INTERACTION_TYPES = (
         ('like', 'Like'),
         ('dislike', 'Dislike'),
@@ -976,14 +905,11 @@ class JobInteraction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     job_listing = models.ForeignKey('JobListing', on_delete=models.CASCADE)
     
-    # Interaction type
     interaction_type = models.CharField(max_length=10, choices=INTERACTION_TYPES)
     comment_text = models.TextField(blank=True, null=True)
     
-    # For replies to comments
     parent_interaction = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -995,13 +921,9 @@ class JobInteraction(models.Model):
         return f"{self.user.username} {self.interaction_type} on {self.job_listing.title}"
 
 
-# ===== VIDEO FEED MODELS =====
-
 class Video(models.Model):
-    """Video post for TikTok-style feed"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
-    # Video content
     video_file = models.FileField(
         upload_to='videos/%Y/%m/%d/',
         validators=[
@@ -1014,19 +936,16 @@ class Video(models.Model):
         null=True, blank=True
     )
     
-    # Metadata
     title = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
     tags = models.JSONField(default=list, blank=True)
     
-    # Author
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
+        CustomUser, 
         on_delete=models.CASCADE,
         related_name='videos'
     )
     
-    # Privacy settings
     PRIVACY_CHOICES = (
         ('public', 'Public'),
         ('private', 'Private'),
@@ -1036,24 +955,18 @@ class Video(models.Model):
     privacy = models.CharField(max_length=20, choices=PRIVACY_CHOICES, default='public')
     is_published = models.BooleanField(default=True)
     
-    # Engagement
     views = models.PositiveIntegerField(default=0)
     shares = models.PositiveIntegerField(default=0)
     
-    # Many-to-Many for likes (using your existing User model)
     likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
+        CustomUser,
         related_name='liked_videos',
         blank=True
     )
     
-    # Comments relationship (defined below)
-    
-    # Analytics
     watch_time = models.BigIntegerField(default=0, help_text="Total watch time in seconds")
     average_watch_percentage = models.FloatField(default=0, help_text="Average % of video watched")
     
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -1076,7 +989,6 @@ class Video(models.Model):
         return self.comments.filter(is_active=True).count()
     
     def get_engagement_score(self):
-        """Calculate engagement score"""
         return (
             self.likes.count() * 2 +
             self.comments.filter(is_active=True).count() * 3 +
@@ -1105,7 +1017,6 @@ class Video(models.Model):
 
 
 class VideoComment(models.Model):
-    """Comments on videos"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     video = models.ForeignKey(
@@ -1114,7 +1025,7 @@ class VideoComment(models.Model):
         related_name='comments'
     )
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='video_comments'
     )
@@ -1127,18 +1038,15 @@ class VideoComment(models.Model):
     
     content = models.TextField(max_length=1000)
     
-    # Likes on comments
     likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
+        CustomUser,
         related_name='liked_video_comments',
         blank=True
     )
     
-    # Status
     is_active = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
     
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -1177,5 +1085,3 @@ class PushSubscription(models.Model):
     
     def __str__(self):
         return f"Subscription for {self.user or 'Anonymous'}"
-
-

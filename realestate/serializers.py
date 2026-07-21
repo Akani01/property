@@ -628,3 +628,56 @@ class PropertyTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'icon', 'created_at']
 
 
+# realestate/serializers.py - Add this at the end
+
+class PropertyUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating properties with image support"""
+    features = serializers.ListField(
+        child=serializers.UUIDField(),
+        required=False,
+        write_only=True
+    )
+    main_image_url = serializers.SerializerMethodField()
+    property_type_name = serializers.CharField(source='property_type.name', read_only=True)
+    
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'property_reference', 'title', 'description',
+            'property_type', 'property_type_name', 'custom_category_name',
+            'custom_category_description', 'features',
+            'address', 'city', 'state', 'country', 'postal_code',
+            'latitude', 'longitude', 'formatted_address', 'place_id',
+            'neighborhood', 'landmark',
+            'total_area', 'land_area', 'floor_area', 'total_rooms',
+            'total_floors', 'max_occupancy', 'bedrooms', 'bathrooms',
+            'garages', 'parking_spaces', 'amenities',
+            'base_price', 'price_per_unit', 'price_per_sqm',
+            'price_currency', 'booking_unit', 'pricing_structure',
+            'pricing_details', 'listing_type', 'transaction_type',
+            'expiry_date', 'status', 'is_bookable', 'booking_mode',
+            'available_from', 'available_until', 'minimum_stay',
+            'maximum_stay', 'main_image', 'main_image_url', 'virtual_tour_url',
+            'additional_images', 'is_featured', 'is_premium',
+            'is_active', 'custom_fields', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'property_reference', 'views_count', 
+            'listing_date', 'created_at', 'updated_at'
+        ]
+    
+    def get_main_image_url(self, obj):
+        return obj.get_main_image_url()
+    
+    def update(self, instance, validated_data):
+        features = validated_data.pop('features', None)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        
+        if features is not None:
+            instance.features.set(features)
+        
+        return instance

@@ -154,4 +154,4 @@ dmypy.json
 .pytype/
 
 # Cython debug symbols
-cython_debug/
+cython_debug/credentials/service-account-key.json

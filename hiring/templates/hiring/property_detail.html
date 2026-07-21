@@ -279,7 +279,7 @@
         .page-header h1 i { color: var(--primary); }
         .page-header .subtitle { color: var(--gray); font-size: 14px; font-weight: 400; }
 
-        /* ===== PROPERTY DETAILS ===== */
+        /* ===== PROPERTY GALLERY ===== */
         .property-gallery {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -409,6 +409,96 @@
             background: var(--primary-light);
             color: var(--primary);
             font-size: 13px;
+        }
+
+        /* ===== LOCATION MAP ===== */
+        .location-map-container {
+            width: 100%;
+            height: 300px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--light-gray);
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .location-map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .location-map-container .map-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            background: var(--light-gray);
+        }
+
+        .location-map-container .map-placeholder i {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .location-map-container .map-placeholder .address-text {
+            font-size: 14px;
+            color: var(--gray);
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .map-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .map-actions .btn-map {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 13px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-map-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-map-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+        }
+
+        .btn-map-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-map-secondary:hover {
+            background: #e8eaed;
+        }
+
+        .btn-map-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-map-success:hover {
+            background: #2d9248;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(52,168,83,0.3);
         }
 
         /* ===== SIDEBAR CARD ===== */
@@ -573,6 +663,8 @@
             .info-card .info-row .label { width: 100%; }
             .sidebar-card { position: relative; top: 0; }
             .toast-item { min-width: auto; width: calc(100vw - 40px); }
+            .location-map-container { height: 200px; }
+            .map-actions .btn-map { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -600,6 +692,10 @@
             <i class="fas fa-chart-bar"></i>
             <span class="tooltip-text">Analytics</span>
         </a>
+        <a href="/property-map/" class="nav-link" title="Map View">
+            <i class="fas fa-map"></i>
+            <span class="tooltip-text">Map View</span>
+        </a>
     </nav>
 
     <!-- ===== HEADER ===== -->
@@ -623,6 +719,7 @@
                     <a href="/properties/add/" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Property</a>
                     <a href="/properties/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
                     <a href="/properties/analytics/" class="dropdown-item"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="/property-map/" class="dropdown-item"><i class="fas fa-map"></i> Map View</a>
                     <div class="dropdown-divider"></div>
                     <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
@@ -746,9 +843,10 @@
                     </div>
                 </div>
 
-                <!-- Location -->
+                <!-- ===== LOCATION WITH MAP (NEW) ===== -->
                 <div class="info-card">
-                    <div class="card-title"><i class="fas fa-map-marker-alt"></i> Location</div>
+                    <div class="card-title"><i class="fas fa-map-marker-alt"></i> Location & Map</div>
+                    
                     <div class="info-row">
                         <span class="label">Address</span>
                         <span class="value">{{ property.address|default:"Not specified" }}</span>
@@ -768,6 +866,70 @@
                     <div class="info-row">
                         <span class="label">Postal Code</span>
                         <span class="value">{{ property.postal_code|default:"Not specified" }}</span>
+                    </div>
+                    {% if property.neighborhood %}
+                    <div class="info-row">
+                        <span class="label">Neighborhood</span>
+                        <span class="value">{{ property.neighborhood }}</span>
+                    </div>
+                    {% endif %}
+                    {% if property.landmark %}
+                    <div class="info-row">
+                        <span class="label">Landmark</span>
+                        <span class="value">{{ property.landmark }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Map -->
+                    <div class="location-map-container">
+                        {% if property.latitude and property.longitude %}
+                            <iframe 
+                                src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_MAPS_API_KEY }}&q={{ property.latitude }},{{ property.longitude }}&zoom=15"
+                                allowfullscreen>
+                            </iframe>
+                        {% elif property.address %}
+                            <div class="map-placeholder">
+                                <i class="fas fa-map-pin" style="color:var(--primary);"></i>
+                                <div class="address-text">
+                                    <strong>{{ property.title }}</strong><br>
+                                    {{ property.address }}<br>
+                                    {{ property.city }}, {{ property.country }}
+                                </div>
+                                <div style="margin-top:12px;color:#999;font-size:12px;">
+                                    <i class="fas fa-info-circle"></i> Click "View on Google Maps" to see location
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="map-placeholder">
+                                <i class="fas fa-map-marker-alt" style="color:#ccc;"></i>
+                                <div class="address-text">No location information available</div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Map Actions -->
+                    <div class="map-actions">
+                        {% if property.latitude and property.longitude %}
+                            <a href="https://www.google.com/maps/dir/?api=1&destination={{ property.latitude }},{{ property.longitude }}" 
+                               target="_blank" 
+                               class="btn-map btn-map-success">
+                                <i class="fas fa-directions"></i> Get Directions
+                            </a>
+                            <a href="https://www.google.com/maps/place/{{ property.latitude }},{{ property.longitude }}" 
+                               target="_blank" 
+                               class="btn-map btn-map-primary">
+                                <i class="fas fa-external-link-alt"></i> View on Google Maps
+                            </a>
+                        {% elif property.address %}
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ property.address|urlencode }},{{ property.city|urlencode }},{{ property.country|urlencode }}" 
+                               target="_blank" 
+                               class="btn-map btn-map-primary">
+                                <i class="fas fa-external-link-alt"></i> View on Google Maps
+                            </a>
+                        {% endif %}
+                        <a href="/property-map/" class="btn-map btn-map-secondary">
+                            <i class="fas fa-map"></i> Open Map View
+                        </a>
                     </div>
                 </div>
 
@@ -809,6 +971,14 @@
                             <span>Created</span>
                             <span>{{ property.created_at|date:"M d, Y" }}</span>
                         </div>
+                        {% if property.latitude and property.longitude %}
+                        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);margin-top:6px;">
+                            <span>Coordinates</span>
+                            <span style="font-size:11px;color:#999;">
+                                {{ property.latitude|floatformat:6 }}, {{ property.longitude|floatformat:6 }}
+                            </span>
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="action-btns">

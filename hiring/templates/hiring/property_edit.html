@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PropNes - Edit Property</title>
+    <title>PropNest - Edit Property</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -385,6 +385,106 @@
             cursor: pointer;
         }
 
+        /* ===== IMAGE UPLOAD ===== */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--light-gray);
+            margin-top: 8px;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-area i { font-size: 32px; color: var(--gray); margin-bottom: 8px; }
+        .file-upload-area p { margin: 0; color: var(--gray); font-size: 14px; }
+        .file-upload-area .upload-hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+        .current-image-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: var(--radius-sm);
+        }
+
+        .current-image-container img {
+            max-height: 150px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .additional-images-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .additional-image-item {
+            position: relative;
+            display: inline-block;
+        }
+
+        .additional-image-item img {
+            height: 80px;
+            width: 80px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .additional-image-item .remove-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .additional-image-item .remove-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .progress {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
         /* ===== BUTTONS ===== */
         .btn {
             padding: 10px 24px;
@@ -441,8 +541,8 @@
             color: white;
         }
 
-        .btn-lg { padding: 12px 32px; font-size: 16px; }
         .btn-sm { padding: 6px 16px; font-size: 13px; }
+        .btn-lg { padding: 12px 32px; font-size: 16px; }
 
         .btn:disabled {
             opacity: 0.6;
@@ -575,6 +675,8 @@
             .form-actions { flex-direction: column; }
             .form-actions .btn { width: 100%; justify-content: center; }
             .toast-item { min-width: auto; width: calc(100vw - 40px); }
+            .current-image-container img { max-height: 100px; }
+            .additional-image-item img { height: 60px; width: 60px; }
         }
     </style>
 </head>
@@ -598,9 +700,13 @@
             <i class="fas fa-calendar-check"></i>
             <span class="tooltip-text">Bookings</span>
         </a>
-        <a href="/properties/analytics/" class="nav-link active" title="Analytics">
+        <a href="/properties/analytics/" class="nav-link" title="Analytics">
             <i class="fas fa-chart-bar"></i>
             <span class="tooltip-text">Analytics</span>
+        </a>
+        <a href="/property-map/" class="nav-link" title="Map View">
+            <i class="fas fa-map"></i>
+            <span class="tooltip-text">Map View</span>
         </a>
     </nav>
 
@@ -625,6 +731,7 @@
                     <a href="/properties/add/" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Property</a>
                     <a href="/properties/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
                     <a href="/properties/analytics/" class="dropdown-item"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="/property-map/" class="dropdown-item"><i class="fas fa-map"></i> Map View</a>
                     <div class="dropdown-divider"></div>
                     <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
@@ -727,7 +834,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Country</label>
-                            <input type="text" class="form-control" name="country" value="{{ property.country }}">
+                            <input type="text" class="form-control" name="country" value="{{ property.country|default:'South Africa' }}">
                         </div>
                         <div class="form-group">
                             <label>Postal Code</label>
@@ -744,22 +851,26 @@
                     <div class="form-row-3">
                         <div class="form-group">
                             <label>Bedrooms</label>
-                            <input type="number" class="form-control" name="bedrooms" min="0" value="{{ property.bedrooms }}">
+                            <input type="number" class="form-control" name="bedrooms" min="0" value="{{ property.bedrooms|default:0 }}">
                         </div>
                         <div class="form-group">
                             <label>Bathrooms</label>
-                            <input type="number" class="form-control" name="bathrooms" min="0" value="{{ property.bathrooms }}">
+                            <input type="number" class="form-control" name="bathrooms" min="0" value="{{ property.bathrooms|default:0 }}">
                         </div>
                         <div class="form-group">
                             <label>Garages</label>
-                            <input type="number" class="form-control" name="garages" min="0" value="{{ property.garages }}">
+                            <input type="number" class="form-control" name="garages" min="0" value="{{ property.garages|default:0 }}">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Total Area (m²)</label>
-                            <input type="number" class="form-control" name="total_area" min="0" step="0.01" value="{{ property.total_area }}">
+                            <input type="number" class="form-control" name="total_area" min="0" step="0.01" value="{{ property.total_area|default:'' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Parking Spaces</label>
+                            <input type="number" class="form-control" name="parking_spaces" min="0" value="{{ property.parking_spaces|default:0 }}">
                         </div>
                     </div>
                 </div>
@@ -798,7 +909,7 @@
                         </div>
                         <div class="form-group">
                             <label>Minimum Stay</label>
-                            <input type="number" class="form-control" name="minimum_stay" min="1" value="{{ property.minimum_stay }}">
+                            <input type="number" class="form-control" name="minimum_stay" min="1" value="{{ property.minimum_stay|default:1 }}">
                         </div>
                     </div>
 
@@ -845,6 +956,89 @@
                             {% endfor %}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ===== IMAGE MANAGEMENT (NEW) ===== -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-images"></i> Image Management</div>
+                <div class="card-body">
+                    
+                    <!-- Current Main Image -->
+                    <div class="form-group">
+                        <label>Current Main Image</label>
+                        <div class="current-image-container">
+                            {% if property.main_image %}
+                            <img src="{{ property.main_image.url }}" alt="Current main image">
+                            <div>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removeMainImage('{{ property.id }}')">
+                                    <i class="fas fa-trash"></i> Remove Image
+                                </button>
+                                <span class="text-muted" style="font-size:12px;display:block;margin-top:4px;">Click Remove to delete this image</span>
+                            </div>
+                            {% else %}
+                            <div style="padding:20px;color:#999;">
+                                <i class="fas fa-image" style="font-size:24px;display:block;margin-bottom:4px;"></i>
+                                No main image set
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Upload New Main Image -->
+                    <div class="form-group">
+                        <label>Upload New Main Image</label>
+                        <div class="file-upload-area" id="imageUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Click to upload</strong> or drag and drop</p>
+                            <div class="upload-hint">PNG, JPG, WEBP up to 10MB</div>
+                            <input type="file" id="mainImageInput" accept="image/*" style="display:none;">
+                        </div>
+                        <div id="imageUploadProgress" style="display:none;margin-top:10px;">
+                            <div class="progress">
+                                <div class="progress-bar" id="uploadProgressBar">0%</div>
+                            </div>
+                            <span id="uploadStatus" style="font-size:12px;color:var(--gray);">Uploading...</span>
+                        </div>
+                    </div>
+
+                    <!-- Additional Images -->
+                    <div class="form-group">
+                        <label>Additional Images</label>
+                        <div class="additional-images-grid" id="additionalImagesGrid">
+                            {% if property.additional_images %}
+                                {% for image in property.additional_images %}
+                                <div class="additional-image-item" data-index="{{ forloop.counter0 }}">
+                                    <img src="{{ image }}" alt="Additional image">
+                                    <button type="button" class="remove-btn" onclick="removeAdditionalImage('{{ property.id }}', {{ forloop.counter0 }})">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-muted">No additional images</div>
+                            {% endif %}
+                        </div>
+                        <div class="help-text mt-2">Additional images are stored in your property gallery</div>
+                    </div>
+
+                    <!-- Upload Additional Image -->
+                    <div class="form-group">
+                        <label>Add Additional Image</label>
+                        <div class="file-upload-area" id="additionalImageUploadArea">
+                            <i class="fas fa-plus-circle"></i>
+                            <p><strong>Click to upload</strong> additional image</p>
+                            <div class="upload-hint">PNG, JPG, WEBP up to 10MB</div>
+                            <input type="file" id="additionalImageInput" accept="image/*" style="display:none;">
+                        </div>
+                        <div id="additionalImageUploadProgress" style="display:none;margin-top:10px;">
+                            <div class="progress">
+                                <div class="progress-bar" id="additionalUploadProgressBar">0%</div>
+                            </div>
+                            <span id="additionalUploadStatus" style="font-size:12px;color:var(--gray);">Uploading...</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -916,7 +1110,237 @@
             return null;
         }
 
-        // ===== FORM SUBMISSION =====
+        // ============================================
+        // IMAGE MANAGEMENT FUNCTIONS
+        // ============================================
+
+        // ----- Upload Main Image -----
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('imageUploadArea');
+            const fileInput = document.getElementById('mainImageInput');
+            
+            if (uploadArea) {
+                uploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+                
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', function() {
+                    this.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    if (e.dataTransfer.files.length) {
+                        fileInput.files = e.dataTransfer.files;
+                        uploadMainImage();
+                    }
+                });
+                
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length) {
+                        uploadMainImage();
+                    }
+                });
+            }
+
+            // ----- Upload Additional Image -----
+            const additionalUploadArea = document.getElementById('additionalImageUploadArea');
+            const additionalFileInput = document.getElementById('additionalImageInput');
+            
+            if (additionalUploadArea) {
+                additionalUploadArea.addEventListener('click', function() {
+                    additionalFileInput.click();
+                });
+                
+                additionalUploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                additionalUploadArea.addEventListener('dragleave', function() {
+                    this.classList.remove('dragover');
+                });
+                
+                additionalUploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    if (e.dataTransfer.files.length) {
+                        additionalFileInput.files = e.dataTransfer.files;
+                        uploadAdditionalImage();
+                    }
+                });
+                
+                additionalFileInput.addEventListener('change', function() {
+                    if (this.files.length) {
+                        uploadAdditionalImage();
+                    }
+                });
+            }
+        });
+
+        function uploadMainImage() {
+            const fileInput = document.getElementById('mainImageInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const progressDiv = document.getElementById('imageUploadProgress');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const statusText = document.getElementById('uploadStatus');
+            
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '30%';
+            progressBar.textContent = '30%';
+            statusText.textContent = 'Uploading...';
+            
+            const formData = new FormData();
+            formData.append('main_image', file);
+            
+            fetch(`/api/properties/{{ property.id }}/update-image/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                progressBar.style.width = '100%';
+                progressBar.textContent = '100%';
+                statusText.textContent = 'Done!';
+                
+                if (data.success) {
+                    showToast('Main image updated successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.error || 'Upload failed', 'error');
+                    progressDiv.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                progressDiv.style.display = 'none';
+                showToast('Error uploading image', 'error');
+            });
+        }
+
+        function removeMainImage(propertyId) {
+            if (!confirm('Remove the main image?')) return;
+            
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            btn.disabled = true;
+            
+            fetch(`/api/properties/${propertyId}/remove-image/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (data.success) {
+                    showToast('Image removed successfully', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Failed to remove image', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Error removing image', 'error');
+            });
+        }
+
+        function uploadAdditionalImage() {
+            const fileInput = document.getElementById('additionalImageInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const progressDiv = document.getElementById('additionalImageUploadProgress');
+            const progressBar = document.getElementById('additionalUploadProgressBar');
+            const statusText = document.getElementById('additionalUploadStatus');
+            
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '30%';
+            progressBar.textContent = '30%';
+            statusText.textContent = 'Uploading...';
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch(`/api/properties/{{ property.id }}/add-additional-image/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                progressBar.style.width = '100%';
+                progressBar.textContent = '100%';
+                statusText.textContent = 'Done!';
+                
+                if (data.success) {
+                    showToast('Additional image added successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.error || 'Upload failed', 'error');
+                    progressDiv.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                progressDiv.style.display = 'none';
+                showToast('Error uploading image', 'error');
+            });
+        }
+
+        function removeAdditionalImage(propertyId, index) {
+            if (!confirm('Remove this image?')) return;
+            
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            btn.disabled = true;
+            
+            fetch(`/api/properties/${propertyId}/remove-additional-image/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ index: index })
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (data.success) {
+                    showToast('Image removed successfully', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Failed to remove image', 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Error removing image', 'error');
+            });
+        }
+
+        // ============================================
+        // FORM SUBMISSION
+        // ============================================
         document.getElementById('propertyForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
