@@ -4,6 +4,7 @@ from .models import *
 import os
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django.utils import timezone
 
 # Define the choices that are missing
 SKILL_PROFICIENCY_LEVELS = [
@@ -601,7 +602,304 @@ class BusinessSignupSerializer(serializers.Serializer):
         return user
 
 
-# ==================== ADMIN SERIALIZERS ====================
+# ============================================================
+# ===== BUSINESS PROFILE SERIALIZERS =====
+# ============================================================
+
+class BusinessProfileSerializer(serializers.ModelSerializer):
+    """Serializer for Business Profile with full details"""
+    
+    user = serializers.StringRelatedField(read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    industry_name = serializers.CharField(source='industry.name', read_only=True, allow_null=True)
+    company_size_display = serializers.CharField(source='company_size.size_range', read_only=True, allow_null=True)
+    
+    # For file fields - return URL or null
+    company_logo_url = serializers.SerializerMethodField()
+    verification_document_url = serializers.SerializerMethodField()
+    
+    # Profile completeness
+    profile_completeness = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BusinessProfile
+        fields = [
+            'id',
+            'user',
+            'user_id',
+            'username',
+            'email',
+            'company_name',
+            'company_description',
+            'company_logo',
+            'company_logo_url',
+            'verification_document',
+            'verification_document_url',
+            'industry',
+            'industry_name',
+            'company_size',
+            'company_size_display',
+            'website',
+            'phone_number',
+            'address',
+            'city',
+            'country',
+            'postal_code',
+            'is_verified',
+            'receive_applicant_notifications',
+            'receive_newsletter',
+            'profile_completeness',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_verified']
+    
+    def get_company_logo_url(self, obj):
+        """Get the URL for company logo"""
+        if obj.company_logo:
+            try:
+                return obj.company_logo.url
+            except:
+                return None
+        return None
+    
+    def get_verification_document_url(self, obj):
+        """Get the URL for verification document"""
+        if obj.verification_document:
+            try:
+                return obj.verification_document.url
+            except:
+                return None
+        return None
+    
+    def get_profile_completeness(self, obj):
+        """Calculate profile completeness for business"""
+        completeness = 0
+        
+        if obj.company_name:
+            completeness += 20
+        if obj.company_description:
+            completeness += 15
+        if obj.company_logo:
+            completeness += 10
+        if obj.industry:
+            completeness += 10
+        if obj.company_size:
+            completeness += 10
+        if obj.phone_number:
+            completeness += 10
+        if obj.address or obj.city:
+            completeness += 10
+        if obj.website:
+            completeness += 10
+        if obj.verification_document:
+            completeness += 5
+        
+        return min(completeness, 100)
+    
+    def to_representation(self, instance):
+        """Custom representation to handle file URLs"""
+        data = super().to_representation(instance)
+        
+        # Ensure company_logo_url is properly set
+        if instance.company_logo and not data.get('company_logo_url'):
+            data['company_logo_url'] = self.get_company_logo_url(instance)
+        
+        return data
+
+
+class BusinessProfileCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating business profile"""
+    
+    class Meta:
+        model = BusinessProfile
+        fields = [
+            'company_name',
+            'company_description',
+            'company_logo',
+            'industry',
+            'company_size',
+            'website',
+            'phone_number',
+            'address',
+            'city',
+            'country',
+            'postal_code',
+            'receive_applicant_notifications',
+            'receive_newsletter',
+        ]
+        extra_kwargs = {
+            'company_name': {'required': True},
+            'company_description': {'required': False, 'allow_blank': True},
+            'company_logo': {'required': False},
+            'industry': {'required': False},
+            'company_size': {'required': False},
+            'website': {'required': False, 'allow_blank': True},
+            'phone_number': {'required': False, 'allow_blank': True},
+            'address': {'required': False, 'allow_blank': True},
+            'city': {'required': False, 'allow_blank': True},
+            'country': {'required': False, 'allow_blank': True},
+            'postal_code': {'required': False, 'allow_blank': True},
+        }
+    
+    def validate_company_name(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("Company name is required")
+        return value.strip()
+    
+    def validate_website(self, value):
+        if value and not value.startswith(('http://', 'https://')):
+            value = f'https://{value}'
+        return value
+
+
+class BusinessProfileUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating business profile"""
+    
+    class Meta:
+        model = BusinessProfile
+        fields = [
+            'company_name',
+            'company_description',
+            'company_logo',
+            'industry',
+            'company_size',
+            'website',
+            'phone_number',
+            'address',
+            'city',
+            'country',
+            'postal_code',
+            'receive_applicant_notifications',
+            'receive_newsletter',
+        ]
+        extra_kwargs = {
+            'company_name': {'required': False},
+            'company_description': {'required': False, 'allow_blank': True},
+            'company_logo': {'required': False},
+            'industry': {'required': False},
+            'company_size': {'required': False},
+            'website': {'required': False, 'allow_blank': True},
+            'phone_number': {'required': False, 'allow_blank': True},
+            'address': {'required': False, 'allow_blank': True},
+            'city': {'required': False, 'allow_blank': True},
+            'country': {'required': False, 'allow_blank': True},
+            'postal_code': {'required': False, 'allow_blank': True},
+        }
+    
+    def validate_company_name(self, value):
+        if value is not None and not value.strip():
+            raise serializers.ValidationError("Company name cannot be empty")
+        return value.strip() if value else value
+    
+    def validate_website(self, value):
+        if value and not value.startswith(('http://', 'https://')):
+            value = f'https://{value}'
+        return value
+
+
+class BusinessProfileDetailSerializer(serializers.ModelSerializer):
+    """Detailed serializer for business profile with stats"""
+    
+    user = serializers.StringRelatedField(read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    industry_name = serializers.CharField(source='industry.name', read_only=True, allow_null=True)
+    company_size_display = serializers.CharField(source='company_size.size_range', read_only=True, allow_null=True)
+    company_logo_url = serializers.SerializerMethodField()
+    profile_completeness = serializers.SerializerMethodField()
+    
+    # Stats
+    total_jobs = serializers.SerializerMethodField()
+    active_jobs = serializers.SerializerMethodField()
+    total_applications = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BusinessProfile
+        fields = [
+            'id',
+            'user',
+            'user_id',
+            'company_name',
+            'company_description',
+            'company_logo',
+            'company_logo_url',
+            'industry',
+            'industry_name',
+            'company_size',
+            'company_size_display',
+            'website',
+            'phone_number',
+            'address',
+            'city',
+            'country',
+            'postal_code',
+            'is_verified',
+            'receive_applicant_notifications',
+            'receive_newsletter',
+            'profile_completeness',
+            'created_at',
+            'updated_at',
+            # Stats
+            'total_jobs',
+            'active_jobs',
+            'total_applications',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_verified']
+    
+    def get_company_logo_url(self, obj):
+        if obj.company_logo:
+            try:
+                return obj.company_logo.url
+            except:
+                return None
+        return None
+    
+    def get_profile_completeness(self, obj):
+        completeness = 0
+        if obj.company_name:
+            completeness += 20
+        if obj.company_description:
+            completeness += 15
+        if obj.company_logo:
+            completeness += 10
+        if obj.industry:
+            completeness += 10
+        if obj.company_size:
+            completeness += 10
+        if obj.phone_number:
+            completeness += 10
+        if obj.address or obj.city:
+            completeness += 10
+        if obj.website:
+            completeness += 10
+        if obj.verification_document:
+            completeness += 5
+        return min(completeness, 100)
+    
+    def get_total_jobs(self, obj):
+        from hiring.models import JobListing
+        return JobListing.objects.filter(company_name=obj.company_name).count()
+    
+    def get_active_jobs(self, obj):
+        from hiring.models import JobListing
+        from django.utils import timezone
+        return JobListing.objects.filter(
+            company_name=obj.company_name,
+            status='published',
+            apply_by__gte=timezone.now().date()
+        ).count()
+    
+    def get_total_applications(self, obj):
+        from hiring.models import Application, JobListing
+        jobs = JobListing.objects.filter(company_name=obj.company_name)
+        return Application.objects.filter(job_listing__in=jobs).count()
+
+
+# ============================================================
+# ===== ADMIN SERIALIZERS =====
+# ============================================================
 
 class AdminJobCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -615,7 +913,7 @@ class AdminJobCreateSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             'listing_reference': {'required': False},
-            'company_name': {'required': False, 'default': 'Benta Group'},
+            'company_name': {'required': False},  # REMOVED hardcoded default
             'ee_position': {'required': False, 'default': True},
             'industry': {'required': False, 'allow_blank': True, 'default': ''},
             'job_category': {'required': False, 'allow_blank': True, 'default': ''},
@@ -630,6 +928,51 @@ class AdminJobCreateSerializer(serializers.ModelSerializer):
 
     def validate_apply_by(self, value):
         return value
+
+    def create(self, validated_data):
+        # Get the request user from context
+        request = self.context.get('request')
+        user = request.user if request else None
+        
+        # For business users (not superuser), force company_name from their profile
+        if user and not user.is_superuser:
+            try:
+                business_profile = BusinessProfile.objects.get(user=user)
+                validated_data['company_name'] = business_profile.company_name
+                print(f"Serializer setting company_name to: {business_profile.company_name}")
+            except BusinessProfile.DoesNotExist:
+                # If no business profile, use a default
+                validated_data['company_name'] = f"{user.username}'s Company"
+                print(f"No business profile, using: {validated_data['company_name']}")
+        
+        # For superusers, allow any company_name or use default
+        elif user and user.is_superuser:
+            if 'company_name' not in validated_data or not validated_data.get('company_name'):
+                validated_data['company_name'] = 'Admin Company'
+        
+        # Fallback for any other case
+        else:
+            if 'company_name' not in validated_data or not validated_data.get('company_name'):
+                validated_data['company_name'] = 'Default Company'
+        
+        # Set default status if not provided
+        if 'status' not in validated_data or not validated_data.get('status'):
+            validated_data['status'] = 'published'
+        
+        # Generate reference if not exists
+        if not validated_data.get('listing_reference'):
+            import uuid
+            validated_data['listing_reference'] = f"JOB-{uuid.uuid4().hex[:8].upper()}"
+        
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # For business users, prevent company_name change
+        request = self.context.get('request')
+        if request and request.user and not request.user.is_superuser:
+            validated_data.pop('company_name', None)
+        
+        return super().update(instance, validated_data)
 
 
 class AdminApplicationStatusSerializer(serializers.Serializer):
@@ -1400,7 +1743,7 @@ class VideoCreateSerializer(serializers.ModelSerializer):
         model = Video
         fields = ['title', 'description', 'tags', 'video_file', 'thumbnail', 'privacy', 'is_published']
         extra_kwargs = {
-            'is_published': {'required': False, 'default': True},  # Default to published
+            'is_published': {'required': False, 'default': True},
             'privacy': {'required': False, 'default': 'public'},
         }
     
@@ -1408,7 +1751,6 @@ class VideoCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         validated_data['author'] = request.user
         
-        # Ensure is_published is set
         if 'is_published' not in validated_data:
             validated_data['is_published'] = True
             

@@ -94,7 +94,20 @@ def has_admin_access(user):
     return False
 
 def has_business_access(user):
-    return user.is_authenticated and user.user_type == 'admin'
+    """Check if user has business/admin access"""
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser or user.is_staff:
+        return True
+    if user.user_type == 'admin':
+        return True
+    # Check for business profile
+    try:
+        if hasattr(user, 'business_profile'):
+            return True
+    except:
+        pass
+    return False
 
 def has_superuser_access(user):
     return user.is_authenticated and (user.is_superuser or user.is_staff)
@@ -3062,16 +3075,106 @@ def api_alerts(request):
         'alerts': serializer.data
     })
 
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def api_job_listings(request):
-    job_listings = JobListing.objects.filter(status='published').order_by('-created_at')
-    serializer = JobListingSerializer(job_listings, many=True, context={'request': request})
-    
-    return Response({
-        'success': True,
-        'jobs': serializer.data
-    })
+    """Get all job listings - FIXED to show jobs properly"""
+    try:
+        # Log the request for debugging
+        print(f"API Job Listings called. User: {request.user}")
+        
+        # Get ALL jobs first for debugging
+        all_jobs = JobListing.objects.all()
+        print(f"Total jobs in database: {all_jobs.count()}")
+        
+        # Log all job statuses and company names
+        for job in all_jobs:
+            print(f"Job: {job.id} - {job.title} - Status: {job.status} - Company: '{job.company_name}'")
+        
+        # Start with published jobs for public view
+        job_listings = JobListing.objects.filter(status='published')
+        
+        # If user is authenticated, show more jobs based on user type
+        if request.user.is_authenticated:
+            if has_admin_access(request.user) or has_business_access(request.user):
+                # Admin/Business users can see ALL their jobs (including drafts)
+                if has_business_access(request.user) and not request.user.is_superuser:
+                    try:
+                        business_profile = BusinessProfile.objects.get(user=request.user)
+                        company_name = business_profile.company_name
+                        print(f"Business user {request.user.username} - Company: '{company_name}'")
+                        
+                        # Get ALL jobs for this business (including drafts)
+                        business_jobs = JobListing.objects.filter(company_name=company_name)
+                        print(f"Found {business_jobs.count()} jobs for {company_name}")
+                        
+                        # If business has jobs, show them all
+                        if business_jobs.exists():
+                            job_listings = business_jobs
+                        else:
+                            # If no business jobs, show published jobs as fallback
+                            job_listings = JobListing.objects.filter(status='published')
+                            print(f"No jobs for {company_name}, showing published jobs instead")
+                    except BusinessProfile.DoesNotExist:
+                        print(f"Business profile not found for {request.user.username}")
+                        job_listings = JobListing.objects.filter(status='published')
+                else:
+                    # Superuser can see all jobs
+                    job_listings = JobListing.objects.all()
+                    print(f"Superuser - Showing all {job_listings.count()} jobs")
+            else:
+                # Regular authenticated users only see published jobs
+                job_listings = JobListing.objects.filter(status='published')
+                print(f"Regular user - Showing {job_listings.count()} published jobs")
+        else:
+            # Anonymous users only see published jobs
+            job_listings = JobListing.objects.filter(status='published')
+            print(f"Anonymous user - Showing {job_listings.count()} published jobs")
+        
+        # Apply order
+        job_listings = job_listings.order_by('-created_at')
+        
+        # Debug: Log each job being returned
+        for job in job_listings:
+            print(f"Returning job: {job.id} - {job.title} - Status: {job.status} - Company: {job.company_name}")
+        
+        # Serialize
+        serializer = JobListingSerializer(job_listings, many=True, context={'request': request})
+        
+        return Response({
+            'success': True,
+            'jobs': serializer.data,
+            'total': job_listings.count(),
+            'debug': {
+                'user_type': request.user.user_type if request.user.is_authenticated else 'anonymous',
+                'is_superuser': request.user.is_superuser if request.user.is_authenticated else False,
+                'total_in_db': JobListing.objects.all().count(),
+                'published_count': JobListing.objects.filter(status='published').count(),
+                'draft_count': JobListing.objects.filter(status='draft').count(),
+                'all_jobs': [
+                    {
+                        'id': job.id,
+                        'title': job.title,
+                        'status': job.status,
+                        'company': job.company_name
+                    } for job in JobListing.objects.all()
+                ]
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error in api_job_listings: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -5612,9 +5715,10 @@ def api_admin_jobs(request):
     elif request.method == 'POST':
         """Create new job listing with proper company isolation"""
         # BUSINESS USER: Must have business profile
+        business_profile = None
         if has_business_access(request.user) and not request.user.is_superuser:
             try:
-                BusinessProfile.objects.get(user=request.user)
+                business_profile = BusinessProfile.objects.get(user=request.user)
             except BusinessProfile.DoesNotExist:
                 return Response({
                     'success': False,
@@ -5627,30 +5731,62 @@ def api_admin_jobs(request):
         if 'company_logo' in request.FILES:
             data['company_logo'] = request.FILES['company_logo']
         elif data.get('company_logo') in ['', 'null', 'undefined']:
-            # Handle explicit logo removal
             data['company_logo'] = None
         
-        # Remove company_name for business users (serializer will handle it)
-        if has_business_access(request.user) and not request.user.is_superuser:
+        # If business user, set company name from their profile
+        if business_profile and not request.user.is_superuser:
+            data['company_name'] = business_profile.company_name
+            # Remove company_name from data if it was sent (prevent override)
             data.pop('company_name', None)
         
+        # Log the data for debugging
+        logger.info(f"Creating job with data: {data.keys()}")
+        
+        # Create serializer with context
         serializer = AdminJobCreateSerializer(data=data, context={'request': request})
+        
         if serializer.is_valid():
-            job = serializer.save()
-            
-            # Log the creation
-            logger.info(f"User {request.user.username} created job: {job.title} for company: {job.company_name}")
-            
-            return Response({
-                'success': True,
-                'job': JobListingSerializer(job, context={'request': request}).data,
-                'message': 'Job created successfully'
-            }, status=status.HTTP_201_CREATED)
+            try:
+                job = serializer.save()
+                
+                logger.info(f"User {request.user.username} created job: {job.title} for company: {job.company_name}")
+                
+                # Return success with redirect URL for the frontend
+                return Response({
+                    'success': True,
+                    'message': 'Job created successfully!',
+                    'job': JobListingSerializer(job, context={'request': request}).data,
+                    'job_id': str(job.id),
+                    'redirect_url': '/admin-portal/jobs/'  # Redirect back to jobs list
+                }, status=status.HTTP_201_CREATED)
+                
+            except Exception as e:
+                logger.error(f"Error saving job: {str(e)}")
+                return Response({
+                    'success': False,
+                    'error': f'Failed to save job: {str(e)}'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Log validation errors for debugging
+        logger.error(f"Job creation validation errors: {serializer.errors}")
+        
+        # Format errors for better frontend display
+        error_messages = []
+        for field, errors in serializer.errors.items():
+            if isinstance(errors, list):
+                for error in errors:
+                    error_messages.append(f"{field}: {error}")
+            else:
+                error_messages.append(f"{field}: {errors}")
         
         return Response({
             'success': False,
-            'errors': serializer.errors
+            'message': 'Please fix the errors below',
+            'errors': serializer.errors,
+            'error_list': error_messages
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
