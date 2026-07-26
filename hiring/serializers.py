@@ -1399,8 +1399,17 @@ class VideoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = ['title', 'description', 'tags', 'video_file', 'thumbnail', 'privacy', 'is_published']
+        extra_kwargs = {
+            'is_published': {'required': False, 'default': True},  # Default to published
+            'privacy': {'required': False, 'default': 'public'},
+        }
     
     def create(self, validated_data):
         request = self.context.get('request')
         validated_data['author'] = request.user
+        
+        # Ensure is_published is set
+        if 'is_published' not in validated_data:
+            validated_data['is_published'] = True
+            
         return super().create(validated_data)
