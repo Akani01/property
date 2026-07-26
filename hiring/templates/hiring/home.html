@@ -1,4 +1,5 @@
 {% load pwa %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Notification styles -->
+    <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}">
     <style>
         :root {
             --primary-color: #c62828;
@@ -115,6 +118,22 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 18px;
+            position: relative;
+        }
+        
+        .status-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #28a745;
+        }
+        
+        .status-dot.offline {
+            background: #6c757d;
         }
         
         .profile-menu {
@@ -227,6 +246,32 @@
             color: var(--secondary-color);
         }
         
+        /* Notification Bell */
+        .notification-wrapper {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
         /* ===== MAIN CONTAINER ===== */
         .main-container {
             display: flex;
@@ -327,6 +372,7 @@
             justify-content: center;
             font-weight: bold;
             flex-shrink: 0;
+            position: relative;
         }
         
         .post-input-wrapper {
@@ -821,11 +867,6 @@
         .property-badge.online {
             background: #2196f3;
             animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
         
         .property-title {
@@ -1687,6 +1728,18 @@
             transform: scale(1.05);
         }
         
+        /* ===== MOBILE BOTTOM NAV - HIDE ON SCROLL ===== */
+        .mobile-bottom-nav {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .mobile-bottom-nav.hidden {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .main-container {
@@ -1969,6 +2022,14 @@
                                     </a>
                                 </li>
 
+                                <!-- ===== NOTIFICATION BELL ===== -->
+                                <li class="notification-wrapper">
+                                    <a href="/notifications/" title="Notifications" id="notificationLink">
+                                        <i class="fas fa-bell"></i>
+                                        <span class="notification-badge" id="notificationBadge">0</span>
+                                    </a>
+                                </li>
+
                                 <li>
                                     <a href="#" class="apps-sticker" onclick="showAppsModal()" title="Apps">
                                         <i class="fas fa-th"></i> Apps
@@ -1978,6 +2039,7 @@
                                 <li class="profile-dropdown">
                                     <div class="profile-avatar-small" onclick="toggleProfileMenu()">
                                         {{ user.username|first|upper }}
+                                        <span class="status-dot" id="userStatusDot"></span>
                                     </div>
 
                                     <div class="profile-menu" id="profileMenu">
@@ -2895,7 +2957,7 @@
     </div>
 
     <!-- ===== MOBILE BOTTOM NAV ===== -->
-    <nav class="mobile-bottom-nav" style="display:none; position:fixed; bottom:0; left:0; right:0; height:60px; background:white; border-top:1px solid #e8e8e8; justify-content:space-around; align-items:center; z-index:9999; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -2px 10px rgba(0,0,0,0.05);">
+    <nav id="mobileBottomNav" class="mobile-bottom-nav" style="display:none; position:fixed; bottom:0; left:0; right:0; height:60px; background:white; border-top:1px solid #e8e8e8; justify-content:space-around; align-items:center; z-index:9999; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease-in-out;">
         <a href="#" onclick="switchTab('properties')" class="active" style="text-align:center; color:#777; font-size:10px; text-decoration:none; flex:1; padding:4px 0; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:0.2s; position:relative;">
             <i class="fas fa-home" style="font-size:20px; display:block; margin-bottom:2px;"></i>
             <span>Property</span>
@@ -2922,7 +2984,7 @@
     
     <script>
     // ============================================================
-    // COMPLETE JAVASCRIPT - PROPERTY TAB DEFAULT
+    // COMPLETE JAVASCRIPT - WITH SCROLL HIDE & NOTIFICATIONS
     // ============================================================
 
     // ===== API URLS =====
@@ -2937,8 +2999,228 @@
             comments: (id) => `/api/maintenance-requests/${id}/comments/`,
             stats: '/api/maintenance-requests/stats/',
         },
-        geocode: '/api/geocode/'
+        geocode: '/api/geocode/',
+        notifications: {
+            unread: '/api/notifications/unread/count/',
+            mark_read: '/api/notifications/mark-read/',
+        }
     };
+
+    // ===== BOTTOM NAVBAR HIDE/SHOW ON SCROLL =====
+    let lastScrollY = window.scrollY;
+    let isNavHidden = false;
+    const bottomNav = document.getElementById('mobileBottomNav');
+    const SCROLL_THRESHOLD = 10;
+
+    function handleNavVisibility() {
+        if (!bottomNav) return;
+        
+        const currentScrollY = window.scrollY;
+        const isAtTop = currentScrollY <= 0;
+        const isScrollingDown = currentScrollY > lastScrollY;
+        const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+        
+        if (scrollDifference < SCROLL_THRESHOLD) {
+            lastScrollY = currentScrollY;
+            return;
+        }
+        
+        if (isAtTop) {
+            bottomNav.classList.remove('hidden');
+            isNavHidden = false;
+        } else if (isScrollingDown && !isNavHidden) {
+            bottomNav.classList.add('hidden');
+            isNavHidden = true;
+        } else if (!isScrollingDown && isNavHidden) {
+            bottomNav.classList.remove('hidden');
+            isNavHidden = false;
+        }
+        
+        lastScrollY = currentScrollY;
+    }
+
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    const throttledHandleNav = throttle(handleNavVisibility, 100);
+    window.addEventListener('scroll', throttledHandleNav, { passive: true });
+
+    // Touch events for mobile
+    let touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+        const diff = touchStartY - window.scrollY;
+        if (Math.abs(diff) > 30) {
+            handleNavVisibility();
+        }
+        touchStartY = 0;
+    }, { passive: true });
+
+    // Show nav at bottom of page
+    let scrollTimeout = null;
+    window.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(function() {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+                if (bottomNav && isNavHidden) {
+                    bottomNav.classList.remove('hidden');
+                    isNavHidden = false;
+                }
+            }
+        }, 200);
+    }, { passive: true });
+
+    // ============================================================
+    // NOTIFICATION SYSTEM - CONNECTED TO NOTIFICATIONS APP
+    // ============================================================
+
+    // Get unread notification count from API
+    function updateNotificationBadge() {
+        fetch('/api/notifications/unread/count/', {
+            headers: { 'X-CSRFToken': getCSRFToken() }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (data.success && data.count > 0) {
+                    badge.textContent = data.count > 99 ? '99+' : data.count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error fetching notifications:', error));
+    }
+
+    // Poll for new notifications every 30 seconds
+    function startNotificationPolling() {
+        // Initial check
+        updateNotificationBadge();
+        // Then poll
+        setInterval(updateNotificationBadge, 30000);
+        
+        // Also poll for real-time notifications
+        setInterval(pollRealtimeNotifications, 10000);
+    }
+
+    // Poll for real-time notifications
+    function pollRealtimeNotifications() {
+        fetch('/api/notifications/realtime/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.notifications && data.notifications.length > 0) {
+                    // Check for new notifications
+                    const latest = data.notifications[0];
+                    if (latest) {
+                        // Update badge
+                        updateNotificationBadge();
+                        
+                        // Play sound if enabled
+                        const soundPref = localStorage.getItem('notification_sound') || 'default';
+                        if (soundPref !== 'none') {
+                            playNotificationSound(soundPref);
+                        }
+                        
+                        // Show toast notification
+                        showNotificationToast(latest);
+                    }
+                }
+            })
+            .catch(error => console.error('Error polling notifications:', error));
+    }
+
+    // Play notification sound
+    function playNotificationSound(soundType = 'default') {
+        const sounds = {
+            default: 'https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3',
+            gentle: 'https://assets.mixkit.co/sfx/preview/mixkit-smooth-message-alert-2558.mp3',
+            pop: 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-2167.mp3',
+            chime: 'https://assets.mixkit.co/sfx/preview/mixkit-daily-blog-news-notification-2554.mp3',
+            bell: 'https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3',
+        };
+        
+        const audio = new Audio(sounds[soundType] || sounds.default);
+        const volume = parseInt(localStorage.getItem('notification_volume') || 70) / 100;
+        audio.volume = volume;
+        audio.play().catch(() => {});
+    }
+
+    // Show notification toast
+    function showNotificationToast(notification) {
+        const container = document.querySelector('.toast-container');
+        if (!container) return;
+
+        const color = notification.color || '#6c757d';
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast show align-items-center border-0';
+        toast.style.background = 'white';
+        toast.style.borderLeft = `4px solid ${color}`;
+        toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.15)';
+        toast.style.borderRadius = '8px';
+        toast.style.cursor = 'pointer';
+        toast.style.zIndex = '9999';
+        
+        toast.innerHTML = `
+            <div class="d-flex p-3">
+                <div style="width:40px;height:40px;border-radius:50%;background:${color}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:12px;">
+                    <i class="${notification.icon || 'fas fa-bell'}" style="color:${color};font-size:18px;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:14px;color:#333;">${notification.title}</div>
+                    <div style="font-size:13px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${notification.message.replace(/<[^>]*>/g, '')}</div>
+                </div>
+                <button type="button" class="btn-close" style="font-size:10px;" onclick="this.parentElement.parentElement.remove()"></button>
+            </div>
+        `;
+        
+        toast.addEventListener('click', function() {
+            if (notification.action_url) {
+                window.location.href = notification.action_url;
+            }
+            this.remove();
+        });
+        
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+
+    // ===== USER ONLINE STATUS =====
+
+    function updateUserStatus() {
+        fetch('/api/user/status/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ status: 'online' })
+        });
+    }
+
+    // Update status periodically
+    setInterval(updateUserStatus, 60000);
+
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            updateUserStatus();
+        }
+    });
 
     // ===== PWA SETUP =====
     document.addEventListener('DOMContentLoaded', function() {
@@ -2951,7 +3233,36 @@
                     console.log('Service Worker registration failed:', error);
                 });
         }
+
+        // Start notification polling
+        if ({% if user.is_authenticated %}true{% else %}false{% endif %}) {
+            startNotificationPolling();
+            updateUserStatus();
+            
+            // Load sound preferences from server
+            loadSoundPreferences();
+        }
+
+        // Show nav at top
+        if (bottomNav && window.scrollY <= 0) {
+            bottomNav.classList.remove('hidden');
+            isNavHidden = false;
+        }
     });
+
+    // ===== SOUND PREFERENCES =====
+    function loadSoundPreferences() {
+        fetch('/api/notifications/sound/preferences/get/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('notification_sound', data.preferences.selected_sound);
+                    localStorage.setItem('notification_volume', data.preferences.sound_volume);
+                    localStorage.setItem('sound_enabled', data.preferences.sound_enabled);
+                }
+            })
+            .catch(() => {});
+    }
 
     // ===== HELPER FUNCTIONS =====
     function getCSRFToken() {
@@ -3044,7 +3355,7 @@
         }
     }
 
-    // ===== TAB SWITCHING - PROPERTY IS DEFAULT =====
+    // ===== TAB SWITCHING =====
     let currentTab = 'properties';
 
     function switchTab(tabName) {

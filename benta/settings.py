@@ -94,6 +94,8 @@ INSTALLED_APPS = [
     'hiring',
     'realestate',
     'core',
+    'education',
+    'notifications',
 ]
 
 AUTH_USER_MODEL = 'hiring.CustomUser'

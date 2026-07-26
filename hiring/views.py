@@ -46,6 +46,7 @@ from realestate.models import (
     AvailabilityCalendar,
     DriverLocation,
 )
+from notifications.models import *
 from realestate.models import PropertyAnalytics
 from hiring.models import CustomUser, ApplicantProfile, BusinessProfile
 from django.db import transaction

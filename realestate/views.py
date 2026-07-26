@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.conf import settings
 from django.http import JsonResponse
+from notifications.models import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import re
 import json
