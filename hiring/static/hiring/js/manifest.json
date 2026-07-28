@@ -1,5 +1,5 @@
 {
-  "name": "Tolleya",
+  "name": "Tolleya - Find Your Dream Property",
   "short_name": "Tolleya",
   "description": "Find Your Dream Property & Jobs",
   "start_url": "/",
@@ -10,49 +10,49 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/static/hiring/icons/icon-72x72.png",
+      "src": "/static/hiring/icons/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-96x96.png",
+      "src": "/static/hiring/icons/icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-128x128.png",
+      "src": "/static/hiring/icons/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-144x144.png",
+      "src": "/static/hiring/icons/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-152x152.png",
+      "src": "/static/hiring/icons/icon-152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-192x192.png",
+      "src": "/static/hiring/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-384x384.png",
+      "src": "/static/hiring/icons/icon-384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-512x512.png",
+      "src": "/static/hiring/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -60,12 +60,12 @@
   ],
   "screenshots": [
     {
-      "src": "/static/hiring/icons/splash-640x1136.png",
+      "src": "/static/hiring/screenshots/splash-640x1136.png",
       "sizes": "640x1136",
       "type": "image/png"
     },
     {
-      "src": "/static/hiring/icons/splash-750x1334.png",
+      "src": "/static/hiring/screenshots/splash-750x1334.png",
       "sizes": "750x1334",
       "type": "image/png"
     }

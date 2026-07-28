@@ -1,51 +1,122 @@
 {
-  "name": "Tolleya",
+  "name": "Tolleya - Find Your Dream Property",
   "short_name": "Tolleya",
-  "description": "Find your dream property",
+  "description": "Property rental, sales, and job platform",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#c62828",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["real estate", "jobs", "property"],
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
-      "src": "/static/hiring/icons/icon-72x72.png",
+      "src": "/static/hiring/icons/icon-72.png",
       "sizes": "72x72",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-96x96.png",
+      "src": "/static/hiring/icons/icon-96.png",
       "sizes": "96x96",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-128x128.png",
+      "src": "/static/hiring/icons/icon-128.png",
       "sizes": "128x128",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-144x144.png",
+      "src": "/static/hiring/icons/icon-144.png",
       "sizes": "144x144",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-152x152.png",
+      "src": "/static/hiring/icons/icon-152.png",
       "sizes": "152x152",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-192x192.png",
+      "src": "/static/hiring/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-384x384.png",
+      "src": "/static/hiring/icons/icon-384.png",
       "sizes": "384x384",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/static/hiring/icons/icon-512x512.png",
+      "src": "/static/hiring/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/static/hiring/screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/static/hiring/screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Properties",
+      "short_name": "Properties",
+      "description": "View available properties",
+      "url": "/?tab=properties",
+      "icons": [
+        {
+          "src": "/static/hiring/icons/shortcut-properties.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "short_name": "Jobs",
+      "description": "Browse job listings",
+      "url": "/?tab=jobs",
+      "icons": [
+        {
+          "src": "/static/hiring/icons/shortcut-jobs.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Maintenance",
+      "short_name": "Maintenance",
+      "description": "Submit maintenance requests",
+      "url": "/?tab=maintenance",
+      "icons": [
+        {
+          "src": "/static/hiring/icons/shortcut-maintenance.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "display_override": ["window-controls-overlay", "standalone"]
 }

@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'core',
     'education',
     'notifications',
+    'webpush',
 ]
 
 AUTH_USER_MODEL = 'hiring.CustomUser'
@@ -132,6 +133,11 @@ PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_APP_ORIENTATION = 'portrait'
 
+PWA_SETTINGS = {
+    'VAPID_PUBLIC_KEY': 'YOUR_PUBLIC_KEY_HERE',
+    'VAPID_PRIVATE_KEY': 'YOUR_PRIVATE_KEY_HERE',
+    'VAPID_EMAIL': 'akaniivinmiyen@gmail.com',
+}
 # -------------------------------------------------------------------
 # MIDDLEWARE
 # -------------------------------------------------------------------
@@ -440,3 +446,24 @@ else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     print("⚠️ Using local file storage (Google Cloud credentials not found)")
+
+# ============================================================
+# PWA SETTINGS
+# ============================================================
+
+# Add these at the bottom of settings.py
+
+# At the bottom of settings.py
+
+# ⚠️ USING THE RAW VAPID KEYS FROM vapid_raw_keys.txt
+PWA_SETTINGS = {
+    'VAPID_PUBLIC_KEY': 'BAt7mPbnnynQNSCQalbpByolKwY_0LS3JyiQ0VSWpDDC2wFkyVJBsEMmra-beaYx-cUMTXgeQAtrzIYDYnnp7tk',
+    'VAPID_PRIVATE_KEY': 'WPuo4Fr5_VXkmIoAy_talxVhdOhJ8mF3N8staMMloMg',
+    'VAPID_EMAIL': 'admin@tolleya.com',
+}
+
+WEBPUSH_SETTINGS = {
+    'VAPID_PUBLIC_KEY': PWA_SETTINGS['VAPID_PUBLIC_KEY'],
+    'VAPID_PRIVATE_KEY': PWA_SETTINGS['VAPID_PRIVATE_KEY'],
+    'VAPID_CLAIM': {'sub': 'mailto:' + PWA_SETTINGS['VAPID_EMAIL']}
+}

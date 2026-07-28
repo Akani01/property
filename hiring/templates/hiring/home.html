@@ -9,6 +9,73 @@
     
     <!-- PWA Meta Tags -->
     {% progressive_web_app_meta %}
+    <script src="{% static 'hiring/js/pwa.js' %}"></script>
+
+    <!-- Add data attribute for logged-in status -->
+    <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+   <!-- Add this somewhere in your template, maybe in the sidebar -->
+    <!-- PWA Install Button - Shows when available -->
+    <div id="pwaInstallContainer" style="display: none; margin: 10px 0;">
+        <button id="pwaInstallBtn" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #c62828, #ff589e); border: none; padding: 12px; border-radius: 12px; color: white; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fas fa-download"></i>
+            Install Tolleya App
+        </button>
+    </div>
+
+    <script>
+    // Show install button when available
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if app is already installed
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        if (isStandalone) {
+            // App is already installed, hide the install button
+            document.getElementById('pwaInstallContainer').style.display = 'none';
+        } else {
+            // Check if install prompt is available
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.deferredPrompt = e;
+                document.getElementById('pwaInstallContainer').style.display = 'block';
+            });
+            
+            // Handle install button click
+            document.getElementById('pwaInstallBtn')?.addEventListener('click', async function() {
+                if (window.deferredPrompt) {
+                    window.deferredPrompt.prompt();
+                    const result = await window.deferredPrompt.userChoice;
+                    if (result.outcome === 'accepted') {
+                        document.getElementById('pwaInstallContainer').style.display = 'none';
+                        showToast('🎉 Tolleya installed successfully!', 'success');
+                    }
+                    window.deferredPrompt = null;
+                }
+            });
+        }
+    });
+    </script>
+
+    <script>
+    function testPushNotification() {
+        fetch('/api/push/test/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Notification sent! Check your device.', 'success');
+            } else {
+                showToast('Error: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error sending notification', 'error');
+        });
+    }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">

@@ -268,5 +268,20 @@ urlpatterns = [
     # Video page
     path('videos/', views.video_feed_page, name='video_feed'),
         # ============================================
+    path('api/push/subscribe/', views.save_push_subscription, name='save_push_subscription'),
+    path('api/push/test/', views.send_test_notification, name='send_test_notification'),
+    # PWA Routes
+    path('manifest/', views.pwa_manifest, name='pwa_manifest'),
+    path('sw.js', views.pwa_sw, name='pwa_sw'),
+    path('offline/', views.offline_page, name='offline_page'),
     
+    # WebPush
+    path('webpush/', include('webpush.urls')),
+    
+    # API Endpoints
+    path('api/user/status/update/', views.update_user_status, name='update_user_status'),
+    path('api/notifications/sound/preferences/get/', views.get_notification_sound_preferences, name='get_notification_sound_preferences'),
+    path('api/sync-pending/', views.sync_pending_data, name='sync_pending_data'),
+    path('api/push/subscribe/', views.save_push_subscription, name='save_push_subscription'),
+    path('api/push/test/', views.send_test_notification, name='send_test_notification'),
 ]

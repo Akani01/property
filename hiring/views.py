@@ -7,6 +7,8 @@ import uuid
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from rest_framework.views import APIView
+from webpush.models import PushInformation
+from webpush import send_user_notification
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.decorators import permission_classes, api_view, action
@@ -32,6 +34,8 @@ from datetime import datetime, timedelta
 from functools import wraps
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
+from webpush import send_user_notification
+from webpush.models import PushInformation
 from realestate.models import (
     Property, 
     PropertyType, 
@@ -10869,3 +10873,94 @@ def analytics_page(request):
 def black_theme_settings(request):
     """Black Theme Settings Page"""
     return render(request, 'black-theme.html')
+
+
+@csrf_exempt
+@login_required
+def update_user_status(request):
+    """Update user online status"""
+    if request.method == 'POST':
+        try:
+            request.user.last_login = timezone.now()
+            request.user.save(update_fields=['last_login'])
+            return JsonResponse({'success': True, 'status': 'online'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@login_required
+def get_notification_sound_preferences(request):
+    """Get notification sound preferences"""
+    try:
+        # Default preferences
+        preferences = {
+            'selected_sound': 'default',
+            'sound_volume': 70,
+            'sound_enabled': True
+        }
+        return JsonResponse({'success': True, 'preferences': preferences})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@csrf_exempt
+@login_required
+def sync_pending_data(request):
+    """Sync pending data after coming back online"""
+    try:
+        # Your sync logic here
+        return JsonResponse({'success': True, 'message': 'Sync complete'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@login_required
+def save_push_subscription(request):
+    """Save push notification subscription"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # Extract the subscription data properly
+            subscription_data = {
+                'endpoint': data.get('endpoint'),
+                'expirationTime': data.get('expirationTime'),
+                'keys': data.get('keys', {})
+            }
+            
+            # The webpush model uses 'subscription' field
+            PushInformation.objects.update_or_create(
+                user=request.user,
+                subscription=subscription_data,
+                defaults={
+                    'active': True
+                }
+            )
+            
+            return JsonResponse({'success': True, 'message': 'Subscription saved!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    
+@login_required
+def send_test_notification(request):
+    """Send a test push notification"""
+    try:
+        from webpush import send_user_notification
+        payload = {
+            'head': '🔔 Tolleya Test',
+            'body': 'Your PWA is working! 🎉',
+            'icon': '/static/hiring/icons/icon-192.png',
+            'badge': '/static/hiring/icons/icon-72x72.png',
+            'url': '/'
+        }
+        send_user_notification(
+            user=request.user,
+            payload=json.dumps(payload),
+            ttl=1000
+        )
+        return JsonResponse({'success': True, 'message': 'Notification sent!'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
