@@ -8,6 +8,8 @@ class TolleyaPWA {
         this.isInstalled = false;
         this.installPromptShown = false;
         this.swRegistration = null;
+        this.swRegistrationAttempts = 0;
+        this.maxSwAttempts = 5;
         
         // Check if already in standalone mode
         this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -21,8 +23,8 @@ class TolleyaPWA {
     }
     
     async init() {
-        // 1. Register service worker
-        await this.registerServiceWorker();
+        // 1. Register service worker with retry
+        await this.registerServiceWorkerWithRetry();
         
         // 2. Setup install prompt
         this.setupInstallPrompt();
@@ -38,37 +40,73 @@ class TolleyaPWA {
     }
     
     // ============================================================
-    // SERVICE WORKER REGISTRATION
+    // SERVICE WORKER REGISTRATION WITH RETRY
     // ============================================================
     
-    async registerServiceWorker() {
+    async registerServiceWorkerWithRetry() {
         if (!('serviceWorker' in navigator)) {
             console.warn('⚠️ Service Workers not supported');
             return;
         }
         
-        try {
-            // Register the service worker
-            this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
-            });
-            
-            console.log('✅ Service Worker registered:', this.swRegistration);
-            
-            // Listen for controller change (new SW takes over)
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                console.log('🔄 Service Worker controller changed');
-                // Reload to get new version
-                this.showUpdateNotification();
-            });
-            
-            // Check for updates periodically
-            setInterval(() => this.checkForUpdates(), 60000); // Check every minute
-            
-            return this.swRegistration;
-        } catch (error) {
-            console.error('❌ Service Worker registration failed:', error);
+        // Try to register with retry logic
+        for (let attempt = 1; attempt <= this.maxSwAttempts; attempt++) {
+            try {
+                // First, check if SW is accessible
+                const swResponse = await fetch('/sw.js', { method: 'HEAD' });
+                
+                if (swResponse.status === 429) {
+                    console.log(`⏳ Rate limited (429), waiting ${attempt * 3}s before retry ${attempt}...`);
+                    await this.sleep(attempt * 3000);
+                    continue;
+                }
+                
+                if (!swResponse.ok) {
+                    console.log(`⚠️ SW fetch returned ${swResponse.status}, retry ${attempt}...`);
+                    await this.sleep(2000);
+                    continue;
+                }
+                
+                // Register the service worker
+                this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
+                    scope: '/'
+                });
+                
+                console.log('✅ Service Worker registered:', this.swRegistration);
+                this.swRegistrationAttempts = 0;
+                
+                // Listen for controller change
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('🔄 Service Worker controller changed');
+                    this.showUpdateNotification();
+                });
+                
+                // Check for updates periodically
+                setInterval(() => this.checkForUpdates(), 60000);
+                
+                return this.swRegistration;
+            } catch (error) {
+                console.error(`❌ Service Worker registration attempt ${attempt} failed:`, error.message);
+                this.swRegistrationAttempts = attempt;
+                
+                if (attempt === this.maxSwAttempts) {
+                    console.error('❌ All SW registration attempts failed');
+                    this.showToast('App update check failed. Please refresh.', 'warning');
+                } else {
+                    await this.sleep(3000);
+                }
+            }
         }
+    }
+    
+    // Helper sleep function
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    async registerServiceWorker() {
+        // Original method kept for compatibility
+        return this.registerServiceWorkerWithRetry();
     }
     
     async checkForUpdates() {
@@ -322,11 +360,10 @@ class TolleyaPWA {
     
     async subscribeToPush() {
         try {
-            // Get the service worker registration
-            const registration = await navigator.serviceWorker.ready;
+            // Wait for SW to be ready with retry
+            let registration = await navigator.serviceWorker.ready;
             
-            // ✅ RAW VAPID PUBLIC KEY (generated from vapid_raw_keys.txt)
-            // This is the correct format for the Push API
+            // ✅ RAW VAPID PUBLIC KEY
             const VAPID_PUBLIC_KEY = 'BAt7mPbnnynQNSCQalbpByolKwY_0LS3JyiQ0VSWpDDC2wFkyVJBsEMmra-beaYx-cUMTXgeQAtrzIYDYnnp7tk';
             
             // Subscribe to push with the raw VAPID key
@@ -352,6 +389,8 @@ class TolleyaPWA {
                 errorMsg += 'Invalid VAPID key configuration.';
             } else if (error.message.includes('permission')) {
                 errorMsg += 'Please allow notification permissions.';
+            } else if (error.message.includes('429')) {
+                errorMsg += 'Server is busy. Please try again later.';
             } else {
                 errorMsg += error.message;
             }
@@ -394,6 +433,11 @@ class TolleyaPWA {
             console.log('🌐 Back online');
             this.hideOfflineBanner();
             this.showToast('Back online!', 'success');
+            
+            // Re-register SW if needed
+            if (!this.swRegistration) {
+                this.registerServiceWorkerWithRetry();
+            }
             
             // Sync pending data
             this.syncPendingData();
@@ -447,7 +491,6 @@ class TolleyaPWA {
     }
     
     async syncPendingData() {
-        // Sync any pending maintenance requests, comments, etc.
         try {
             const response = await fetch('/api/sync-pending/', {
                 method: 'POST',

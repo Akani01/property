@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
 from . import message_views
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 
 
