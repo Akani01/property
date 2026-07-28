@@ -276,8 +276,18 @@ urlpatterns = [
     path('offline/', views.offline_page, name='offline_page'),
     
     # WebPush
-    path('webpush/', include('webpush.urls')),
     
+    # PWA Routes with caching
+    path('manifest.json', cache_page(86400)(views.pwa_manifest), name='pwa_manifest'),
+    path('sw.js', cache_page(86400)(views.pwa_sw), name='pwa_sw'),
+    path('offline/', views.offline_page, name='offline_page'),
+    
+    # WebPush
+    path('webpush/', include('webpush.urls')),
+      # PWA Routes - using views directly instead of static files
+    path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
+    path('sw.js', views.pwa_sw, name='pwa_sw'),
+    # PWA Routes - using views directly instead of static files
     # API Endpoints
     path('api/user/status/update/', views.update_user_status, name='update_user_status'),
     path('api/notifications/sound/preferences/get/', views.get_notification_sound_preferences, name='get_notification_sound_preferences'),

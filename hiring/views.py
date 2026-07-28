@@ -7,6 +7,7 @@ import uuid
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from rest_framework.views import APIView
+from django.views.decorators.cache import cache_control
 from webpush.models import PushInformation
 from webpush import send_user_notification
 from rest_framework.permissions import AllowAny
@@ -10964,3 +10965,61 @@ def send_test_notification(request):
         return JsonResponse({'success': True, 'message': 'Notification sent!'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+
+
+@cache_control(max_age=86400, public=True)
+def pwa_manifest(request):
+    """Serve PWA manifest with caching to avoid rate limiting"""
+    # Try to find manifest in multiple locations
+    paths = [
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'manifest.json'),
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'manifest.json'),
+        os.path.join(settings.STATIC_ROOT, 'hiring', 'manifest.json'),
+    ]
+    
+    for path in paths:
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                data = json.load(f)
+            response = JsonResponse(data, content_type='application/json')
+            response['Cache-Control'] = 'public, max-age=86400'
+            response['Access-Control-Allow-Origin'] = '*'
+            return response
+    
+    # Fallback - return inline manifest
+    fallback_manifest = {
+        "name": "Tolleya - Find Your Dream Property",
+        "short_name": "Tolleya",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#c62828",
+        "icons": [
+            {"src": "/static/hiring/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/static/hiring/icons/icon-512.png", "sizes": "512x512", "type": "image/png"}
+        ]
+    }
+    response = JsonResponse(fallback_manifest, content_type='application/json')
+    response['Cache-Control'] = 'public, max-age=86400'
+    return response
+
+@cache_control(max_age=86400, public=True)
+def pwa_sw(request):
+    """Serve service worker with caching to avoid rate limiting"""
+    sw_paths = [
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'sw.js'),
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'sw.js'),
+        os.path.join(settings.STATIC_ROOT, 'hiring', 'sw.js'),
+    ]
+    
+    for path in sw_paths:
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                content = f.read()
+            response = HttpResponse(content, content_type='application/javascript')
+            response['Cache-Control'] = 'public, max-age=86400'
+            response['Access-Control-Allow-Origin'] = '*'
+            return response
+    
+    return HttpResponse('Service Worker not found', status=404)
