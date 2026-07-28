@@ -459,7 +459,7 @@ else:
 PWA_SETTINGS = {
     'VAPID_PUBLIC_KEY': 'BAt7mPbnnynQNSCQalbpByolKwY_0LS3JyiQ0VSWpDDC2wFkyVJBsEMmra-beaYx-cUMTXgeQAtrzIYDYnnp7tk',
     'VAPID_PRIVATE_KEY': 'WPuo4Fr5_VXkmIoAy_talxVhdOhJ8mF3N8staMMloMg',
-    'VAPID_EMAIL': 'admin@tolleya.com',
+    'VAPID_EMAIL': 'akaniivinmiyen@gmail.com',
 }
 
 WEBPUSH_SETTINGS = {

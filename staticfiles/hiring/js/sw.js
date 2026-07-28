@@ -5,19 +5,21 @@
 const CACHE_VERSION = 'v2.0.0';
 const CACHE_NAME = `tolleya-${CACHE_VERSION}`;
 
-// URLs to cache on install
+// URLs to cache on install - FIXED PATHS
 const STATIC_CACHE_URLS = [
     '/',
     '/static/hiring/manifest.json',
     '/static/hiring/js/pwa.js',
-    '/static/hiring/icons/icon-192x192.png',
-    '/static/hiring/icons/icon-512x512.png',
+    '/static/hiring/icons/icon-192.png',
+    '/static/hiring/icons/icon-512.png',
+    '/static/hiring/icons/icon-72.png',
+    '/offline/',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css'
 ];
 
-// Install event - cache static assets
+// Install event - cache static assets with error handling
 self.addEventListener('install', event => {
     console.log('[Service Worker] Installing...');
     
@@ -25,7 +27,14 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('[Service Worker] Caching static assets');
-                return cache.addAll(STATIC_CACHE_URLS);
+                // Use Promise.allSettled to handle individual failures
+                return Promise.allSettled(
+                    STATIC_CACHE_URLS.map(url => 
+                        cache.add(url).catch(err => {
+                            console.warn(`[Service Worker] Failed to cache: ${url}`, err);
+                        })
+                    )
+                );
             })
             .then(() => {
                 console.log('[Service Worker] Skip waiting');
@@ -64,8 +73,8 @@ self.addEventListener('fetch', event => {
     const request = event.request;
     const url = new URL(request.url);
     
-    // Skip cross-origin requests
-    if (url.origin !== location.origin) {
+    // Skip cross-origin requests (except CDN)
+    if (url.origin !== location.origin && !url.origin.includes('cdn')) {
         return;
     }
     
@@ -79,7 +88,7 @@ self.addEventListener('fetch', event => {
         return;
     }
     
-    // Skip static files that are already cached
+    // Skip static files that are already cached (with better handling)
     if (url.pathname.startsWith('/static/')) {
         event.respondWith(
             caches.match(request)
@@ -89,12 +98,21 @@ self.addEventListener('fetch', event => {
                     }
                     return fetch(request)
                         .then(response => {
-                            const responseClone = response.clone();
-                            caches.open(CACHE_NAME)
-                                .then(cache => {
-                                    cache.put(request, responseClone);
-                                });
+                            if (response && response.status === 200) {
+                                const responseClone = response.clone();
+                                caches.open(CACHE_NAME)
+                                    .then(cache => {
+                                        cache.put(request, responseClone);
+                                    });
+                            }
                             return response;
+                        })
+                        .catch(() => {
+                            // Return a placeholder for images if offline
+                            if (url.pathname.match(/\.(png|jpg|jpeg|gif|svg)$/)) {
+                                return caches.match('/static/hiring/icons/icon-192.png');
+                            }
+                            return new Response('Network error', { status: 503 });
                         });
                 })
         );
@@ -106,11 +124,13 @@ self.addEventListener('fetch', event => {
         fetch(request)
             .then(response => {
                 // Cache the fresh response
-                const responseClone = response.clone();
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        cache.put(request, responseClone);
-                    });
+                if (response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(request, responseClone);
+                        });
+                }
                 return response;
             })
             .catch(() => {
@@ -121,13 +141,31 @@ self.addEventListener('fetch', event => {
                             return cachedResponse;
                         }
                         // If not in cache, return offline page
-                        return caches.match('/offline/');
+                        return caches.match('/offline/')
+                            .then(offlineResponse => {
+                                if (offlineResponse) {
+                                    return offlineResponse;
+                                }
+                                // Fallback offline response
+                                return new Response(`
+                                    <!DOCTYPE html>
+                                    <html>
+                                        <head><title>Offline</title></head>
+                                        <body style="text-align:center;padding-top:50px;font-family:sans-serif;">
+                                            <h1>🔌 You're Offline</h1>
+                                            <p>Please check your internet connection.</p>
+                                        </body>
+                                    </html>
+                                `, {
+                                    headers: { 'Content-Type': 'text/html' }
+                                });
+                            });
                     });
             })
     );
 });
 
-// Handle push notifications
+// Handle push notifications - FIXED ICON PATHS
 self.addEventListener('push', event => {
     let data = {};
     if (event.data) {
@@ -137,16 +175,16 @@ self.addEventListener('push', event => {
             data = {
                 title: 'Tolleya',
                 body: event.data.text(),
-                icon: '/static/hiring/icons/icon-192x192.png',
-                badge: '/static/hiring/icons/icon-72x72.png'
+                icon: '/static/hiring/icons/icon-192.png',
+                badge: '/static/hiring/icons/icon-72.png'
             };
         }
     }
     
     const options = {
         body: data.body || 'You have a new notification',
-        icon: data.icon || '/static/hiring/icons/icon-192x192.png',
-        badge: data.badge || '/static/hiring/icons/icon-72x72.png',
+        icon: data.icon || '/static/hiring/icons/icon-192.png',
+        badge: data.badge || '/static/hiring/icons/icon-72.png',
         vibrate: [200, 100, 200],
         data: {
             url: data.url || '/',
