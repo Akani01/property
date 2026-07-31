@@ -10,6 +10,8 @@ class TolleyaPWA {
         this.swRegistration = null;
         this.swRegistrationAttempts = 0;
         this.maxSwAttempts = 5;
+        this.toastTimeout = null;
+        this.installBtnTimeout = null;
         
         // Check if already in standalone mode
         this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -23,19 +25,10 @@ class TolleyaPWA {
     }
     
     async init() {
-        // 1. Register service worker with retry
         await this.registerServiceWorkerWithRetry();
-        
-        // 2. Setup install prompt
         this.setupInstallPrompt();
-        
-        // 3. Setup notifications
         this.setupNotifications();
-        
-        // 4. Check for updates
         this.checkForUpdates();
-        
-        // 5. Setup online/offline handlers
         this.setupConnectivityHandlers();
     }
     
@@ -49,10 +42,8 @@ class TolleyaPWA {
             return;
         }
         
-        // Try to register with retry logic
         for (let attempt = 1; attempt <= this.maxSwAttempts; attempt++) {
             try {
-                // First, check if SW is accessible
                 const swResponse = await fetch('/sw.js', { method: 'HEAD' });
                 
                 if (swResponse.status === 429) {
@@ -67,7 +58,6 @@ class TolleyaPWA {
                     continue;
                 }
                 
-                // Register the service worker
                 this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
                     scope: '/'
                 });
@@ -75,13 +65,11 @@ class TolleyaPWA {
                 console.log('✅ Service Worker registered:', this.swRegistration);
                 this.swRegistrationAttempts = 0;
                 
-                // Listen for controller change
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     console.log('🔄 Service Worker controller changed');
                     this.showUpdateNotification();
                 });
                 
-                // Check for updates periodically
                 setInterval(() => this.checkForUpdates(), 60000);
                 
                 return this.swRegistration;
@@ -99,19 +87,16 @@ class TolleyaPWA {
         }
     }
     
-    // Helper sleep function
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     async registerServiceWorker() {
-        // Original method kept for compatibility
         return this.registerServiceWorkerWithRetry();
     }
     
     async checkForUpdates() {
         if (!this.swRegistration) return;
-        
         try {
             await this.swRegistration.update();
             console.log('🔄 Checked for SW updates');
@@ -121,21 +106,19 @@ class TolleyaPWA {
     }
     
     // ============================================================
-    // INSTALL PROMPT
+    // INSTALL PROMPT - MINIMAL & NON-INTRUSIVE
     // ============================================================
     
     setupInstallPrompt() {
-        // Listen for the beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             console.log('📱 Install prompt available');
             e.preventDefault();
             this.deferredPrompt = e;
             this.installPromptShown = true;
             
-            // Show the install button
-            this.showInstallButton();
+            // Show minimal install banner
+            this.showInstallBanner();
             
-            // Track with analytics if available
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'pwa_prompt_shown', {
                     'event_category': 'PWA',
@@ -144,13 +127,11 @@ class TolleyaPWA {
             }
         });
         
-        // Listen for successful installation
         window.addEventListener('appinstalled', () => {
             console.log('🎉 Tolleya installed successfully!');
             this.isInstalled = true;
-            this.hideInstallButton();
+            this.hideInstallBanner();
             
-            // Track installation
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'pwa_installed', {
                     'event_category': 'PWA',
@@ -158,89 +139,123 @@ class TolleyaPWA {
                 });
             }
             
-            // Send to server
             this.sendInstallEvent('installed');
-            
-            // Show success message
             this.showToast('🎉 Tolleya installed successfully!', 'success');
         });
         
-        // Listen for display mode changes
         window.addEventListener('displaymodechange', (e) => {
             console.log('Display mode changed:', e);
             this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
             if (this.isStandalone) {
                 this.isInstalled = true;
-                this.hideInstallButton();
+                this.hideInstallBanner();
             }
         });
     }
     
-    showInstallButton() {
-        // Check if button already exists
-        if (document.getElementById('tolleyaInstallBtn')) return;
+    // ============================================================
+    // MINIMAL INSTALL BANNER (Non-intrusive, auto-dismiss)
+    // ============================================================
+    
+    showInstallBanner() {
+        // Remove existing banner if any
+        this.hideInstallBanner();
         
-        const btn = document.createElement('button');
-        btn.id = 'tolleyaInstallBtn';
-        btn.innerHTML = `
-            <i class="fas fa-download" style="margin-right: 10px;"></i>
-            Install Tolleya App
-        `;
-        btn.style.cssText = `
+        // Don't show if app is already installed or in standalone mode
+        if (this.isInstalled || this.isStandalone) return;
+        
+        const banner = document.createElement('div');
+        banner.id = 'tolleyaInstallBanner';
+        banner.style.cssText = `
             position: fixed;
-            bottom: 100px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10000;
-            background: linear-gradient(135deg, #c62828, #ff589e);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 16px;
-            box-shadow: 0 8px 30px rgba(198, 40, 40, 0.4);
-            cursor: pointer;
-            animation: slideUp 0.5s ease;
+            z-index: 9999;
+            background: white;
+            border-radius: 14px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
             display: flex;
             align-items: center;
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: transform 0.3s ease;
-            white-space: nowrap;
+            gap: 14px;
+            max-width: 420px;
+            width: 90%;
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(0,0,0,0.06);
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.95);
         `;
         
-        // Hover effects
-        btn.addEventListener('mouseenter', () => {
-            btn.style.transform = 'translateX(-50%) scale(1.05)';
+        banner.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+                <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#c62828,#ff589e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-download" style="color:white;font-size:18px;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:14px;color:#1a1a2e;">Install Tolleya</div>
+                    <div style="font-size:12px;color:#8e8e8e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Get the full app experience</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <button id="installNowBtn" style="
+                    background: linear-gradient(135deg, #c62828, #ff589e);
+                    color: white;
+                    border: none;
+                    padding: 6px 16px;
+                    border-radius: 20px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                    white-space: nowrap;
+                ">Install</button>
+                <button id="installDismissBtn" style="
+                    background: none;
+                    border: none;
+                    color: #8e8e8e;
+                    font-size: 18px;
+                    cursor: pointer;
+                    padding: 4px 8px;
+                    transition: color 0.2s;
+                ">✕</button>
+            </div>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        // Install button handler
+        document.getElementById('installNowBtn')?.addEventListener('click', () => {
+            this.handleInstallClick();
         });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.transform = 'translateX(-50%) scale(1)';
+        
+        // Dismiss button handler
+        document.getElementById('installDismissBtn')?.addEventListener('click', () => {
+            this.hideInstallBanner();
+            // Store dismissal preference
+            try {
+                localStorage.setItem('tolleya_install_dismissed', 'true');
+            } catch(e) {}
         });
         
-        // Click handler
-        btn.addEventListener('click', this.handleInstallClick.bind(this));
-        
-        document.body.appendChild(btn);
-        
-        // Auto-hide after 15 seconds if not clicked
-        setTimeout(() => {
-            if (btn && btn.style.display !== 'none') {
-                btn.style.animation = 'slideDown 0.5s ease forwards';
-                setTimeout(() => {
-                    if (btn.parentNode) btn.remove();
-                }, 500);
-            }
-        }, 15000);
+        // Auto-hide after 20 seconds if not interacted
+        if (this.installBtnTimeout) clearTimeout(this.installBtnTimeout);
+        this.installBtnTimeout = setTimeout(() => {
+            this.hideInstallBanner();
+        }, 20000);
     }
     
-    hideInstallButton() {
-        const btn = document.getElementById('tolleyaInstallBtn');
-        if (btn) {
-            btn.style.animation = 'slideDown 0.3s ease forwards';
+    hideInstallBanner() {
+        const banner = document.getElementById('tolleyaInstallBanner');
+        if (banner) {
+            banner.style.animation = 'slideDown 0.3s ease forwards';
             setTimeout(() => {
-                if (btn.parentNode) btn.remove();
+                if (banner.parentNode) banner.remove();
             }, 300);
+        }
+        if (this.installBtnTimeout) {
+            clearTimeout(this.installBtnTimeout);
+            this.installBtnTimeout = null;
         }
     }
     
@@ -251,18 +266,14 @@ class TolleyaPWA {
         }
         
         try {
-            // Show the install prompt
             this.deferredPrompt.prompt();
-            
-            // Wait for user choice
             const result = await this.deferredPrompt.userChoice;
             
             if (result.outcome === 'accepted') {
                 console.log('✅ User installed the app');
                 this.isInstalled = true;
-                this.hideInstallButton();
+                this.hideInstallBanner();
                 
-                // Track
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'pwa_install_accepted', {
                         'event_category': 'PWA'
@@ -290,7 +301,7 @@ class TolleyaPWA {
     }
     
     // ============================================================
-    // NOTIFICATIONS
+    // NOTIFICATIONS - MINIMAL & PROFESSIONAL
     // ============================================================
     
     setupNotifications() {
@@ -299,17 +310,13 @@ class TolleyaPWA {
             return;
         }
         
-        // Check if user is logged in (your Django template variable)
         const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
-        
         if (!isLoggedIn) return;
         
-        // Check permission
         if (Notification.permission === 'granted') {
             console.log('✅ Notification permission granted');
             this.subscribeToPush();
         } else if (Notification.permission === 'default') {
-            // Add click handler to notification bell
             const bell = document.querySelector('.notification-wrapper a');
             if (bell) {
                 bell.addEventListener('click', (e) => {
@@ -354,19 +361,12 @@ class TolleyaPWA {
         }
     }
     
-    // ============================================================
-    // FIXED: PUSH SUBSCRIPTION WITH RAW VAPID KEY
-    // ============================================================
-    
     async subscribeToPush() {
         try {
-            // Wait for SW to be ready with retry
             let registration = await navigator.serviceWorker.ready;
             
-            // ✅ RAW VAPID PUBLIC KEY
             const VAPID_PUBLIC_KEY = 'BAt7mPbnnynQNSCQalbpByolKwY_0LS3JyiQ0VSWpDDC2wFkyVJBsEMmra-beaYx-cUMTXgeQAtrzIYDYnnp7tk';
             
-            // Subscribe to push with the raw VAPID key
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: this.urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
@@ -374,7 +374,6 @@ class TolleyaPWA {
             
             console.log('✅ Push subscription successful:', subscription);
             
-            // Send subscription to server
             await this.sendSubscriptionToServer(subscription);
             
             this.showToast('🔔 Push notifications enabled!', 'success');
@@ -383,7 +382,6 @@ class TolleyaPWA {
         } catch (error) {
             console.error('❌ Push subscription error:', error);
             
-            // Show user-friendly error message
             let errorMsg = 'Push notifications unavailable. ';
             if (error.message.includes('ApplicationServerKey')) {
                 errorMsg += 'Invalid VAPID key configuration.';
@@ -428,18 +426,15 @@ class TolleyaPWA {
     // ============================================================
     
     setupConnectivityHandlers() {
-        // Online/Offline events
         window.addEventListener('online', () => {
             console.log('🌐 Back online');
             this.hideOfflineBanner();
             this.showToast('Back online!', 'success');
             
-            // Re-register SW if needed
             if (!this.swRegistration) {
                 this.registerServiceWorkerWithRetry();
             }
             
-            // Sync pending data
             this.syncPendingData();
         });
         
@@ -449,7 +444,6 @@ class TolleyaPWA {
             this.showToast('You are offline. Some features may be limited.', 'warning');
         });
         
-        // Check initial status
         if (!navigator.onLine) {
             this.showOfflineBanner();
         }
@@ -473,9 +467,10 @@ class TolleyaPWA {
             background: #dc3545;
             color: white;
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             z-index: 9999;
             font-weight: 500;
+            font-size: 13px;
             animation: slideDown 0.3s ease;
         `;
         
@@ -506,6 +501,162 @@ class TolleyaPWA {
     }
     
     // ============================================================
+    // MINIMAL TOAST NOTIFICATIONS (Non-intrusive, auto-dismiss)
+    // ============================================================
+    
+    showToast(message, type = 'info') {
+        // Clear any existing toast timeout
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+            this.toastTimeout = null;
+        }
+        
+        // Remove existing toast
+        const existingToast = document.getElementById('tolleyaToast');
+        if (existingToast) {
+            existingToast.style.animation = 'slideDown 0.3s ease forwards';
+            setTimeout(() => {
+                if (existingToast.parentNode) existingToast.remove();
+            }, 300);
+        }
+        
+        const colors = {
+            success: { bg: '#28a745', icon: 'fa-check-circle' },
+            error: { bg: '#dc3545', icon: 'fa-exclamation-circle' },
+            info: { bg: '#17a2b8', icon: 'fa-info-circle' },
+            warning: { bg: '#ffc107', icon: 'fa-exclamation-triangle' }
+        };
+        
+        const color = colors[type] || colors.info;
+        
+        const toast = document.createElement('div');
+        toast.id = 'tolleyaToast';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            background: rgba(26, 26, 46, 0.92);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+            border: 1px solid rgba(255,255,255,0.06);
+            pointer-events: none;
+            user-select: none;
+        `;
+        
+        const iconColor = type === 'success' ? '#28a745' : 
+                         type === 'error' ? '#dc3545' : 
+                         type === 'warning' ? '#ffc107' : '#17a2b8';
+        
+        toast.innerHTML = `
+            <i class="fas ${color.icon}" style="color:${iconColor};font-size:16px;"></i>
+            <span style="flex:1;min-width:0;">${message}</span>
+            <button onclick="this.parentElement.style.animation='slideDown 0.3s ease forwards';setTimeout(()=>this.parentElement.remove(),300)" style="
+                background: none;
+                border: none;
+                color: rgba(255,255,255,0.5);
+                font-size: 16px;
+                cursor: pointer;
+                padding: 0 4px;
+                pointer-events: auto;
+                transition: color 0.2s;
+            ">✕</button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Auto-dismiss after 4 seconds
+        this.toastTimeout = setTimeout(() => {
+            const t = document.getElementById('tolleyaToast');
+            if (t) {
+                t.style.animation = 'slideDown 0.3s ease forwards';
+                setTimeout(() => {
+                    if (t.parentNode) t.remove();
+                }, 300);
+            }
+            this.toastTimeout = null;
+        }, 4000);
+    }
+    
+    showUpdateNotification() {
+        const toast = document.createElement('div');
+        toast.id = 'tolleyaUpdateToast';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 14px 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            max-width: 420px;
+            width: 90%;
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(0,0,0,0.06);
+        `;
+        
+        toast.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#c62828,#ff589e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-sync-alt" style="color:white;font-size:16px;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:14px;color:#1a1a2e;">Update Available</div>
+                    <div style="font-size:12px;color:#8e8e8e;">A new version is ready</div>
+                </div>
+            </div>
+            <button onclick="window.location.reload()" style="
+                background: linear-gradient(135deg, #c62828, #ff589e);
+                color: white;
+                border: none;
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s;
+                white-space: nowrap;
+            ">Update</button>
+            <button onclick="this.parentElement.style.animation='slideDown 0.3s ease forwards';setTimeout(()=>this.parentElement.remove(),300)" style="
+                background: none;
+                border: none;
+                color: #8e8e8e;
+                font-size: 16px;
+                cursor: pointer;
+                padding: 0 4px;
+            ">✕</button>
+        `;
+        
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            const t = document.getElementById('tolleyaUpdateToast');
+            if (t) {
+                t.style.animation = 'slideDown 0.3s ease forwards';
+                setTimeout(() => {
+                    if (t.parentNode) t.remove();
+                }, 300);
+            }
+        }, 10000);
+    }
+    
+    // ============================================================
     // UTILITY FUNCTIONS
     // ============================================================
     
@@ -524,92 +675,6 @@ class TolleyaPWA {
                 timestamp: new Date().toISOString()
             })
         }).catch(err => console.error('Failed to send install event:', err));
-    }
-    
-    showUpdateNotification() {
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border-radius: 12px;
-            padding: 16px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            max-width: 90%;
-            animation: slideUp 0.3s ease;
-        `;
-        toast.innerHTML = `
-            <div>
-                <strong>🔄 Update Available</strong>
-                <div style="font-size: 14px; color: #666;">A new version is ready. Refresh to update.</div>
-            </div>
-            <button onclick="window.location.reload()" style="
-                background: #c62828;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: 600;
-            ">
-                Update Now
-            </button>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 10000);
-    }
-    
-    showToast(message, type = 'info') {
-        const colors = {
-            success: '#28a745',
-            error: '#dc3545',
-            info: '#17a2b8',
-            warning: '#ffc107'
-        };
-        
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            info: 'fa-info-circle',
-            warning: 'fa-exclamation-triangle'
-        };
-        
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 160px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            background: ${colors[type] || '#6c757d'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 14px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            animation: slideUp 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        `;
-        
-        toast.innerHTML = `
-            <i class="fas ${icons[type] || 'fa-info-circle'}"></i>
-            ${message}
-        `;
-        
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.animation = 'slideDown 0.3s ease forwards';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
     }
     
     getCSRFToken() {
@@ -641,13 +706,10 @@ class TolleyaPWA {
 // INITIALIZE PWA
 // ============================================================
 
-// Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if we should initialize
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     
     if (!isStandalone) {
-        // Initialize PWA
         window.tolleyaPWA = new TolleyaPWA();
         console.log('✅ Tolleya PWA initialized');
     } else {
