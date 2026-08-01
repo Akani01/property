@@ -21,7 +21,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
     
     def get_avatar_url(self, obj):
         return getattr(obj, 'avatar_url', None) or '/static/images/default-avatar.png'
-        
+    
 
 class UserBasicSerializer(serializers.ModelSerializer):
     """Basic user info for notifications"""

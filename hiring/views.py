@@ -11023,3 +11023,5 @@ def pwa_sw(request):
             return response
     
     return HttpResponse('Service Worker not found', status=404)
+
+    

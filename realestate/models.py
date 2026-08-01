@@ -331,6 +331,14 @@ class Property(models.Model):
     
     # Custom fields
     custom_fields = models.JSONField(default=dict, blank=True, help_text="Additional custom fields")
+     
+    # Interaction counters
+    likes_count = models.PositiveIntegerField(default=0, help_text="Number of likes")
+    dislikes_count = models.PositiveIntegerField(default=0, help_text="Number of dislikes")
+    
+    # Rating fields
+    average_rating = models.FloatField(default=0.0, help_text="Average rating (1-5 stars)")
+    rating_count = models.PositiveIntegerField(default=0, help_text="Number of ratings")
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -426,7 +434,62 @@ class Property(models.Model):
     def is_available_for_instant_booking(self):
         return self.is_online and self.status == 'available' and self.agent_status == 'available'
 
+# ============================================================
+# ADD THIS MODEL - Place it after the Property class
+# ============================================================
 
+class PropertyInteraction(models.Model):
+    """Track likes, dislikes for properties"""
+    INTERACTION_TYPES = (
+        ('like', 'Like'),
+        ('dislike', 'Dislike'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='interactions')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='property_interactions')
+    interaction_type = models.CharField(max_length=10, choices=INTERACTION_TYPES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        app_label = 'realestate'
+        unique_together = ['property', 'user', 'interaction_type']
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} {self.interaction_type}s {self.property.title}"
+
+
+# ============================================================
+# ADD THIS MODEL - Place it after PropertyInteraction
+# ============================================================
+
+class PropertyRating(models.Model):
+    """Property ratings (1-5 stars)"""
+    RATING_CHOICES = [
+        (1, '1 Star - Poor'),
+        (2, '2 Stars - Fair'),
+        (3, '3 Stars - Good'),
+        (4, '4 Stars - Very Good'),
+        (5, '5 Stars - Excellent'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='property_ratings')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='property_ratings')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    review = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        app_label = 'realestate'
+        unique_together = ['property', 'user']
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} rated {self.property.title} {self.rating}★"
 # ============================================
 # 3. ROOM/UNIT MANAGEMENT
 # ============================================

@@ -3,8 +3,9 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import F, Count, Avg, Q
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Count
 from django.views.decorators.csrf import csrf_exempt 
 from django.utils import timezone
 from django.conf import settings
@@ -40,45 +41,8 @@ from hiring.serializers import (
 )
 
 # ===== IMPORTS FROM REALESTATE APP =====
-from .models import (
-    PropertyCategory,
-    PropertyType,
-    PropertyFeature,
-    Property,
-    Room,
-    Booking,
-    AvailabilityCalendar,
-    BookingInquiry,
-    PropertyReview,
-    Wishlist,
-    PropertyAnalytics,
-    MaintenanceCategory,
-    MaintenanceRequest,
-    MaintenanceComment,
-    DriverLocation,
-)
-
-from .serializers import (
-    PropertyCategorySerializer,
-    PropertyTypeSerializer,
-    PropertyFeatureSerializer,
-    PropertySerializer,
-    PropertyListSerializer,
-    PropertyCreateSerializer,
-    PropertyDetailSerializer,
-    PropertyUpdateSerializer,
-    RoomSerializer,
-    BookingSerializer,
-    AvailabilityCalendarSerializer,
-    BookingInquirySerializer,
-    PropertyReviewSerializer,
-    WishlistSerializer,
-    PropertyAnalyticsSerializer,
-    MaintenanceCategorySerializer,
-    MaintenanceRequestSerializer,
-    MaintenanceCommentSerializer,
-    DriverLocationSerializer,
-)
+from .models import *
+from .serializers import *
 
 
 # ============================================================
@@ -148,7 +112,6 @@ class PropertyFeatureViewSet(viewsets.ModelViewSet):
 class PropertyViewSet(viewsets.ModelViewSet):
     """Main Property ViewSet with all features including image management"""
     queryset = Property.objects.filter(is_active=True)
-    serializer_class = PropertySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = [
@@ -170,6 +133,46 @@ class PropertyViewSet(viewsets.ModelViewSet):
         elif self.action in ['update', 'partial_update']:
             return PropertyUpdateSerializer
         return PropertySerializer
+    
+    def get_serializer_context(self):
+        """Add request to serializer context"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
+    def list(self, request, *args, **kwargs):
+        """Override list to include user interactions"""
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Annotate user interactions if authenticated
+        if request.user.is_authenticated:
+            from django.db.models import OuterRef, Subquery, Value, CharField
+            
+            # Subquery for user's interaction (like/dislike)
+            user_interaction_subquery = PropertyInteraction.objects.filter(
+                property=OuterRef('id'),
+                user=request.user
+            ).values('interaction_type')[:1]
+            
+            # Subquery for user's rating
+            user_rating_subquery = PropertyRating.objects.filter(
+                property=OuterRef('id'),
+                user=request.user
+            ).values('rating')[:1]
+            
+            queryset = queryset.annotate(
+                user_interaction=Subquery(user_interaction_subquery, output_field=CharField()),
+                user_rating=Subquery(user_rating_subquery, output_field=CharField())
+            )
+        
+        # Paginate
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
     
     def perform_create(self, serializer):
         company = None
@@ -367,8 +370,6 @@ class PropertyViewSet(viewsets.ModelViewSet):
             'success': True,
             'message': 'Property deleted successfully'
         })
-
-
 # ============================================================
 # BOOKING VIEWSET
 # ============================================================
@@ -623,7 +624,7 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
         description = parsed.get('description', text if text else '')
         
         priority = 'medium'
-        request_status = 'pending'  # CHANGED: renamed to avoid conflict with imported status
+        request_status = 'pending'
         location = location_name or None
         estimated_cost = None
         preferred_date = None
@@ -658,14 +659,11 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
             location = self.get_location_from_coords(float(latitude), float(longitude))
         
         try:
-            # ===== FIX: Get or create a default property =====
             property_id = request.data.get('property_id', None)
             
             if not property_id:
-                # Try to find an existing property for this user
                 default_property = Property.objects.filter(owner=user).first()
                 if not default_property:
-                    # Create a default property if none exists
                     default_property = Property.objects.create(
                         title=f"{user.username}'s Property",
                         description="Default property for maintenance requests",
@@ -679,13 +677,13 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
                 title=title,
                 description=description,
                 priority=priority,
-                status=request_status,  # CHANGED: using renamed variable
+                status=request_status,
                 location=location,
                 estimated_cost=estimated_cost,
                 preferred_date=preferred_date,
                 notes=notes,
                 tenant=user,
-                property_id=property_id  # CHANGED: using property_id directly
+                property_id=property_id
             )
             
             if image:
@@ -949,7 +947,7 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
 
 
 # ============================================================
-# JOB VIEWSET - FIXED: No is_active filter
+# JOB VIEWSET
 # ============================================================
 class JobViewSet(viewsets.ModelViewSet):
     """Job management using JobListing from hiring app"""
@@ -1496,3 +1494,536 @@ def api_business_bookings(request):
             'success': False,
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============================================================
+# FIXED: PROPERTY INTERACTIONS (Like/Dislike) - SINGLE VERSION
+# ============================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_property_interaction(request, property_id):
+    """
+    Like, dislike, or remove interaction from a property
+    ---
+    Request body: {"action": "like"|"dislike"|"unlike"|"undislike"}
+    """
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return Response(
+            {'error': 'Property not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    action = request.data.get('action', '')
+    
+    if action not in ['like', 'dislike', 'unlike', 'undislike']:
+        return Response(
+            {'error': 'Invalid action. Use like, dislike, unlike, or undislike'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    user = request.user
+    
+    # CASE 1: Remove interaction (unlike/undislike)
+    if action in ['unlike', 'undislike']:
+        interaction_type = 'like' if action == 'unlike' else 'dislike'
+        
+        deleted_count, _ = PropertyInteraction.objects.filter(
+            property=property_obj,
+            user=user,
+            interaction_type=interaction_type
+        ).delete()
+        
+        if deleted_count > 0:
+            if interaction_type == 'like':
+                property_obj.likes_count = max(0, property_obj.likes_count - deleted_count)
+            else:
+                property_obj.dislikes_count = max(0, property_obj.dislikes_count - deleted_count)
+            property_obj.save(update_fields=['likes_count', 'dislikes_count'])
+        
+        return Response({
+            'success': True,
+            'action': action,
+            'likes_count': property_obj.likes_count,
+            'dislikes_count': property_obj.dislikes_count
+        })
+    
+    # CASE 2: Add or toggle like/dislike
+    interaction_type = 'like' if action == 'like' else 'dislike'
+    opposite_type = 'dislike' if action == 'like' else 'like'
+    
+    # STEP 1: Remove opposite interaction if exists
+    PropertyInteraction.objects.filter(
+        property=property_obj,
+        user=user,
+        interaction_type=opposite_type
+    ).delete()
+    
+    # STEP 2: Check if the interaction already exists
+    existing = PropertyInteraction.objects.filter(
+        property=property_obj,
+        user=user,
+        interaction_type=interaction_type
+    ).first()
+    
+    if existing:
+        # If exists, remove it (toggle off)
+        existing.delete()
+        if interaction_type == 'like':
+            property_obj.likes_count = max(0, property_obj.likes_count - 1)
+        else:
+            property_obj.dislikes_count = max(0, property_obj.dislikes_count - 1)
+        property_obj.save(update_fields=['likes_count', 'dislikes_count'])
+        
+        return Response({
+            'success': True,
+            'action': 'removed',
+            'likes_count': property_obj.likes_count,
+            'dislikes_count': property_obj.dislikes_count
+        })
+    
+    # STEP 3: Create new interaction (only if it doesn't exist)
+    PropertyInteraction.objects.create(
+        property=property_obj,
+        user=user,
+        interaction_type=interaction_type
+    )
+    
+    # Increment count
+    if interaction_type == 'like':
+        property_obj.likes_count += 1
+    else:
+        property_obj.dislikes_count += 1
+    property_obj.save(update_fields=['likes_count', 'dislikes_count'])
+    
+    return Response({
+        'success': True,
+        'action': action,
+        'likes_count': property_obj.likes_count,
+        'dislikes_count': property_obj.dislikes_count
+    })
+
+
+# ============================================================
+# FIXED: RATE PROPERTY
+# ============================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def rate_property(request, property_id):
+    """
+    Rate a property (1-5 stars)
+    ---
+    Request body: {"rating": 5, "review": "Great property!"}
+    """
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return Response(
+            {'error': 'Property not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    rating_value = request.data.get('rating')
+    
+    if not rating_value:
+        return Response(
+            {'error': 'Rating is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        rating_value = int(rating_value)
+        if rating_value < 1 or rating_value > 5:
+            raise ValueError
+    except:
+        return Response(
+            {'error': 'Rating must be between 1 and 5'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    review = request.data.get('review', '')
+    
+    # Create or update rating
+    rating, created = PropertyRating.objects.update_or_create(
+        property=property_obj,
+        user=request.user,
+        defaults={
+            'rating': rating_value,
+            'review': review
+        }
+    )
+    
+    # Calculate new average
+    ratings = PropertyRating.objects.filter(property=property_obj)
+    count = ratings.count()
+    
+    if count > 0:
+        avg = ratings.aggregate(avg=Avg('rating'))['avg'] or 0
+        property_obj.average_rating = round(avg, 2)
+    else:
+        property_obj.average_rating = 0
+    
+    property_obj.rating_count = count
+    property_obj.save(update_fields=['average_rating', 'rating_count'])
+    
+    # Invalidate cache
+    cache.delete(f'rating_summary_{property_obj.id}')
+    
+    return Response({
+        'success': True,
+        'created': created,
+        'rating': rating_value,
+        'average_rating': property_obj.average_rating,
+        'rating_count': property_obj.rating_count
+    })
+
+
+# ============================================================
+# FIXED: GET PROPERTY RATINGS
+# ============================================================
+
+@api_view(['GET'])
+def get_property_ratings(request, property_id):
+    """
+    Get all ratings for a property with pagination
+    """
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return Response(
+            {'error': 'Property not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    # Pagination
+    page = int(request.query_params.get('page', 1))
+    page_size = int(request.query_params.get('page_size', 20))
+    start = (page - 1) * page_size
+    end = start + page_size
+    
+    ratings = PropertyRating.objects.filter(
+        property=property_obj
+    ).select_related('user').order_by('-created_at')
+    
+    total = ratings.count()
+    paginated_ratings = ratings[start:end]
+    
+    serializer = PropertyRatingSerializer(paginated_ratings, many=True)
+    
+    return Response({
+        'success': True,
+        'count': total,
+        'page': page,
+        'page_size': page_size,
+        'total_pages': (total + page_size - 1) // page_size,
+        'ratings': serializer.data,
+        'average': property_obj.average_rating or 0,
+        'rating_count': property_obj.rating_count or 0
+    })
+
+
+# ============================================================
+# FIXED: GET RATING SUMMARY (Cached)
+# ============================================================
+
+@api_view(['GET'])
+def get_property_rating_summary(request, property_id):
+    """
+    Get rating summary for a property (cached for performance)
+    """
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return Response(
+            {'error': 'Property not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    # Try cache first
+    cache_key = f'rating_summary_{property_obj.id}'
+    response_data = cache.get(cache_key)
+    
+    if response_data is None:
+        # Get user rating if authenticated
+        user_rating = None
+        if request.user.is_authenticated:
+            user_rating = PropertyRating.objects.filter(
+                property=property_obj,
+                user=request.user
+            ).values_list('rating', flat=True).first()
+        
+        # Get distribution using helper function
+        distribution = get_rating_distribution(property_obj)
+        
+        response_data = {
+            'average': float(property_obj.average_rating or 0.0),
+            'count': property_obj.rating_count or 0,
+            'distribution': distribution,
+            'user_rating': user_rating
+        }
+        
+        # Cache for 5 minutes
+        cache.set(cache_key, response_data, 300)
+    
+    return Response(response_data)
+
+
+# ============================================================
+# FIXED: BATCH INTERACTION
+# ============================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def batch_property_interaction(request):
+    """
+    Batch like/dislike multiple properties at once
+    ---
+    Request body: {"ids": ["uuid1", "uuid2"], "action": "like"}
+    """
+    property_ids = request.data.get('ids', [])
+    action = request.data.get('action', '')
+    
+    if not property_ids:
+        return Response(
+            {'error': 'Property IDs required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if action not in ['like', 'dislike', 'unlike', 'undislike']:
+        return Response(
+            {'error': 'Invalid action'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    user = request.user
+    
+    # Get all properties in one query
+    properties = Property.objects.filter(id__in=property_ids, is_active=True)
+    property_ids_found = list(properties.values_list('id', flat=True))
+    
+    if action in ['unlike', 'undislike']:
+        interaction_type = 'like' if action == 'unlike' else 'dislike'
+        
+        # Delete all interactions in one query
+        deleted_count, _ = PropertyInteraction.objects.filter(
+            property__in=properties,
+            user=user,
+            interaction_type=interaction_type
+        ).delete()
+        
+        # Update all property counts in one query (if any deleted)
+        if deleted_count > 0:
+            update_field = 'likes_count' if interaction_type == 'like' else 'dislikes_count'
+            Property.objects.filter(id__in=property_ids_found).update(
+                **{update_field: F(update_field) - 1}
+            )
+        
+    else:
+        interaction_type = 'like' if action == 'like' else 'dislike'
+        opposite_type = 'dislike' if action == 'like' else 'like'
+        
+        # Remove opposite interactions in one query
+        PropertyInteraction.objects.filter(
+            property__in=properties,
+            user=user,
+            interaction_type=opposite_type
+        ).delete()
+        
+        # Get existing interactions
+        existing = PropertyInteraction.objects.filter(
+            property__in=properties,
+            user=user,
+            interaction_type=interaction_type
+        ).values_list('property_id', flat=True)
+        
+        # Get properties that need new interactions
+        new_property_ids = [pid for pid in property_ids_found if pid not in existing]
+        
+        # Bulk create new interactions
+        if new_property_ids:
+            interactions_to_create = [
+                PropertyInteraction(
+                    property_id=pid,
+                    user=user,
+                    interaction_type=interaction_type
+                )
+                for pid in new_property_ids
+            ]
+            PropertyInteraction.objects.bulk_create(interactions_to_create)
+            
+            # Update counts
+            update_field = f'{interaction_type}s_count'
+            Property.objects.filter(id__in=new_property_ids).update(
+                **{update_field: F(update_field) + 1}
+            )
+    
+    # Get updated counts
+    updated_properties = Property.objects.filter(id__in=property_ids_found)
+    results = []
+    for p in updated_properties:
+        results.append({
+            'id': str(p.id),
+            'likes_count': p.likes_count,
+            'dislikes_count': p.dislikes_count
+        })
+    
+    return Response({
+        'success': True,
+        'action': action,
+        'count': len(results),
+        'results': results
+    })
+
+
+# ============================================================
+# FIXED: GET USER'S INTERACTIONS
+# ============================================================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_property_interactions(request):
+    """
+    Get all properties the user has liked or disliked
+    """
+    user = request.user
+    interaction_type = request.query_params.get('type')  # like or dislike
+    
+    queryset = PropertyInteraction.objects.filter(user=user).select_related('property')
+    
+    if interaction_type in ['like', 'dislike']:
+        queryset = queryset.filter(interaction_type=interaction_type)
+    
+    serializer = PropertyInteractionSerializer(queryset, many=True)
+    
+    return Response({
+        'success': True,
+        'count': queryset.count(),
+        'interactions': serializer.data
+    })
+
+
+# ============================================================
+# FIXED: ADVANCED SEARCH
+# ============================================================
+
+@api_view(['GET'])
+def advanced_property_search(request):
+    """
+    Advanced search for properties with filters
+    """
+    queryset = Property.objects.filter(is_active=True)
+    
+    # Get query parameters
+    query = request.query_params.get('q', '').strip()
+    property_type = request.query_params.get('property_type', '')
+    listing_type = request.query_params.get('listing_type', '')
+    status = request.query_params.get('status', '')
+    city = request.query_params.get('city', '')
+    country = request.query_params.get('country', '')
+    min_price = request.query_params.get('min_price', '')
+    max_price = request.query_params.get('max_price', '')
+    min_bedrooms = request.query_params.get('min_bedrooms', '')
+    max_bedrooms = request.query_params.get('max_bedrooms', '')
+    min_bathrooms = request.query_params.get('min_bathrooms', '')
+    max_bathrooms = request.query_params.get('max_bathrooms', '')
+    min_area = request.query_params.get('min_area', '')
+    max_area = request.query_params.get('max_area', '')
+    sort_by = request.query_params.get('sort_by', 'created_at')
+    sort_order = request.query_params.get('sort_order', 'desc')
+    is_featured = request.query_params.get('is_featured', '').lower() == 'true'
+    is_premium = request.query_params.get('is_premium', '').lower() == 'true'
+    
+    # Text search
+    if query:
+        queryset = queryset.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(address__icontains=query) |
+            Q(city__icontains=query) |
+            Q(country__icontains=query) |
+            Q(property_reference__icontains=query)
+        )
+    
+    # Apply filters
+    if property_type:
+        queryset = queryset.filter(property_type_id=property_type)
+    
+    if listing_type:
+        queryset = queryset.filter(listing_type=listing_type)
+    
+    if status:
+        queryset = queryset.filter(status=status)
+    
+    if city:
+        queryset = queryset.filter(city__icontains=city)
+    
+    if country:
+        queryset = queryset.filter(country__icontains=country)
+    
+    if min_price:
+        queryset = queryset.filter(base_price__gte=min_price)
+    
+    if max_price:
+        queryset = queryset.filter(base_price__lte=max_price)
+    
+    if min_bedrooms:
+        queryset = queryset.filter(bedrooms__gte=min_bedrooms)
+    
+    if max_bedrooms:
+        queryset = queryset.filter(bedrooms__lte=max_bedrooms)
+    
+    if min_bathrooms:
+        queryset = queryset.filter(bathrooms__gte=min_bathrooms)
+    
+    if max_bathrooms:
+        queryset = queryset.filter(bathrooms__lte=max_bathrooms)
+    
+    if min_area:
+        queryset = queryset.filter(total_area__gte=min_area)
+    
+    if max_area:
+        queryset = queryset.filter(total_area__lte=max_area)
+    
+    if is_featured:
+        queryset = queryset.filter(is_featured=True)
+    
+    if is_premium:
+        queryset = queryset.filter(is_premium=True)
+    
+    # Sorting
+    valid_sort_fields = [
+        'created_at', 'updated_at', 'base_price', 'bedrooms', 
+        'bathrooms', 'average_rating', 'likes_count', 'views_count'
+    ]
+    if sort_by not in valid_sort_fields:
+        sort_by = 'created_at'
+    
+    if sort_order == 'desc':
+        sort_field = f'-{sort_by}'
+    else:
+        sort_field = sort_by
+    
+    queryset = queryset.order_by(sort_field)
+    
+    # Pagination
+    page = int(request.query_params.get('page', 1))
+    page_size = int(request.query_params.get('page_size', 20))
+    start = (page - 1) * page_size
+    end = start + page_size
+    
+    total = queryset.count()
+    results = queryset[start:end]
+    
+    serializer = PropertyListSerializer(results, many=True, context={'request': request})
+    
+    return Response({
+        'success': True,
+        'count': total,
+        'page': page,
+        'page_size': page_size,
+        'total_pages': (total + page_size - 1) // page_size,
+        'results': serializer.data
+    })

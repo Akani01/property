@@ -901,7 +901,7 @@
                             <li class="notification-wrapper">
                                 <a href="/notifications/" id="notificationLink"><i class="fas fa-bell"></i><span class="notification-badge" id="notificationBadge">0</span></a>
                             </li>
-                            <li><a href="#" class="apps-sticker" onclick="showAppsModal()"><i class="fas fa-th"></i> Apps</a></li>
+                            <li><a href="#" class="apps-sticker" onclick="showAppsModal()"><i class="fas fa-th"></i></a></li>
                             <li class="profile-dropdown">
                                 <div class="profile-avatar-small" onclick="toggleProfileMenu()">
                                     {{ user.username|first|upper }}
@@ -1113,7 +1113,9 @@
 
             <div id="videosTab" class="tab-content">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0" style="font-family:var(--font-display);font-size:15px;"><i class="fas fa-video me-2"></i>Video Feed</h5>
+                    <h5 class="mb-0 text-white" style="font-family: var(--font-display); font-size: 15px;">
+                        <i class="fas fa-video me-2"></i>Video Feed
+                    </h5>
                     <button class="video-upload-btn" onclick="document.getElementById('videoUploadInput').click()"><i class="fas fa-upload me-1"></i>Upload</button>
                     <input type="file" id="videoUploadInput" accept="video/*" style="display:none" onchange="uploadVideo(this)">
                 </div>

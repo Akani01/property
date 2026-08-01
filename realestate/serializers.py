@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from django.utils import timezone
 from decimal import Decimal
-from .models import (
-    PropertyCategory, PropertyType, PropertyFeature, Property,
-    Room, Booking, DriverLocation, AvailabilityCalendar,
-    BookingInquiry, PropertyReview, Wishlist, PropertyAnalytics
-)
+from django.db.models import Count, Avg
+from django.core.cache import cache
+from .models import *
 from hiring.models import BusinessProfile, CustomUser, ApplicantProfile
 
 
@@ -94,27 +92,86 @@ class RoomSerializer(serializers.ModelSerializer):
 # ============================================
 # 3. PROPERTY SERIALIZERS
 # ============================================
+# realestate/serializers.py - FIXED PropertyListSerializer
 
 class PropertyListSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for listing properties"""
-    property_type_name = serializers.CharField(source='property_type.name', read_only=True)
-    company_name = serializers.CharField(source='company.company_name', read_only=True, default=None)
+    """List view serializer with user interactions"""
+    
+    # These are the model fields
+    likes_count = serializers.IntegerField(read_only=True, default=0)
+    dislikes_count = serializers.IntegerField(read_only=True, default=0)
+    average_rating = serializers.FloatField(read_only=True, default=0.0)
+    rating_count = serializers.IntegerField(read_only=True, default=0)
+    
+    # Additional fields
     main_image_url = serializers.SerializerMethodField()
-    status_color = serializers.CharField(source='get_status_display', read_only=True)
+    uploader_name = serializers.SerializerMethodField()
+    user_interaction = serializers.SerializerMethodField()
+    user_rating = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
         fields = [
-            'id', 'property_reference', 'title', 'property_type_name',
-            'status', 'status_color', 'city', 'base_price', 'price_currency',
-            'listing_type', 'bedrooms', 'bathrooms', 'company_name',
-            'main_image_url', 'is_featured', 'is_premium', 'is_online',
-            'views_count', 'created_at'
+            'id', 'property_reference', 'title', 'description',
+            'city', 'country', 'address',
+            'base_price', 'price_currency', 'listing_type',
+            'status', 'is_featured', 'is_premium', 'is_bookable',
+            'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
+            'total_area',
+            'main_image_url', 'additional_images',
+            'likes_count', 'dislikes_count',
+            'average_rating', 'rating_count',
+            'uploader_name', 'user_interaction', 'user_rating',
+            'created_at', 'updated_at'
         ]
     
     def get_main_image_url(self, obj):
         return obj.get_main_image_url()
-
+    
+    def get_uploader_name(self, obj):
+        if obj.owner:
+            return obj.owner.get_full_name() or obj.owner.username
+        elif obj.company:
+            return obj.company.company_name
+        return "Unknown"
+    
+    def get_user_interaction(self, obj):
+        """Get current user's interaction"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            # Check if we have the interaction from the view
+            if hasattr(obj, 'user_interaction'):
+                return obj.user_interaction
+            
+            # Fallback: direct database query
+            try:
+                interaction = PropertyInteraction.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return interaction.interaction_type
+            except PropertyInteraction.DoesNotExist:
+                return None
+        return None
+    
+    def get_user_rating(self, obj):
+        """Get current user's rating"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            # Check if we have the rating from the view
+            if hasattr(obj, 'user_rating'):
+                return obj.user_rating
+            
+            # Fallback: direct database query
+            try:
+                rating = PropertyRating.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return rating.rating
+            except PropertyRating.DoesNotExist:
+                return None
+        return None
 
 class PropertySerializer(serializers.ModelSerializer):
     """Main Property Serializer with nested relationships"""
@@ -681,3 +738,356 @@ class PropertyUpdateSerializer(serializers.ModelSerializer):
             instance.features.set(features)
         
         return instance
+
+
+# ============================================================
+# 1. USER MINIMAL SERIALIZER (For nested data)
+# ============================================================
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    """Minimal user info for nested responses"""
+    full_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'full_name']
+    
+    def get_full_name(self, obj):
+        return obj.get_full_name() or obj.username
+
+
+# ============================================================
+# 2. PROPERTY INTERACTION SERIALIZER (Like/Dislike)
+# ============================================================
+
+class PropertyInteractionSerializer(serializers.ModelSerializer):
+    user = UserMinimalSerializer(read_only=True)
+    interaction_type_display = serializers.SerializerMethodField()
+    time_ago = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PropertyInteraction
+        fields = [
+            'id', 'property', 'user', 'interaction_type',
+            'interaction_type_display', 'created_at', 'time_ago'
+        ]
+        read_only_fields = ['id', 'user', 'created_at']
+    
+    def get_interaction_type_display(self, obj):
+        return dict(PropertyInteraction.INTERACTION_TYPES).get(obj.interaction_type, obj.interaction_type)
+    
+    def get_time_ago(self, obj):
+        from django.utils import timezone
+        diff = timezone.now() - obj.created_at
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        elif diff.seconds > 3600:
+            return f"{diff.seconds // 3600}h ago"
+        elif diff.seconds > 60:
+            return f"{diff.seconds // 60}m ago"
+        return "Just now"
+
+
+# ============================================================
+# 3. PROPERTY RATING SERIALIZER
+# ============================================================
+
+class PropertyRatingSerializer(serializers.ModelSerializer):
+    user = UserMinimalSerializer(read_only=True)
+    user_avatar = serializers.SerializerMethodField()
+    time_ago = serializers.SerializerMethodField()
+    rating_display = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PropertyRating
+        fields = [
+            'id', 'property', 'user', 'user_avatar',
+            'rating', 'rating_display', 'review',
+            'created_at', 'time_ago'
+        ]
+        read_only_fields = ['id', 'user', 'created_at']
+    
+    def get_user_avatar(self, obj):
+        if obj.user:
+            return obj.user.username[0].upper()
+        return 'U'
+    
+    def get_time_ago(self, obj):
+        from django.utils import timezone
+        diff = timezone.now() - obj.created_at
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        elif diff.seconds > 3600:
+            return f"{diff.seconds // 3600}h ago"
+        elif diff.seconds > 60:
+            return f"{diff.seconds // 60}m ago"
+        return "Just now"
+    
+    def get_rating_display(self, obj):
+        return dict(PropertyRating.RATING_CHOICES).get(obj.rating, str(obj.rating))
+
+
+# ============================================================
+# 4. RATING STATISTICS SERIALIZER
+# ============================================================
+
+class RatingStatisticsSerializer(serializers.Serializer):
+    """Rating statistics for a property"""
+    average = serializers.FloatField()
+    count = serializers.IntegerField()
+    distribution = serializers.DictField(child=serializers.IntegerField())
+    user_rating = serializers.IntegerField(required=False, allow_null=True)
+
+
+# ============================================================
+# 5. INTERACTION TOGGLE SERIALIZER (For requests)
+# ============================================================
+
+class ToggleInteractionSerializer(serializers.Serializer):
+    """Serializer for like/dislike toggle requests"""
+    action = serializers.ChoiceField(
+        choices=['like', 'dislike', 'unlike', 'undislike'],
+        required=True,
+        help_text="Action to perform: like, dislike, unlike, or undislike"
+    )
+
+
+# ============================================================
+# 6. RATE PROPERTY SERIALIZER (For requests)
+# ============================================================
+
+class RatePropertySerializer(serializers.Serializer):
+    """Serializer for rating submission requests"""
+    rating = serializers.IntegerField(
+        min_value=1,
+        max_value=5,
+        required=True,
+        help_text="Rating from 1 to 5 stars"
+    )
+    review = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=1000,
+        help_text="Optional review text"
+    )
+    
+    def validate_rating(self, value):
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+
+
+# ============================================================
+# 7. BATCH INTERACTION SERIALIZER (For bulk operations)
+# ============================================================
+
+class BatchInteractionSerializer(serializers.Serializer):
+    """Serializer for batch like/dislike operations"""
+    ids = serializers.ListField(
+        child=serializers.UUIDField(),
+        required=True,
+        help_text="List of property IDs"
+    )
+    action = serializers.ChoiceField(
+        choices=['like', 'dislike', 'unlike', 'undislike'],
+        required=True,
+        help_text="Action to perform on all properties"
+    )
+    
+    def validate_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("At least one property ID is required")
+        if len(value) > 100:
+            raise serializers.ValidationError("Maximum 100 properties per batch request")
+        return value
+
+
+# ============================================================
+# 8. PROPERTY LIST SERIALIZER - FIXED WITH USER INTERACTIONS
+# ============================================================
+
+class PropertyListSerializer(serializers.ModelSerializer):
+    """List view serializer with user interactions"""
+    
+    # These fields come from the model
+    likes_count = serializers.IntegerField(read_only=True, default=0)
+    dislikes_count = serializers.IntegerField(read_only=True, default=0)
+    average_rating = serializers.FloatField(read_only=True, default=0.0)
+    rating_count = serializers.IntegerField(read_only=True, default=0)
+    
+    # Additional fields
+    main_image_url = serializers.SerializerMethodField()
+    uploader_name = serializers.SerializerMethodField()
+    user_interaction = serializers.SerializerMethodField()
+    user_rating = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'property_reference', 'title', 'description',
+            'city', 'country', 'address',
+            'base_price', 'price_currency', 'listing_type',
+            'status', 'is_featured', 'is_premium', 'is_bookable',
+            'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
+            'total_area',
+            'main_image_url', 'additional_images',
+            'likes_count', 'dislikes_count',
+            'average_rating', 'rating_count',
+            'uploader_name', 'user_interaction', 'user_rating',
+            'created_at', 'updated_at'
+        ]
+    
+    def get_main_image_url(self, obj):
+        return obj.get_main_image_url()
+    
+    def get_uploader_name(self, obj):
+        if obj.owner:
+            return obj.owner.get_full_name() or obj.owner.username
+        elif obj.company:
+            return obj.company.company_name
+        return "Unknown"
+    
+    def get_user_interaction(self, obj):
+        """Get current user's interaction (if authenticated)"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            try:
+                interaction = PropertyInteraction.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return interaction.interaction_type
+            except PropertyInteraction.DoesNotExist:
+                pass
+        return None
+    
+    def get_user_rating(self, obj):
+        """Get current user's rating (if authenticated)"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            try:
+                rating = PropertyRating.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return rating.rating
+            except PropertyRating.DoesNotExist:
+                pass
+        return None
+
+
+# ============================================================
+# 9. PROPERTY DETAIL SERIALIZER
+# ============================================================
+
+class PropertyDetailSerializer(PropertyListSerializer):
+    """Detailed property serializer with all fields"""
+    
+    class Meta(PropertyListSerializer.Meta):
+        fields = PropertyListSerializer.Meta.fields + [
+            'description', 'latitude', 'longitude', 
+            'formatted_address', 'neighborhood', 'landmark',
+            'property_type', 'custom_category_name',
+            'features', 'amenities',
+            'total_area', 'land_area', 'floor_area',
+            'total_rooms', 'total_floors', 'max_occupancy',
+            'booking_unit', 'pricing_structure', 'pricing_details',
+            'minimum_stay', 'maximum_stay',
+            'available_from', 'available_until',
+            'is_online', 'agent_status',
+            'virtual_tour_url',
+            'views_count', 'is_verified',
+            'custom_fields', 'property_reference',
+            'owner', 'company',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'property_reference', 'created_at', 'updated_at']
+
+
+# ============================================================
+# 10. PROPERTY CREATE SERIALIZER
+# ============================================================
+
+class PropertyCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        fields = '__all__'
+        read_only_fields = ['id', 'property_reference', 'created_at', 'updated_at', 'likes_count', 'dislikes_count', 'average_rating', 'rating_count']
+
+
+# ============================================================
+# 11. PROPERTY UPDATE SERIALIZER
+# ============================================================
+
+class PropertyUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        fields = '__all__'
+        read_only_fields = ['id', 'property_reference', 'created_at', 'updated_at', 'likes_count', 'dislikes_count', 'average_rating', 'rating_count']
+
+
+# ============================================================
+# 12. PROPERTY SERIALIZER (Base)
+# ============================================================
+
+class PropertySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        fields = '__all__'
+
+
+# ============================================================
+# 13. HELPER FUNCTIONS
+# ============================================================
+
+def get_rating_distribution(property_obj):
+    """Get rating distribution for a property (cached)"""
+    cache_key = f'rating_dist_{property_obj.id}'
+    distribution = cache.get(cache_key)
+    
+    if distribution is None:
+        distribution = {}
+        counts = PropertyRating.objects.filter(
+            property=property_obj
+        ).values('rating').annotate(
+            count=Count('id')
+        ).order_by('rating')
+        
+        for item in counts:
+            distribution[str(item['rating'])] = item['count']
+        
+        for i in range(1, 6):
+            if str(i) not in distribution:
+                distribution[str(i)] = 0
+        
+        cache.set(cache_key, distribution, 300)
+    
+    return distribution
+
+
+def get_user_interaction(property_obj, user):
+    """Get user's interaction with a property"""
+    if user and user.is_authenticated:
+        try:
+            interaction = PropertyInteraction.objects.get(
+                property=property_obj,
+                user=user
+            )
+            return interaction.interaction_type
+        except PropertyInteraction.DoesNotExist:
+            pass
+    return None
+
+
+def get_user_rating(property_obj, user):
+    """Get user's rating for a property"""
+    if user and user.is_authenticated:
+        try:
+            rating = PropertyRating.objects.get(
+                property=property_obj,
+                user=user
+            )
+            return rating.rating
+        except PropertyRating.DoesNotExist:
+            pass
+    return None

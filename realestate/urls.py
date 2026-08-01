@@ -57,4 +57,30 @@ urlpatterns = [
     
     # ===== BUSINESS BOOKINGS =====
     path('api/business-bookings/', views.api_business_bookings, name='api_business_bookings'),
+    
+    # Like/Dislike
+    path('api/properties/<uuid:property_id>/interact/', 
+         views.toggle_property_interaction, 
+         name='toggle_property_interaction'),
+    
+    path('api/properties/batch-interact/', 
+         views.batch_property_interaction, 
+         name='batch_property_interaction'),
+    
+    path('api/user/interactions/', 
+         views.get_user_property_interactions, 
+         name='get_user_property_interactions'),
+    
+    # Ratings
+    path('api/properties/<uuid:property_id>/rate/', 
+         views.rate_property, 
+         name='rate_property'),
+    
+    path('api/properties/<uuid:property_id>/ratings/', 
+         views.get_property_ratings, 
+         name='get_property_ratings'),
+    
+    path('api/properties/<uuid:property_id>/rating-summary/', 
+         views.get_property_rating_summary, 
+         name='get_property_rating_summary'),
 ]
