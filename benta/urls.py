@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include('hiring.urls')),  # Your hiring app
     path('', include('realestate.urls')),  # Real estate app
     path('api/', include('realestate.urls')),
+    path('api/auth/', include('social_auth.urls')),
     path('', include('core.urls')),
     path('api/education/', include('education.urls')),
     # Redirect /api/notifications/* to /notifications/api/notifications/*

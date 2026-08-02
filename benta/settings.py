@@ -57,6 +57,16 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
+
+# ============================================================
+# SESSION SETTINGS
+# ============================================================
+
+SESSION_COOKIE_SECURE = not DEBUG  # True in production
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
 # -------------------------------------------------------------------
 # SSL/Proxy Settings
 # -------------------------------------------------------------------
@@ -85,6 +95,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django.contrib.sites',
     'rest_framework_simplejwt',
+    'social_auth',
     'channels',
     'corsheaders',
     'phonenumber_field',
@@ -100,6 +111,23 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'hiring.CustomUser'
+
+
+# Google Auth
+# ============================================================
+# GOOGLE OAUTH 2.0 SETTINGS
+# ============================================================
+
+# Get Google Client ID from environment variable
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+
+# If GOOGLE_CLIENT_ID is not set in environment, you can set it here for development
+if not GOOGLE_CLIENT_ID and DEBUG:
+    # For development, you can hardcode your Client ID here temporarily
+    # GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'
+    pass
+
+print(f"🔑 Google Client ID configured: {GOOGLE_CLIENT_ID[:20] if GOOGLE_CLIENT_ID else 'Not Set'}...")
 
 # PWA settings
 PWA_APP_NAME = 'Tolleya'

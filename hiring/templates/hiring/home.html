@@ -16,6 +16,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}">
     
+    <!-- Google Sign-In SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
     <style>
         /* ============================================================
            ROOT VARIABLES & RESET
@@ -41,6 +44,7 @@
             --font-body: 'Inter', -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
             --transition: all 0.2s ease;
+            --google-color: #4285F4;
         }
         
         * { box-sizing: border-box; }
@@ -243,7 +247,697 @@
         .user-badge.business { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); }
 
         /* ============================================================
-           HORIZONTAL CARDS ROW - SPOTIFY STYLE
+           PWA INSTALL BUTTON - FUTURISTIC DESIGN
+           ============================================================ */
+        .pwa-install-btn {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 77, 61, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 77, 61, 0.25);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9998;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(255, 77, 61, 0.25), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
+            animation: pwaPulse 2s ease-in-out infinite;
+            min-height: 50px;
+            white-space: nowrap;
+        }
+        
+        .pwa-install-btn.show {
+            display: flex;
+        }
+        
+        .pwa-install-btn:hover {
+            transform: translateX(-50%) scale(1.03);
+            background: rgba(255, 77, 61, 0.25);
+            border-color: rgba(255, 77, 61, 0.4);
+            box-shadow: 0 12px 40px rgba(255, 77, 61, 0.35);
+        }
+        
+        .pwa-install-btn:active {
+            transform: translateX(-50%) scale(0.97);
+        }
+        
+        .pwa-install-btn .btn-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(255, 77, 61, 0.3);
+        }
+        
+        .pwa-install-btn .btn-icon i {
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .pwa-install-btn .btn-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+        }
+        
+        .pwa-install-btn .btn-text .main-text {
+            font-size: 13px;
+        }
+        
+        .pwa-install-btn .btn-text .sub-text {
+            font-size: 9px;
+            opacity: 0.6;
+            font-weight: 400;
+        }
+        
+        .pwa-install-btn .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        
+        .pwa-install-btn .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        
+        @keyframes pwaPulse {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(255, 77, 61, 0.2), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 0 8px 48px rgba(255, 77, 61, 0.35), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            }
+        }
+        
+        /* Mobile adjustments for PWA button */
+        @media (max-width: 576px) {
+            .pwa-install-btn {
+                bottom: 62px;
+                padding: 10px 18px;
+                font-size: 12px;
+                min-height: 44px;
+                width: calc(100% - 32px);
+                max-width: 360px;
+                white-space: normal;
+            }
+            .pwa-install-btn .btn-text .main-text {
+                font-size: 12px;
+            }
+            .pwa-install-btn .btn-text .sub-text {
+                font-size: 8px;
+            }
+            .pwa-install-btn .btn-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+            .pwa-install-btn .btn-icon i {
+                font-size: 12px;
+            }
+        }
+
+        /* ============================================================
+           GOOGLE SIGN-IN / LOGIN BUTTONS
+           ============================================================ */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            color: #444;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            min-height: 44px;
+            font-family: var(--font-body);
+        }
+        
+        .google-btn:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        
+        .google-btn:active {
+            transform: scale(0.97);
+        }
+        
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .google-btn .btn-text {
+            font-size: 13px;
+        }
+        
+        .google-btn.dark {
+            background: #1a1a2e;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .google-btn.dark:hover {
+            background: #2a2a4e;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+
+        /* ============================================================
+           CREATE POST - FULLY RESPONSIVE BUTTONS
+           ============================================================ */
+        .create-post-card {
+            background: var(--glass);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 12px;
+            margin-bottom: 14px;
+            transition: var(--transition);
+        }
+
+        .post-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        .post-input-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-input {
+            width: 100%;
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: #f0f2f5;
+            font-size: 13px;
+            cursor: pointer;
+            min-height: 34px;
+            transition: var(--transition);
+        }
+
+        .post-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: #fff;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+            flex-wrap: wrap;
+        }
+
+        .post-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 6px;
+            border: none;
+            background: none;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+            min-height: 34px;
+            font-size: 12px;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .post-action-btn i {
+            font-size: 15px;
+        }
+
+        .post-action-btn .btn-label {
+            display: inline;
+        }
+
+        .post-action-btn:hover {
+            background: rgba(0,0,0,0.04);
+        }
+
+        .post-action-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== RESPONSIVE CREATE POST BUTTONS ===== */
+        @media (max-width: 576px) {
+            .create-post-card {
+                padding: 8px 10px;
+                border-radius: 12px;
+            }
+
+            .post-input-row {
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+
+            .post-input {
+                padding: 6px 12px;
+                font-size: 12px;
+                min-height: 30px;
+                border-radius: 16px;
+            }
+
+            .post-actions {
+                gap: 4px;
+                padding-top: 4px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .post-actions::-webkit-scrollbar {
+                display: none;
+            }
+
+            .post-action-btn {
+                flex: 0 0 auto;
+                padding: 6px 10px;
+                min-height: 30px;
+                font-size: 11px;
+                gap: 4px;
+                border-radius: 6px;
+                min-width: auto;
+            }
+
+            .post-action-btn i {
+                font-size: 13px;
+            }
+
+            .post-action-btn .btn-label {
+                display: inline;
+                font-size: 10px;
+            }
+
+            /* Hide text on very small screens, show only icons */
+            @media (max-width: 400px) {
+                .post-action-btn .btn-label {
+                    display: none;
+                }
+                
+                .post-action-btn {
+                    padding: 6px 8px;
+                    min-width: 34px;
+                    justify-content: center;
+                }
+
+                .post-action-btn i {
+                    font-size: 15px;
+                    margin: 0;
+                }
+
+                .post-actions {
+                    justify-content: space-around;
+                }
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 992px) {
+            .post-action-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .post-action-btn .btn-label {
+                display: inline;
+            }
+        }
+
+        /* ============================================================
+           PROPERTY CARD - CLICKABLE IMAGE
+           ============================================================ */
+        .property-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transform: translateZ(0);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(20, 8, 5, 0.15);
+        }
+
+        .property-image-container {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            background: #1a1a1a;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .property-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .property-card:hover .property-image {
+            transform: scale(1.02);
+        }
+
+        .property-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 16px 14px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .property-card:hover .property-image-overlay {
+            opacity: 1;
+        }
+        .property-image-overlay .overlay-btn {
+            pointer-events: auto;
+        }
+
+        .overlay-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 48px;
+            min-height: 48px;
+            justify-content: center;
+        }
+        .overlay-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+        .overlay-btn:active {
+            transform: scale(0.95);
+        }
+        .overlay-btn i { 
+            font-size: 18px; 
+            margin-bottom: 2px;
+        }
+        .overlay-btn .count {
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+        .overlay-btn.liked {
+            background: rgba(255,77,61,0.4);
+            border-color: rgba(255,77,61,0.3);
+        }
+        .overlay-btn.liked i { color: var(--primary-color); }
+        .overlay-btn.liked .count { color: var(--primary-color); }
+        .overlay-btn.disliked {
+            background: rgba(255,77,61,0.4);
+            border-color: rgba(255,77,61,0.3);
+        }
+        .overlay-btn.disliked i { color: #ff6b6b; }
+        .overlay-btn.disliked .count { color: #ff6b6b; }
+        .overlay-btn.rated {
+            background: rgba(255,183,3,0.4);
+            border-color: rgba(255,183,3,0.3);
+        }
+        .overlay-btn.rated i { color: var(--gold-color); }
+
+        .property-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.6rem;
+            font-weight: 600;
+            background: var(--primary-color);
+            color: #fff;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .property-badge.featured { background: var(--gold-color); color: #1a1a1a; }
+        .property-badge.premium { background: #4caf50; }
+        .property-badge.online { background: #2196f3; }
+
+        .property-content { padding: 10px 14px; }
+        .property-title {
+            font-family: var(--font-display);
+            font-size: clamp(1rem, 0.95rem + 0.4vw, 1.1rem);
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: var(--dark-color);
+        }
+        .property-location {
+            font-size: 0.82rem;
+            color: #666;
+        }
+        .property-price {
+            font-family: var(--font-mono);
+            font-size: clamp(1rem, 0.95rem + 0.5vw, 1.2rem);
+            font-weight: 700;
+            color: var(--primary-color-deep);
+        }
+
+        .property-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px 6px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .property-rating .rating-number {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        .property-rating .rating-stars {
+            color: #ffc107;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        .property-rating .rating-count {
+            font-size: 11px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .property-details {
+            padding: 6px 14px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .property-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .property-detail-item i { color: var(--primary-color); width: 14px; }
+
+        .property-description {
+            padding: 6px 14px;
+            color: #666;
+            font-size: 0.82rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .property-footer {
+            padding: 6px 14px;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .property-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+        .btn-view-property {
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep));
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 30px;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        .btn-view-property:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
+        .btn-book {
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color-deep);
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 30px;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        .btn-book:hover { background: var(--primary-color); color: #fff; }
+        .btn-book.booked { background: #28a745; color: #fff; border-color: #28a745; cursor: default; }
+        .btn-discuss {
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--secondary-color);
+            background: transparent;
+            color: var(--secondary-color);
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 30px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+        }
+        .btn-discuss:hover { background: var(--secondary-color); color: #fff; }
+        .discuss-badge {
+            background: rgba(0,0,0,0.06);
+            border-radius: 6px;
+            padding: 0 6px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+        }
+
+        /* ============================================================
+           MAINTENANCE IMAGES - PROPER SIZING
+           ============================================================ */
+        .maintenance-image-container {
+            width: 100%;
+            max-height: 250px;
+            overflow: hidden;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #1a1a1a;
+            position: relative;
+        }
+        .maintenance-image-container img {
+            width: 100%;
+            height: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .maintenance-image-container .image-placeholder {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+            color: #666;
+            font-size: 14px;
+            border-radius: 6px;
+        }
+
+        /* ============================================================
+           HORIZONTAL CARDS ROW
            ============================================================ */
         .horizontal-cards-row {
             margin-bottom: 16px;
@@ -451,7 +1145,7 @@
         }
 
         /* ============================================================
-           SEE ALL MODAL - IMPROVED DESIGN
+           SEE ALL MODAL
            ============================================================ */
         .see-all-modal {
             position: fixed;
@@ -684,7 +1378,6 @@
         .see-all-grid .h-card.property-card .card-thumb {
             background: linear-gradient(135deg, #0d1a15, #1a2a20);
         }
-        /* Scrollbar styling for see-all grid */
         .see-all-grid::-webkit-scrollbar {
             width: 4px;
         }
@@ -831,253 +1524,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* ===== PROPERTY CARD ===== */
-        .property-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 14px;
-            overflow: hidden;
-            transform: translateZ(0);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .property-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(20, 8, 5, 0.15);
-        }
-
-        .property-image-container {
-            position: relative;
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            background: #1a1a1a;
-            overflow: hidden;
-        }
-        .property-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-        .property-card:hover .property-image {
-            transform: scale(1.02);
-        }
-
-        .property-image-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px 16px 14px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        .property-card:hover .property-image-overlay {
-            opacity: 1;
-        }
-
-        .overlay-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--radius-sm);
-            padding: 6px 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: var(--transition);
-            min-width: 48px;
-            min-height: 48px;
-            justify-content: center;
-        }
-        .overlay-btn:hover {
-            background: rgba(255,255,255,0.25);
-            transform: scale(1.05);
-        }
-        .overlay-btn:active {
-            transform: scale(0.95);
-        }
-        .overlay-btn i { 
-            font-size: 18px; 
-            margin-bottom: 2px;
-        }
-        .overlay-btn .count {
-            font-size: 11px;
-            font-weight: 600;
-            font-family: var(--font-mono);
-        }
-        .overlay-btn.liked {
-            background: rgba(255,77,61,0.4);
-            border-color: rgba(255,77,61,0.3);
-        }
-        .overlay-btn.liked i { color: var(--primary-color); }
-        .overlay-btn.liked .count { color: var(--primary-color); }
-        .overlay-btn.disliked {
-            background: rgba(255,77,61,0.4);
-            border-color: rgba(255,77,61,0.3);
-        }
-        .overlay-btn.disliked i { color: #ff6b6b; }
-        .overlay-btn.disliked .count { color: #ff6b6b; }
-        .overlay-btn.rated {
-            background: rgba(255,183,3,0.4);
-            border-color: rgba(255,183,3,0.3);
-        }
-        .overlay-btn.rated i { color: var(--gold-color); }
-
-        .property-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.6rem;
-            font-weight: 600;
-            background: var(--primary-color);
-            color: #fff;
-            z-index: 5;
-        }
-        .property-badge.featured { background: var(--gold-color); color: #1a1a1a; }
-        .property-badge.premium { background: #4caf50; }
-        .property-badge.online { background: #2196f3; }
-
-        .property-content { padding: 10px 14px; }
-        .property-title {
-            font-family: var(--font-display);
-            font-size: clamp(1rem, 0.95rem + 0.4vw, 1.1rem);
-            font-weight: 600;
-            margin-bottom: 2px;
-            color: var(--dark-color);
-        }
-        .property-location {
-            font-size: 0.82rem;
-            color: #666;
-        }
-        .property-price {
-            font-family: var(--font-mono);
-            font-size: clamp(1rem, 0.95rem + 0.5vw, 1.2rem);
-            font-weight: 700;
-            color: var(--primary-color-deep);
-        }
-
-        .property-rating {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 14px 6px;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .property-rating .rating-number {
-            font-family: var(--font-mono);
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--dark-color);
-        }
-        .property-rating .rating-stars {
-            color: #ffc107;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-        .property-rating .rating-count {
-            font-size: 11px;
-            color: #999;
-            font-weight: 500;
-        }
-
-        .property-details {
-            padding: 6px 14px;
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .property-detail-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-        .property-detail-item i { color: var(--primary-color); width: 14px; }
-
-        .property-description {
-            padding: 6px 14px;
-            color: #666;
-            font-size: 0.82rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .property-footer {
-            padding: 6px 14px;
-            background: rgba(0,0,0,0.02);
-            border-top: 1px solid rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .property-actions { display: flex; gap: 4px; flex-wrap: wrap; }
-        .btn-view-property {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: none;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep));
-            color: #fff;
-            font-weight: 500;
-            cursor: pointer;
-            min-height: 30px;
-            font-size: 12px;
-            transition: var(--transition);
-        }
-        .btn-view-property:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
-        .btn-book {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color-deep);
-            font-weight: 500;
-            cursor: pointer;
-            min-height: 30px;
-            font-size: 12px;
-            transition: var(--transition);
-        }
-        .btn-book:hover { background: var(--primary-color); color: #fff; }
-        .btn-book.booked { background: #28a745; color: #fff; border-color: #28a745; cursor: default; }
-        .btn-discuss {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid var(--secondary-color);
-            background: transparent;
-            color: var(--secondary-color);
-            font-weight: 500;
-            cursor: pointer;
-            min-height: 30px;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: var(--transition);
-        }
-        .btn-discuss:hover { background: var(--secondary-color); color: #fff; }
-        .discuss-badge {
-            background: rgba(0,0,0,0.06);
-            border-radius: 6px;
-            padding: 0 6px;
-            font-family: var(--font-mono);
-            font-size: 10px;
-        }
-
         .property-tag-chip {
             margin-top: 6px;
             padding: 6px 10px;
@@ -1090,59 +1536,6 @@
             flex-wrap: wrap;
         }
         .property-tag-chip strong { color: var(--ink); font-size: 12px; }
-
-        /* ===== CREATE POST ===== */
-        .create-post-card {
-            background: var(--glass);
-            backdrop-filter: blur(8px) saturate(130%);
-            -webkit-backdrop-filter: blur(8px) saturate(130%);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 12px;
-            margin-bottom: 14px;
-        }
-        .post-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex-shrink: 0;
-            font-size: 13px;
-        }
-        .post-input-wrapper { flex: 1; }
-        .post-input {
-            width: 100%;
-            padding: 8px 14px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background: #f0f2f5;
-            font-size: 13px;
-            cursor: pointer;
-            min-height: 34px;
-        }
-        .post-actions { display: flex; gap: 6px; padding-top: 6px; border-top: 1px solid #eee; flex-wrap: wrap; }
-        .post-action-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 6px;
-            border: none;
-            background: none;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: var(--transition);
-            min-height: 32px;
-            font-size: 12px;
-        }
-        .post-action-btn:hover { background: rgba(0,0,0,0.04); }
 
         /* ===== POSTS ===== */
         .post-card {
@@ -1652,9 +2045,7 @@
         .apps-grid a i { display: block; font-size: 20px; margin-bottom: 2px; color: var(--primary-color); }
         .apps-grid a:hover { background: linear-gradient(135deg, rgba(255,77,61,0.08), rgba(255,46,136,0.06)); transform: scale(1.04); }
 
-        /* ============================================================
-           TOAST - FRIENDLY & ENCOURAGING
-           ============================================================ */
+        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             top: 72px;
@@ -1907,6 +2298,10 @@
             .see-all-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
             }
+            
+            .pwa-install-btn {
+                bottom: 66px;
+            }
         }
         @media (max-width: 768px) {
             .main-container { padding: 8px; gap: 10px; }
@@ -1920,14 +2315,15 @@
             .see-all-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
             }
+            .pwa-install-btn {
+                bottom: 66px;
+            }
         }
         @media (max-width: 576px) {
             .nav-icons { gap: 4px; }
             .profile-avatar-small { width: 26px; height: 26px; font-size: 11px; }
             .apps-sticker { padding: 2px 6px; font-size: 10px; }
             .filter-row select, .filter-row input { min-width: 100%; }
-            .post-actions { flex-direction: column; }
-            .post-action-btn { width: 100%; }
             .apps-grid { grid-template-columns: repeat(3, 1fr); }
             .property-image-overlay { gap: 6px; }
             .overlay-btn { padding: 3px 6px; min-width: 32px; min-height: 32px; }
@@ -1954,6 +2350,30 @@
             .see-all-filter-bar .filter-chip {
                 font-size: 9px;
                 padding: 2px 8px;
+            }
+            
+            .pwa-install-btn {
+                bottom: 62px;
+                padding: 10px 18px;
+                font-size: 12px;
+                min-height: 44px;
+                width: calc(100% - 32px);
+                max-width: 360px;
+                white-space: normal;
+            }
+            .pwa-install-btn .btn-text .main-text {
+                font-size: 12px;
+            }
+            .pwa-install-btn .btn-text .sub-text {
+                font-size: 8px;
+            }
+            .pwa-install-btn .btn-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+            .pwa-install-btn .btn-icon i {
+                font-size: 12px;
             }
         }
         .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep)); border-color: var(--primary-color); }
@@ -2094,7 +2514,7 @@
         <div class="main-content">
 
             <!-- ============================================================
-                 HORIZONTAL CARDS ROW - SPOTIFY STYLE (FIXED - No inline onclick)
+                 HORIZONTAL CARDS ROW
                  ============================================================ -->
             <div class="horizontal-cards-row">
                 <div class="section-header">
@@ -2143,7 +2563,7 @@
                 </div>
             </div>
 
-            <!-- ===== CREATE POST ===== -->
+            <!-- ===== CREATE POST - FULLY RESPONSIVE ===== -->
             <div id="createPostCard" class="create-post-card hidden">
                 <div class="post-input-row">
                     <div class="user-avatar">{{ user.username|first|upper }}</div>
@@ -2152,9 +2572,18 @@
                     </div>
                 </div>
                 <div class="post-actions">
-                    <button class="post-action-btn" onclick="showPostModal()"><i class="fas fa-image text-success"></i> Photo</button>
-                    <button class="post-action-btn" onclick="showPostModal()"><i class="fas fa-video text-danger"></i> Video</button>
-                    <button class="post-action-btn" onclick="showPostModal()"><i class="fas fa-home" style="color:var(--primary-color);"></i> Tag Property</button>
+                    <button class="post-action-btn" onclick="showPostModal()">
+                        <i class="fas fa-image text-success"></i>
+                        <span class="btn-label">Photo</span>
+                    </button>
+                    <button class="post-action-btn" onclick="showPostModal()">
+                        <i class="fas fa-video text-danger"></i>
+                        <span class="btn-label">Video</span>
+                    </button>
+                    <button class="post-action-btn" onclick="showPostModal()">
+                        <i class="fas fa-home" style="color:var(--primary-color);"></i>
+                        <span class="btn-label">Tag Property</span>
+                    </button>
                 </div>
             </div>
 
@@ -2351,43 +2780,91 @@
         <a href="/messaging/"><i class="fas fa-envelope"></i>Messages</a>
     </div></div></div></div></div>
 
-    <!-- ===== LOGIN MODAL ===== -->
+    <!-- ===== LOGIN MODAL WITH GOOGLE ===== -->
     <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Login to Tolleya</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body"><form id="loginForm"><div class="mb-2"><label class="form-label" style="font-size:12px;">Username</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:12px;">Password</label><div class="password-input-group"><input type="password" class="form-control" name="password" id="loginPassword" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-        <div class="mb-2 text-end"><a href="/forgot-password/" class="text-decoration-none" style="color:var(--primary-color);font-size:11px;"><i class="fas fa-key me-1"></i>Forgot Password?</a></div>
-        <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Login</button></form></div></div></div>
+        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Welcome Back 👋</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <!-- Google Sign-In Button -->
+            <div id="googleLoginBtn" style="margin-bottom:12px;"></div>
+            
+            <div class="auth-divider">or continue with email</div>
+            
+            <form id="loginForm">
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Username or Email</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Password</label><div class="position-relative"><input type="password" class="form-control" name="password" id="loginPassword" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                <div class="mb-2 text-end"><a href="/forgot-password/" class="text-decoration-none" style="color:var(--primary-color);font-size:11px;"><i class="fas fa-key me-1"></i>Forgot Password?</a></div>
+                <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Login</button>
+            </form>
+            
+            <div class="text-center mt-2" style="font-size:11px;color:#999;">
+                Don't have an account? <a href="#" onclick="showSignup();$('#loginModal').modal('hide');" style="color:var(--primary-color);">Sign up</a>
+            </div>
+        </div></div></div>
     </div>
 
-    <!-- ===== USER SIGNUP MODAL ===== -->
+    <!-- ===== USER SIGNUP MODAL WITH GOOGLE ===== -->
     <div class="modal fade" id="signupModal" tabindex="-1">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">User Sign Up</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body"><form id="signupForm"><div class="mb-2"><label class="form-label" style="font-size:12px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:12px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:12px;">Mobile Phone *</label><input type="tel" class="form-control" name="mobile_phone" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:12px;">Password *</label><div class="password-input-group"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-        <div class="mb-2"><label class="form-label" style="font-size:12px;">Confirm Password *</label><div class="password-input-group"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-        <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Create Account</button></form></div></div></div>
+        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Create Account 🚀</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <!-- Google Sign-Up Button -->
+            <div id="googleSignupBtn" style="margin-bottom:12px;"></div>
+            
+            <div class="auth-divider">or sign up with email</div>
+            
+            <form id="signupForm">
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Mobile Phone *</label><input type="tel" class="form-control" name="mobile_phone" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                <div class="mb-2"><label class="form-label" style="font-size:12px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Create Account</button>
+            </form>
+            
+            <div class="text-center mt-2" style="font-size:11px;color:#999;">
+                Already have an account? <a href="#" onclick="showLogin();$('#signupModal').modal('hide');" style="color:var(--primary-color);">Login</a>
+            </div>
+        </div></div></div>
     </div>
 
-    <!-- ===== BUSINESS SIGNUP MODAL ===== -->
+    <!-- ===== BUSINESS SIGNUP MODAL (RESPONSIVE - FIXED POSITION) ===== -->
     <div class="modal fade" id="businessSignupModal" tabindex="-1">
-        <div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Create Business Account</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body"><form id="businessSignupForm" enctype="multipart/form-data"><div class="row"><div class="col-md-6"><h6 style="font-size:13px;">Company Information</h6>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Logo</label><input type="file" name="company_logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"><small class="text-muted" style="font-size:9px;">Optional</small></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Name *</label><input type="text" class="form-control" name="company_name" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Industry</label><select name="industry" class="form-control" id="industrySelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Industry</option></select></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Size</label><select name="company_size" class="form-control" id="companySizeSelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Size</option></select></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" class="form-control" name="website" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div></div>
-        <div class="col-md-6"><h6 style="font-size:13px;">Account Information</h6>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Password *</label><div class="password-input-group"><input type="password" class="form-control" name="password" id="businessPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Confirm Password *</label><div class="password-input-group"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Contact Phone</label><input type="tel" class="form-control" name="phone_number" style="font-size:12px;padding:4px 8px;"></div></div></div>
-        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description" style="font-size:12px;padding:4px 8px;"></textarea></div>
-        <button type="submit" class="btn btn-primary w-100" id="businessSignupBtn" style="font-size:12px;padding:6px;"><span id="businessSignupBtnText">Create Business Account</span></button></form></div></div></div>
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin: 10px auto; max-height: 95vh;">
+            <div class="modal-content" style="border-radius:16px;max-height:95vh;">
+                <div class="modal-header" style="flex-shrink:0;padding:12px 16px;">
+                    <h5 class="modal-title" style="font-size:14px;">🏢 Create Business Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="overflow-y:auto;padding:12px 16px;padding-bottom:20px;">
+                    <!-- Google Sign-Up for Business -->
+                    <div id="googleBusinessSignupBtn" style="margin-bottom:12px;"></div>
+                    
+                    <div class="auth-divider">or sign up with email</div>
+                    
+                    <form id="businessSignupForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Company Information</h6>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Logo</label><input type="file" name="company_logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"><small class="text-muted" style="font-size:9px;">Optional</small></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Name *</label><input type="text" class="form-control" name="company_name" required style="font-size:12px;padding:4px 8px;"></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Industry</label><select name="industry" class="form-control" id="industrySelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Industry</option></select></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Size</label><select name="company_size" class="form-control" id="companySizeSelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Size</option></select></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" class="form-control" name="website" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Account Information</h6>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Contact Phone</label><input type="tel" class="form-control" name="phone_number" style="font-size:12px;padding:4px 8px;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description" style="font-size:12px;padding:4px 8px;"></textarea></div>
+                        <button type="submit" class="btn btn-primary w-100" id="businessSignupBtn" style="font-size:12px;padding:8px;min-height:42px;"><span id="businessSignupBtnText">Create Business Account</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ===== AI CHAT ===== -->
@@ -2440,8 +2917,406 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     // ============================================================
-    // COMPLETE JAVASCRIPT
+    // GOOGLE SIGN-IN / LOGIN - FULLY FIXED
     // ============================================================
+    
+    // ⚠️ IMPORTANT: Replace this with your actual Google Client ID
+    // Get it from: Google Cloud Console → APIs & Services → Credentials
+    const GOOGLE_CLIENT_ID = '402309405742-cffefeqgl5dj875c5q1t5pqpm87jl53u.apps.googleusercontent.com';
+    
+    // ============================================================
+    // GOOGLE SIGN-IN FUNCTIONS
+    // ============================================================
+    
+    function handleGoogleLogin(response) {
+        showToast('🔄 Signing in with Google...', 'info');
+        
+        fetch('/api/auth/google-login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ credential: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+                showToast('🎉 Welcome back!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.error || 'Google login failed', 'error');
+            }
+        })
+        .catch(() => {
+            showToast('Network error. Please try again.', 'error');
+        });
+    }
+    
+    function handleGoogleSignup(response) {
+        showToast('🔄 Creating account with Google...', 'info');
+        
+        fetch('/api/auth/google-signup/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ credential: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
+                showToast('🎉 Account created!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.error || 'Google signup failed', 'error');
+            }
+        })
+        .catch(() => {
+            showToast('Network error. Please try again.', 'error');
+        });
+    }
+    
+    function handleGoogleBusinessSignup(response) {
+        showToast('🔄 Creating business account with Google...', 'info');
+        
+        fetch('/api/auth/google-business-signup/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ credential: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'))?.hide();
+                showToast('🎉 Business account created!', 'success');
+                setTimeout(() => window.location.href = data.redirect_to || '/admin-portal/', 2000);
+            } else {
+                showToast(data.error || 'Google business signup failed', 'error');
+            }
+        })
+        .catch(() => {
+            showToast('Network error. Please try again.', 'error');
+        });
+    }
+    
+    // ============================================================
+    // INITIALIZE GOOGLE SIGN-IN
+    // ============================================================
+    
+    function initGoogleSignIn() {
+        if (typeof google === 'undefined') {
+            console.log('Google SDK not loaded, retrying...');
+            setTimeout(initGoogleSignIn, 500);
+            return;
+        }
+        
+        console.log('Google SDK loaded, initializing with Client ID:', GOOGLE_CLIENT_ID);
+        
+        try {
+            // ✅ Initialize Google Identity Services with your Client ID
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: function(response) {
+                    console.log('Google callback received');
+                    
+                    // Determine which modal is open
+                    const loginModal = document.getElementById('loginModal');
+                    const signupModal = document.getElementById('signupModal');
+                    const businessModal = document.getElementById('businessSignupModal');
+                    
+                    if (loginModal && loginModal.classList.contains('show')) {
+                        handleGoogleLogin(response);
+                    } else if (signupModal && signupModal.classList.contains('show')) {
+                        handleGoogleSignup(response);
+                    } else if (businessModal && businessModal.classList.contains('show')) {
+                        handleGoogleBusinessSignup(response);
+                    } else {
+                        // Default to login if no modal is open
+                        handleGoogleLogin(response);
+                    }
+                },
+                cancel_on_tap_outside: false,
+                auto_select: false,
+            });
+            
+            console.log('Google initialized successfully');
+            
+            // Render Login Button
+            const loginBtnContainer = document.getElementById('googleLoginBtn');
+            if (loginBtnContainer) {
+                google.accounts.id.renderButton(
+                    loginBtnContainer,
+                    {
+                        type: 'standard',
+                        shape: 'pill',
+                        theme: 'outline',
+                        text: 'signin_with',
+                        size: 'large',
+                        width: '100%',
+                        logo_alignment: 'left'
+                    }
+                );
+                console.log('Login button rendered');
+            } else {
+                console.warn('Login button container not found');
+            }
+            
+            // Render Signup Button
+            const signupBtnContainer = document.getElementById('googleSignupBtn');
+            if (signupBtnContainer) {
+                google.accounts.id.renderButton(
+                    signupBtnContainer,
+                    {
+                        type: 'standard',
+                        shape: 'pill',
+                        theme: 'outline',
+                        text: 'signup_with',
+                        size: 'large',
+                        width: '100%',
+                        logo_alignment: 'left'
+                    }
+                );
+                console.log('Signup button rendered');
+            } else {
+                console.warn('Signup button container not found');
+            }
+            
+            // Render Business Signup Button
+            const businessBtnContainer = document.getElementById('googleBusinessSignupBtn');
+            if (businessBtnContainer) {
+                google.accounts.id.renderButton(
+                    businessBtnContainer,
+                    {
+                        type: 'standard',
+                        shape: 'pill',
+                        theme: 'outline',
+                        text: 'signup_with',
+                        size: 'large',
+                        width: '100%',
+                        logo_alignment: 'left'
+                    }
+                );
+                console.log('Business signup button rendered');
+            } else {
+                console.warn('Business signup button container not found');
+            }
+            
+        } catch (error) {
+            console.error('Error initializing Google Sign-In:', error);
+        }
+    }
+    
+    // ============================================================
+    // EVENT LISTENERS FOR GOOGLE SIGN-IN
+    // ============================================================
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing Google Sign-In...');
+        setTimeout(initGoogleSignIn, 1000);
+    });
+    
+    // Re-initialize when modals open
+    document.addEventListener('shown.bs.modal', function(event) {
+        const modalId = event.target.id;
+        if (['loginModal', 'signupModal', 'businessSignupModal'].includes(modalId)) {
+            console.log('Modal opened:', modalId);
+            setTimeout(initGoogleSignIn, 300);
+        }
+    });
+    
+    // Also try when Google SDK loads
+    window.onGoogleLibraryLoad = function() {
+        console.log('Google Library loaded event');
+        initGoogleSignIn();
+    };
+    
+    // ============================================================
+    // PWA INSTALL PROMPT - FUTURISTIC BUTTON
+    // ============================================================
+    let deferredPrompt;
+    let pwaInstallBtn = null;
+    let pwaInstalled = false;
+
+    function checkIfInstalled() {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            pwaInstalled = true;
+            return true;
+        }
+        if (localStorage.getItem('pwa_dismissed') === 'true') {
+            return false;
+        }
+        return false;
+    }
+
+    function createPwaInstallButton() {
+        if (pwaInstallBtn || pwaInstalled) return;
+        if (checkIfInstalled()) {
+            pwaInstalled = true;
+            return;
+        }
+        
+        const btn = document.createElement('button');
+        btn.className = 'pwa-install-btn';
+        btn.setAttribute('aria-label', 'Install Tolleya App');
+        
+        btn.innerHTML = `
+            <span class="btn-icon">
+                <i class="fas fa-download"></i>
+            </span>
+            <span class="btn-text">
+                <span class="main-text">📱 Install Tolleya App</span>
+                <span class="sub-text">Get the full experience</span>
+            </span>
+            <button class="close-btn" aria-label="Dismiss">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        document.body.appendChild(btn);
+        pwaInstallBtn = btn;
+        
+        setTimeout(() => {
+            btn.classList.add('show');
+        }, 500);
+        
+        btn.querySelector('.close-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            localStorage.setItem('pwa_dismissed', 'true');
+            btn.classList.remove('show');
+            setTimeout(() => btn.remove(), 400);
+            pwaInstallBtn = null;
+            showToast('You can install later from browser menu', 'info');
+        });
+        
+        btn.addEventListener('click', async function(e) {
+            if (e.target.closest('.close-btn')) return;
+            
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('PWA User response:', outcome);
+                deferredPrompt = null;
+                
+                btn.classList.remove('show');
+                setTimeout(() => {
+                    if (btn.parentNode) btn.remove();
+                    pwaInstallBtn = null;
+                }, 400);
+                
+                if (outcome === 'accepted') {
+                    showToast('🎉 Installing Tolleya...', 'success');
+                } else {
+                    showToast('You can install later from the browser menu', 'info');
+                }
+            } else {
+                showToast('Open browser menu → "Install App" or "Add to Home Screen"', 'info');
+            }
+        });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        if (!checkIfInstalled() && localStorage.getItem('pwa_dismissed') !== 'true') {
+            createPwaInstallButton();
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 App installed successfully!');
+        pwaInstalled = true;
+        
+        if (pwaInstallBtn) {
+            pwaInstallBtn.classList.remove('show');
+            setTimeout(() => {
+                if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
+                pwaInstallBtn = null;
+            }, 400);
+        }
+        
+        showToast('🎉 Thank you for installing Tolleya!', 'success');
+    });
+
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+        if (e.matches) {
+            pwaInstalled = true;
+            if (pwaInstallBtn) {
+                pwaInstallBtn.classList.remove('show');
+                setTimeout(() => {
+                    if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
+                    pwaInstallBtn = null;
+                }, 400);
+            }
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (checkIfInstalled()) {
+            pwaInstalled = true;
+            return;
+        }
+    });
+
+    function detectIOSPWA() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS && !checkIfInstalled() && !localStorage.getItem('pwa_dismissed')) {
+            setTimeout(() => {
+                if (!pwaInstallBtn && !pwaInstalled) {
+                    const iosHint = document.createElement('div');
+                    iosHint.className = 'pwa-install-btn show';
+                    iosHint.style.background = 'rgba(255, 255, 255, 0.1)';
+                    iosHint.style.backdropFilter = 'blur(20px)';
+                    iosHint.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                    iosHint.innerHTML = `
+                        <span class="btn-icon">
+                            <i class="fas fa-arrow-up" style="font-size:14px;color:#fff;"></i>
+                        </span>
+                        <span class="btn-text">
+                            <span class="main-text">Add to Home Screen</span>
+                            <span class="sub-text">Tap Share → Add to Home Screen</span>
+                        </span>
+                        <button class="close-btn" aria-label="Dismiss">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.body.appendChild(iosHint);
+                    
+                    iosHint.querySelector('.close-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        localStorage.setItem('pwa_dismissed', 'true');
+                        iosHint.classList.remove('show');
+                        setTimeout(() => iosHint.remove(), 400);
+                    });
+                    
+                    pwaInstallBtn = iosHint;
+                }
+            }, 3000);
+        }
+    }
+    detectIOSPWA();
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) return;
+        if (checkIfInstalled() && !pwaInstalled) {
+            pwaInstalled = true;
+            if (pwaInstallBtn) {
+                pwaInstallBtn.classList.remove('show');
+                setTimeout(() => {
+                    if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
+                    pwaInstallBtn = null;
+                }, 400);
+            }
+        }
+    });
 
     // ============================================================
     // UTILITY FUNCTIONS
@@ -2465,22 +3340,15 @@
     function showToast(message, type = 'success') {
         const container = document.querySelector('.toast-container');
         if (!container) return;
-        // Friendly, user-encouraging messages only - no "not found" or error chasing
-        const friendlyMessages = {
-            'success': '✅ ' + message,
-            'info': '💡 ' + message,
-            'warning': '⚠️ ' + message,
-            'error': '🔄 ' + message  // Changed from error to neutral
-        };
-        const colors = { success:'#28a745', error:'#17a2b8', info:'#17a2b8', warning:'#ffc107' };
-        const icons = { success:'fa-check-circle', error:'fa-info-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
+        const colors = { success:'#28a745', error:'#dc3545', info:'#17a2b8', warning:'#ffc107' };
+        const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
         const toast = document.createElement('div');
         toast.className = `toast show align-items-center text-white border-0`;
         toast.style.background = colors[type] || colors.info;
         toast.style.borderRadius = '6px';
-        toast.innerHTML = `<div class="d-flex"><div class="toast-body" style="font-size:12px;padding:6px 10px;"><i class="fas ${icons[type] || icons.info} me-2"></i>${friendlyMessages[type] || message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" style="font-size:8px;" onclick="this.parentElement.parentElement.remove()"></button></div>`;
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body" style="font-size:12px;padding:6px 10px;"><i class="fas ${icons[type] || icons.info} me-2"></i>${escapeHtml(message)}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" style="font-size:8px;" onclick="this.parentElement.parentElement.remove()"></button></div>`;
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
+        setTimeout(() => toast.remove(), 5000);
     }
 
     function togglePassword(inputId, button) {
@@ -2546,7 +3414,7 @@
     }
 
     // ============================================================
-    // HORIZONTAL CARDS - FULLY DYNAMIC (FIXED - No inline onclick)
+    // HORIZONTAL CARDS
     // ============================================================
     let allRecommendations = [];
     let seeAllFilter = 'all';
@@ -2557,7 +3425,6 @@
         
         const cards = [];
         
-        // 1. Reels from videoState
         if (videoState.videos && videoState.videos.length > 0) {
             videoState.videos.forEach(v => {
                 cards.push({
@@ -2574,7 +3441,6 @@
             });
         }
         
-        // 2. Feed Posts
         if (allFeedPosts && allFeedPosts.length > 0) {
             allFeedPosts.forEach(p => {
                 const content = p.content || '';
@@ -2592,7 +3458,6 @@
             });
         }
         
-        // 3. Properties
         if (allProperties && allProperties.length > 0) {
             allProperties.forEach(p => {
                 const priceStr = `${p.price_currency || 'ZAR'} ${Number(p.price || 0).toLocaleString()}`;
@@ -2625,7 +3490,6 @@
         }
         
         const shuffled = cards.sort(() => 0.5 - Math.random()).slice(0, 15);
-        // FIXED: No onclick attribute - uses data attributes instead
         container.innerHTML = shuffled.map(card => createCardHTML(card)).join('');
     }
 
@@ -2651,7 +3515,6 @@
             ? `<img src="${card.image}" alt="${escapeHtml(card.title)}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.thumb-placeholder').style.display='flex';">`
             : '';
         
-        // FIXED: No onclick attribute! Uses data-type and data-id instead
         return `
             <div class="h-card ${card.type}-card" data-type="${escapeHtml(String(card.type))}" data-id="${escapeHtml(String(card.id))}">
                 <div class="card-thumb">
@@ -2673,48 +3536,27 @@
         `;
     }
 
-    // ============================================================
-    // DELEGATED EVENT HANDLER - The professional fix!
-    // This handles ALL .h-card clicks, even after re-rendering
-    // ============================================================
     document.addEventListener('click', function(e) {
-        // Find the closest .h-card element (works for nested clicks too)
         const card = e.target.closest('.h-card');
         if (!card) return;
-        
-        // Read from data attributes (safe, no JS injection risk)
         const type = card.dataset.type;
         const id = card.dataset.id;
-        
         if (type && id) {
             handleCardClick(type, id);
         }
     });
 
-    // ============================================================
-    // handleCardClick - Fixed with no user-chasing error messages
-    // ============================================================
     function handleCardClick(type, id) {
         if (type === 'reel') {
             switchTab('videos');
             setTimeout(() => {
-                // Try to find the video with CSS.escape for safety
-                const target = document.querySelector(`.video-item[data-video-id="${CSS.escape(String(id))}"]`);
+                const target = document.querySelector(`.video-item[data-video-id="${id}"]`);
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     const video = target.querySelector('video');
                     if (video) video.play();
                 } else {
-                    // Silent fallback - just reload videos without scaring users
                     loadVideos(1);
-                    setTimeout(() => {
-                        const retryTarget = document.querySelector(`.video-item[data-video-id="${CSS.escape(String(id))}"]`);
-                        if (retryTarget) {
-                            retryTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            const video = retryTarget.querySelector('video');
-                            if (video) video.play();
-                        }
-                    }, 800);
                 }
             }, 500);
         } else if (type === 'feed') {
@@ -2726,7 +3568,6 @@
                     post.style.border = '2px solid var(--primary-color)';
                     setTimeout(() => { post.style.border = ''; }, 2000);
                 } else {
-                    // Silent reload - no scary error messages
                     loadFeedPosts();
                 }
             }, 400);
@@ -2739,7 +3580,6 @@
                     property.style.border = '2px solid var(--primary-color)';
                     setTimeout(() => { property.style.border = ''; }, 2000);
                 } else {
-                    // Silent reload - no scary error messages
                     loadProperties();
                 }
             }, 400);
@@ -2747,7 +3587,7 @@
     }
 
     // ============================================================
-    // SEE ALL FUNCTIONALITY - IMPROVED DESIGN
+    // SEE ALL
     // ============================================================
     function openSeeAll() {
         const modal = document.getElementById('seeAllModal');
@@ -2772,11 +3612,9 @@
     function renderSeeAll(filter) {
         const grid = document.getElementById('seeAllGrid');
         let filtered = allRecommendations;
-        
         if (filter !== 'all') {
             filtered = allRecommendations.filter(c => c.type === filter);
         }
-        
         if (filtered.length === 0) {
             grid.innerHTML = `
                 <div style="grid-column:1/-1;text-align:center;padding:40px 0;color:rgba(255,255,255,0.3);font-size:13px;">
@@ -2786,12 +3624,9 @@
             `;
             return;
         }
-        
-        // Use the same card HTML but with see-all specific styling
         grid.innerHTML = filtered.map(card => createSeeAllCardHTML(card)).join('');
     }
 
-    // Separate function for see-all cards with consistent sizing
     function createSeeAllCardHTML(card) {
         let metaHtml = '';
         if (card.type === 'property') {
@@ -2835,7 +3670,6 @@
         `;
     }
 
-    // Close see all modal on backdrop click
     document.getElementById('seeAllModal')?.addEventListener('click', function(e) {
         if (e.target === this) closeSeeAll();
     });
@@ -2890,7 +3724,7 @@
     }
 
     // ============================================================
-    // PROPERTIES
+    // PROPERTIES - WITH CLICKABLE IMAGES
     // ============================================================
     let allProperties = [];
     let currentRating = 0;
@@ -2939,26 +3773,26 @@
             
             return `
             <div class="property-card" id="property-${p.id}" data-property-id="${p.id}">
-                <div class="property-image-container">
+                <div class="property-image-container" onclick="viewProperty('${p.id}')">
                     <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${escapeHtml(p.title || 'Property')}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22300%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2220%22 font-family=%22sans-serif%22%3ENo Image%3C/text%3E%3C/svg%3E'">
                     ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
                     ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
                     ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
                     
                     <div class="property-image-overlay">
-                        <button class="overlay-btn ${userLiked ? 'liked' : ''}" onclick="togglePropertyInteraction('${p.id}', 'like')" id="like-btn-${p.id}" title="Like">
+                        <button class="overlay-btn ${userLiked ? 'liked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'like')" id="like-btn-${p.id}" title="Like">
                             <i class="${userLiked ? 'fas' : 'far'} fa-heart"></i>
                             <span class="count" id="like-count-${p.id}">${p.likes_count || 0}</span>
                         </button>
-                        <button class="overlay-btn ${userDisliked ? 'disliked' : ''}" onclick="togglePropertyInteraction('${p.id}', 'dislike')" id="dislike-btn-${p.id}" title="Dislike">
+                        <button class="overlay-btn ${userDisliked ? 'disliked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'dislike')" id="dislike-btn-${p.id}" title="Dislike">
                             <i class="${userDisliked ? 'fas' : 'far'} fa-thumbs-down"></i>
                             <span class="count" id="dislike-count-${p.id}">${p.dislikes_count || 0}</span>
                         </button>
-                        <button class="overlay-btn" onclick="openPropertyComments('${p.id}')" title="Comments">
+                        <button class="overlay-btn" onclick="event.stopPropagation();openPropertyComments('${p.id}')" title="Comments">
                             <i class="far fa-comment"></i>
                             <span class="count" id="comment-count-${p.id}">${p.comments_count || 0}</span>
                         </button>
-                        <button class="overlay-btn ${userRating > 0 ? 'rated' : ''}" onclick="openRatingModal('${p.id}')" id="rate-btn-${p.id}" title="Rate">
+                        <button class="overlay-btn ${userRating > 0 ? 'rated' : ''}" onclick="event.stopPropagation();openRatingModal('${p.id}')" id="rate-btn-${p.id}" title="Rate">
                             <i class="${userRating > 0 ? 'fas' : 'far'} fa-star"></i>
                             <span class="count">${userRating > 0 ? userRating : '☆'}</span>
                         </button>
@@ -3092,7 +3926,7 @@
             btn.innerHTML = original;
             btn.disabled = false;
             if (data.success) { showToast('Property booked!', 'success'); loadProperties(); }
-            else showToast('Booking request sent', 'info'); // Friendly message
+            else showToast('Booking request sent', 'info');
         })
         .catch(() => { btn.innerHTML = original; btn.disabled = false; showToast('Please try again', 'info'); });
     }
@@ -3319,7 +4153,7 @@
     }
 
     // ============================================================
-    // MAINTENANCE
+    // MAINTENANCE - WITH PROPER IMAGES
     // ============================================================
     let maintenanceTags = [];
     let maintenanceQuickImageFile = null;
@@ -3474,6 +4308,13 @@
                     <strong>${escapeHtml(r.property.title || 'Property')}</strong>
                     <button class="btn-discuss" style="padding:1px 6px;font-size:10px;min-height:24px;" onclick="viewProperty('${r.property.id}')">View</button>
                 </div>` : '';
+            
+            const imageHtml = r.image ? `
+                <div class="maintenance-image-container">
+                    <img src="${r.image}" alt="Maintenance image" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'image-placeholder\\'><i class=\\'fas fa-image\\' style=\\'margin-right:6px;\\'></i>No Image</div>'">
+                </div>
+            ` : '';
+            
             html += `
                 <div class="post-card" data-request-id="${r.id}" style="border-left:3px solid ${priorityColors[r.priority]||'#6c757d'};">
                     <div class="post-header">
@@ -3503,7 +4344,7 @@
                     <div class="post-content">
                         <p class="post-text" style="font-size:12px;">${escapeHtml(r.description || 'No description')}</p>
                         ${propertyHtml}
-                        ${r.image ? `<img src="${r.image}" class="post-image" style="max-height:250px;" loading="lazy" onerror="this.style.display='none'">` : ''}
+                        ${imageHtml}
                         ${r.notes ? `<div class="mt-1 p-1" style="background:rgba(0,0,0,0.03);border-radius:4px;font-size:0.8rem;"><i class="fas fa-sticky-note me-1 text-muted"></i>${escapeHtml(r.notes)}</div>` : ''}
                         ${r.estimated_cost ? `<div class="mt-1"><small class="text-muted">Est: $${parseFloat(r.estimated_cost).toFixed(2)}</small></div>` : ''}
                     </div>
