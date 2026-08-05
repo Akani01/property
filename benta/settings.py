@@ -28,8 +28,8 @@ ALLOWED_HOSTS = [
     'property-production-61c8.up.railway.app',
     '*.up.railway.app',
     '*.railway.app',
-    'oppoglobe.co.za'
-    'www.oppoglobe.co.za'
+    'oppoglobe.co.za',
+    'www.oppoglobe.co.za',
 ]
 
 # ============================================
