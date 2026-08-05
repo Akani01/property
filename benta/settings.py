@@ -28,6 +28,8 @@ ALLOWED_HOSTS = [
     'property-production-61c8.up.railway.app',
     '*.up.railway.app',
     '*.railway.app',
+    'oppoglobe.co.za'
+    'www.oppoglobe.co.za'
 ]
 
 # ============================================
@@ -41,6 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://property-production-61c8.up.railway.app',
     'https://*.up.railway.app',
     'https://*.railway.app',
+    'https://www.oppoglobe.co.za',
 ]
 
 # ============================================
@@ -53,6 +56,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://property-production-61c8.up.railway.app',
     'https://*.up.railway.app',
     'https://*.railway.app',
+    'https://www.oppoglobe.co.za',
+
 ]
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
