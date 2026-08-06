@@ -2,7 +2,7 @@
 // TOLOLEYA PWA - Complete Client-Side Setup
 // ============================================================
 
-class TolleyaPWA {
+class OppoGlobePWA {
     constructor() {
         this.deferredPrompt = null;
         this.isInstalled = false;
@@ -18,7 +18,7 @@ class TolleyaPWA {
         
         if (this.isStandalone) {
             this.isInstalled = true;
-            console.log('📱 Tolleya is running as installed app');
+            console.log('📱 OppoGlobe is running as installed app');
         }
         
         this.init();
@@ -128,7 +128,7 @@ class TolleyaPWA {
         });
         
         window.addEventListener('appinstalled', () => {
-            console.log('🎉 Tolleya installed successfully!');
+            console.log('🎉 OppoGlobe installed successfully!');
             this.isInstalled = true;
             this.hideInstallBanner();
             
@@ -140,7 +140,7 @@ class TolleyaPWA {
             }
             
             this.sendInstallEvent('installed');
-            this.showToast('🎉 Tolleya installed successfully!', 'success');
+            this.showToast('🎉 OppoGlobe installed successfully!', 'success');
         });
         
         window.addEventListener('displaymodechange', (e) => {
@@ -193,7 +193,7 @@ class TolleyaPWA {
                     <i class="fas fa-download" style="color:white;font-size:18px;"></i>
                 </div>
                 <div style="flex:1;min-width:0;">
-                    <div style="font-weight:600;font-size:14px;color:#1a1a2e;">Install Tolleya</div>
+                    <div style="font-weight:600;font-size:14px;color:#1a1a2e;">Install OppoGlobe</div>
                     <div style="font-size:12px;color:#8e8e8e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Get the full app experience</div>
                 </div>
             </div>
@@ -281,7 +281,7 @@ class TolleyaPWA {
                 }
                 
                 this.sendInstallEvent('accepted');
-                this.showToast('🎉 Thank you for installing Tolleya!', 'success');
+                this.showToast('🎉 Thank you for installing OppoGlobe!', 'success');
             } else {
                 console.log('❌ User dismissed install');
                 this.showToast('Installation canceled', 'info');
@@ -710,10 +710,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     
     if (!isStandalone) {
-        window.tolleyaPWA = new TolleyaPWA();
-        console.log('✅ Tolleya PWA initialized');
+        window.tolleyaPWA = new OppoGlobePWA();
+        console.log('✅ OppoGlobe PWA initialized');
     } else {
-        console.log('📱 Tolleya running as installed app');
+        console.log('📱 OppoGlobe running as installed app');
     }
 });
 
@@ -731,4 +731,4 @@ pwaStyles.textContent = `
 `;
 document.head.appendChild(pwaStyles);
 
-console.log('📱 Tolleya PWA loaded successfully');
+console.log('📱 OppoGlobe PWA loaded successfully');

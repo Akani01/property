@@ -173,7 +173,7 @@ self.addEventListener('push', event => {
             data = event.data.json();
         } catch (e) {
             data = {
-                title: 'Tolleya',
+                title: 'OppoGlobe',
                 body: event.data.text(),
                 icon: '/static/hiring/icons/icon-192.png',
                 badge: '/static/hiring/icons/icon-72.png'
@@ -203,7 +203,7 @@ self.addEventListener('push', event => {
     };
     
     event.waitUntil(
-        self.registration.showNotification(data.title || 'Tolleya', options)
+        self.registration.showNotification(data.title || 'OppoGlobe', options)
     );
 });
 
