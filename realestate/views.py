@@ -2144,3 +2144,157 @@ def advanced_property_search(request):
         'total_pages': (total + page_size - 1) // page_size,
         'results': serializer.data
     })
+
+# Add this to your views.py
+def booking_detail_view(request, pk):
+    """View for booking detail page"""
+    from django.shortcuts import render, get_object_or_404
+    booking = get_object_or_404(Booking, id=pk, guest=request.user)
+    
+    context = {
+        'booking': booking,
+        'property': booking.property,
+    }
+    return render(request, 'hiring/booking_detail.html', context)
+
+
+@csrf_exempt
+def share_property(request, property_id):
+    """Share a property - returns share data"""
+    try:
+        property_obj = get_object_or_404(Property, id=property_id, is_active=True)
+        
+        # Get share data
+        share_data = {
+            'success': True,
+            'title': property_obj.title,
+            'description': property_obj.description[:200] if property_obj.description else '',
+            'url': f"/properties/{property_obj.id}/",
+            'image': property_obj.get_main_image_url(),
+            'price': f"{property_obj.price_currency} {property_obj.base_price}" if property_obj.base_price else None,
+            'location': f"{property_obj.city}, {property_obj.country}" if property_obj.city else '',
+            'type': 'property',
+            'id': str(property_obj.id)
+        }
+        
+        # Record share (optional - track shares)
+        property_obj.shares_count = (getattr(property_obj, 'shares_count', 0) + 1)
+        property_obj.save(update_fields=['shares_count'])
+        
+        return JsonResponse(share_data)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+@csrf_exempt
+def share_post(request, post_id):
+    """Share a post"""
+    try:
+        post_obj = get_object_or_404(Post, id=post_id, is_published=True)
+        
+        share_data = {
+            'success': True,
+            'title': post_obj.title or 'Post',
+            'description': post_obj.content[:200] if post_obj.content else '',
+            'url': f"/post/{post_obj.id}/",
+            'image': post_obj.image.url if post_obj.image else None,
+            'type': 'post',
+            'id': str(post_obj.id),
+            'author': post_obj.author.username if post_obj.author else 'Unknown'
+        }
+        
+        # Track share
+        post_obj.shares = (post_obj.shares or 0) + 1
+        post_obj.save(update_fields=['shares'])
+        
+        return JsonResponse(share_data)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+@csrf_exempt
+def share_job(request, job_id):
+    """Share a job listing"""
+    try:
+        job_obj = get_object_or_404(JobListing, id=job_id)
+        
+        share_data = {
+            'success': True,
+            'title': job_obj.title,
+            'description': job_obj.position_summary[:200] if job_obj.position_summary else '',
+            'url': f"/jobs/{job_obj.id}/",
+            'company': job_obj.company_name,
+            'location': job_obj.location,
+            'type': 'job',
+            'id': str(job_obj.id)
+        }
+        
+        return JsonResponse(share_data)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+@csrf_exempt
+def share_education(request, type, item_id):
+    """Share education content"""
+    try:
+        # Import education models
+        from education.models import Bursary, University, School, QuestionPaper
+        
+        share_data = {
+            'success': True,
+            'type': type,
+            'id': str(item_id)
+        }
+        
+        if type == 'bursary':
+            item = get_object_or_404(Bursary, id=item_id, is_active=True)
+            share_data['title'] = item.title
+            share_data['description'] = item.description[:200] if item.description else ''
+            share_data['url'] = f"/education/bursary/{item.id}/"
+            share_data['provider'] = item.provider
+            share_data['amount'] = item.amount
+            
+        elif type == 'university':
+            item = get_object_or_404(University, id=item_id, is_active=True)
+            share_data['title'] = item.name
+            share_data['description'] = item.description[:200] if item.description else ''
+            share_data['url'] = f"/education/university/{item.id}/"
+            share_data['location'] = f"{item.city}, {item.province}" if item.city else ''
+            
+        elif type == 'school':
+            item = get_object_or_404(School, id=item_id, is_active=True)
+            share_data['title'] = item.name
+            share_data['description'] = item.address[:200] if item.address else ''
+            share_data['url'] = f"/education/school/{item.id}/"
+            share_data['location'] = f"{item.city}, {item.province}" if item.city else ''
+            
+        elif type == 'paper':
+            item = get_object_or_404(QuestionPaper, id=item_id)
+            share_data['title'] = item.title
+            share_data['description'] = f"{item.grade.name} - {item.subject.name}" if item.grade and item.subject else ''
+            share_data['url'] = f"/education/paper/{item.id}/"
+            share_data['year'] = item.year
+            
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid education type'
+            }, status=400)
+        
+        return JsonResponse(share_data)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

@@ -83,4 +83,10 @@ urlpatterns = [
     path('api/properties/<uuid:property_id>/rating-summary/', 
          views.get_property_rating_summary, 
          name='get_property_rating_summary'),
+    path('bookings/<uuid:pk>/', views.booking_detail_view, name='booking_detail'),
+    # Share endpoints
+    path('api/share/property/<uuid:property_id>/', views.share_property, name='share_property'),
+    path('api/share/post/<int:post_id>/', views.share_post, name='share_post'),
+    path('api/share/job/<int:job_id>/', views.share_job, name='share_job'),
+    path('api/share/education/<str:type>/<int:item_id>/', views.share_education, name='share_education'),
 ]
