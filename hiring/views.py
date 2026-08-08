@@ -50,6 +50,8 @@ from realestate.models import (
     BookingInquiry,
     AvailabilityCalendar,
     DriverLocation,
+    PropertyInteraction,  # ADD THIS
+    PropertyRating,       # ADD THIS
 )
 from notifications.models import *
 from realestate.models import PropertyAnalytics
@@ -11024,4 +11026,95 @@ def pwa_sw(request):
     
     return HttpResponse('Service Worker not found', status=404)
 
-    
+
+# Add this to hiring/views.py - near the end of the file, before pwa_sw
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_properties_with_owner(request):
+    """Custom endpoint that returns properties with full owner data"""
+    try:
+        properties = Property.objects.filter(is_active=True)
+        
+        result = []
+        for prop in properties:
+            owner_data = None
+            if prop.owner:
+                owner_data = {
+                    'id': prop.owner.id,
+                    'username': prop.owner.username,
+                    'first_name': prop.owner.first_name,
+                    'last_name': prop.owner.last_name,
+                    'full_name': prop.owner.get_full_name() or prop.owner.username,
+                    'email': prop.owner.email,
+                    'user_type': getattr(prop.owner, 'user_type', 'user'),
+                }
+            
+            # Get user interaction if authenticated
+            user_interaction = None
+            user_rating = None
+            if request.user.is_authenticated:
+                try:
+                    interaction = PropertyInteraction.objects.get(
+                        property=prop,
+                        user=request.user
+                    )
+                    user_interaction = interaction.interaction_type
+                except PropertyInteraction.DoesNotExist:
+                    pass
+                
+                try:
+                    rating = PropertyRating.objects.get(
+                        property=prop,
+                        user=request.user
+                    )
+                    user_rating = rating.rating
+                except PropertyRating.DoesNotExist:
+                    pass
+            
+            result.append({
+                'id': str(prop.id),
+                'property_reference': prop.property_reference,
+                'title': prop.title,
+                'description': prop.description,
+                'city': prop.city,
+                'country': prop.country,
+                'address': prop.address,
+                'base_price': str(prop.base_price) if prop.base_price else '0',
+                'price_currency': prop.price_currency,
+                'listing_type': prop.listing_type,
+                'status': prop.status,
+                'is_featured': prop.is_featured,
+                'is_premium': prop.is_premium,
+                'is_bookable': prop.is_bookable,
+                'bedrooms': prop.bedrooms,
+                'bathrooms': prop.bathrooms,
+                'garages': prop.garages,
+                'parking_spaces': prop.parking_spaces,
+                'total_area': str(prop.total_area) if prop.total_area else None,
+                'main_image_url': prop.get_main_image_url(),
+                'additional_images': prop.additional_images or [],
+                'likes_count': prop.likes_count,
+                'dislikes_count': prop.dislikes_count,
+                'average_rating': float(prop.average_rating or 0),
+                'rating_count': prop.rating_count,
+                'owner': owner_data,
+                'uploader_name': prop.owner.username if prop.owner else 'Unknown',
+                'user_interaction': user_interaction,
+                'user_rating': user_rating,
+                'created_at': prop.created_at.isoformat(),
+                'updated_at': prop.updated_at.isoformat(),
+            })
+        
+        return Response({
+            'success': True,
+            'properties': result,
+            'count': len(result)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in get_properties_with_owner: {str(e)}")
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   

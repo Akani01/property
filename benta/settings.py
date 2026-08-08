@@ -132,7 +132,7 @@ if not GOOGLE_CLIENT_ID and DEBUG:
     # GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'
     pass
 
-print(f"🔑 Google Client ID configured: {GOOGLE_CLIENT_ID[:20] if GOOGLE_CLIENT_ID else 'Not Set'}...")
+
 
 # PWA settings
 PWA_APP_NAME = 'Tolleya'
@@ -466,7 +466,7 @@ if GS_CREDENTIALS and GS_BUCKET_NAME:
         },
     }
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-    print(f"✅ Google Cloud Storage configured with uniform bucket-level access: {GS_BUCKET_NAME}")
+    
 else:
     # Fallback to local storage if no credentials
     STORAGES = {

@@ -107,10 +107,10 @@ class PropertyFeatureViewSet(viewsets.ModelViewSet):
 
 
 # ============================================================
-# PROPERTY VIEWSET
+# PROPERTY VIEWSET - FIXED (Only ONE definition)
 # ============================================================
 class PropertyViewSet(viewsets.ModelViewSet):
-    """Main Property ViewSet with all features including image management"""
+    """Main Property ViewSet with all features including image management and OWNER DATA"""
     queryset = Property.objects.filter(is_active=True)
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -141,7 +141,9 @@ class PropertyViewSet(viewsets.ModelViewSet):
         return context
     
     def list(self, request, *args, **kwargs):
-        """Override list to include user interactions"""
+        """
+        Override list to include user interactions AND FULL OWNER DATA
+        """
         queryset = self.filter_queryset(self.get_queryset())
         
         # Annotate user interactions if authenticated
@@ -169,10 +171,63 @@ class PropertyViewSet(viewsets.ModelViewSet):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            # Convert to list and add owner data
+            data = self._add_owner_data_to_serializer_data(serializer.data, request)
+            return self.get_paginated_response(data)
         
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        data = self._add_owner_data_to_serializer_data(serializer.data, request)
+        return Response({
+            'success': True,
+            'properties': data,
+            'count': len(data)
+        })
+    
+    def _add_owner_data_to_serializer_data(self, serializer_data, request):
+        """
+        Helper method to add full owner data to each property
+        """
+        result = []
+        for item in serializer_data:
+            property_id = item.get('id')
+            
+            # Get the property object from the queryset
+            try:
+                property_obj = Property.objects.get(id=property_id)
+            except Property.DoesNotExist:
+                result.append(item)
+                continue
+            
+            # Build owner data - Check if owner already exists in item
+            if 'owner' not in item or item['owner'] is None:
+                owner_data = None
+                if property_obj.owner:
+                    owner_data = {
+                        'id': property_obj.owner.id,
+                        'username': property_obj.owner.username,
+                        'first_name': property_obj.owner.first_name,
+                        'last_name': property_obj.owner.last_name,
+                        'full_name': property_obj.owner.get_full_name() or property_obj.owner.username,
+                        'email': property_obj.owner.email,
+                        'user_type': getattr(property_obj.owner, 'user_type', 'user'),
+                    }
+                elif property_obj.company:
+                    owner_data = {
+                        'id': property_obj.company.id,
+                        'username': property_obj.company.company_name,
+                        'first_name': property_obj.company.company_name,
+                        'last_name': '',
+                        'full_name': property_obj.company.company_name,
+                        'email': getattr(property_obj.company, 'email', ''),
+                        'user_type': 'business',
+                    }
+                
+                # Add owner data to item
+                item['owner'] = owner_data
+            
+            result.append(item)
+        
+        return result
     
     def perform_create(self, serializer):
         company = None
@@ -370,6 +425,68 @@ class PropertyViewSet(viewsets.ModelViewSet):
             'success': True,
             'message': 'Property deleted successfully'
         })
+
+
+# ============================================================
+# CUSTOM ENDPOINT FOR PROPERTIES WITH OWNER - USE THIS IN YOUR HTML
+# ============================================================
+@api_view(['GET'])
+def get_properties_with_owner(request):
+    """Custom endpoint that returns properties with full owner data"""
+    properties = Property.objects.filter(is_active=True)
+    
+    result = []
+    for prop in properties:
+        owner_data = None
+        if prop.owner:
+            owner_data = {
+                'id': prop.owner.id,
+                'username': prop.owner.username,
+                'first_name': prop.owner.first_name,
+                'last_name': prop.owner.last_name,
+                'full_name': prop.owner.get_full_name() or prop.owner.username,
+                'email': prop.owner.email,
+                'user_type': getattr(prop.owner, 'user_type', 'user'),
+            }
+        
+        result.append({
+            'id': str(prop.id),
+            'title': prop.title,
+            'description': prop.description,
+            'city': prop.city,
+            'country': prop.country,
+            'address': prop.address,
+            'base_price': str(prop.base_price) if prop.base_price else '0',
+            'price_currency': prop.price_currency,
+            'listing_type': prop.listing_type,
+            'status': prop.status,
+            'is_featured': prop.is_featured,
+            'is_premium': prop.is_premium,
+            'is_bookable': prop.is_bookable,
+            'bedrooms': prop.bedrooms,
+            'bathrooms': prop.bathrooms,
+            'garages': prop.garages,
+            'parking_spaces': prop.parking_spaces,
+            'total_area': str(prop.total_area) if prop.total_area else None,
+            'main_image_url': prop.get_main_image_url(),
+            'additional_images': prop.additional_images or [],
+            'likes_count': prop.likes_count,
+            'dislikes_count': prop.dislikes_count,
+            'average_rating': float(prop.average_rating or 0),
+            'rating_count': prop.rating_count,
+            'owner': owner_data,  # Full owner object
+            'uploader_name': prop.owner.username if prop.owner else 'Unknown',
+            'created_at': prop.created_at.isoformat(),
+            'updated_at': prop.updated_at.isoformat(),
+        })
+    
+    return Response({
+        'success': True,
+        'properties': result,
+        'count': len(result)
+    })
+
+
 # ============================================================
 # BOOKING VIEWSET
 # ============================================================
@@ -1497,7 +1614,7 @@ def api_business_bookings(request):
 
 
 # ============================================================
-# FIXED: PROPERTY INTERACTIONS (Like/Dislike) - SINGLE VERSION
+# FIXED: PROPERTY INTERACTIONS (Like/Dislike)
 # ============================================================
 
 @api_view(['POST'])

@@ -295,4 +295,5 @@ urlpatterns = [
     path('api/sync-pending/', views.sync_pending_data, name='sync_pending_data'),
     path('api/push/subscribe/', views.save_push_subscription, name='save_push_subscription'),
     path('api/push/test/', views.send_test_notification, name='send_test_notification'),
+    path('api/get-properties-with-owner/', views.get_properties_with_owner, name='get_properties_with_owner'),
 ]

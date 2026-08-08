@@ -93,7 +93,6 @@ class RoomSerializer(serializers.ModelSerializer):
 # 3. PROPERTY SERIALIZERS
 # ============================================
 # realestate/serializers.py - FIXED PropertyListSerializer
-
 class PropertyListSerializer(serializers.ModelSerializer):
     """List view serializer with user interactions"""
     
@@ -109,6 +108,9 @@ class PropertyListSerializer(serializers.ModelSerializer):
     user_interaction = serializers.SerializerMethodField()
     user_rating = serializers.SerializerMethodField()
     
+    # ADD THIS - Include the owner object
+    owner = serializers.SerializerMethodField()
+    
     class Meta:
         model = Property
         fields = [
@@ -122,6 +124,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             'likes_count', 'dislikes_count',
             'average_rating', 'rating_count',
             'uploader_name', 'user_interaction', 'user_rating',
+            'owner',  # ADD THIS
             'created_at', 'updated_at'
         ]
     
@@ -134,6 +137,28 @@ class PropertyListSerializer(serializers.ModelSerializer):
         elif obj.company:
             return obj.company.company_name
         return "Unknown"
+    
+    def get_owner(self, obj):
+        """Return owner information as an object"""
+        if obj.owner:
+            return {
+                'id': obj.owner.id,
+                'username': obj.owner.username,
+                'first_name': obj.owner.first_name,
+                'last_name': obj.owner.last_name,
+                'user_type': getattr(obj.owner, 'user_type', 'user'),
+                'email': obj.owner.email,
+            }
+        elif obj.company:
+            return {
+                'id': obj.company.id,
+                'username': obj.company.company_name,
+                'first_name': obj.company.company_name,
+                'last_name': '',
+                'user_type': 'business',
+                'email': obj.company.email if hasattr(obj.company, 'email') else '',
+            }
+        return None
     
     def get_user_interaction(self, obj):
         """Get current user's interaction"""
@@ -181,6 +206,12 @@ class PropertySerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.company_name', read_only=True, default=None)
     agent_name = serializers.SerializerMethodField()
     owner_name = serializers.SerializerMethodField()
+    
+    # ============================================================
+    # FIXED: Serialize owner as a full object
+    # ============================================================
+    owner = serializers.SerializerMethodField()
+    
     main_image_url = serializers.SerializerMethodField()
     features = PropertyFeatureSerializer(many=True, read_only=True)
     room_count = serializers.SerializerMethodField()
@@ -203,8 +234,10 @@ class PropertySerializer(serializers.ModelSerializer):
             'transaction_type', 'listing_date', 'expiry_date',
             'status', 'status_display', 'is_bookable', 'booking_mode',
             'available_from', 'available_until', 'minimum_stay',
-            'maximum_stay', 'owner', 'owner_name', 'listing_agent',
-            'agent_name', 'company', 'company_name',
+            'maximum_stay', 
+            'owner', 'owner_name',  # owner is now a full object
+            'listing_agent', 'agent_name', 
+            'company', 'company_name',
             'is_online', 'agent_status', 'assigned_agent',
             'main_image', 'main_image_url', 'virtual_tour_url',
             'additional_images', 'is_featured', 'is_premium',
@@ -229,9 +262,145 @@ class PropertySerializer(serializers.ModelSerializer):
             return obj.owner.get_full_name() or obj.owner.username
         return None
     
+    # ============================================================
+    # FIXED: Return owner as a full object with all needed fields
+    # ============================================================
+    def get_owner(self, obj):
+        """Return owner information as a full object for JavaScript"""
+        if obj.owner:
+            return {
+                'id': obj.owner.id,
+                'username': obj.owner.username,
+                'first_name': obj.owner.first_name,
+                'last_name': obj.owner.last_name,
+                'full_name': obj.owner.get_full_name() or obj.owner.username,
+                'email': obj.owner.email,
+                'user_type': getattr(obj.owner, 'user_type', 'user'),
+                'is_staff': obj.owner.is_staff,
+                'is_superuser': obj.owner.is_superuser,
+            }
+        return None
+    
     def get_room_count(self, obj):
         return obj.rooms.count()
 
+
+# ============================================================
+# FIXED: PropertyListSerializer with owner
+# ============================================================
+# ============================================
+# 3. PROPERTY LIST SERIALIZER - FIXED WITH OWNER
+# ============================================
+
+class PropertyListSerializer(serializers.ModelSerializer):
+    """List view serializer with user interactions"""
+    
+    likes_count = serializers.IntegerField(read_only=True, default=0)
+    dislikes_count = serializers.IntegerField(read_only=True, default=0)
+    average_rating = serializers.FloatField(read_only=True, default=0.0)
+    rating_count = serializers.IntegerField(read_only=True, default=0)
+    
+    main_image_url = serializers.SerializerMethodField()
+    uploader_name = serializers.SerializerMethodField()
+    user_interaction = serializers.SerializerMethodField()
+    user_rating = serializers.SerializerMethodField()
+    
+    # ============================================================
+    # FIX: ADD OWNER FIELD
+    # ============================================================
+    owner = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'property_reference', 'title', 'description',
+            'city', 'country', 'address',
+            'base_price', 'price_currency', 'listing_type',
+            'status', 'is_featured', 'is_premium', 'is_bookable',
+            'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
+            'total_area',
+            'main_image_url', 'additional_images',
+            'likes_count', 'dislikes_count',
+            'average_rating', 'rating_count',
+            'uploader_name', 'user_interaction', 'user_rating',
+            'owner',  # <-- ADD THIS
+            'created_at', 'updated_at'
+        ]
+    
+    def get_main_image_url(self, obj):
+        return obj.get_main_image_url()
+    
+    def get_uploader_name(self, obj):
+        if obj.owner:
+            return obj.owner.get_full_name() or obj.owner.username
+        elif obj.company:
+            return obj.company.company_name
+        return "Unknown"
+    
+    # ============================================================
+    # FIX: RETURN OWNER AS FULL OBJECT
+    # ============================================================
+    def get_owner(self, obj):
+        """Return owner information as a full object for JavaScript"""
+        if obj.owner:
+            return {
+                'id': obj.owner.id,
+                'username': obj.owner.username,
+                'first_name': obj.owner.first_name,
+                'last_name': obj.owner.last_name,
+                'full_name': obj.owner.get_full_name() or obj.owner.username,
+                'email': obj.owner.email,
+                'user_type': getattr(obj.owner, 'user_type', 'user'),
+            }
+        elif obj.company:
+            return {
+                'id': obj.company.id,
+                'username': obj.company.company_name,
+                'first_name': obj.company.company_name,
+                'last_name': '',
+                'full_name': obj.company.company_name,
+                'email': getattr(obj.company, 'email', ''),
+                'user_type': 'business',
+            }
+        return None
+    
+    def get_user_interaction(self, obj):
+        """Get current user's interaction"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            if hasattr(obj, 'user_interaction'):
+                return obj.user_interaction
+            try:
+                interaction = PropertyInteraction.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return interaction.interaction_type
+            except PropertyInteraction.DoesNotExist:
+                return None
+        return None
+    
+    def get_user_rating(self, obj):
+        """Get current user's rating"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            if hasattr(obj, 'user_rating'):
+                return obj.user_rating
+            try:
+                rating = PropertyRating.objects.get(
+                    property=obj,
+                    user=request.user
+                )
+                return rating.rating
+            except PropertyRating.DoesNotExist:
+                return None
+        return None
+
+
+
+# ============================================================
+# FIXED: PropertyDetailSerializer with owner
+# ============================================================
 
 class PropertyDetailSerializer(PropertySerializer):
     """Detailed serializer with additional analytics"""
@@ -286,7 +455,6 @@ class PropertyDetailSerializer(PropertySerializer):
         return PropertyReviewSerializer(reviews, many=True).data
     
     def get_available_dates(self, obj):
-        # Get availability calendar entries
         availability = obj.availability_calendar.filter(
             availability_type='available',
             end_date__gte=timezone.now().date()
@@ -299,7 +467,6 @@ class PropertyDetailSerializer(PropertySerializer):
             }
             for a in availability
         ]
-
 
 class PropertyCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating properties"""
@@ -1030,10 +1197,87 @@ class PropertyUpdateSerializer(serializers.ModelSerializer):
 # 12. PROPERTY SERIALIZER (Base)
 # ============================================================
 
+
 class PropertySerializer(serializers.ModelSerializer):
+    """Main Property Serializer with nested relationships"""
+    property_type_name = serializers.CharField(source='property_type.name', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    listing_type_display = serializers.CharField(source='get_listing_type_display', read_only=True)
+    company_name = serializers.CharField(source='company.company_name', read_only=True, default=None)
+    agent_name = serializers.SerializerMethodField()
+    owner_name = serializers.SerializerMethodField()
+    
+    # ============================================================
+    # FIX: ADD OWNER FIELD
+    # ============================================================
+    owner = serializers.SerializerMethodField()
+    
+    main_image_url = serializers.SerializerMethodField()
+    features = PropertyFeatureSerializer(many=True, read_only=True)
+    room_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = Property
-        fields = '__all__'
+        fields = [
+            'id', 'property_reference', 'title', 'description',
+            'property_type', 'property_type_name', 'custom_category_name',
+            'custom_category_description', 'features',
+            'address', 'city', 'state', 'country', 'postal_code',
+            'latitude', 'longitude', 'formatted_address', 'place_id',
+            'neighborhood', 'landmark', 'map_zoom_level', 'location_data',
+            'total_area', 'land_area', 'floor_area', 'total_rooms',
+            'total_floors', 'max_occupancy', 'room_count',
+            'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
+            'amenities', 'base_price', 'price_per_unit', 'price_per_sqm',
+            'price_currency', 'booking_unit', 'pricing_structure',
+            'pricing_details', 'listing_type', 'listing_type_display',
+            'transaction_type', 'listing_date', 'expiry_date',
+            'status', 'status_display', 'is_bookable', 'booking_mode',
+            'available_from', 'available_until', 'minimum_stay',
+            'maximum_stay', 
+            'owner', 'owner_name',  # owner is now a full object
+            'listing_agent', 'agent_name', 
+            'company', 'company_name',
+            'is_online', 'agent_status', 'assigned_agent',
+            'main_image', 'main_image_url', 'virtual_tour_url',
+            'additional_images', 'is_featured', 'is_premium',
+            'views_count', 'is_verified', 'is_active',
+            'custom_fields', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'property_reference', 'views_count', 
+            'listing_date', 'created_at', 'updated_at'
+        ]
+    
+    def get_main_image_url(self, obj):
+        return obj.get_main_image_url()
+    
+    def get_agent_name(self, obj):
+        if obj.listing_agent:
+            return obj.listing_agent.get_full_name() or obj.listing_agent.username
+        return None
+    
+    def get_owner_name(self, obj):
+        if obj.owner:
+            return obj.owner.get_full_name() or obj.owner.username
+        return None
+    
+    def get_owner(self, obj):
+        """Return owner information as a full object"""
+        if obj.owner:
+            return {
+                'id': obj.owner.id,
+                'username': obj.owner.username,
+                'first_name': obj.owner.first_name,
+                'last_name': obj.owner.last_name,
+                'full_name': obj.owner.get_full_name() or obj.owner.username,
+                'email': obj.owner.email,
+                'user_type': getattr(obj.owner, 'user_type', 'user'),
+            }
+        return None
+    
+    def get_room_count(self, obj):
+        return obj.rooms.count()
 
 
 # ============================================================
