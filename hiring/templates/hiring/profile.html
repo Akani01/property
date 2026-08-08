@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - JobPortal</title>
+    <title>My Profile - OppoGlobe</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
+        /* ============================================================
+           BASE STYLES
+           ============================================================ */
         .header-area {
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -39,7 +42,6 @@
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
             overflow-y: auto;
         }
-
         .desktop-sidebar a {
             display: block;
             padding: 12px 10px;
@@ -50,7 +52,6 @@
             font-weight: 500;
             transition: all 0.3s;
         }
-
         .desktop-sidebar a:hover,
         .desktop-sidebar a.active {
             background-color: rgba(255, 88, 158, 0.1);
@@ -58,21 +59,15 @@
         }
 
         @media (max-width: 991px) {
-            .desktop-sidebar {
-                display: none;
-            }
+            .desktop-sidebar { display: none; }
         }
-
         @media (min-width: 992px) {
-            body {
-                padding-left: 270px !important;
-            }
+            body { padding-left: 270px !important; }
         }
 
         .mobile-bottom-nav {
             display: none;
         }
-
         @media (max-width: 991px) {
             .mobile-bottom-nav {
                 display: flex;
@@ -150,13 +145,6 @@
             margin-bottom: 15px;
             color: #dee2e6;
         }
-        .skill-item, .employment-item, .education-item, .document-item {
-            border-left: 4px solid #ff589e;
-            transition: all 0.3s;
-        }
-        .skill-item:hover, .employment-item:hover, .education-item:hover, .document-item:hover {
-            background-color: #f8f9fa;
-        }
         .btn-primary {
             background: linear-gradient(135deg, #ff589e 0%, #ff136f 100%);
             border: none;
@@ -165,6 +153,39 @@
             background: linear-gradient(135deg, #ff136f 0%, #ff589e 100%);
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(255, 88, 158, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(17, 153, 142, 0.3);
+            color: #fff;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            border: none;
+            color: #1a1a1a;
+        }
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #ffd200 0%, #f7971e 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(247, 151, 30, 0.3);
+            color: #1a1a1a;
+        }
+        .btn-purple {
+            background: linear-gradient(135deg, #8a2be2 0%, #6a1bb2 100%);
+            border: none;
+            color: #fff;
+        }
+        .btn-purple:hover {
+            background: linear-gradient(135deg, #6a1bb2 0%, #8a2be2 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);
+            color: #fff;
         }
         .card-header {
             background-color: white;
@@ -196,14 +217,12 @@
             margin: 0;
             padding: 0;
         }
-
         .nav-icons a {
             font-size: 20px;
             color: #555;
             transition: 0.2s;
             text-decoration: none;
         }
-
         .nav-icons a:hover {
             color: #ff589e;
             transform: translateY(-2px);
@@ -212,7 +231,6 @@
         .profile-dropdown {
             position: relative;
         }
-
         .profile-avatar-small {
             width: 35px;
             height: 35px;
@@ -225,7 +243,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-
         .profile-menu {
             position: absolute;
             top: 50px;
@@ -241,13 +258,11 @@
             transition: all 0.25s ease;
             z-index: 1000;
         }
-
         .profile-menu.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0px);
         }
-
         .profile-menu a {
             display: flex;
             align-items: center;
@@ -257,39 +272,20 @@
             text-decoration: none;
             transition: 0.2s;
         }
-
         .profile-menu a:hover {
             background: #f5f7fa;
             color: #ff589e;
         }
-
         .profile-divider {
             height: 1px;
             background: #eee;
             margin: 8px 0;
         }
 
-        .dropdown-menu {
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-
-        #menuIcon {
-            padding: 8px;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
-
-        #menuIcon:hover {
-            background: rgba(0,0,0,0.1);
-        }
-
         .three-dot-menu {
             position: relative;
             cursor: pointer;
         }
-
         .three-dot-menu i {
             font-size: 22px;
             color: #555;
@@ -297,12 +293,10 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
-
         .three-dot-menu i:hover {
             background-color: #f0f0f0;
             color: #ff589e;
         }
-
         .three-dot-menu .menu-content {
             position: absolute;
             right: 0;
@@ -318,13 +312,11 @@
             transition: all 0.3s ease;
             z-index: 1000;
         }
-
         .three-dot-menu:hover .menu-content {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-
         .three-dot-menu .menu-content a {
             display: flex;
             align-items: center;
@@ -336,12 +328,10 @@
             background: none;
             width: 100%;
         }
-
         .three-dot-menu .menu-content a:hover {
             background: rgba(255, 88, 158, 0.1);
             color: #ff589e;
         }
-
         .three-dot-menu .menu-content a i {
             margin-right: 10px;
             font-size: 16px;
@@ -351,7 +341,6 @@
             background: none;
         }
 
-        /* Business-specific styles */
         .business-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
@@ -365,9 +354,347 @@
             border-left: 4px solid #667eea;
         }
         
-        /* Toast notifications */
         .toast-container {
             z-index: 9999;
+        }
+
+        .skill-item, .employment-item, .education-item, .document-item {
+            border-left: 4px solid #ff589e;
+            transition: all 0.3s;
+        }
+        .skill-item:hover, .employment-item:hover, .education-item:hover, .document-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* ============================================================
+           EDUCATION MANAGEMENT - CLEAN DESIGN
+           ============================================================ */
+        .edu-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .edu-stats-grid .stat-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+            border-left: 3px solid #f7971e;
+        }
+        .edu-stats-grid .stat-box .stat-number {
+            font-weight: 700;
+            font-size: 14px;
+            color: #f7971e;
+        }
+        .edu-stats-grid .stat-box .stat-label {
+            font-size: 8px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .edu-upload-bar {
+            background: rgba(247, 151, 30, 0.06);
+            border: 1px solid rgba(247, 151, 30, 0.12);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .edu-upload-bar .edu-label {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .edu-upload-bar .edu-label i {
+            color: #f7971e;
+        }
+        .edu-upload-bar .edu-actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .edu-upload-bar .edu-actions button {
+            padding: 4px 14px;
+            border-radius: 16px;
+            border: none;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f7971e;
+            color: #1a1a1a;
+        }
+        .edu-upload-bar .edu-actions button:hover {
+            transform: scale(1.04);
+        }
+        .edu-upload-bar .edu-actions button.outline {
+            background: transparent;
+            border: 1px solid rgba(247, 151, 30, 0.25);
+            color: #f7971e;
+        }
+        .edu-upload-bar .edu-actions button.outline:hover {
+            background: rgba(247, 151, 30, 0.08);
+        }
+
+        .edu-filter-chips {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .edu-filter-chips .chip {
+            padding: 4px 12px;
+            border-radius: 14px;
+            border: 1px solid #e0e0e0;
+            background: transparent;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+        .edu-filter-chips .chip:hover {
+            border-color: #f7971e;
+            color: #f7971e;
+        }
+        .edu-filter-chips .chip.active {
+            background: #f7971e;
+            border-color: #f7971e;
+            color: #1a1a1a;
+        }
+        .edu-filter-chips .chip i {
+            margin-right: 3px;
+        }
+
+        .edu-manage-item {
+            border-left: 4px solid #f7971e;
+            padding: 12px 14px;
+            border-radius: 6px;
+            background: #fafaf8;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+        }
+        .edu-manage-item:hover {
+            background: #f5f0e8;
+        }
+        .edu-manage-item .badge-type {
+            font-size: 9px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .badge-type.bursary { background: #11998e; color: #fff; }
+        .badge-type.university { background: #4facfe; color: #fff; }
+        .badge-type.school { background: #a18cd1; color: #fff; }
+        .badge-type.paper { background: #ff6b6b; color: #fff; }
+
+        /* ============================================================
+           AD MANAGEMENT - CLEAN DESIGN
+           ============================================================ */
+        .ad-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .ad-stats-grid .stat-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+            border-left: 3px solid #8a2be2;
+        }
+        .ad-stats-grid .stat-box .stat-number {
+            font-weight: 700;
+            font-size: 14px;
+            color: #8a2be2;
+        }
+        .ad-stats-grid .stat-box .stat-label {
+            font-size: 8px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .ad-upload-bar {
+            background: rgba(138, 43, 226, 0.06);
+            border: 1px solid rgba(138, 43, 226, 0.12);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .ad-upload-bar .ad-label {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ad-upload-bar .ad-label i {
+            color: #8a2be2;
+        }
+        .ad-upload-bar .ad-actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .ad-upload-bar .ad-actions button {
+            padding: 4px 14px;
+            border-radius: 16px;
+            border: none;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #8a2be2;
+            color: #fff;
+        }
+        .ad-upload-bar .ad-actions button:hover {
+            transform: scale(1.04);
+        }
+        .ad-upload-bar .ad-actions button.outline {
+            background: transparent;
+            border: 1px solid rgba(138, 43, 226, 0.25);
+            color: #8a2be2;
+        }
+        .ad-upload-bar .ad-actions button.outline:hover {
+            background: rgba(138, 43, 226, 0.08);
+        }
+
+        .ad-filter-chips {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .ad-filter-chips .chip {
+            padding: 4px 12px;
+            border-radius: 14px;
+            border: 1px solid #e0e0e0;
+            background: transparent;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+        .ad-filter-chips .chip:hover {
+            border-color: #8a2be2;
+            color: #8a2be2;
+        }
+        .ad-filter-chips .chip.active {
+            background: #8a2be2;
+            border-color: #8a2be2;
+            color: #fff;
+        }
+        .ad-filter-chips .chip i {
+            margin-right: 3px;
+        }
+
+        .ad-manage-item {
+            border-left: 4px solid #8a2be2;
+            padding: 12px 14px;
+            border-radius: 6px;
+            background: #fafaf8;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+        }
+        .ad-manage-item:hover {
+            background: #f5f0ff;
+        }
+        .ad-manage-item .status-badge {
+            font-size: 9px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .status-badge.active { background: #d4edda; color: #155724; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.rejected { background: #f8d7da; color: #721c24; }
+        .status-badge.paused { background: #cce5ff; color: #004085; }
+        .status-badge.expired { background: #e2e3e5; color: #383d41; }
+        .status-badge.draft { background: #d6d8db; color: #1b1e21; }
+
+        .ad-stats-mini {
+            display: flex;
+            gap: 12px;
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+        .ad-stats-mini span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .ad-stats-mini i {
+            color: #8a2be2;
+        }
+
+        .ad-action-btns {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .ad-action-btns button {
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: none;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ad-action-btns .btn-approve {
+            background: #28a745;
+            color: #fff;
+        }
+        .ad-action-btns .btn-approve:hover {
+            background: #218838;
+        }
+        .ad-action-btns .btn-reject {
+            background: #dc3545;
+            color: #fff;
+        }
+        .ad-action-btns .btn-reject:hover {
+            background: #c82333;
+        }
+        .ad-action-btns .btn-pause {
+            background: #ffc107;
+            color: #1a1a1a;
+        }
+        .ad-action-btns .btn-pause:hover {
+            background: #e0a800;
+        }
+        .ad-action-btns .btn-unpause {
+            background: #17a2b8;
+            color: #fff;
+        }
+        .ad-action-btns .btn-unpause:hover {
+            background: #138496;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .edu-stats-grid, .ad-stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .edu-upload-bar, .ad-upload-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .edu-upload-bar .edu-actions, .ad-upload-bar .ad-actions {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -381,54 +708,31 @@
                 <div class="col-12">
                     <nav class="main-nav">
                         <a href="/" class="logo">
-                            <img src="/static/images/logo.png" alt="JobPortal" style="max-height: 40px;">
+                            <img src="/static/images/logo.png" alt="OppoGlobe" style="max-height: 40px;">
                         </a>
 
-                        <!-- Top Right Icons -->
                         <ul class="nav-icons">
-                            <li>
-                                <a href="/" title="Home">
-                                    <i class="fas fa-home"></i>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="/#job-listings" title="Browse Jobs">
-                                    <i class="fas fa-search"></i>
-                                </a>
-                            </li>
+                            <li><a href="/" title="Home"><i class="fas fa-home"></i></a></li>
+                            <li><a href="/#job-listings" title="Browse Jobs"><i class="fas fa-search"></i></a></li>
 
                             {% if user.is_authenticated %}
-                            <li>
-                                <a href="/dashboard" title="Dashboard">
-                                    <i class="fas fa-th-large"></i>
-                                </a>
-                            </li>
+                            <li><a href="/dashboard" title="Dashboard"><i class="fas fa-th-large"></i></a></li>
 
-                            <!-- Profile Dropdown Icon -->
                             <li class="profile-dropdown">
                                 <div class="profile-avatar-small" onclick="toggleProfileDropdown()">
                                     {{ user.username|first|upper }}
                                 </div>
-
                                 <div class="profile-menu" id="profileMenu">
                                     <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
                                     <a href="/applications/"><i class="fas fa-file-alt"></i> Applications</a>
                                     <div class="profile-divider"></div>
-
                                     <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
                                     <a href="/preferences/"><i class="fas fa-cog"></i> Preferences</a>
-
                                     <div class="profile-divider"></div>
-
                                     <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
                                 </div>
                             </li>
-                            <li>
-                              <a href="/messaging/">
-                                <i class="fas fa-comment-dots"></i>
-                              </a>
-                            </li>  
+                            <li><a href="/messaging/"><i class="fas fa-comment-dots"></i></a></li>  
                             <li>
                                 <div class="three-dot-menu">
                                     <i class="bi bi-three-dots-vertical"></i>
@@ -442,17 +746,8 @@
                             </li>
 
                             {% else %}
-                            <li>
-                                <a href="#" onclick="showLogin()" title="Login">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="#" onclick="showSignup()" title="Sign Up">
-                                    <i class="fas fa-user-plus"></i>
-                                </a>
-                            </li>
+                            <li><a href="#" onclick="showLogin()" title="Login"><i class="fas fa-sign-in-alt"></i></a></li>
+                            <li><a href="#" onclick="showSignup()" title="Sign Up"><i class="fas fa-user-plus"></i></a></li>
                             {% endif %}
                         </ul>
                     </nav>
@@ -526,9 +821,9 @@
             </div>
         </div>
 
-        <!-- Applicant Sections (Only for Applicant Users) -->
+        <!-- Applicant Sections -->
         <div id="applicantSections">
-            <!-- Skills Section -->
+            <!-- Skills -->
             <div class="card section-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Skills</h5>
@@ -545,7 +840,7 @@
                 </div>
             </div>
 
-            <!-- Employment History -->
+            <!-- Employment -->
             <div class="card section-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Employment History</h5>
@@ -595,10 +890,158 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ============================================================
+                 EDUCATION MANAGEMENT - BUSINESS ONLY
+                 ============================================================ -->
+            <div class="card section-card" id="educationManagementSection" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2" style="color:#f7971e;"></i>Education Content</h5>
+                    <span class="badge" style="background:#f7971e;color:#1a1a1a;font-weight:600;">Business</span>
+                </div>
+                <div class="card-body">
+                    <!-- Stats -->
+                    <div class="edu-stats-grid" id="eduStatsGrid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="eduTotalCount">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="eduSchoolCount">0</div>
+                            <div class="stat-label">Schools</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="eduBursaryCount">0</div>
+                            <div class="stat-label">Bursaries</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="eduUniversityCount">0</div>
+                            <div class="stat-label">Universities</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="eduPaperCount">0</div>
+                            <div class="stat-label">Papers</div>
+                        </div>
+                    </div>
+
+                    <!-- Upload -->
+                    <div class="edu-upload-bar">
+                        <span class="edu-label">
+                            <i class="fas fa-plus-circle"></i> 
+                            <span>Add education content</span>
+                        </span>
+                        <div class="edu-actions">
+                            <button onclick="showEduUpload('school')"><i class="fas fa-school"></i> School</button>
+                            <button onclick="showEduUpload('bursary')"><i class="fas fa-hand-holding-heart"></i> Bursary</button>
+                            <button onclick="showEduUpload('paper')"><i class="fas fa-file-pdf"></i> Paper</button>
+                            <button class="outline" onclick="showEduUpload('university')"><i class="fas fa-university"></i> University</button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="edu-filter-chips">
+                        <button class="chip active" data-filter="all" onclick="filterEduManage('all', this)"><i class="fas fa-th"></i> All</button>
+                        <button class="chip" data-filter="school" onclick="filterEduManage('school', this)"><i class="fas fa-school"></i> Schools</button>
+                        <button class="chip" data-filter="bursary" onclick="filterEduManage('bursary', this)"><i class="fas fa-hand-holding-heart"></i> Bursaries</button>
+                        <button class="chip" data-filter="university" onclick="filterEduManage('university', this)"><i class="fas fa-university"></i> Universities</button>
+                        <button class="chip" data-filter="paper" onclick="filterEduManage('paper', this)"><i class="fas fa-file-pdf"></i> Papers</button>
+                        <span style="flex:1;"></span>
+                        <span style="font-size:10px;color:#999;" id="eduManageCount">0 items</span>
+                    </div>
+
+                    <!-- List -->
+                    <div id="educationManageContent">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2" style="font-size:12px;color:#999;">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 AD MANAGEMENT - BUSINESS ONLY
+                 ============================================================ -->
+            <div class="card section-card" id="adManagementSection" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-ad me-2" style="color:#8a2be2;"></i>Ad Campaigns</h5>
+                    <div>
+                        <span class="badge" style="background:#8a2be2;color:#fff;font-weight:600;margin-right:4px;">Business</span>
+                        {% if user.is_superuser or user.is_staff %}
+                        <span class="badge" style="background:#dc3545;color:#fff;font-weight:600;">Admin</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Stats -->
+                    <div class="ad-stats-grid" id="adStatsGrid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="adTotalCount">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="adActiveCount">0</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="adPendingCount">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="adImpressions">0</div>
+                            <div class="stat-label">Impressions</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="adClicks">0</div>
+                            <div class="stat-label">Clicks</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="adConversions">0</div>
+                            <div class="stat-label">Conversions</div>
+                        </div>
+                    </div>
+
+                    <!-- Upload -->
+                    <div class="ad-upload-bar">
+                        <span class="ad-label">
+                            <i class="fas fa-plus-circle"></i> 
+                            <span>Create ad campaign</span>
+                        </span>
+                        <div class="ad-actions">
+                            <button onclick="showAdUpload()"><i class="fas fa-plus"></i> New Ad</button>
+                            <button class="outline" onclick="loadAds()"><i class="fas fa-sync"></i> Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="ad-filter-chips">
+                        <button class="chip active" data-filter="all" onclick="filterAds('all', this)"><i class="fas fa-th"></i> All</button>
+                        <button class="chip" data-filter="active" onclick="filterAds('active', this)"><i class="fas fa-check-circle"></i> Active</button>
+                        <button class="chip" data-filter="pending" onclick="filterAds('pending', this)"><i class="fas fa-clock"></i> Pending</button>
+                        <button class="chip" data-filter="rejected" onclick="filterAds('rejected', this)"><i class="fas fa-times-circle"></i> Rejected</button>
+                        <button class="chip" data-filter="paused" onclick="filterAds('paused', this)"><i class="fas fa-pause-circle"></i> Paused</button>
+                        <button class="chip" data-filter="expired" onclick="filterAds('expired', this)"><i class="fas fa-hourglass-end"></i> Expired</button>
+                        <span style="flex:1;"></span>
+                        <span style="font-size:10px;color:#999;" id="adManageCount">0 ads</span>
+                    </div>
+
+                    <!-- List -->
+                    <div id="adManageContent">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2" style="font-size:12px;color:#999;">Loading ads...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Mobile Bottom Navbar -->
+    <!-- Mobile Bottom Nav -->
     <div class="mobile-bottom-nav">
         <a href="/"><i class="fas fa-home"></i>Home</a>
         <a href="/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
@@ -606,7 +1049,11 @@
         <a href="/profile/" class="active"><i class="fas fa-user"></i>Profile</a>
     </div>
 
-    <!-- Add Skill Modal -->
+    <!-- ============================================================
+         MODALS
+         ============================================================ -->
+
+    <!-- Skill Modal -->
     <div class="modal fade" id="skillModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -636,7 +1083,7 @@
         </div>
     </div>
 
-    <!-- Add Employment Modal -->
+    <!-- Employment Modal -->
     <div class="modal fade" id="employmentModal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -694,16 +1141,14 @@
                                     <input type="date" class="form-control" name="end_date">
                                     <div class="form-check mt-2">
                                         <input class="form-check-input" type="checkbox" id="currentlyWorking" name="currently_working">
-                                        <label class="form-check-label" for="currentlyWorking">
-                                            I currently work here
-                                        </label>
+                                        <label class="form-check-label" for="currentlyWorking">I currently work here</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Description</label>
-                            <textarea class="form-control" name="description" rows="4" placeholder="Describe your responsibilities and achievements"></textarea>
+                            <textarea class="form-control" name="description" rows="4"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Add Employment</button>
                     </form>
@@ -712,7 +1157,7 @@
         </div>
     </div>
 
-    <!-- Add Education Modal -->
+    <!-- Education Modal -->
     <div class="modal fade" id="educationModal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -750,20 +1195,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Grade</label>
-                                    <input type="text" class="form-control" name="grade" placeholder="e.g., 3.8 GPA, First Class">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="country" placeholder="Country of institution">
-                                </div>
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-primary w-100">Add Education</button>
                     </form>
                 </div>
@@ -771,7 +1202,7 @@
         </div>
     </div>
 
-    <!-- Add Document Modal -->
+    <!-- Document Modal -->
     <div class="modal fade" id="documentModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -784,22 +1215,43 @@
                         <div class="mb-3">
                             <label class="form-label">Document Type</label>
                             <select class="form-select" name="document_type" required>
-                                <option value="">Select Document Type</option>
+                                <option value="">Select Type</option>
                                 <option value="cv">CV / Resume</option>
                                 <option value="cover_letter">Cover Letter</option>
                                 <option value="certificate">Certificate</option>
-                                <option value="transcript">Academic Transcript</option>
+                                <option value="transcript">Transcript</option>
                                 <option value="id">ID Document</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Select File</label>
+                            <label class="form-label">File</label>
                             <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <div class="form-text">Allowed formats: PDF, DOC, DOCX, JPG, JPEG, PNG (Max 5MB)</div>
+                            <div class="form-text">PDF, DOC, DOCX, JPG, JPEG, PNG (Max 5MB)</div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-upload me-2"></i>Upload Document
+                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-upload me-2"></i>Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education Upload Modal -->
+    <div class="modal fade" id="eduUploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-graduation-cap me-2" style="color:#f7971e;"></i>
+                        <span id="eduUploadTitleText">Add Education Content</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eduUploadForm" enctype="multipart/form-data">
+                        <div id="eduUploadFields"></div>
+                        <button type="submit" class="btn btn-warning w-100 mt-3" id="eduUploadSubmitBtn">
+                            <i class="fas fa-upload me-2"></i>Upload Content
                         </button>
                     </form>
                 </div>
@@ -807,23 +1259,274 @@
         </div>
     </div>
 
-    <!-- Edit Personal Info Modal -->
-    <div class="modal fade" id="personalInfoModal">
+    <!-- Ad Create Modal -->
+    <div class="modal fade" id="adCreateModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
+                        <i class="fas fa-ad me-2" style="color:#8a2be2;"></i>
+                        <span id="adCreateTitle">Create Ad Campaign</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adCreateForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Ad Title *</label>
+                                    <input type="text" class="form-control" name="title" required style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Ad Type</label>
+                                    <select class="form-select" name="ad_type" style="font-size:13px;padding:6px 10px;">
+                                        <option value="promotion">Promotion</option>
+                                        <option value="property">Property</option>
+                                        <option value="service">Service</option>
+                                        <option value="event">Event</option>
+                                        <option value="brand">Brand Awareness</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" style="font-size:12px;">Description</label>
+                            <textarea class="form-control" name="description" rows="2" style="font-size:13px;padding:6px 10px;"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Image</label>
+                                    <input type="file" class="form-control" name="image" accept="image/*" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Image URL</label>
+                                    <input type="url" class="form-control" name="image_url" style="font-size:13px;padding:6px 10px;" placeholder="https://">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Price</label>
+                                    <input type="number" class="form-control" name="price" step="0.01" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Display Price</label>
+                                    <input type="text" class="form-control" name="display_price" style="font-size:13px;padding:6px 10px;" placeholder="e.g., From R500,000">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Currency</label>
+                                    <select class="form-select" name="price_currency" style="font-size:13px;padding:6px 10px;">
+                                        <option value="ZAR">ZAR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">CTA Text</label>
+                                    <input type="text" class="form-control" name="cta_text" style="font-size:13px;padding:6px 10px;" value="Learn More">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">CTA Link</label>
+                                    <input type="url" class="form-control" name="cta_link" style="font-size:13px;padding:6px 10px;" placeholder="https://">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Button Color</label>
+                                    <input type="color" class="form-control form-control-color" name="cta_button_color" style="font-size:13px;padding:4px;height:38px;" value="#8a2be2">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Text Color</label>
+                                    <input type="color" class="form-control form-control-color" name="cta_button_text_color" style="font-size:13px;padding:4px;height:38px;" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Placement</label>
+                                    <select class="form-select" name="position" style="font-size:13px;padding:6px 10px;">
+                                        <option value="feed">Feed</option>
+                                        <option value="sidebar">Sidebar</option>
+                                        <option value="top">Top Banner</option>
+                                        <option value="bottom">Bottom Banner</option>
+                                        <option value="popup">Popup</option>
+                                        <option value="both">Both</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Priority</label>
+                                    <input type="number" class="form-control" name="priority" style="font-size:13px;padding:6px 10px;" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Start Date</label>
+                                    <input type="datetime-local" class="form-control" name="start_date" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">End Date</label>
+                                    <input type="datetime-local" class="form-control" name="end_date" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Total Budget</label>
+                                    <input type="number" class="form-control" name="budget_total" step="0.01" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Daily Budget</label>
+                                    <input type="number" class="form-control" name="budget_daily" step="0.01" style="font-size:13px;padding:6px 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Frequency Cap</label>
+                                    <input type="number" class="form-control" name="frequency_cap" style="font-size:13px;padding:6px 10px;" placeholder="0 = unlimited">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Target Locations</label>
+                                    <input type="text" class="form-control" name="target_locations" style="font-size:13px;padding:6px 10px;" placeholder="e.g., Johannesburg, Cape Town">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Target User Types</label>
+                                    <select class="form-select" name="target_user_types" style="font-size:13px;padding:6px 10px;">
+                                        <option value="">All Users</option>
+                                        <option value="applicant">Applicants</option>
+                                        <option value="admin">Business/Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Min Age</label>
+                                    <input type="number" class="form-control" name="target_min_age" style="font-size:13px;padding:6px 10px;" placeholder="18">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Max Age</label>
+                                    <input type="number" class="form-control" name="target_max_age" style="font-size:13px;padding:6px 10px;" placeholder="65">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Target Property Types</label>
+                                    <input type="text" class="form-control" name="target_property_types" style="font-size:13px;padding:6px 10px;" placeholder="e.g., Apartment, House">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" style="font-size:12px;">Link to Property</label>
+                                    <select class="form-select" name="property" id="adPropertySelect" style="font-size:13px;padding:6px 10px;">
+                                        <option value="">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="is_featured" id="adIsFeatured">
+                                    <label class="form-check-label" style="font-size:12px;" for="adIsFeatured">Featured Ad</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="is_active" id="adIsActive" checked>
+                                    <label class="form-check-label" style="font-size:12px;" for="adIsActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-purple w-100 mt-2" id="adCreateSubmitBtn">
+                            <i class="fas fa-rocket me-2"></i>Create Ad
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Reject Modal -->
+    <div class="modal fade" id="adRejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-times-circle me-2" style="color:#dc3545;"></i>Reject Ad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adRejectForm">
+                        <div class="mb-3">
+                            <label class="form-label">Reason *</label>
+                            <textarea class="form-control" name="notes" rows="3" required></textarea>
+                        </div>
+                        <input type="hidden" name="ad_id" id="rejectAdId">
+                        <button type="submit" class="btn btn-danger w-100">Reject Ad</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Info Modal -->
+    <div class="modal fade" id="personalInfoModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Personal Information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="personalInfoForm">
-                         <button type="submit" class="btn btn-primary w-100">Update Information</button></h5>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Title</label>
                                     <select class="form-select" name="title" id="titleInput">
-                                        <option value="">Select Title</option>
+                                        <option value="">Select</option>
                                         <option value="mr">Mr</option>
                                         <option value="ms">Ms</option>
                                         <option value="mrs">Mrs</option>
@@ -835,7 +1538,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Gender</label>
                                     <select class="form-select" name="gender" id="genderInput">
-                                        <option value="">Select Gender</option>
+                                        <option value="">Select</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                         <option value="other">Other</option>
@@ -843,7 +1546,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -858,13 +1560,12 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Ethnicity</label>
                                     <select class="form-select" name="ethnicity" id="ethnicityInput">
-                                        <option value="">Select Ethnicity</option>
+                                        <option value="">Select</option>
                                         <option value="african">African</option>
                                         <option value="coloured">Coloured</option>
                                         <option value="indian">Indian</option>
@@ -875,10 +1576,10 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Citizenship Status</label>
+                                    <label class="form-label">Citizenship</label>
                                     <select class="form-select" name="is_citizen" id="citizenInput">
-                                        <option value="">Select Status</option>
-                                        <option value="south_african">South African Citizen</option>
+                                        <option value="">Select</option>
+                                        <option value="south_african">South African</option>
                                         <option value="permanent_resident">Permanent Resident</option>
                                         <option value="work_permit">Work Permit</option>
                                         <option value="other">Other</option>
@@ -886,7 +1587,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -896,99 +1596,90 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Current Location</label>
-                                    <input type="text" class="form-control" name="current_home_location" id="locationInput" placeholder="e.g., City, Country">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" name="current_home_location" id="locationInput">
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="has_drivers_license" id="driversLicenseInput">
-                                    <label class="form-check-label" for="driversLicenseInput">
-                                        Has Driver's License
-                                    </label>
+                                    <label class="form-check-label" for="driversLicenseInput">Driver's License</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="has_own_transport" id="ownTransportInput">
-                                    <label class="form-check-label" for="ownTransportInput">
-                                        Has Own Transport
-                                    </label>
+                                    <label class="form-check-label" for="ownTransportInput">Own Transport</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="willing_to_relocate" id="relocateInput">
-                                    <label class="form-check-label" for="relocateInput">
-                                        Willing to Relocate
-                                    </label>
+                                    <label class="form-check-label" for="relocateInput">Willing to Relocate</label>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Preferred Job Title</label>
-                                    <input type="text" class="form-control" name="preferred_job_title" id="preferredJobInput" placeholder="e.g., Software Engineer">
+                                    <label class="form-label">Preferred Job</label>
+                                    <input type="text" class="form-control" name="preferred_job_title" id="preferredJobInput">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Availability</label>
-                                    <input type="text" class="form-control" name="availability" id="availabilityInput" placeholder="e.g., Immediate, 2 weeks notice">
+                                    <input type="text" class="form-control" name="availability" id="availabilityInput" placeholder="e.g., Immediate">
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Current Salary Range</label>
+                                    <label class="form-label">Current Salary</label>
                                     <select class="form-select" name="current_salary" id="currentSalaryInput">
-                                        <option value="">Select Range</option>
-                                        <option value="0_50k">0 - 50K Annually</option>
-                                        <option value="50_100k">50 - 100K Annually</option>
-                                        <option value="100_150k">100 - 150K Annually</option>
-                                        <option value="150_200k">150 - 200K Annually</option>
-                                        <option value="200k_plus">200K+ Annually</option>
+                                        <option value="">Select</option>
+                                        <option value="0_50k">0 - 50K</option>
+                                        <option value="50_100k">50 - 100K</option>
+                                        <option value="100_150k">100 - 150K</option>
+                                        <option value="150_200k">150 - 200K</option>
+                                        <option value="200k_plus">200K+</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Desired Salary Range</label>
+                                    <label class="form-label">Desired Salary</label>
                                     <select class="form-select" name="desired_salary" id="desiredSalaryInput">
-                                        <option value="">Select Range</option>
-                                        <option value="0_50k">0 - 50K Annually</option>
-                                        <option value="50_100k">50 - 100K Annually</option>
-                                        <option value="100_150k">100 - 150K Annually</option>
-                                        <option value="150_200k">150 - 200K Annually</option>
-                                        <option value="200k_plus">200K+ Annually</option>
+                                        <option value="">Select</option>
+                                        <option value="0_50k">0 - 50K</option>
+                                        <option value="50_100k">50 - 100K</option>
+                                        <option value="100_150k">100 - 150K</option>
+                                        <option value="150_200k">150 - 200K</option>
+                                        <option value="200k_plus">200K+</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="mb-3">
-                            <label class="form-label">Professional Introduction</label>
-                            <textarea class="form-control" name="introduction" id="introductionInput" rows="4" placeholder="Brief professional introduction about yourself"></textarea>
+                            <label class="form-label">Introduction</label>
+                            <textarea class="form-control" name="introduction" id="introductionInput" rows="4"></textarea>
                         </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Information</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit Business Profile Modal -->
+    <!-- Business Profile Modal -->
     <div class="modal fade" id="businessProfileModal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><button type="submit" class="btn btn-primary w-100">Update Business Profile</button></h5>
+                    <h5 class="modal-title">Edit Business Profile</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -1002,24 +1693,21 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Phone Number</label>
+                                    <label class="form-label">Phone</label>
                                     <input type="text" class="form-control" name="phone_number" id="companyPhoneInput">
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="mb-3">
-                            <label class="form-label">Company Description</label>
-                            <textarea class="form-control" name="company_description" id="companyDescriptionInput" rows="3" placeholder="Brief description of your company"></textarea>
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="company_description" id="companyDescriptionInput" rows="3"></textarea>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Industry</label>
                                     <select class="form-select" name="industry" id="industryInput">
-                                        <option value="">Select Industry</option>
-                                        <!-- Options will be populated dynamically -->
+                                        <option value="">Select</option>
                                     </select>
                                 </div>
                             </div>
@@ -1027,82 +1715,69 @@
                                 <div class="mb-3">
                                     <label class="form-label">Company Size</label>
                                     <select class="form-select" name="company_size" id="companySizeInput">
-                                        <option value="">Select Company Size</option>
-                                        <!-- Options will be populated dynamically -->
+                                        <option value="">Select</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Website</label>
-                                    <input type="url" class="form-control" name="website" id="websiteInput" placeholder="https://example.com">
+                                    <input type="url" class="form-control" name="website" id="websiteInput" placeholder="https://">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Company Logo</label>
+                                    <label class="form-label">Logo</label>
                                     <input type="file" class="form-control" name="company_logo" id="companyLogoInput" accept="image/*">
-                                    <div class="form-text">Recommended size: 150x150 pixels</div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <div id="companyLogoPreview" class="mt-2"></div>
-                        </div>
-                        
+                        <div id="companyLogoPreview" class="mb-3"></div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Address</label>
-                                    <input type="text" class="form-control" name="address" id="addressInput" placeholder="Street address">
+                                    <input type="text" class="form-control" name="address" id="addressInput">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="city" id="cityInput" placeholder="City">
+                                    <input type="text" class="form-control" name="city" id="cityInput">
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="country" id="countryInput" placeholder="Country">
+                                    <input type="text" class="form-control" name="country" id="countryInput">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Postal Code</label>
-                                    <input type="text" class="form-control" name="postal_code" id="postalCodeInput" placeholder="Postal code">
+                                    <input type="text" class="form-control" name="postal_code" id="postalCodeInput">
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="receive_applicant_notifications" id="notificationsInput">
-                                    <label class="form-check-label" for="notificationsInput">
-                                        Receive Applicant Notifications
-                                    </label>
+                                    <label class="form-check-label" for="notificationsInput">Notifications</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="receive_newsletter" id="newsletterInput">
-                                    <label class="form-check-label" for="newsletterInput">
-                                        Receive Newsletter
-                                    </label>
+                                    <label class="form-check-label" for="newsletterInput">Newsletter</label>
                                 </div>
                             </div>
                         </div>
-                        
+                        <button type="submit" class="btn btn-primary w-100">Update Business Profile</button>
                     </form>
                 </div>
             </div>
@@ -1111,315 +1786,229 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Global variable to track user type
+        // ============================================================
+        // GLOBALS
+        // ============================================================
         let currentUserType = 'applicant';
+        let eduManageFilter = 'all';
+        let allEducationItems = [];
+        let eduUploadType = 'school';
+        let adFilter = 'all';
+        let allAds = [];
+        let isSuperAdmin = false;
 
-        // Simple navigation functions
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
         function toggleProfileDropdown() {
             document.getElementById("profileMenu").classList.toggle("show");
         }
-
-        // Close dropdown on click outside
         document.addEventListener("click", function(e) {
             const menu = document.getElementById("profileMenu");
             const avatar = document.querySelector(".profile-avatar-small");
-            const threeDotMenu = document.querySelector(".three-dot-menu");
-
             if (avatar && menu && !avatar.contains(e.target) && !menu.contains(e.target)) {
                 menu.classList.remove("show");
             }
         });
 
-        // Load profile data when page loads
+        // ============================================================
+        // LOAD PROFILE
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             loadProfileData();
             setupFormHandlers();
         });
 
         function setupFormHandlers() {
-            // Skill form handler
+            // Skill
             document.getElementById('skillForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData);
-                
+                const data = Object.fromEntries(new FormData(this));
                 fetch('/api/profile/skills/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                     body: JSON.stringify(data)
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('skillModal')).hide();
-                        document.getElementById('skillForm').reset();
+                        this.reset();
                         loadProfileData();
-                        showToast('Skill added successfully!', 'success');
-                    } else {
-                        showToast('Error adding skill: ' + (data.errors || 'Please try again'), 'error');
-                    }
+                        showToast('Skill added!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error adding skill. Please try again.', 'error');
-                });
+                .catch(() => showToast('Error', 'error'));
             });
 
-            // Employment form handler
+            // Employment
             document.getElementById('employmentForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData);
-                
-                // Handle currently working checkbox
+                const data = Object.fromEntries(new FormData(this));
                 data.currently_working = document.getElementById('currentlyWorking').checked;
-                if (data.currently_working) {
-                    data.end_date = null;
-                }
-                
+                if (data.currently_working) data.end_date = null;
                 fetch('/api/profile/employment/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                     body: JSON.stringify(data)
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('employmentModal')).hide();
-                        document.getElementById('employmentForm').reset();
+                        this.reset();
                         loadProfileData();
-                        showToast('Employment history added successfully!', 'success');
-                    } else {
-                        showToast('Error adding employment: ' + (data.errors || 'Please try again'), 'error');
-                    }
+                        showToast('Employment added!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error adding employment history. Please try again.', 'error');
-                });
+                .catch(() => showToast('Error', 'error'));
             });
 
-            // Education form handler
+            // Education
             document.getElementById('educationForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData);
-                
+                const data = Object.fromEntries(new FormData(this));
                 fetch('/api/profile/education/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                     body: JSON.stringify(data)
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('educationModal')).hide();
-                        document.getElementById('educationForm').reset();
+                        this.reset();
                         loadProfileData();
-                        showToast('Education added successfully!', 'success');
-                    } else {
-                        showToast('Error adding education: ' + (data.errors || 'Please try again'), 'error');
-                    }
+                        showToast('Education added!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error adding education. Please try again.', 'error');
-                });
+                .catch(() => showToast('Error', 'error'));
             });
 
-            // Document form handler
+            // Document
             document.getElementById('documentForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
-                
-                // Show loading state
-                const submitBtn = this.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
-                submitBtn.disabled = true;
-
+                const btn = this.querySelector('button[type="submit"]');
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+                btn.disabled = true;
                 fetch('/api/profile/documents/', {
                     method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'X-CSRFToken': getCSRFToken() },
                     body: formData
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('documentModal')).hide();
                         this.reset();
                         loadProfileData();
-                        showToast('Document uploaded successfully!', 'success');
-                    } else {
-                        let errorMessage = 'Error uploading document: ';
-                        if (data.errors) {
-                            errorMessage += Object.values(data.errors).join(', ');
-                        } else {
-                            errorMessage += 'Please try again.';
-                        }
-                        showToast(errorMessage, 'error');
-                    }
+                        showToast('Document uploaded!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error uploading document. Please try again.', 'error');
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                });
+                .catch(() => showToast('Error', 'error'))
+                .finally(() => { btn.innerHTML = original; btn.disabled = false; });
             });
 
-            // Personal info form handler
+            // Personal Info
             document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData);
-                
-                // Handle checkboxes properly
+                const data = Object.fromEntries(new FormData(this));
                 data.has_drivers_license = document.getElementById('driversLicenseInput').checked;
                 data.has_own_transport = document.getElementById('ownTransportInput').checked;
                 data.willing_to_relocate = document.getElementById('relocateInput').checked;
-                
-                // Handle empty strings for optional fields
-                const optionalFields = ['title', 'gender', 'ethnicity', 'is_citizen', 'current_home_location', 'preferred_job_title', 'availability', 'current_salary', 'desired_salary', 'introduction'];
-                optionalFields.forEach(field => {
-                    if (data[field] === '') {
-                        data[field] = null;
-                    }
+                ['title','gender','ethnicity','is_citizen','current_home_location','preferred_job_title','availability','current_salary','desired_salary','introduction'].forEach(f => {
+                    if (data[f] === '') data[f] = null;
                 });
-                
-                console.log('Sending profile update:', data);
-                
                 fetch('/api/profile/edit/', {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                     body: JSON.stringify(data)
                 })
-                .then(response => response.json().then(data => ({ status: response.status, data })))
+                .then(r => r.json().then(data => ({ status: r.status, data })))
                 .then(({ status, data }) => {
                     if (status === 200 && data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('personalInfoModal')).hide();
                         loadProfileData();
-                        showToast('Personal information updated successfully!', 'success');
-                    } else {
-                        console.error('Update failed:', data);
-                        let errorMessage = 'Error updating information';
-                        if (data.errors) {
-                            const errorMessages = [];
-                            for (const field in data.errors) {
-                                errorMessages.push(`${field}: ${data.errors[field].join(', ')}`);
-                            }
-                            errorMessage += ': ' + errorMessages.join('; ');
-                        }
-                        showToast(errorMessage, 'error');
-                    }
+                        showToast('Updated!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Network error:', error);
-                    showToast('Network error. Please check your connection and try again.', 'error');
-                });
+                .catch(() => showToast('Error', 'error'));
             });
 
-            // Business profile form handler
+            // Business Profile
             document.getElementById('businessProfileForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
                 const formData = new FormData(this);
-                
-                // Show loading state
-                const submitBtn = this.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
-                submitBtn.disabled = true;
-                
+                const btn = this.querySelector('button[type="submit"]');
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+                btn.disabled = true;
                 fetch('/api/profile/edit/', {
                     method: 'PUT',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    },
+                    headers: { 'X-CSRFToken': getCSRFToken() },
                     body: formData
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         bootstrap.Modal.getInstance(document.getElementById('businessProfileModal')).hide();
                         loadProfileData();
-                        showToast('Business profile updated successfully!', 'success');
-                    } else {
-                        let errorMessage = 'Error updating business profile';
-                        if (data.errors) {
-                            const errorMessages = [];
-                            for (const field in data.errors) {
-                                errorMessages.push(`${field}: ${data.errors[field].join(', ')}`);
-                            }
-                            errorMessage += ': ' + errorMessages.join('; ');
-                        }
-                        showToast(errorMessage, 'error');
-                    }
+                        showToast('Business profile updated!', 'success');
+                    } else showToast('Error', 'error');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error updating business profile. Please try again.', 'error');
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                });
+                .catch(() => showToast('Error', 'error'))
+                .finally(() => { btn.innerHTML = original; btn.disabled = false; });
             });
 
-            // Currently working checkbox handler
+            // Education Upload
+            document.getElementById('eduUploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitEduUpload();
+            });
+
+            // Ad Create
+            document.getElementById('adCreateForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitAdCreate();
+            });
+
+            // Ad Reject
+            document.getElementById('adRejectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitAdReject();
+            });
+
+            // Currently working
             document.getElementById('currentlyWorking').addEventListener('change', function() {
-                const endDateInput = document.querySelector('input[name="end_date"]');
-                if (this.checked) {
-                    endDateInput.disabled = true;
-                    endDateInput.value = '';
-                } else {
-                    endDateInput.disabled = false;
-                }
+                const endDate = document.querySelector('input[name="end_date"]');
+                if (this.checked) { endDate.disabled = true; endDate.value = ''; }
+                else { endDate.disabled = false; }
             });
 
-            // Company logo preview
+            // Logo preview
             document.getElementById('companyLogoInput').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 const preview = document.getElementById('companyLogoPreview');
-                
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        preview.innerHTML = `<img src="${e.target.result}" class="company-logo-preview" alt="Company Logo Preview">`;
+                        preview.innerHTML = `<img src="${e.target.result}" class="company-logo-preview">`;
                     };
                     reader.readAsDataURL(file);
-                } else {
-                    preview.innerHTML = '';
-                }
+                } else preview.innerHTML = '';
             });
         }
 
         function loadProfileData() {
             fetch('/api/profile/')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        // Determine user type and update UI accordingly
                         currentUserType = data.user_type || 'applicant';
+                        isSuperAdmin = data.user?.is_superuser || data.user?.is_staff || false;
                         updateUIForUserType(currentUserType, data);
-                        
                         if (currentUserType === 'applicant') {
                             updateProfileCompleteness(data.profile);
                             displayPersonalInfo(data.profile);
@@ -1427,25 +2016,21 @@
                             displayEmployment(data.employment);
                             displayEducation(data.education);
                             displayDocuments(data.documents);
+                            document.getElementById('educationManagementSection').style.display = 'none';
+                            document.getElementById('adManagementSection').style.display = 'none';
                         } else if (currentUserType === 'admin') {
                             displayUserInfo(data.user);
                             displayBusinessProfile(data.business_profile);
+                            document.getElementById('educationManagementSection').style.display = 'block';
+                            document.getElementById('adManagementSection').style.display = 'block';
+                            loadEducationManageContent();
+                            loadAds();
+                            loadAdStats();
+                            loadPropertiesForAdSelect();
                         }
-                    } else {
-                        console.error('Failed to load profile data');
-                        showToast('Error loading profile data', 'error');
-                    }
+                    } else showToast('Error loading profile', 'error');
                 })
-                .catch(error => {
-                    console.error('Error loading profile:', error);
-                    // Show error states
-                    document.querySelectorAll('.card-body').forEach(el => {
-                        if (el.querySelector('.spinner-border')) {
-                            el.innerHTML = '<div class="text-center text-muted py-4">Error loading data. Please refresh the page.</div>';
-                        }
-                    });
-                    showToast('Error loading profile data', 'error');
-                });
+                .catch(() => showToast('Error loading profile', 'error'));
         }
 
         function updateUIForUserType(userType, data) {
@@ -1454,43 +2039,48 @@
             const profileSubtitle = document.getElementById('profileSubtitle');
             const userInfoTitle = document.getElementById('userInfoTitle');
             const editUserInfoBtn = document.getElementById('editUserInfoBtn');
-            const profileCompletenessSection = document.getElementById('profileCompletenessSection');
+            const completeness = document.getElementById('profileCompletenessSection');
             const applicantSections = document.getElementById('applicantSections');
-            const businessProfileSection = document.getElementById('businessProfileSection');
+            const businessSection = document.getElementById('businessProfileSection');
+            const eduSection = document.getElementById('educationManagementSection');
+            const adSection = document.getElementById('adManagementSection');
 
             if (userType === 'admin') {
-                // Business user UI
                 profileHeader.classList.add('business-section');
                 profileTitle.textContent = 'Business Profile';
-                profileSubtitle.textContent = 'Manage your company information and settings';
+                profileSubtitle.textContent = 'Manage your company, ads, and education content';
                 userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Account Information';
                 editUserInfoBtn.textContent = 'Edit Account';
-                profileCompletenessSection.style.display = 'none';
-                applicantSections.style.display = 'none';
-                businessProfileSection.style.display = 'block';
+                completeness.style.display = 'none';
+                applicantSections.style.display = 'block';
+                businessSection.style.display = 'block';
+                if (eduSection) eduSection.style.display = 'block';
+                if (adSection) adSection.style.display = 'block';
             } else {
-                // Applicant user UI
                 profileHeader.classList.remove('business-section');
                 profileTitle.textContent = 'My Profile';
-                profileSubtitle.textContent = 'Manage your professional information and job preferences';
+                profileSubtitle.textContent = 'Manage your professional information';
                 userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Personal Information';
                 editUserInfoBtn.textContent = 'Edit';
-                profileCompletenessSection.style.display = 'block';
+                completeness.style.display = 'block';
                 applicantSections.style.display = 'block';
-                businessProfileSection.style.display = 'none';
+                businessSection.style.display = 'none';
+                if (eduSection) eduSection.style.display = 'none';
+                if (adSection) adSection.style.display = 'none';
             }
         }
 
+        // ============================================================
+        // DISPLAY FUNCTIONS
+        // ============================================================
         function updateProfileCompleteness(profile) {
-            const completeness = profile.profile_completeness || 0;
-            document.getElementById('completenessBar').style.width = `${completeness}%`;
-            document.getElementById('completenessText').textContent = `${completeness}% Complete`;
+            const c = profile.profile_completeness || 0;
+            document.getElementById('completenessBar').style.width = c + '%';
+            document.getElementById('completenessText').textContent = c + '% Complete';
         }
 
         function displayUserInfo(user) {
-            const content = document.getElementById('userInfoContent');
-            
-            content.innerHTML = `
+            document.getElementById('userInfoContent').innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Username:</strong> ${user.username || 'Not set'}</p>
@@ -1501,73 +2091,52 @@
                         <p><strong>Last Name:</strong> ${user.last_name || 'Not set'}</p>
                         <p><strong>Phone:</strong> ${user.mobile_phone || 'Not set'}</p>
                         <p><strong>User Type:</strong> ${user.user_type || 'Not set'}</p>
+                        ${isSuperAdmin ? '<p><strong>Role:</strong> <span class="badge bg-danger">Super Admin</span></p>' : ''}
                     </div>
                 </div>
             `;
         }
 
-        function displayBusinessProfile(businessProfile) {
+        function displayBusinessProfile(business) {
             const content = document.getElementById('businessProfileContent');
-            
-            if (!businessProfile) {
+            if (!business) {
                 content.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-building"></i>
                         <h5>No Business Profile</h5>
-                        <p>Set up your business profile to start posting jobs.</p>
                         <button class="btn btn-primary" onclick="editBusinessProfile()">Setup Business Profile</button>
                     </div>
                 `;
                 return;
             }
-
             content.innerHTML = `
                 <div class="row">
                     <div class="col-md-4 text-center mb-3">
-                        ${businessProfile.company_logo ? 
-                            `<img src="${businessProfile.company_logo}" class="company-logo-preview" alt="${businessProfile.company_name}">` :
-                            '<div class="text-muted"><i class="fas fa-building fa-3x"></i><br>No Logo</div>'
-                        }
+                        ${business.company_logo ? `<img src="${business.company_logo}" class="company-logo-preview">` :
+                            '<div class="text-muted"><i class="fas fa-building fa-3x"></i><br>No Logo</div>'}
                     </div>
                     <div class="col-md-8">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Company Name:</strong> ${businessProfile.company_name || 'Not set'}</p>
-                                <p><strong>Industry:</strong> ${businessProfile.industry_name || 'Not set'}</p>
-                                <p><strong>Company Size:</strong> ${businessProfile.company_size_name || 'Not set'}</p>
+                                <p><strong>Company:</strong> ${business.company_name || 'Not set'}</p>
+                                <p><strong>Industry:</strong> ${business.industry_name || 'Not set'}</p>
+                                <p><strong>Size:</strong> ${business.company_size_name || 'Not set'}</p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Phone:</strong> ${businessProfile.phone_number || 'Not set'}</p>
-                                <p><strong>Website:</strong> ${businessProfile.website ? `<a href="${businessProfile.website}" target="_blank">${businessProfile.website}</a>` : 'Not set'}</p>
-                                <p><strong>Verification:</strong> ${businessProfile.is_verified ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-warning">Pending</span>'}</p>
+                                <p><strong>Phone:</strong> ${business.phone_number || 'Not set'}</p>
+                                <p><strong>Website:</strong> ${business.website ? `<a href="${business.website}" target="_blank">${business.website}</a>` : 'Not set'}</p>
+                                <p><strong>Verified:</strong> ${business.is_verified ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-warning">Pending</span>'}</p>
                             </div>
                         </div>
-                        ${businessProfile.company_description ? `
-                            <div class="mt-3">
-                                <strong>Company Description:</strong>
-                                <p class="mt-1">${businessProfile.company_description}</p>
-                            </div>
-                        ` : ''}
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <p><strong>Address:</strong> ${businessProfile.address || 'Not set'}</p>
-                                <p><strong>City:</strong> ${businessProfile.city || 'Not set'}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Country:</strong> ${businessProfile.country || 'Not set'}</p>
-                                <p><strong>Postal Code:</strong> ${businessProfile.postal_code || 'Not set'}</p>
-                            </div>
-                        </div>
+                        ${business.company_description ? `<div class="mt-2"><strong>Description:</strong><p class="mt-1">${business.company_description}</p></div>` : ''}
                     </div>
                 </div>
             `;
         }
 
         function displayPersonalInfo(profile) {
-            const content = document.getElementById('userInfoContent');
             const user = profile.user || {};
-            
-            content.innerHTML = `
+            document.getElementById('userInfoContent').innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Name:</strong> ${profile.first_name || 'Not set'} ${profile.last_name || ''}</p>
@@ -1575,56 +2144,30 @@
                         <p><strong>Phone:</strong> ${user.mobile_phone || 'Not set'}</p>
                         <p><strong>Title:</strong> ${profile.title || 'Not set'}</p>
                         <p><strong>Gender:</strong> ${profile.gender || 'Not set'}</p>
-                        <p><strong>Ethnicity:</strong> ${profile.ethnicity || 'Not set'}</p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Citizenship:</strong> ${profile.is_citizen || 'Not set'}</p>
-                        <p><strong>Date of Birth:</strong> ${profile.birth_date || 'Not set'}</p>
+                        <p><strong>DOB:</strong> ${profile.birth_date || 'Not set'}</p>
                         <p><strong>Location:</strong> ${profile.current_home_location || 'Not set'}</p>
-                        <p><strong>Driver's License:</strong> ${profile.has_drivers_license ? 'Yes' : 'No'}</p>
-                        <p><strong>Own Transport:</strong> ${profile.has_own_transport ? 'Yes' : 'No'}</p>
-                        <p><strong>Willing to Relocate:</strong> ${profile.willing_to_relocate ? 'Yes' : 'No'}</p>
+                        <p><strong>License:</strong> ${profile.has_drivers_license ? 'Yes' : 'No'}</p>
+                        <p><strong>Transport:</strong> ${profile.has_own_transport ? 'Yes' : 'No'}</p>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <p><strong>Preferred Job:</strong> ${profile.preferred_job_title || 'Not set'}</p>
-                        <p><strong>Availability:</strong> ${profile.availability || 'Not set'}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Current Salary:</strong> ${profile.current_salary || 'Not set'}</p>
-                        <p><strong>Desired Salary:</strong> ${profile.desired_salary || 'Not set'}</p>
-                    </div>
-                </div>
-                ${profile.introduction ? `<div class="mt-3"><strong>Introduction:</strong><p class="mt-1">${profile.introduction}</p></div>` : ''}
+                ${profile.introduction ? `<div class="mt-2"><strong>Introduction:</strong><p class="mt-1">${profile.introduction}</p></div>` : ''}
             `;
         }
 
         function displaySkills(skills) {
             const content = document.getElementById('skillsContent');
-            
             if (!skills || skills.length === 0) {
-                content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-cogs"></i>
-                        <h5>No Skills Added</h5>
-                        <p>Add your skills to showcase your expertise to employers.</p>
-                        <button class="btn btn-primary" onclick="addSkill()">Add Your First Skill</button>
-                    </div>
-                `;
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-cogs"></i><h5>No Skills</h5><button class="btn btn-primary" onclick="addSkill()">Add Skill</button></div>`;
                 return;
             }
-
-            content.innerHTML = skills.map(skill => `
-                <div class="skill-item mb-3 p-3 border rounded">
+            content.innerHTML = skills.map(s => `
+                <div class="skill-item mb-2 p-2 border rounded">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">${skill.skill_name}</h6>
-                            <small class="text-muted">Proficiency: ${skill.proficiency}</small>
-                        </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteSkill('${skill.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div><h6 class="mb-0">${s.skill_name}</h6><small class="text-muted">${s.proficiency}</small></div>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteSkill('${s.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -1632,34 +2175,19 @@
 
         function displayEmployment(employment) {
             const content = document.getElementById('employmentContent');
-            
             if (!employment || employment.length === 0) {
-                content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-briefcase"></i>
-                        <h5>No Employment History</h5>
-                        <p>Add your work experience to show employers your background.</p>
-                        <button class="btn btn-primary" onclick="addEmployment()">Add Employment</button>
-                    </div>
-                `;
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h5>No Employment</h5><button class="btn btn-primary" onclick="addEmployment()">Add Employment</button></div>`;
                 return;
             }
-
-            content.innerHTML = employment.map(job => `
-                <div class="employment-item mb-3 p-3 border rounded">
+            content.innerHTML = employment.map(j => `
+                <div class="employment-item mb-2 p-2 border rounded">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-1">${job.job_title}</h6>
-                            <p class="mb-1"><strong>${job.company}</strong> - ${job.location || 'Location not specified'}</p>
-                            <small class="text-muted">
-                                ${job.start_date ? new Date(job.start_date).toLocaleDateString() : 'Start date not set'} - 
-                                ${job.currently_working ? 'Present' : (job.end_date ? new Date(job.end_date).toLocaleDateString() : 'End date not set')}
-                            </small>
-                            ${job.description ? `<p class="mt-2">${job.description}</p>` : ''}
+                            <h6 class="mb-0">${j.job_title}</h6>
+                            <p class="mb-0"><strong>${j.company}</strong> ${j.location ? '· ' + j.location : ''}</p>
+                            <small class="text-muted">${j.start_date ? new Date(j.start_date).toLocaleDateString() : ''} - ${j.currently_working ? 'Present' : j.end_date ? new Date(j.end_date).toLocaleDateString() : ''}</small>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteEmployment('${job.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteEmployment('${j.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -1667,34 +2195,19 @@
 
         function displayEducation(education) {
             const content = document.getElementById('educationContent');
-            
             if (!education || education.length === 0) {
-                content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h5>No Education Added</h5>
-                        <p>Add your educational background to complete your profile.</p>
-                        <button class="btn btn-primary" onclick="addEducation()">Add Education</button>
-                    </div>
-                `;
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-graduation-cap"></i><h5>No Education</h5><button class="btn btn-primary" onclick="addEducation()">Add Education</button></div>`;
                 return;
             }
-
-            content.innerHTML = education.map(edu => `
-                <div class="education-item mb-3 p-3 border rounded">
+            content.innerHTML = education.map(e => `
+                <div class="education-item mb-2 p-2 border rounded">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-1">${edu.qualification}</h6>
-                            <p class="mb-1"><strong>${edu.institution}</strong></p>
-                            <small class="text-muted">
-                                ${edu.completion_year ? `Completed: ${edu.completion_year}` : 'Completion year not set'}
-                                ${edu.major_subject ? ` | Major: ${edu.major_subject}` : ''}
-                                ${edu.grade ? ` | Grade: ${edu.grade}` : ''}
-                            </small>
+                            <h6 class="mb-0">${e.qualification}</h6>
+                            <p class="mb-0"><strong>${e.institution}</strong></p>
+                            <small class="text-muted">${e.completion_year || ''} ${e.major_subject ? '· ' + e.major_subject : ''}</small>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteEducation('${edu.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteEducation('${e.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -1702,306 +2215,597 @@
 
         function displayDocuments(documents) {
             const content = document.getElementById('documentsContent');
-            
             if (!documents || documents.length === 0) {
-                content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-file-upload"></i>
-                        <h5>No Documents Uploaded</h5>
-                        <p>Upload your CV, certificates, and other important documents.</p>
-                        <button class="btn btn-primary" onclick="addDocument()">Upload Document</button>
-                    </div>
-                `;
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-file-upload"></i><h5>No Documents</h5><button class="btn btn-primary" onclick="addDocument()">Upload</button></div>`;
                 return;
             }
-
-            content.innerHTML = documents.map(doc => `
-                <div class="document-item mb-3 p-3 border rounded">
+            content.innerHTML = documents.map(d => `
+                <div class="document-item mb-2 p-2 border rounded">
                     <div class="d-flex justify-content-between align-items-center">
+                        <div><h6 class="mb-0">${d.file_name}</h6><small class="text-muted">${d.document_type}</small></div>
                         <div>
-                            <h6 class="mb-1">${doc.file_name}</h6>
-                            <small class="text-muted">
-                                Type: ${doc.document_type} | 
-                                Uploaded: ${doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleDateString() : 'Date not available'}
-                            </small>
-                        </div>
-                        <div>
-                            <a href="${doc.file}" class="btn btn-outline-primary btn-sm me-2" target="_blank">
-                                <i class="fas fa-download"></i>
-                            </a>
-                            <button class="btn btn-outline-danger btn-sm" onclick="deleteDocument('${doc.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <a href="${d.file}" class="btn btn-outline-primary btn-sm me-1" target="_blank"><i class="fas fa-download"></i></a>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteDocument('${d.id}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Modal functions
-        function addSkill() {
-            const modal = new bootstrap.Modal(document.getElementById('skillModal'));
-            modal.show();
+        // ============================================================
+        // DELETE FUNCTIONS
+        // ============================================================
+        function deleteSkill(id) {
+            if (!confirm('Delete this skill?')) return;
+            fetch(`/api/profile/skills/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCSRFToken() } })
+                .then(r => { if (r.ok) { loadProfileData(); showToast('Deleted', 'success'); } else showToast('Error', 'error'); })
+                .catch(() => showToast('Error', 'error'));
         }
 
-        function addEmployment() {
-            const modal = new bootstrap.Modal(document.getElementById('employmentModal'));
-            modal.show();
+        function deleteEmployment(id) {
+            if (!confirm('Delete this employment?')) return;
+            fetch(`/api/profile/employment/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCSRFToken() } })
+                .then(r => { if (r.ok) { loadProfileData(); showToast('Deleted', 'success'); } else showToast('Error', 'error'); })
+                .catch(() => showToast('Error', 'error'));
         }
 
-        function addEducation() {
-            const modal = new bootstrap.Modal(document.getElementById('educationModal'));
-            modal.show();
+        function deleteEducation(id) {
+            if (!confirm('Delete this education?')) return;
+            fetch(`/api/profile/education/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCSRFToken() } })
+                .then(r => { if (r.ok) { loadProfileData(); showToast('Deleted', 'success'); } else showToast('Error', 'error'); })
+                .catch(() => showToast('Error', 'error'));
         }
 
-        function addDocument() {
-            const modal = new bootstrap.Modal(document.getElementById('documentModal'));
-            modal.show();
+        function deleteDocument(id) {
+            if (!confirm('Delete this document?')) return;
+            fetch(`/api/profile/documents/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCSRFToken() } })
+                .then(r => { if (r.ok) { loadProfileData(); showToast('Deleted', 'success'); } else showToast('Error', 'error'); })
+                .catch(() => showToast('Error', 'error'));
         }
+
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
+        function addSkill() { new bootstrap.Modal(document.getElementById('skillModal')).show(); }
+        function addEmployment() { new bootstrap.Modal(document.getElementById('employmentModal')).show(); }
+        function addEducation() { new bootstrap.Modal(document.getElementById('educationModal')).show(); }
+        function addDocument() { new bootstrap.Modal(document.getElementById('documentModal')).show(); }
 
         function editUserInfo() {
             if (currentUserType === 'applicant') {
-                // Load current data into personal info form
                 fetch('/api/profile/')
-                    .then(response => response.json())
+                    .then(r => r.json())
                     .then(data => {
                         if (data.success) {
-                            const profile = data.profile;
-                            
-                            // Populate all form fields
-                            document.getElementById('titleInput').value = profile.title || '';
-                            document.getElementById('genderInput').value = profile.gender || '';
-                            document.getElementById('firstNameInput').value = profile.first_name || '';
-                            document.getElementById('lastNameInput').value = profile.last_name || '';
-                            document.getElementById('ethnicityInput').value = profile.ethnicity || '';
-                            document.getElementById('citizenInput').value = profile.is_citizen || '';
-                            document.getElementById('birthDateInput').value = profile.birth_date || '';
-                            document.getElementById('locationInput').value = profile.current_home_location || '';
-                            document.getElementById('driversLicenseInput').checked = profile.has_drivers_license || false;
-                            document.getElementById('ownTransportInput').checked = profile.has_own_transport || false;
-                            document.getElementById('relocateInput').checked = profile.willing_to_relocate || false;
-                            document.getElementById('preferredJobInput').value = profile.preferred_job_title || '';
-                            document.getElementById('availabilityInput').value = profile.availability || '';
-                            document.getElementById('currentSalaryInput').value = profile.current_salary || '';
-                            document.getElementById('desiredSalaryInput').value = profile.desired_salary || '';
-                            document.getElementById('introductionInput').value = profile.introduction || '';
-                            
-                            const modal = new bootstrap.Modal(document.getElementById('personalInfoModal'));
-                            modal.show();
+                            const p = data.profile;
+                            document.getElementById('titleInput').value = p.title || '';
+                            document.getElementById('genderInput').value = p.gender || '';
+                            document.getElementById('firstNameInput').value = p.first_name || '';
+                            document.getElementById('lastNameInput').value = p.last_name || '';
+                            document.getElementById('ethnicityInput').value = p.ethnicity || '';
+                            document.getElementById('citizenInput').value = p.is_citizen || '';
+                            document.getElementById('birthDateInput').value = p.birth_date || '';
+                            document.getElementById('locationInput').value = p.current_home_location || '';
+                            document.getElementById('driversLicenseInput').checked = p.has_drivers_license || false;
+                            document.getElementById('ownTransportInput').checked = p.has_own_transport || false;
+                            document.getElementById('relocateInput').checked = p.willing_to_relocate || false;
+                            document.getElementById('preferredJobInput').value = p.preferred_job_title || '';
+                            document.getElementById('availabilityInput').value = p.availability || '';
+                            document.getElementById('currentSalaryInput').value = p.current_salary || '';
+                            document.getElementById('desiredSalaryInput').value = p.desired_salary || '';
+                            document.getElementById('introductionInput').value = p.introduction || '';
+                            new bootstrap.Modal(document.getElementById('personalInfoModal')).show();
                         }
                     })
-                    .catch(error => {
-                        console.error('Error loading profile data:', error);
-                        showToast('Error loading profile data', 'error');
-                    });
+                    .catch(() => showToast('Error', 'error'));
             } else {
-                // For business users, edit account info
-                editAccountInfo();
+                fetch('/api/profile/')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            const u = data.user;
+                            document.getElementById('firstNameInput').value = u.first_name || '';
+                            document.getElementById('lastNameInput').value = u.last_name || '';
+                            new bootstrap.Modal(document.getElementById('personalInfoModal')).show();
+                        }
+                    })
+                    .catch(() => showToast('Error', 'error'));
             }
-        }
-
-        function editAccountInfo() {
-            // Load current user data for business users
-            fetch('/api/profile/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const user = data.user;
-                        
-                        // For business users, we'll use the personal info modal but with limited fields
-                        document.getElementById('firstNameInput').value = user.first_name || '';
-                        document.getElementById('lastNameInput').value = user.last_name || '';
-                        
-                        // Show only relevant fields for business users
-                        document.querySelectorAll('#personalInfoForm .mb-3').forEach(el => {
-                            if (!el.querySelector('#firstNameInput') && !el.querySelector('#lastNameInput')) {
-                                el.style.display = 'none';
-                            }
-                        });
-                        
-                        const modal = new bootstrap.Modal(document.getElementById('personalInfoModal'));
-                        modal.show();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading user data:', error);
-                    showToast('Error loading user data', 'error');
-                });
         }
 
         function editBusinessProfile() {
-            // Load current business data
             fetch('/api/profile/')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        const business = data.business_profile || {};
-                        
-                        // Populate business form fields
-                        document.getElementById('companyNameInput').value = business.company_name || '';
-                        document.getElementById('companyPhoneInput').value = business.phone_number || '';
-                        document.getElementById('companyDescriptionInput').value = business.company_description || '';
-                        document.getElementById('websiteInput').value = business.website || '';
-                        document.getElementById('addressInput').value = business.address || '';
-                        document.getElementById('cityInput').value = business.city || '';
-                        document.getElementById('countryInput').value = business.country || '';
-                        document.getElementById('postalCodeInput').value = business.postal_code || '';
-                        document.getElementById('notificationsInput').checked = business.receive_applicant_notifications || false;
-                        document.getElementById('newsletterInput').checked = business.receive_newsletter || false;
-                        
-                        // Load industries and company sizes
-                        loadIndustriesAndSizes(business.industry, business.company_size);
-                        
-                        // Show logo preview if exists
-                        if (business.company_logo) {
-                            document.getElementById('companyLogoPreview').innerHTML = 
-                                `<img src="${business.company_logo}" class="company-logo-preview" alt="Current Logo">`;
+                        const b = data.business_profile || {};
+                        document.getElementById('companyNameInput').value = b.company_name || '';
+                        document.getElementById('companyPhoneInput').value = b.phone_number || '';
+                        document.getElementById('companyDescriptionInput').value = b.company_description || '';
+                        document.getElementById('websiteInput').value = b.website || '';
+                        document.getElementById('addressInput').value = b.address || '';
+                        document.getElementById('cityInput').value = b.city || '';
+                        document.getElementById('countryInput').value = b.country || '';
+                        document.getElementById('postalCodeInput').value = b.postal_code || '';
+                        document.getElementById('notificationsInput').checked = b.receive_applicant_notifications || false;
+                        document.getElementById('newsletterInput').checked = b.receive_newsletter || false;
+                        loadIndustriesAndSizes(b.industry, b.company_size);
+                        if (b.company_logo) {
+                            document.getElementById('companyLogoPreview').innerHTML = `<img src="${b.company_logo}" class="company-logo-preview">`;
                         }
-                        
-                        const modal = new bootstrap.Modal(document.getElementById('businessProfileModal'));
-                        modal.show();
+                        new bootstrap.Modal(document.getElementById('businessProfileModal')).show();
                     }
                 })
-                .catch(error => {
-                    console.error('Error loading business profile:', error);
-                    showToast('Error loading business profile', 'error');
-                });
+                .catch(() => showToast('Error', 'error'));
         }
 
-        function loadIndustriesAndSizes(selectedIndustry = null, selectedSize = null) {
-            // Load industries
+        function loadIndustriesAndSizes(selectedIndustry, selectedSize) {
             fetch('/api/industries/')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        const industrySelect = document.getElementById('industryInput');
-                        industrySelect.innerHTML = '<option value="">Select Industry</option>';
-                        data.industries.forEach(industry => {
-                            const option = document.createElement('option');
-                            option.value = industry.id;
-                            option.textContent = industry.name;
-                            if (selectedIndustry && industry.id === selectedIndustry) {
-                                option.selected = true;
-                            }
-                            industrySelect.appendChild(option);
+                        const sel = document.getElementById('industryInput');
+                        sel.innerHTML = '<option value="">Select Industry</option>';
+                        data.industries.forEach(i => {
+                            const opt = document.createElement('option');
+                            opt.value = i.id;
+                            opt.textContent = i.name;
+                            if (selectedIndustry && i.id === selectedIndustry) opt.selected = true;
+                            sel.appendChild(opt);
                         });
                     }
                 });
-
-            // Load company sizes
             fetch('/api/company-sizes/')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        const sizeSelect = document.getElementById('companySizeInput');
-                        sizeSelect.innerHTML = '<option value="">Select Company Size</option>';
-                        data.company_sizes.forEach(size => {
-                            const option = document.createElement('option');
-                            option.value = size.id;
-                            option.textContent = size.size_range;
-                            if (selectedSize && size.id === selectedSize) {
-                                option.selected = true;
-                            }
-                            sizeSelect.appendChild(option);
+                        const sel = document.getElementById('companySizeInput');
+                        sel.innerHTML = '<option value="">Select Size</option>';
+                        data.company_sizes.forEach(s => {
+                            const opt = document.createElement('option');
+                            opt.value = s.id;
+                            opt.textContent = s.size_range;
+                            if (selectedSize && s.id === selectedSize) opt.selected = true;
+                            sel.appendChild(opt);
                         });
                     }
                 });
         }
 
-        // Delete functions (only for applicants)
-        function deleteSkill(skillId) {
-            if (confirm('Are you sure you want to delete this skill?')) {
-                fetch(`/api/profile/skills/${skillId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        loadProfileData();
-                        showToast('Skill deleted successfully!', 'success');
-                    } else {
-                        showToast('Error deleting skill', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error deleting skill', 'error');
-                });
-            }
+        // ============================================================
+        // EDUCATION MANAGEMENT
+        // ============================================================
+        function loadEducationManageContent() {
+            const container = document.getElementById('educationManageContent');
+            container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div><p class="mt-2" style="font-size:12px;color:#999;">Loading...</p></div>';
+            
+            Promise.all([
+                fetch('/api/education/bursaries/').then(r => r.json()).catch(() => ({ success: false, bursaries: [] })),
+                fetch('/api/education/universities/').then(r => r.json()).catch(() => ({ success: false, universities: [] })),
+                fetch('/api/education/schools/').then(r => r.json()).catch(() => ({ success: false, schools: [] })),
+                fetch('/api/education/papers/').then(r => r.json()).catch(() => ({ success: false, papers: [] }))
+            ]).then(([bursaries, universities, schools, papers]) => {
+                const items = [];
+                let schoolCount = 0, bursaryCount = 0, universityCount = 0, paperCount = 0;
+                if (bursaries.success) {
+                    bursaries.bursaries.forEach(b => { items.push({ type: 'bursary', id: b.id, title: b.title || 'Bursary', institution: b.provider || '', badge: '💰 Bursary' }); bursaryCount++; });
+                }
+                if (universities.success) {
+                    universities.universities.forEach(u => { items.push({ type: 'university', id: u.id, title: u.name || 'University', institution: u.city || u.province || '', badge: '🏛️ University' }); universityCount++; });
+                }
+                if (schools.success) {
+                    schools.schools.forEach(s => { items.push({ type: 'school', id: s.id, title: s.name || 'School', institution: `${s.city || ''} ${s.province || ''}`, badge: '🏫 School' }); schoolCount++; });
+                }
+                if (papers.success) {
+                    papers.papers.forEach(p => { items.push({ type: 'paper', id: p.id, title: p.title || 'Paper', institution: `${p.grade?.name || ''} ${p.subject?.name || ''}`, badge: '📄 Paper' }); paperCount++; });
+                }
+                allEducationItems = items;
+                document.getElementById('eduTotalCount').textContent = items.length;
+                document.getElementById('eduSchoolCount').textContent = schoolCount;
+                document.getElementById('eduBursaryCount').textContent = bursaryCount;
+                document.getElementById('eduUniversityCount').textContent = universityCount;
+                document.getElementById('eduPaperCount').textContent = paperCount;
+                renderEducationManage(items);
+                document.getElementById('eduManageCount').textContent = items.length + ' items';
+            }).catch(() => container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h6>Error Loading</h6></div>');
         }
 
-        function deleteEmployment(employmentId) {
-            if (confirm('Are you sure you want to delete this employment record?')) {
-                fetch(`/api/profile/employment/${employmentId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        loadProfileData();
-                        showToast('Employment record deleted successfully!', 'success');
-                    } else {
-                        showToast('Error deleting employment record', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error deleting employment record', 'error');
-                });
+        function renderEducationManage(items) {
+            const container = document.getElementById('educationManageContent');
+            let filtered = items;
+            if (eduManageFilter !== 'all') filtered = items.filter(i => i.type === eduManageFilter);
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-graduation-cap"></i><h6>No Education Content</h6><p style="font-size:12px;color:#999;">Add schools, bursaries, universities, or papers.</p></div>`;
+                return;
             }
+            container.innerHTML = filtered.map(item => `
+                <div class="edu-manage-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge-type ${item.type}">${item.badge}</span>
+                        <strong style="font-size:13px;margin-left:6px;">${escapeHtml(item.title)}</strong>
+                        <div style="font-size:11px;color:#888;">${escapeHtml(item.institution || '')}</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEducationItem('${item.type}', '${item.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
         }
 
-        function deleteEducation(educationId) {
-            if (confirm('Are you sure you want to delete this education record?')) {
-                fetch(`/api/profile/education/${educationId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        loadProfileData();
-                        showToast('Education record deleted successfully!', 'success');
-                    } else {
-                        showToast('Error deleting education record', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error deleting education record', 'error');
-                });
-            }
+        function filterEduManage(filter, btn) {
+            eduManageFilter = filter;
+            document.querySelectorAll('.edu-filter-chips .chip').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderEducationManage(allEducationItems);
         }
 
-        function deleteDocument(documentId) {
-            if (confirm('Are you sure you want to delete this document?')) {
-                fetch(`/api/profile/documents/${documentId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        loadProfileData();
-                        showToast('Document deleted successfully!', 'success');
-                    } else {
-                        showToast('Error deleting document', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error deleting document', 'error');
-                });
-            }
+        function deleteEducationItem(type, id) {
+            if (!confirm(`Delete this ${type}?`)) return;
+            const endpoints = { bursary: '/api/education/bursaries/', university: '/api/education/universities/', school: '/api/education/schools/', paper: '/api/education/papers/' };
+            fetch(`${endpoints[type]}${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCSRFToken() } })
+                .then(r => { if (r.ok) { showToast('Deleted', 'success'); loadEducationManageContent(); } else showToast('Error', 'error'); })
+                .catch(() => showToast('Error', 'error'));
         }
 
-        // Utility functions
+        function showEduUpload(type) {
+            eduUploadType = type;
+            const modal = new bootstrap.Modal(document.getElementById('eduUploadModal'));
+            document.getElementById('eduUploadTitleText').textContent = { school: 'Add School', bursary: 'Add Bursary', university: 'Add University', paper: 'Upload Question Paper' }[type] || 'Add Education Content';
+            const fields = document.getElementById('eduUploadFields');
+            let html = '';
+            if (type === 'school') {
+                html = `
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">School Name *</label><input type="text" name="name" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">EMIS Number</label><input type="text" name="emis_number" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Province</label><input type="text" name="province" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">City</label><input type="text" name="city" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Address</label><textarea name="address" class="form-control" rows="2" style="font-size:13px;padding:6px 10px;"></textarea></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Logo</label><input type="file" name="logo" accept="image/*" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                `;
+            } else if (type === 'bursary') {
+                html = `
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Bursary Title *</label><input type="text" name="title" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Provider *</label><input type="text" name="provider" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Description</label><textarea name="description" class="form-control" rows="2" style="font-size:13px;padding:6px 10px;"></textarea></div>
+                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Amount</label><input type="text" name="amount" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Closing Date</label><input type="date" name="closing_date" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Application Link</label><input type="url" name="application_link" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Image</label><input type="file" name="image" accept="image/*" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                `;
+            } else if (type === 'university') {
+                html = `
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">University Name *</label><input type="text" name="name" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Province</label><input type="text" name="province" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">City</label><input type="text" name="city" class="form-control" style="font-size:13px;padding:6px 10px;"></div></div></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Description</label><textarea name="description" class="form-control" rows="2" style="font-size:13px;padding:6px 10px;"></textarea></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Website</label><input type="url" name="website" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Logo</label><input type="file" name="logo" accept="image/*" class="form-control" style="font-size:13px;padding:6px 10px;"></div>
+                `;
+            } else if (type === 'paper') {
+                html = `
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Paper Title *</label><input type="text" name="title" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Grade *</label><select name="grade_id" id="paperGradeSelect" class="form-control" required style="font-size:13px;padding:6px 10px;"><option value="">Select Grade</option></select></div></div><div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:12px;">Subject *</label><select name="subject_id" id="paperSubjectSelect" class="form-control" required style="font-size:13px;padding:6px 10px;"><option value="">Select Subject</option></select></div></div></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">Year *</label><input type="number" name="year" class="form-control" required min="2000" max="2026" style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="mb-2"><label class="form-label" style="font-size:12px;">PDF File *</label><input type="file" name="file" accept=".pdf" class="form-control" required style="font-size:13px;padding:6px 10px;"></div>
+                    <div class="form-check mb-2"><input type="checkbox" name="is_public" class="form-check-input" checked><label class="form-check-label" style="font-size:12px;">Make Public</label></div>
+                `;
+                fetch('/api/education/grades/')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success && data.grades) {
+                            const select = document.getElementById('paperGradeSelect');
+                            if (select) {
+                                select.innerHTML = '<option value="">Select Grade</option>';
+                                data.grades.forEach(g => { const opt = document.createElement('option'); opt.value = g.id; opt.textContent = g.name; select.appendChild(opt); });
+                            }
+                        }
+                    }).catch(() => {});
+                document.addEventListener('change', function(e) {
+                    if (e.target.id === 'paperGradeSelect') {
+                        const gradeId = e.target.value;
+                        const subjectSelect = document.getElementById('paperSubjectSelect');
+                        if (gradeId && subjectSelect) {
+                            subjectSelect.innerHTML = '<option value="">Loading...</option>';
+                            fetch(`/api/education/subjects/by_grade/?grade_id=${gradeId}`)
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (data.success && data.subjects) {
+                                        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                                        data.subjects.forEach(s => { const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name; subjectSelect.appendChild(opt); });
+                                    }
+                                }).catch(() => {});
+                        }
+                    }
+                });
+            }
+            fields.innerHTML = html;
+            modal.show();
+        }
+
+        function submitEduUpload() {
+            const form = document.getElementById('eduUploadForm');
+            const formData = new FormData(form);
+            const btn = document.getElementById('eduUploadSubmitBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+            btn.disabled = true;
+            const endpoints = { school: '/api/education/schools/', bursary: '/api/education/bursaries/', university: '/api/education/universities/', paper: '/api/education/papers/' };
+            fetch(endpoints[eduUploadType], {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('eduUploadModal')).hide();
+                    form.reset();
+                    showToast('✅ Upload successful!', 'success');
+                    loadEducationManageContent();
+                } else showToast('Upload failed', 'error');
+            })
+            .catch(() => { btn.innerHTML = original; btn.disabled = false; showToast('Network error', 'error'); });
+        }
+
+        // ============================================================
+        // AD MANAGEMENT
+        // ============================================================
+        function loadAds() {
+            const container = document.getElementById('adManageContent');
+            container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div><p class="mt-2" style="font-size:12px;color:#999;">Loading ads...</p></div>';
+            fetch('/api/ads/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.results) {
+                        allAds = data.results;
+                        renderAds(allAds);
+                        document.getElementById('adManageCount').textContent = allAds.length + ' ads';
+                    } else { allAds = []; renderAds([]); }
+                })
+                .catch(() => container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h6>Error Loading Ads</h6></div>');
+        }
+
+        function loadAdStats() {
+            fetch('/api/ads/stats/')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('adTotalCount').textContent = data.total_ads || 0;
+                    document.getElementById('adActiveCount').textContent = data.active_ads || 0;
+                    document.getElementById('adPendingCount').textContent = data.pending_ads || 0;
+                    document.getElementById('adImpressions').textContent = data.total_impressions || 0;
+                    document.getElementById('adClicks').textContent = data.total_clicks || 0;
+                    document.getElementById('adConversions').textContent = data.total_conversions || 0;
+                })
+                .catch(() => {});
+        }
+
+        function loadPropertiesForAdSelect() {
+            fetch('/api/properties/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.properties) {
+                        const select = document.getElementById('adPropertySelect');
+                        if (select) {
+                            select.innerHTML = '<option value="">None</option>';
+                            data.properties.forEach(p => {
+                                const opt = document.createElement('option');
+                                opt.value = p.id;
+                                opt.textContent = p.title || 'Property ' + p.id;
+                                select.appendChild(opt);
+                            });
+                        }
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function renderAds(ads) {
+            const container = document.getElementById('adManageContent');
+            let filtered = ads;
+            if (adFilter !== 'all') filtered = ads.filter(a => a.status === adFilter);
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-ad"></i>
+                        <h6>No Ads Found</h6>
+                        <button class="btn btn-purple" onclick="showAdUpload()"><i class="fas fa-plus"></i> Create Ad</button>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = filtered.map(ad => {
+                const statusClass = ad.status === 'active' ? 'active' : ad.status === 'pending' ? 'pending' : ad.status === 'rejected' ? 'rejected' : ad.status === 'paused' ? 'paused' : 'draft';
+                let actionBtns = '';
+                if (isSuperAdmin && ad.status === 'pending') {
+                    actionBtns = `
+                        <div class="ad-action-btns">
+                            <button class="btn-approve" onclick="approveAd('${ad.id}')"><i class="fas fa-check"></i> Approve</button>
+                            <button class="btn-reject" onclick="showRejectModal('${ad.id}')"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    `;
+                } else if (isSuperAdmin && ad.status === 'active') {
+                    actionBtns = `<button class="btn-pause" onclick="pauseAd('${ad.id}')"><i class="fas fa-pause"></i> Pause</button>`;
+                } else if (isSuperAdmin && ad.status === 'paused') {
+                    actionBtns = `<button class="btn-unpause" onclick="unpauseAd('${ad.id}')"><i class="fas fa-play"></i> Unpause</button>`;
+                }
+                return `
+                    <div class="ad-manage-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div>
+                                    <span class="status-badge ${statusClass}">${ad.status.toUpperCase()}</span>
+                                    <strong style="font-size:14px;margin-left:6px;">${escapeHtml(ad.title || 'Untitled Ad')}</strong>
+                                </div>
+                                <div style="font-size:11px;color:#888;">${ad.ad_type || 'Promotion'} · ${ad.position || 'Feed'}</div>
+                                <div class="ad-stats-mini">
+                                    <span><i class="fas fa-eye"></i> ${ad.impressions || 0}</span>
+                                    <span><i class="fas fa-mouse-pointer"></i> ${ad.clicks || 0}</span>
+                                    <span><i class="fas fa-trophy"></i> ${ad.conversions || 0}</span>
+                                    ${ad.display_price ? `<span><i class="fas fa-tag"></i> ${escapeHtml(ad.display_price)}</span>` : ''}
+                                </div>
+                            </div>
+                            <div>
+                                ${actionBtns}
+                                <button class="btn btn-sm btn-outline-secondary" onclick="viewAdStats('${ad.id}')"><i class="fas fa-chart-bar"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteAd('${ad.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterAds(filter, btn) {
+            adFilter = filter;
+            document.querySelectorAll('.ad-filter-chips .chip').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderAds(allAds);
+        }
+
+        function showAdUpload() {
+            document.getElementById('adCreateForm').reset();
+            document.getElementById('adCreateTitle').textContent = 'Create Ad Campaign';
+            new bootstrap.Modal(document.getElementById('adCreateModal')).show();
+        }
+
+        function submitAdCreate() {
+            const form = document.getElementById('adCreateForm');
+            const formData = new FormData(form);
+            const btn = document.getElementById('adCreateSubmitBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+            btn.disabled = true;
+            
+            const targetLocations = formData.get('target_locations');
+            if (targetLocations) formData.set('target_locations', JSON.stringify(targetLocations.split(',').map(s => s.trim()).filter(Boolean)));
+            else formData.delete('target_locations');
+            
+            const propertyTypes = formData.get('target_property_types');
+            if (propertyTypes) formData.set('target_property_types', JSON.stringify(propertyTypes.split(',').map(s => s.trim()).filter(Boolean)));
+            else formData.delete('target_property_types');
+            
+            const userTypes = formData.get('target_user_types');
+            if (userTypes) formData.set('target_user_types', JSON.stringify([userTypes]));
+            else formData.delete('target_user_types');
+            
+            fetch('/api/ads/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.id) {
+                    bootstrap.Modal.getInstance(document.getElementById('adCreateModal')).hide();
+                    showToast('✅ Ad created! Pending approval.', 'success');
+                    loadAds();
+                    loadAdStats();
+                } else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => { btn.innerHTML = original; btn.disabled = false; showToast('Network error', 'error'); });
+        }
+
+        // Super Admin Actions
+        function approveAd(adId) {
+            if (!confirm('Approve this ad?')) return;
+            fetch(`/api/ads/${adId}/approve/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) { showToast('✅ Ad approved!', 'success'); loadAds(); loadAdStats(); }
+                else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => showToast('Network error', 'error'));
+        }
+
+        function showRejectModal(adId) {
+            document.getElementById('rejectAdId').value = adId;
+            document.getElementById('adRejectForm').reset();
+            new bootstrap.Modal(document.getElementById('adRejectModal')).show();
+        }
+
+        function submitAdReject() {
+            const form = document.getElementById('adRejectForm');
+            const formData = new FormData(form);
+            const adId = formData.get('ad_id');
+            const notes = formData.get('notes');
+            if (!notes) { showToast('Please provide a reason', 'warning'); return; }
+            const btn = form.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Rejecting...';
+            btn.disabled = true;
+            fetch(`/api/ads/${adId}/reject/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({ notes: notes })
+            })
+            .then(r => r.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('adRejectModal')).hide();
+                    showToast('Ad rejected', 'success');
+                    loadAds();
+                    loadAdStats();
+                } else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => { btn.innerHTML = original; btn.disabled = false; showToast('Network error', 'error'); });
+        }
+
+        function pauseAd(adId) {
+            if (!confirm('Pause this ad?')) return;
+            fetch(`/api/ads/${adId}/pause/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) { showToast('Ad paused', 'success'); loadAds(); loadAdStats(); }
+                else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => showToast('Network error', 'error'));
+        }
+
+        function unpauseAd(adId) {
+            if (!confirm('Unpause this ad?')) return;
+            fetch(`/api/ads/${adId}/unpause/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                body: JSON.stringify({})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) { showToast('Ad unpaused', 'success'); loadAds(); loadAdStats(); }
+                else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => showToast('Network error', 'error'));
+        }
+
+        function deleteAd(adId) {
+            if (!confirm('Delete this ad?')) return;
+            fetch(`/api/ads/${adId}/soft_delete/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCSRFToken() }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) { showToast('Ad deleted', 'success'); loadAds(); loadAdStats(); }
+                else showToast('Error: ' + (data.message || 'Unknown'), 'error');
+            })
+            .catch(() => showToast('Network error', 'error'));
+        }
+
+        function viewAdStats(adId) {
+            window.location.href = `/ads/${adId}/stats/`;
+        }
+
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
         function getCSRFToken() {
             const name = 'csrftoken';
             let cookieValue = null;
@@ -2018,41 +2822,34 @@
             return cookieValue;
         }
 
-        function showToast(message, type = 'info') {
-            // Create toast container if it doesn't exist
-            let toastContainer = document.getElementById('toastContainer');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toastContainer';
-                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-                toastContainer.style.zIndex = '9999';
-                document.body.appendChild(toastContainer);
-            }
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
 
+        function showToast(message, type = 'info') {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
             const toastId = 'toast-' + Date.now();
             const bgColor = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-info';
-            
-            const toastHtml = `
+            container.insertAdjacentHTML('beforeend', `
                 <div id="${toastId}" class="toast align-items-center text-white ${bgColor} border-0" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
+                    <div class="d-flex"><div class="toast-body">${escapeHtml(message)}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
                 </div>
-            `;
-            
-            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-            
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            `);
+            const toastEl = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
             toast.show();
-            
-            // Remove toast from DOM after it's hidden
-            toastElement.addEventListener('hidden.bs.toast', function () {
-                toastElement.remove();
-            });
+            toastEl.addEventListener('hidden.bs.toast', function() { this.remove(); });
         }
     </script>
 </body>
