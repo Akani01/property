@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OppoGlobe - {{ property.title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -36,6 +36,7 @@
             padding-bottom: 40px;
             color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         a { text-decoration: none; color: inherit; }
@@ -51,34 +52,50 @@
             z-index: 1000;
             background: rgba(255,255,255,0.92);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 64px;
+            padding: 0 16px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
+        @media (min-width: 768px) {
+            .header { padding: 0 24px; height: 64px; }
+        }
+
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-weight: 700;
-            font-size: 20px;
+            font-size: 16px;
             color: var(--primary);
         }
 
-        .header-brand img { height: 36px; }
+        @media (min-width: 768px) {
+            .header-brand { font-size: 20px; gap: 10px; }
+        }
+
+        .header-brand img { height: 28px; }
+        @media (min-width: 768px) {
+            .header-brand img { height: 36px; }
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .header-actions { gap: 8px; }
         }
 
         .header-actions .btn-icon {
-            width: 40px;
-            height: 40px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -86,6 +103,15 @@
             color: var(--gray);
             transition: var(--transition);
             position: relative;
+            font-size: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .header-actions .btn-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
         }
 
         .header-actions .btn-icon:hover {
@@ -94,28 +120,37 @@
         }
 
         .user-badge {
-            padding: 4px 14px;
+            padding: 2px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
             background: #fce8e6;
             color: var(--accent);
+            display: none;
+        }
+
+        @media (min-width: 576px) {
+            .user-badge { display: inline-block; padding: 4px 14px; font-size: 12px; }
         }
 
         .avatar {
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             color: white;
             background: linear-gradient(135deg, var(--primary), #4285f4);
             cursor: pointer;
             transition: var(--transition);
             flex-shrink: 0;
+        }
+
+        @media (min-width: 768px) {
+            .avatar { width: 36px; height: 36px; font-size: 14px; }
         }
 
         .avatar:hover {
@@ -134,7 +169,7 @@
             position: absolute;
             top: calc(100% + 8px);
             right: 0;
-            min-width: 220px;
+            min-width: 200px;
             background: white;
             border-radius: var(--radius);
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
@@ -147,6 +182,10 @@
             border: 1px solid var(--border);
         }
 
+        @media (min-width: 768px) {
+            .dropdown-menu-custom { min-width: 220px; }
+        }
+
         .dropdown-menu-custom.show {
             opacity: 1;
             visibility: visible;
@@ -156,15 +195,23 @@
         .dropdown-menu-custom .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 20px;
+            gap: 10px;
+            padding: 8px 16px;
             color: var(--dark);
-            font-size: 14px;
+            font-size: 13px;
             transition: var(--transition);
             border: none;
             background: none;
             width: 100%;
             text-align: left;
+        }
+
+        @media (min-width: 768px) {
+            .dropdown-menu-custom .dropdown-item {
+                padding: 10px 20px;
+                font-size: 14px;
+                gap: 12px;
+            }
         }
 
         .dropdown-menu-custom .dropdown-item:hover {
@@ -173,43 +220,53 @@
         }
 
         .dropdown-menu-custom .dropdown-item i {
-            width: 20px;
+            width: 18px;
             color: var(--gray);
-            font-size: 16px;
+            font-size: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .dropdown-menu-custom .dropdown-item i { width: 20px; font-size: 16px; }
         }
 
         .dropdown-menu-custom .dropdown-divider {
             height: 1px;
             background: var(--border);
-            margin: 6px 16px;
+            margin: 4px 12px;
+        }
+
+        @media (min-width: 768px) {
+            .dropdown-menu-custom .dropdown-divider { margin: 6px 16px; }
         }
 
         /* ===== SIDEBAR NAV ===== */
         .sidebar-nav {
-            position: fixed;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            background: white;
-            border-radius: 0 var(--radius) var(--radius) 0;
-            box-shadow: var(--shadow);
-            padding: 12px 8px;
             display: none;
-            flex-direction: column;
-            gap: 4px;
-            z-index: 900;
-            border: 1px solid var(--border);
-            border-left: none;
         }
 
         @media (min-width: 992px) {
-            .sidebar-nav { display: flex; }
+            .sidebar-nav {
+                position: fixed;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                background: white;
+                border-radius: 0 var(--radius) var(--radius) 0;
+                box-shadow: var(--shadow);
+                padding: 12px 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                z-index: 900;
+                border: 1px solid var(--border);
+                border-left: none;
+            }
             body { padding-left: 80px; }
         }
 
         .sidebar-nav .nav-link {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
@@ -217,6 +274,7 @@
             color: var(--gray);
             transition: var(--transition);
             position: relative;
+            font-size: 16px;
         }
 
         .sidebar-nav .nav-link:hover {
@@ -230,69 +288,139 @@
         }
 
         .sidebar-nav .nav-link .tooltip-text {
-            position: absolute;
-            left: calc(100% + 12px);
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--dark);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
+            display: none;
         }
 
         .sidebar-nav .nav-link:hover .tooltip-text {
-            opacity: 1;
-            visibility: visible;
+            display: none;
         }
 
         /* ===== MAIN LAYOUT ===== */
         .main-layout {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 12px;
+        }
+
+        @media (min-width: 768px) {
+            .main-layout { padding: 0 20px; }
         }
 
         /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 12px;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .page-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+                gap: 12px;
+            }
         }
 
         .page-header h1 {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             margin: 0;
         }
 
+        @media (min-width: 576px) {
+            .page-header h1 { font-size: 20px; }
+        }
+
+        @media (min-width: 768px) {
+            .page-header h1 { font-size: 24px; gap: 12px; }
+        }
+
         .page-header h1 i { color: var(--primary); }
-        .page-header .subtitle { color: var(--gray); font-size: 14px; font-weight: 400; }
+        .page-header .subtitle { 
+            color: var(--gray); 
+            font-size: 12px; 
+            font-weight: 400; 
+            display: block;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .page-header .subtitle {
+                font-size: 14px;
+                display: inline;
+                width: auto;
+            }
+        }
+
+        .page-header .btn-back {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--light-gray);
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            width: 100%;
+            justify-content: center;
+        }
+
+        @media (min-width: 576px) {
+            .page-header .btn-back { width: auto; }
+        }
+
+        .page-header .btn-back:hover {
+            background: #e8eaed;
+        }
 
         /* ===== PROPERTY GALLERY ===== */
         .property-gallery {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
             border-radius: var(--radius);
             overflow: hidden;
         }
 
+        @media (min-width: 576px) {
+            .property-gallery { gap: 10px; }
+        }
+
+        @media (min-width: 768px) {
+            .property-gallery {
+                grid-template-columns: 2fr 1fr;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+        }
+
         .property-gallery .main-image {
-            height: 400px;
+            height: 200px;
             background: var(--light-gray);
             overflow: hidden;
+        }
+
+        @media (min-width: 576px) {
+            .property-gallery .main-image { height: 250px; }
+        }
+
+        @media (min-width: 768px) {
+            .property-gallery .main-image { height: 350px; }
+        }
+
+        @media (min-width: 992px) {
+            .property-gallery .main-image { height: 400px; }
         }
 
         .property-gallery .main-image img {
@@ -303,16 +431,35 @@
 
         .property-gallery .thumb-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        @media (min-width: 576px) {
+            .property-gallery .thumb-grid { gap: 10px; }
+        }
+
+        @media (min-width: 768px) {
+            .property-gallery .thumb-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
         }
 
         .property-gallery .thumb-grid .thumb {
-            height: 194px;
+            height: 80px;
             background: var(--light-gray);
             overflow: hidden;
             cursor: pointer;
             transition: var(--transition);
+        }
+
+        @media (min-width: 576px) {
+            .property-gallery .thumb-grid .thumb { height: 100px; }
+        }
+
+        @media (min-width: 768px) {
+            .property-gallery .thumb-grid .thumb { height: 169px; }
         }
 
         .property-gallery .thumb-grid .thumb:hover {
@@ -325,49 +472,70 @@
             object-fit: cover;
         }
 
-        @media (max-width: 768px) {
-            .property-gallery {
-                grid-template-columns: 1fr;
-            }
-            .property-gallery .main-image { height: 250px; }
-            .property-gallery .thumb-grid { grid-template-columns: 1fr 1fr 1fr; }
-            .property-gallery .thumb-grid .thumb { height: 100px; }
-        }
-
         /* ===== INFO CARDS ===== */
         .info-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
 
-        @media (max-width: 992px) {
-            .info-grid { grid-template-columns: 1fr; }
+        @media (min-width: 768px) {
+            .info-grid { gap: 20px; }
+        }
+
+        @media (min-width: 992px) {
+            .info-grid { grid-template-columns: 2fr 1fr; gap: 24px; }
         }
 
         .info-card {
             background: white;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .info-card { padding: 20px; margin-bottom: 20px; }
+        }
+
+        @media (min-width: 992px) {
+            .info-card { padding: 24px; }
         }
 
         .info-card .card-title {
             font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 16px;
+            font-size: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .info-card .card-title { font-size: 18px; margin-bottom: 16px; gap: 10px; }
         }
 
         .info-card .card-title i { color: var(--primary); }
 
         .info-card .info-row {
             display: flex;
-            padding: 10px 0;
+            flex-direction: column;
+            padding: 6px 0;
             border-bottom: 1px solid var(--border);
+            gap: 2px;
+        }
+
+        @media (min-width: 576px) {
+            .info-card .info-row {
+                flex-direction: row;
+                padding: 8px 0;
+                gap: 0;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .info-card .info-row { padding: 10px 0; }
         }
 
         .info-card .info-row:last-child { border-bottom: none; }
@@ -375,19 +543,44 @@
         .info-card .info-row .label {
             font-weight: 500;
             color: var(--gray);
-            width: 140px;
-            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        @media (min-width: 576px) {
+            .info-card .info-row .label {
+                width: 130px;
+                flex-shrink: 0;
+                font-size: 14px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .info-card .info-row .label { width: 140px; }
         }
 
         .info-card .info-row .value {
             flex: 1;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        @media (min-width: 576px) {
+            .info-card .info-row .value { font-size: 14px; }
         }
 
         .info-card .info-row .value .badge-status {
-            padding: 4px 14px;
+            padding: 2px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
+            display: inline-block;
+        }
+
+        @media (min-width: 768px) {
+            .info-card .info-row .value .badge-status {
+                padding: 4px 14px;
+                font-size: 12px;
+            }
         }
 
         .badge-status.available { background: #e8f5e9; color: #2e7d32; }
@@ -399,27 +592,43 @@
         .feature-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .feature-tags { gap: 8px; margin-top: 8px; }
         }
 
         .feature-tags .tag {
-            padding: 4px 14px;
+            padding: 3px 10px;
             border-radius: 20px;
             background: var(--primary-light);
             color: var(--primary);
-            font-size: 13px;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .feature-tags .tag { padding: 4px 14px; font-size: 13px; }
         }
 
         /* ===== LOCATION MAP ===== */
         .location-map-container {
             width: 100%;
-            height: 300px;
+            height: 200px;
             border-radius: var(--radius-sm);
             overflow: hidden;
             background: var(--light-gray);
-            margin-top: 12px;
+            margin-top: 8px;
             position: relative;
+        }
+
+        @media (min-width: 576px) {
+            .location-map-container { height: 250px; margin-top: 10px; }
+        }
+
+        @media (min-width: 768px) {
+            .location-map-container { height: 300px; margin-top: 12px; }
         }
 
         .location-map-container iframe {
@@ -437,37 +646,69 @@
             justify-content: center;
             color: #999;
             background: var(--light-gray);
+            padding: 16px;
+            text-align: center;
         }
 
         .location-map-container .map-placeholder i {
-            font-size: 48px;
-            margin-bottom: 12px;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .location-map-container .map-placeholder i { font-size: 48px; margin-bottom: 12px; }
         }
 
         .location-map-container .map-placeholder .address-text {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--gray);
-            max-width: 80%;
-            text-align: center;
+            max-width: 90%;
+        }
+
+        @media (min-width: 768px) {
+            .location-map-container .map-placeholder .address-text { font-size: 14px; max-width: 80%; }
         }
 
         .map-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media (min-width: 576px) {
+            .map-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 12px;
+            }
         }
 
         .map-actions .btn-map {
-            padding: 8px 20px;
+            padding: 6px 14px;
             border-radius: var(--radius-sm);
             font-weight: 500;
-            font-size: 13px;
+            font-size: 12px;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 6px;
             border: none;
+            width: 100%;
+        }
+
+        @media (min-width: 576px) {
+            .map-actions .btn-map {
+                width: auto;
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .map-actions .btn-map { padding: 8px 20px; }
         }
 
         .btn-map-primary {
@@ -506,42 +747,77 @@
             background: white;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 24px;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 80px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-card { padding: 20px; margin-bottom: 20px; }
+        }
+
+        @media (min-width: 992px) {
+            .sidebar-card {
+                padding: 24px;
+                position: sticky;
+                top: 80px;
+            }
         }
 
         .sidebar-card .price {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--primary);
         }
 
+        @media (min-width: 576px) {
+            .sidebar-card .price { font-size: 28px; }
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-card .price { font-size: 32px; }
+        }
+
         .sidebar-card .price small {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 400;
             color: var(--gray);
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-card .price small { font-size: 16px; }
         }
 
         .sidebar-card .action-btns {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 16px;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-card .action-btns { gap: 10px; margin-top: 16px; }
         }
 
         .sidebar-card .action-btns .btn {
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: var(--radius-sm);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
             transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             border: none;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar-card .action-btns .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                gap: 8px;
+            }
         }
 
         .sidebar-card .action-btns .btn-primary {
@@ -571,28 +847,97 @@
             background: #d33426;
         }
 
+        /* ===== QUICK STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        @media (min-width: 576px) {
+            .stats-grid { gap: 10px; }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid { gap: 12px; }
+        }
+
+        .stats-grid .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: var(--light-gray);
+            border-radius: var(--radius-sm);
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid .stat-item { padding: 12px; }
+        }
+
+        .stats-grid .stat-item .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid .stat-item .stat-number { font-size: 24px; }
+        }
+
+        .stats-grid .stat-item .stat-label {
+            font-size: 11px;
+            color: var(--gray);
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid .stat-item .stat-label { font-size: 12px; }
+        }
+
+        .stat-number.primary { color: var(--primary); }
+        .stat-number.success { color: var(--secondary); }
+        .stat-number.warning { color: var(--warning); }
+        .stat-number.accent { color: var(--accent); }
+
         /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
-            top: 80px;
-            right: 20px;
+            top: 72px;
+            right: 12px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            max-width: calc(100vw - 24px);
+        }
+
+        @media (min-width: 768px) {
+            .toast-container {
+                top: 80px;
+                right: 20px;
+                max-width: 400px;
+            }
         }
 
         .toast-item {
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: var(--radius-sm);
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             animation: slideIn 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 280px;
+            gap: 8px;
+            min-width: auto;
+            width: 100%;
             box-shadow: var(--shadow-hover);
+        }
+
+        @media (min-width: 768px) {
+            .toast-item {
+                padding: 12px 20px;
+                font-size: 14px;
+                gap: 10px;
+                min-width: 280px;
+                width: auto;
+            }
         }
 
         .toast-item.success { background: var(--secondary); }
@@ -604,8 +949,12 @@
             background: none;
             border: none;
             color: rgba(255,255,255,0.7);
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .toast-item .close-toast { font-size: 18px; }
         }
 
         .toast-item .close-toast:hover { color: white; }
@@ -617,54 +966,78 @@
 
         /* ===== MOBILE BOTTOM NAV ===== */
         .mobile-nav {
-            display: none;
+            display: flex;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: white;
             border-top: 1px solid var(--border);
-            padding: 6px 0 env(safe-area-inset-bottom);
+            padding: 4px 0 env(safe-area-inset-bottom);
             z-index: 999;
             justify-content: space-around;
             align-items: center;
+            height: 56px;
         }
 
-        @media (max-width: 992px) {
-            .mobile-nav { display: flex; }
-            body { padding-bottom: 72px; }
+        @media (min-width: 992px) {
+            .mobile-nav { display: none; }
+            body { padding-bottom: 40px; }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-nav { height: 60px; padding: 6px 0; }
         }
 
         .mobile-nav a {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            font-size: 10px;
+            gap: 1px;
+            font-size: 9px;
             color: var(--gray);
-            padding: 4px 12px;
+            padding: 2px 8px;
             transition: var(--transition);
             border: none;
             background: none;
         }
 
-        .mobile-nav a i { font-size: 20px; }
+        @media (min-width: 576px) {
+            .mobile-nav a { font-size: 10px; padding: 4px 12px; gap: 2px; }
+        }
+
+        .mobile-nav a i { font-size: 18px; }
+        @media (min-width: 576px) { .mobile-nav a i { font-size: 20px; } }
         .mobile-nav a.active { color: var(--primary); }
         .mobile-nav a:hover { color: var(--primary); }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 576px) {
-            .header { padding: 0 12px; }
-            .header-brand { font-size: 16px; }
-            .header-brand img { height: 28px; }
-            .main-layout { padding: 0 12px; }
-            .page-header h1 { font-size: 20px; }
-            .info-card .info-row { flex-direction: column; gap: 4px; }
-            .info-card .info-row .label { width: 100%; }
+        /* ===== RESPONSIVE FINE-TUNING ===== */
+        @media (max-width: 575px) {
+            .header-brand span { display: none; }
+            .header-actions .btn-icon.hide-mobile { display: none; }
+            .avatar { width: 26px; height: 26px; font-size: 10px; }
+            .page-header h1 { font-size: 16px; }
+            .page-header .subtitle { font-size: 11px; }
+            .info-card .card-title { font-size: 14px; }
+            .sidebar-card .price { font-size: 20px; }
+            .sidebar-card .price small { font-size: 12px; }
+            .stats-grid .stat-item .stat-number { font-size: 18px; }
+        }
+
+        /* Fix for very small screens */
+        @media (max-width: 360px) {
+            .property-gallery .main-image { height: 160px; }
+            .property-gallery .thumb-grid .thumb { height: 60px; }
+            .info-card { padding: 12px; }
+            .sidebar-card { padding: 12px; }
+            .mobile-nav a { font-size: 8px; padding: 2px 4px; }
+            .mobile-nav a i { font-size: 14px; }
+        }
+
+        /* Fix for tablets */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .info-grid { grid-template-columns: 1fr; }
             .sidebar-card { position: relative; top: 0; }
-            .toast-item { min-width: auto; width: calc(100vw - 40px); }
-            .location-map-container { height: 200px; }
-            .map-actions .btn-map { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -707,7 +1080,7 @@
 
         <div class="header-actions">
             <span class="user-badge"><i class="fas fa-building me-1"></i>Business</span>
-            <a href="/messaging/" class="btn-icon"><i class="fas fa-comment-dots"></i></a>
+            <a href="/messaging/" class="btn-icon hide-mobile"><i class="fas fa-comment-dots"></i></a>
 
             <div class="dropdown-container">
                 <div class="avatar business" onclick="toggleDropdown('profileMenu')">
@@ -749,11 +1122,9 @@
                     <span class="subtitle">Property Details</span>
                 </h1>
             </div>
-            <div style="display:flex;gap:8px;">
-                <a href="/properties/manage/" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-            </div>
+            <a href="/properties/manage/" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
         </div>
 
         <!-- Gallery -->
@@ -763,7 +1134,7 @@
                 <img src="{{ main_image }}" alt="{{ property.title }}">
                 {% else %}
                 <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--light-gray);color:#ccc;">
-                    <i class="fas fa-home" style="font-size:64px;"></i>
+                    <i class="fas fa-home" style="font-size:48px;"></i>
                 </div>
                 {% endif %}
             </div>
@@ -774,16 +1145,16 @@
                 </div>
                 {% empty %}
                 <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
-                    <i class="fas fa-image" style="font-size:32px;"></i>
+                    <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
                 <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
-                    <i class="fas fa-image" style="font-size:32px;"></i>
+                    <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
                 <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
-                    <i class="fas fa-image" style="font-size:32px;"></i>
+                    <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
                 <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
-                    <i class="fas fa-image" style="font-size:32px;"></i>
+                    <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
                 {% endfor %}
             </div>
@@ -798,7 +1169,7 @@
                 <!-- Description -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-align-left"></i> Description</div>
-                    <p style="line-height:1.8;color:var(--gray);">{{ property.description|default:"No description provided." }}</p>
+                    <p style="line-height:1.8;color:var(--gray);font-size:14px;">{{ property.description|default:"No description provided." }}</p>
                 </div>
 
                 <!-- Details -->
@@ -843,7 +1214,7 @@
                     </div>
                 </div>
 
-                <!-- ===== LOCATION WITH MAP (NEW) ===== -->
+                <!-- Location with Map -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-map-marker-alt"></i> Location & Map</div>
                     
@@ -885,7 +1256,7 @@
                         {% if property.latitude and property.longitude %}
                             <iframe 
                                 src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_MAPS_API_KEY }}&q={{ property.latitude }},{{ property.longitude }}&zoom=15"
-                                allowfullscreen>
+                                allowfullscreen loading="lazy">
                             </iframe>
                         {% elif property.address %}
                             <div class="map-placeholder">
@@ -895,8 +1266,8 @@
                                     {{ property.address }}<br>
                                     {{ property.city }}, {{ property.country }}
                                 </div>
-                                <div style="margin-top:12px;color:#999;font-size:12px;">
-                                    <i class="fas fa-info-circle"></i> Click "View on Google Maps" to see location
+                                <div style="margin-top:8px;color:#999;font-size:11px;">
+                                    <i class="fas fa-info-circle"></i> Click "View on Google Maps"
                                 </div>
                             </div>
                         {% else %}
@@ -918,13 +1289,13 @@
                             <a href="https://www.google.com/maps/place/{{ property.latitude }},{{ property.longitude }}" 
                                target="_blank" 
                                class="btn-map btn-map-primary">
-                                <i class="fas fa-external-link-alt"></i> View on Google Maps
+                                <i class="fas fa-external-link-alt"></i> View on Maps
                             </a>
                         {% elif property.address %}
                             <a href="https://www.google.com/maps/search/?api=1&query={{ property.address|urlencode }},{{ property.city|urlencode }},{{ property.country|urlencode }}" 
                                target="_blank" 
                                class="btn-map btn-map-primary">
-                                <i class="fas fa-external-link-alt"></i> View on Google Maps
+                                <i class="fas fa-external-link-alt"></i> View on Maps
                             </a>
                         {% endif %}
                         <a href="/property-map/" class="btn-map btn-map-secondary">
@@ -940,7 +1311,7 @@
                         {% for feature in property_features %}
                         <span class="tag"><i class="fas fa-check-circle me-1"></i>{{ feature.name }}</span>
                         {% empty %}
-                        <span class="text-muted">No features listed</span>
+                        <span class="text-muted" style="font-size:14px;">No features listed</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -956,25 +1327,25 @@
                         <small>/{{ property.get_booking_unit_display|default:"night" }}</small>
                     </div>
 
-                    <div style="margin-top:12px;padding:12px 0;border-top:1px solid var(--border);">
-                        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);">
+                    <div style="margin-top:10px;padding:10px 0;border-top:1px solid var(--border);">
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);">
                             <span>Status</span>
-                            <span class="badge-status {{ property.status }}" style="font-size:12px;">
+                            <span class="badge-status {{ property.status }}" style="font-size:11px;">
                                 {{ property.get_status_display }}
                             </span>
                         </div>
-                        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);margin-top:6px;">
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);margin-top:4px;">
                             <span>Listing ID</span>
-                            <span style="font-weight:500;">#{{ property.id|stringformat:"08d" }}</span>
+                            <span style="font-weight:500;font-size:12px;">#{{ property.id|stringformat:"08d" }}</span>
                         </div>
-                        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);margin-top:6px;">
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);margin-top:4px;">
                             <span>Created</span>
-                            <span>{{ property.created_at|date:"M d, Y" }}</span>
+                            <span style="font-size:12px;">{{ property.created_at|date:"M d, Y" }}</span>
                         </div>
                         {% if property.latitude and property.longitude %}
-                        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);margin-top:6px;">
+                        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);margin-top:4px;">
                             <span>Coordinates</span>
-                            <span style="font-size:11px;color:#999;">
+                            <span style="font-size:10px;color:#999;max-width:120px;word-break:break-all;">
                                 {{ property.latitude|floatformat:6 }}, {{ property.longitude|floatformat:6 }}
                             </span>
                         </div>
@@ -997,22 +1368,22 @@
                 <!-- Quick Stats -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-chart-bar"></i> Quick Stats</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                        <div style="text-align:center;padding:12px;background:var(--light-gray);border-radius:var(--radius-sm);">
-                            <div style="font-size:24px;font-weight:700;color:var(--primary);">{{ total_rooms|default:0 }}</div>
-                            <div style="font-size:12px;color:var(--gray);">Total Rooms</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number primary">{{ total_rooms|default:0 }}</div>
+                            <div class="stat-label">Total Rooms</div>
                         </div>
-                        <div style="text-align:center;padding:12px;background:var(--light-gray);border-radius:var(--radius-sm);">
-                            <div style="font-size:24px;font-weight:700;color:var(--secondary);">{{ available_rooms|default:0 }}</div>
-                            <div style="font-size:12px;color:var(--gray);">Available Rooms</div>
+                        <div class="stat-item">
+                            <div class="stat-number success">{{ available_rooms|default:0 }}</div>
+                            <div class="stat-label">Available Rooms</div>
                         </div>
-                        <div style="text-align:center;padding:12px;background:var(--light-gray);border-radius:var(--radius-sm);">
-                            <div style="font-size:24px;font-weight:700;color:var(--warning);">{{ total_bookings|default:0 }}</div>
-                            <div style="font-size:12px;color:var(--gray);">Total Bookings</div>
+                        <div class="stat-item">
+                            <div class="stat-number warning">{{ total_bookings|default:0 }}</div>
+                            <div class="stat-label">Total Bookings</div>
                         </div>
-                        <div style="text-align:center;padding:12px;background:var(--light-gray);border-radius:var(--radius-sm);">
-                            <div style="font-size:24px;font-weight:700;color:var(--primary);">{{ total_views|default:0 }}</div>
-                            <div style="font-size:12px;color:var(--gray);">Total Views</div>
+                        <div class="stat-item">
+                            <div class="stat-number primary">{{ total_views|default:0 }}</div>
+                            <div class="stat-label">Total Views</div>
                         </div>
                     </div>
                 </div>
@@ -1049,6 +1420,13 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-menu-custom.show').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        // Close dropdowns on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
                 document.querySelectorAll('.dropdown-menu-custom.show').forEach(d => d.classList.remove('show'));
             }
         });
