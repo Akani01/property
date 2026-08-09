@@ -207,6 +207,91 @@
             display: none;
             border: 2px solid #fff;
         }
+        /* ===== CAR WASH DOT ON MAINTENANCE BUTTON ===== */
+        .wash-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #ffd700;
+            border-radius: 50%;
+            margin-left: 5px;
+            animation: pulseDot 2s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+            flex-shrink: 0; /* Prevents dot from shrinking on mobile */
+            min-width: 7px; /* Ensures dot stays visible */
+            min-height: 7px;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+            }
+            50% { 
+                opacity: 0.5; 
+                transform: scale(0.7);
+                box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        /* Optional: Add a subtle glow on hover */
+        .tab-btn:hover .wash-dot {
+            animation: none;
+            transform: scale(1.3);
+            box-shadow: 0 0 16px rgba(255, 215, 0, 0.8);
+        }
+
+        /* ===== FIX: Ensure tab buttons show all content on mobile ===== */
+        .tab-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            white-space: nowrap !important;
+            min-width: auto !important;
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+        }
+
+        /* ===== FIX: Mobile tab button text ===== */
+        @media (max-width: 576px) {
+            .tab-btn {
+                font-size: 9px !important;
+                padding: 4px 6px !important;
+                gap: 2px !important;
+            }
+            .tab-btn i {
+                font-size: 11px !important;
+            }
+            .wash-dot {
+                width: 5px;
+                height: 5px;
+                min-width: 5px;
+                min-height: 5px;
+                margin-left: 2px;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .tab-btn {
+                font-size: 8px !important;
+                padding: 3px 4px !important;
+            }
+            .tab-btn i {
+                font-size: 10px !important;
+            }
+            .wash-dot {
+                width: 4px;
+                height: 4px;
+                min-width: 4px;
+                min-height: 4px;
+                margin-left: 1px;
+            }
+        }
         .user-badge {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
@@ -1603,6 +1688,7 @@
             scrollbar-width: none;
             flex-wrap: nowrap;
             border-bottom: 1px solid rgba(0,0,0,0.04);
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
         .tabs-nav::-webkit-scrollbar { display: none; }
         .tab-btn {
@@ -2665,7 +2751,11 @@
             <div class="tabs-wrapper">
                 <div class="tabs-nav">
                     <button class="tab-btn active" onclick="switchTab('properties')"><i class="fas fa-home"></i> Properties</button>
-                    <button class="tab-btn" onclick="switchTab('maintenance')"><i class="fas fa-tools"></i> Maintenance</button>
+                    <button class="tab-btn" onclick="switchTab('maintenance')">
+                        <i class="fas fa-tools"></i> 
+                        Maintenance
+                        <span class="wash-dot" title="🚗 Car wash available!"></span>
+                    </button>
                     <button class="tab-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i> Jobs</button>
                     {% if user.is_authenticated %}
                         <button class="tab-btn" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i> Feed</button>

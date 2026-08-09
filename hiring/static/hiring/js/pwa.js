@@ -165,7 +165,7 @@ class OppoGlobePWA {
         if (this.isInstalled || this.isStandalone) return;
         
         const banner = document.createElement('div');
-        banner.id = 'tolleyaInstallBanner';
+        banner.id = 'OppoGlobeInstallBanner';
         banner.style.cssText = `
             position: fixed;
             bottom: 80px;
@@ -234,7 +234,7 @@ class OppoGlobePWA {
             this.hideInstallBanner();
             // Store dismissal preference
             try {
-                localStorage.setItem('tolleya_install_dismissed', 'true');
+                localStorage.setItem('OppoGlobe_install_dismissed', 'true');
             } catch(e) {}
         });
         
@@ -246,7 +246,7 @@ class OppoGlobePWA {
     }
     
     hideInstallBanner() {
-        const banner = document.getElementById('tolleyaInstallBanner');
+        const banner = document.getElementById('OppoGlobeInstallBanner');
         if (banner) {
             banner.style.animation = 'slideDown 0.3s ease forwards';
             setTimeout(() => {
@@ -512,7 +512,7 @@ class OppoGlobePWA {
         }
         
         // Remove existing toast
-        const existingToast = document.getElementById('tolleyaToast');
+        const existingToast = document.getElementById('OppoGlobeToast');
         if (existingToast) {
             existingToast.style.animation = 'slideDown 0.3s ease forwards';
             setTimeout(() => {
@@ -530,7 +530,7 @@ class OppoGlobePWA {
         const color = colors[type] || colors.info;
         
         const toast = document.createElement('div');
-        toast.id = 'tolleyaToast';
+        toast.id = 'OppoGlobeToast';
         toast.style.cssText = `
             position: fixed;
             bottom: 30px;
@@ -578,7 +578,7 @@ class OppoGlobePWA {
         
         // Auto-dismiss after 4 seconds
         this.toastTimeout = setTimeout(() => {
-            const t = document.getElementById('tolleyaToast');
+            const t = document.getElementById('OppoGlobeToast');
             if (t) {
                 t.style.animation = 'slideDown 0.3s ease forwards';
                 setTimeout(() => {
@@ -591,7 +591,7 @@ class OppoGlobePWA {
     
     showUpdateNotification() {
         const toast = document.createElement('div');
-        toast.id = 'tolleyaUpdateToast';
+        toast.id = 'OppoGlobeUpdateToast';
         toast.style.cssText = `
             position: fixed;
             bottom: 30px;
@@ -646,7 +646,7 @@ class OppoGlobePWA {
         
         document.body.appendChild(toast);
         setTimeout(() => {
-            const t = document.getElementById('tolleyaUpdateToast');
+            const t = document.getElementById('OppoGlobeUpdateToast');
             if (t) {
                 t.style.animation = 'slideDown 0.3s ease forwards';
                 setTimeout(() => {
@@ -710,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     
     if (!isStandalone) {
-        window.tolleyaPWA = new OppoGlobePWA();
+        window.OppoGlobePWA = new OppoGlobePWA();
         console.log('✅ OppoGlobe PWA initialized');
     } else {
         console.log('📱 OppoGlobe running as installed app');

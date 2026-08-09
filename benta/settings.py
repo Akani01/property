@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'education',
     'notifications',
     'webpush',
+    'ads',
 ]
 
 AUTH_USER_MODEL = 'hiring.CustomUser'

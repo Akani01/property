@@ -3,7 +3,7 @@
 // ============================================
 
 const CACHE_VERSION = 'v2.0.0';
-const CACHE_NAME = `tolleya-${CACHE_VERSION}`;
+const CACHE_NAME = `OppoGlobe-${CACHE_VERSION}`;
 
 // URLs to cache on install - FIXED PATHS
 const STATIC_CACHE_URLS = [

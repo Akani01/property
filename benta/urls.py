@@ -16,7 +16,7 @@ urlpatterns = [
     # Redirect /api/notifications/* to /notifications/api/notifications/*
     path('api/notifications/', lambda request: HttpResponseRedirect('/notifications/api/notifications/')),
     path('api/notifications/<path:path>', lambda request, path: HttpResponseRedirect(f'/notifications/api/notifications/{path}')),
-    
+    path('', include('ads.urls')),
     # ===== ADD NOTIFICATIONS APP =====
     path('notifications/', include('notifications.urls')),  # <-- ADD THIS LINE
 ]

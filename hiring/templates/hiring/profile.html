@@ -1790,12 +1790,12 @@
         // GLOBALS
         // ============================================================
         let currentUserType = 'applicant';
+        let isSuperAdmin = false;
         let eduManageFilter = 'all';
         let allEducationItems = [];
         let eduUploadType = 'school';
         let adFilter = 'all';
         let allAds = [];
-        let isSuperAdmin = false;
 
         // ============================================================
         // NAVIGATION
@@ -1812,7 +1812,7 @@
         });
 
         // ============================================================
-        // LOAD PROFILE
+        // LOAD PROFILE - FIXED FOR SUPERUSERS
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             loadProfileData();
@@ -2001,6 +2001,9 @@
             });
         }
 
+        // ============================================================
+        // MAIN PROFILE LOADER - FIXED FOR SUPERUSERS
+        // ============================================================
         function loadProfileData() {
             fetch('/api/profile/')
                 .then(r => r.json())
@@ -2008,66 +2011,74 @@
                     if (data.success) {
                         currentUserType = data.user_type || 'applicant';
                         isSuperAdmin = data.user?.is_superuser || data.user?.is_staff || false;
-                        updateUIForUserType(currentUserType, data);
-                        if (currentUserType === 'applicant') {
+                        
+                        // ============================================================
+                        // CRITICAL FIX: Determine if user should see business sections
+                        // Show for: user_type == 'admin' OR is_superuser OR is_staff
+                        // ============================================================
+                        const isBusinessUser = (currentUserType === 'admin') || isSuperAdmin;
+                        
+                        const profileHeader = document.getElementById('profileHeader');
+                        const profileTitle = document.getElementById('profileTitle');
+                        const profileSubtitle = document.getElementById('profileSubtitle');
+                        const userInfoTitle = document.getElementById('userInfoTitle');
+                        const editUserInfoBtn = document.getElementById('editUserInfoBtn');
+                        const completeness = document.getElementById('profileCompletenessSection');
+                        const applicantSections = document.getElementById('applicantSections');
+                        const businessSection = document.getElementById('businessProfileSection');
+                        const eduSection = document.getElementById('educationManagementSection');
+                        const adSection = document.getElementById('adManagementSection');
+
+                        if (isBusinessUser) {
+                            // ============================================================
+                            // BUSINESS / SUPERUSER UI
+                            // ============================================================
+                            profileHeader.classList.add('business-section');
+                            profileTitle.textContent = 'Business Profile';
+                            profileSubtitle.textContent = 'Manage your company, ads, and education content';
+                            userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Account Information';
+                            editUserInfoBtn.textContent = 'Edit Account';
+                            completeness.style.display = 'none';
+                            applicantSections.style.display = 'block';
+                            businessSection.style.display = 'block';
+                            if (eduSection) eduSection.style.display = 'block';
+                            if (adSection) adSection.style.display = 'block';
+                            
+                            // Load business data
+                            displayUserInfo(data.user);
+                            displayBusinessProfile(data.business_profile);
+                            loadEducationManageContent();
+                            loadAds();
+                            loadAdStats();
+                            loadPropertiesForAdSelect();
+                        } else {
+                            // ============================================================
+                            // APPLICANT UI
+                            // ============================================================
+                            profileHeader.classList.remove('business-section');
+                            profileTitle.textContent = 'My Profile';
+                            profileSubtitle.textContent = 'Manage your professional information';
+                            userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Personal Information';
+                            editUserInfoBtn.textContent = 'Edit';
+                            completeness.style.display = 'block';
+                            applicantSections.style.display = 'block';
+                            businessSection.style.display = 'none';
+                            if (eduSection) eduSection.style.display = 'none';
+                            if (adSection) adSection.style.display = 'none';
+                            
+                            // Load applicant data
                             updateProfileCompleteness(data.profile);
                             displayPersonalInfo(data.profile);
                             displaySkills(data.skills);
                             displayEmployment(data.employment);
                             displayEducation(data.education);
                             displayDocuments(data.documents);
-                            document.getElementById('educationManagementSection').style.display = 'none';
-                            document.getElementById('adManagementSection').style.display = 'none';
-                        } else if (currentUserType === 'admin') {
-                            displayUserInfo(data.user);
-                            displayBusinessProfile(data.business_profile);
-                            document.getElementById('educationManagementSection').style.display = 'block';
-                            document.getElementById('adManagementSection').style.display = 'block';
-                            loadEducationManageContent();
-                            loadAds();
-                            loadAdStats();
-                            loadPropertiesForAdSelect();
                         }
-                    } else showToast('Error loading profile', 'error');
+                    } else {
+                        showToast('Error loading profile', 'error');
+                    }
                 })
                 .catch(() => showToast('Error loading profile', 'error'));
-        }
-
-        function updateUIForUserType(userType, data) {
-            const profileHeader = document.getElementById('profileHeader');
-            const profileTitle = document.getElementById('profileTitle');
-            const profileSubtitle = document.getElementById('profileSubtitle');
-            const userInfoTitle = document.getElementById('userInfoTitle');
-            const editUserInfoBtn = document.getElementById('editUserInfoBtn');
-            const completeness = document.getElementById('profileCompletenessSection');
-            const applicantSections = document.getElementById('applicantSections');
-            const businessSection = document.getElementById('businessProfileSection');
-            const eduSection = document.getElementById('educationManagementSection');
-            const adSection = document.getElementById('adManagementSection');
-
-            if (userType === 'admin') {
-                profileHeader.classList.add('business-section');
-                profileTitle.textContent = 'Business Profile';
-                profileSubtitle.textContent = 'Manage your company, ads, and education content';
-                userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Account Information';
-                editUserInfoBtn.textContent = 'Edit Account';
-                completeness.style.display = 'none';
-                applicantSections.style.display = 'block';
-                businessSection.style.display = 'block';
-                if (eduSection) eduSection.style.display = 'block';
-                if (adSection) adSection.style.display = 'block';
-            } else {
-                profileHeader.classList.remove('business-section');
-                profileTitle.textContent = 'My Profile';
-                profileSubtitle.textContent = 'Manage your professional information';
-                userInfoTitle.innerHTML = '<i class="fas fa-user me-2"></i>Personal Information';
-                editUserInfoBtn.textContent = 'Edit';
-                completeness.style.display = 'block';
-                applicantSections.style.display = 'block';
-                businessSection.style.display = 'none';
-                if (eduSection) eduSection.style.display = 'none';
-                if (adSection) adSection.style.display = 'none';
-            }
         }
 
         // ============================================================
@@ -2272,7 +2283,7 @@
         function addDocument() { new bootstrap.Modal(document.getElementById('documentModal')).show(); }
 
         function editUserInfo() {
-            if (currentUserType === 'applicant') {
+            if (currentUserType === 'applicant' && !isSuperAdmin) {
                 fetch('/api/profile/')
                     .then(r => r.json())
                     .then(data => {
@@ -2299,6 +2310,7 @@
                     })
                     .catch(() => showToast('Error', 'error'));
             } else {
+                // For business users and superusers - edit account info
                 fetch('/api/profile/')
                     .then(r => r.json())
                     .then(data => {
