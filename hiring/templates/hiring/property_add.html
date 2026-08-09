@@ -1404,7 +1404,7 @@
         }
 
         // ============================================
-        // GEOCODING - AUTO LOCATION (USER FRIENDLY!)
+        // GEOCODING - FIXED: Using the correct POST endpoint
         // ============================================
         function geocodeAddress() {
             const address = document.getElementById('streetAddress').value.trim();
@@ -1436,9 +1436,8 @@
                 </div>
             `;
             
-            const fullAddress = `${address}, ${city}, ${country}`;
-            
-            fetch('/api/geocode/', {
+            // ✅ FIXED: Using the correct POST endpoint that exists in your views
+            fetch('/api/geocode-address/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1459,15 +1458,15 @@
                     // Set coordinates
                     document.getElementById('latitude').value = data.lat;
                     document.getElementById('longitude').value = data.lng;
-                    document.getElementById('formattedAddress').value = data.formatted_address;
-                    document.getElementById('placeId').value = data.place_id;
+                    document.getElementById('formattedAddress').value = data.formatted_address || data.full_address || '';
+                    document.getElementById('placeId').value = data.place_id || '';
                     
                     // Update preview
                     preview.innerHTML = `
                         <div class="location-status" style="color:#2e7d32;">
                             <i class="fas fa-check-circle" style="color:#4caf50;font-size:32px;"></i>
                             <div class="status-text" style="font-weight:600;color:#2e7d32;">✅ Location Found!</div>
-                            <div class="status-detail">${data.formatted_address}</div>
+                            <div class="status-detail">${data.formatted_address || data.full_address || 'Address found'}</div>
                             <div class="status-detail" style="font-size:11px;color:#999;margin-top:4px;">
                                 ${parseFloat(data.lat).toFixed(6)}, ${parseFloat(data.lng).toFixed(6)}
                             </div>
@@ -1479,7 +1478,7 @@
                     const foundDiv = document.getElementById('locationFound');
                     foundDiv.classList.add('show');
                     document.getElementById('locationFoundText').textContent = 
-                        `📍 Location found: ${data.formatted_address}`;
+                        `📍 Location found: ${data.formatted_address || data.full_address || 'Address found'}`;
                     
                     document.getElementById('clearLocationBtn').style.display = 'inline-flex';
                     
@@ -1489,7 +1488,7 @@
                         <div class="location-status" style="color:#c62828;">
                             <i class="fas fa-exclamation-circle" style="color:#c62828;font-size:32px;"></i>
                             <div class="status-text" style="font-weight:600;color:#c62828;">Location Not Found</div>
-                            <div class="status-detail">Please check the address and try again</div>
+                            <div class="status-detail">${data.error || 'Please check the address and try again'}</div>
                             <div class="status-detail" style="font-size:11px;color:#999;margin-top:4px;">
                                 Tip: Include street number and city
                             </div>
