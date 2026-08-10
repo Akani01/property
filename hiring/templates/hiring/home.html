@@ -207,7 +207,8 @@
             display: none;
             border: 2px solid #fff;
         }
-        /* ===== CAR WASH DOT ON MAINTENANCE BUTTON ===== */
+        
+        /* ===== WASH DOT ===== */
         .wash-dot {
             display: inline-block;
             width: 7px;
@@ -220,8 +221,8 @@
             vertical-align: middle;
             position: relative;
             top: -1px;
-            flex-shrink: 0; /* Prevents dot from shrinking on mobile */
-            min-width: 7px; /* Ensures dot stays visible */
+            flex-shrink: 0;
+            min-width: 7px;
             min-height: 7px;
         }
 
@@ -238,14 +239,6 @@
             }
         }
 
-        /* Optional: Add a subtle glow on hover */
-        .tab-btn:hover .wash-dot {
-            animation: none;
-            transform: scale(1.3);
-            box-shadow: 0 0 16px rgba(255, 215, 0, 0.8);
-        }
-
-        /* ===== FIX: Ensure tab buttons show all content on mobile ===== */
         .tab-btn {
             display: inline-flex !important;
             align-items: center !important;
@@ -256,7 +249,6 @@
             font-size: 11px !important;
         }
 
-        /* ===== FIX: Mobile tab button text ===== */
         @media (max-width: 576px) {
             .tab-btn {
                 font-size: 9px !important;
@@ -292,6 +284,7 @@
                 margin-left: 1px;
             }
         }
+        
         .user-badge {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
@@ -363,7 +356,7 @@
             margin-left: auto;
         }
 
-        /* ===== SHARE BUTTON - FIXED RESPONSIVE ===== */
+        /* ===== SHARE DROPDOWN ===== */
         .share-dropdown {
             position: relative;
             display: inline-block;
@@ -429,40 +422,6 @@
         .btn-share:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(79,172,254,0.3);
-        }
-
-        .content-creator .share-dropdown {
-            margin-left: auto !important;
-            flex-shrink: 0;
-        }
-
-        .content-creator .btn-share {
-            font-size: 9px;
-            padding: 2px 6px;
-            min-height: 20px;
-        }
-
-        @media (max-width: 480px) {
-            .content-creator {
-                flex-wrap: wrap;
-                gap: 4px;
-            }
-            .content-creator .share-dropdown {
-                margin-left: 0 !important;
-            }
-            .content-creator .post-time {
-                margin-left: 0;
-                width: 100%;
-                font-size: 9px;
-            }
-            .share-dropdown-content {
-                min-width: 140px;
-                right: -10px;
-            }
-            .share-dropdown-content a {
-                font-size: 10px;
-                padding: 4px 10px;
-            }
         }
 
         /* ===== PWA INSTALL BUTTON ===== */
@@ -632,7 +591,7 @@
         .property-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
         
         /* ============================================================
-           EDUCATION - MINIMAL INTEGRATION (Blends with Property Design)
+           EDUCATION - COMPLETE FIXED STYLES
            ============================================================ */
         .edu-card {
             background: #ffffff;
@@ -889,11 +848,213 @@
             color: #f7971e;
         }
 
+        .edu-card .edu-content {
+            padding: 10px 14px 4px 14px;
+        }
+        .edu-card .edu-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #191919;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .edu-card .edu-icon {
+            color: #f7971e;
+            font-size: 13px;
+        }
+        .edu-card .edu-meta {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 4px 0;
+        }
+        .edu-card .edu-meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .edu-card .edu-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+        .edu-card .edu-footer {
+            padding: 6px 14px;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .edu-card .edu-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .edu-card .btn-edu-secondary {
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            background: transparent;
+            font-size: 9px;
+            cursor: pointer;
+            color: #666;
+            transition: var(--transition);
+        }
+        .edu-card .btn-edu-secondary:hover {
+            background: rgba(0,0,0,0.04);
+        }
+        .edu-card .btn-edu-primary {
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #f7971e, #ffb703);
+            color: #1a1a1a;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .edu-card .btn-edu-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(247, 151, 30, 0.3);
+        }
+
+        /* ===== EDUCATION UPLOAD MODAL ===== */
+        #eduUploadModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        #eduUploadModal.show { display: flex; }
+        .edu-modal-content {
+            background: #ffffff;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalSlideUp 0.25s ease;
+        }
+        @keyframes modalSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .edu-modal-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .edu-modal-header h5 {
+            font-family: var(--font-display);
+            font-size: 15px;
+            margin: 0;
+            color: #191919;
+        }
+        .edu-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .edu-modal-footer {
+            padding: 10px 16px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+        .edu-modal-footer .btn {
+            padding: 6px 18px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            min-height: 34px;
+        }
+        .edu-modal-footer .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .edu-modal-footer .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .edu-modal-footer .btn-primary {
+            background: linear-gradient(135deg, #f7971e, #ffb703);
+            color: #1a1a1a;
+        }
+        .edu-modal-footer .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(247, 151, 30, 0.3);
+        }
+        .edu-modal-footer .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .edu-modal-body .form-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .edu-modal-body .form-control {
+            font-size: 12px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            outline: none;
+            background: #fff;
+            transition: var(--transition);
+        }
+        .edu-modal-body .form-control:focus {
+            border-color: #f7971e;
+            box-shadow: 0 0 0 3px rgba(247, 151, 30, 0.1);
+        }
+        .edu-modal-body .form-control-sm {
+            font-size: 11px;
+            padding: 3px 6px;
+        }
+        .edu-modal-body .form-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .edu-modal-body .form-check-input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: #f7971e;
+        }
+        .edu-modal-body .form-check-label {
+            font-size: 11px;
+            color: #555;
+        }
+
         @media (max-width: 576px) {
             .edu-scroll .edu-mini-card { width: 100px; }
             .edu-scroll .edu-mini-card .edu-info .edu-title { font-size: 9px; }
             .edu-upload-mini { flex-direction: column; align-items: stretch; }
             .edu-upload-mini .upload-actions { justify-content: center; }
+            .edu-modal-content { max-width: 100%; margin: 10px; }
         }
 
         /* ===== ADS CARD STYLES ===== */
@@ -1688,7 +1849,7 @@
             scrollbar-width: none;
             flex-wrap: nowrap;
             border-bottom: 1px solid rgba(0,0,0,0.04);
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            -webkit-overflow-scrolling: touch;
         }
         .tabs-nav::-webkit-scrollbar { display: none; }
         .tab-btn {
@@ -1897,7 +2058,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             animation: modalSlideUp 0.25s ease;
         }
-        @keyframes modalSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .rating-modal-content .rating-stars {
             display: flex;
             justify-content: center;
@@ -2721,7 +2881,7 @@
                     </span>
                 </div>
                 
-                <!-- Mini scroll - just like property scroll -->
+                <!-- Mini scroll -->
                 <div class="edu-scroll" id="eduMiniScroll">
                     <div class="text-center py-2" style="color:rgba(0,0,0,0.4);font-size:11px;width:100%;">
                         <span class="loading-spinner" style="width:12px;height:12px;display:inline-block;margin-right:6px;"></span>
@@ -2806,9 +2966,9 @@
                 <div id="propertiesContainer"></div>
             </div>
 
-            <!-- ===== EDUCATION TAB - Complete View ===== -->
+            <!-- ===== EDUCATION TAB - COMPLETE VIEW ===== -->
             <div id="educationTab" class="tab-content">
-                <!-- Business Upload - Minimal & Clean -->
+                <!-- Business Upload -->
                 <div id="eduUploadZone" class="edu-upload-mini hidden">
                     <span class="upload-label">
                         <i class="fas fa-graduation-cap"></i> 
@@ -2954,6 +3114,25 @@
                 <div><input type="file" id="mediaInput" accept="image/*,video/*" style="display:none;" onchange="previewMedia(event)"><button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('mediaInput').click()" style="font-size:11px;padding:2px 10px;"><i class="fas fa-image"></i> Add</button></div>
                 <div class="d-flex gap-2"><button type="button" class="btn btn-secondary" onclick="hidePostModal()" style="font-size:11px;padding:2px 12px;">Cancel</button><button type="button" class="btn btn-primary" onclick="createPost()" id="createPostBtn" style="font-size:11px;padding:2px 12px;">Post</button></div>
             </div>
+        </div>
+    </div>
+
+    <!-- ===== EDUCATION UPLOAD MODAL ===== -->
+    <div id="eduUploadModal">
+        <div class="edu-modal-content">
+            <div class="edu-modal-header">
+                <h5 id="eduUploadTitle">Add Education Content</h5>
+                <button type="button" class="btn-close" onclick="closeEduUploadModal()"></button>
+            </div>
+            <form id="eduUploadForm" enctype="multipart/form-data">
+                <div class="edu-modal-body" id="eduUploadFields">
+                    <!-- Dynamic fields will be inserted here -->
+                </div>
+                <div class="edu-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEduUploadModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEduUpload()">Upload</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -3130,7 +3309,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     // ============================================================
-    // GOOGLE SIGN-IN / LOGIN - FULLY FIXED
+    // GOOGLE SIGN-IN / LOGIN
     // ============================================================
     const GOOGLE_CLIENT_ID = '402309405742-cffefeqgl5dj875c5q1t5pqpm87jl53u.apps.googleusercontent.com';
     
@@ -3215,12 +3394,10 @@
             setTimeout(initGoogleSignIn, 500);
             return;
         }
-        console.log('Google SDK loaded, initializing with Client ID:', GOOGLE_CLIENT_ID);
         try {
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: function(response) {
-                    console.log('Google callback received');
                     const loginModal = document.getElementById('loginModal');
                     const signupModal = document.getElementById('signupModal');
                     const businessModal = document.getElementById('businessSignupModal');
@@ -3237,60 +3414,41 @@
                 cancel_on_tap_outside: false,
                 auto_select: false,
             });
-            console.log('Google initialized successfully');
             const loginBtnContainer = document.getElementById('googleLoginBtn');
             if (loginBtnContainer) {
-                google.accounts.id.renderButton(
-                    loginBtnContainer,
-                    {
-                        type: 'standard',
-                        shape: 'pill',
-                        theme: 'outline',
-                        text: 'signin_with',
-                        size: 'large',
-                        width: '100%',
-                        logo_alignment: 'left'
-                    }
-                );
-                console.log('Login button rendered');
-            } else {
-                console.warn('Login button container not found');
+                google.accounts.id.renderButton(loginBtnContainer, {
+                    type: 'standard',
+                    shape: 'pill',
+                    theme: 'outline',
+                    text: 'signin_with',
+                    size: 'large',
+                    width: '100%',
+                    logo_alignment: 'left'
+                });
             }
             const signupBtnContainer = document.getElementById('googleSignupBtn');
             if (signupBtnContainer) {
-                google.accounts.id.renderButton(
-                    signupBtnContainer,
-                    {
-                        type: 'standard',
-                        shape: 'pill',
-                        theme: 'outline',
-                        text: 'signup_with',
-                        size: 'large',
-                        width: '100%',
-                        logo_alignment: 'left'
-                    }
-                );
-                console.log('Signup button rendered');
-            } else {
-                console.warn('Signup button container not found');
+                google.accounts.id.renderButton(signupBtnContainer, {
+                    type: 'standard',
+                    shape: 'pill',
+                    theme: 'outline',
+                    text: 'signup_with',
+                    size: 'large',
+                    width: '100%',
+                    logo_alignment: 'left'
+                });
             }
             const businessBtnContainer = document.getElementById('googleBusinessSignupBtn');
             if (businessBtnContainer) {
-                google.accounts.id.renderButton(
-                    businessBtnContainer,
-                    {
-                        type: 'standard',
-                        shape: 'pill',
-                        theme: 'outline',
-                        text: 'signup_with',
-                        size: 'large',
-                        width: '100%',
-                        logo_alignment: 'left'
-                    }
-                );
-                console.log('Business signup button rendered');
-            } else {
-                console.warn('Business signup button container not found');
+                google.accounts.id.renderButton(businessBtnContainer, {
+                    type: 'standard',
+                    shape: 'pill',
+                    theme: 'outline',
+                    text: 'signup_with',
+                    size: 'large',
+                    width: '100%',
+                    logo_alignment: 'left'
+                });
             }
         } catch (error) {
             console.error('Error initializing Google Sign-In:', error);
@@ -3298,18 +3456,14 @@
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded, initializing Google Sign-In...');
         setTimeout(initGoogleSignIn, 1000);
     });
     document.addEventListener('shown.bs.modal', function(event) {
-        const modalId = event.target.id;
-        if (['loginModal', 'signupModal', 'businessSignupModal'].includes(modalId)) {
-            console.log('Modal opened:', modalId);
+        if (['loginModal', 'signupModal', 'businessSignupModal'].includes(event.target.id)) {
             setTimeout(initGoogleSignIn, 300);
         }
     });
     window.onGoogleLibraryLoad = function() {
-        console.log('Google Library loaded event');
         initGoogleSignIn();
     };
 
@@ -3318,189 +3472,6 @@
     // ============================================================
     const currentUserId = parseInt(document.body.dataset.userId || '0');
     const currentUsername = document.body.dataset.username || '';
-
-    
-    // Fallback copy method
-    function fallbackCopy(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            showToast('Link copied!', 'success');
-        } catch (err) {
-            showToast('Could not copy link', 'error');
-        }
-        document.body.removeChild(textarea);
-    }
-
-    // ============================================================
-    // PWA INSTALL PROMPT
-    // ============================================================
-    let deferredPrompt;
-    let pwaInstallBtn = null;
-    let pwaInstalled = false;
-
-    function checkIfInstalled() {
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            pwaInstalled = true;
-            return true;
-        }
-        if (localStorage.getItem('pwa_dismissed') === 'true') {
-            return false;
-        }
-        return false;
-    }
-
-    function createPwaInstallButton() {
-        if (pwaInstallBtn || pwaInstalled) return;
-        if (checkIfInstalled()) {
-            pwaInstalled = true;
-            return;
-        }
-        const btn = document.createElement('button');
-        btn.className = 'pwa-install-btn';
-        btn.setAttribute('aria-label', 'Install OppoGlobe App');
-        btn.innerHTML = `
-            <span class="btn-icon">
-                <i class="fas fa-download"></i>
-            </span>
-            <span class="btn-text">
-                <span class="main-text">📱 Install OppoGlobe App</span>
-                <span class="sub-text">Get the full experience</span>
-            </span>
-            <button class="close-btn" aria-label="Dismiss">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        document.body.appendChild(btn);
-        pwaInstallBtn = btn;
-        setTimeout(() => {
-            btn.classList.add('show');
-        }, 500);
-        btn.querySelector('.close-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            localStorage.setItem('pwa_dismissed', 'true');
-            btn.classList.remove('show');
-            setTimeout(() => btn.remove(), 400);
-            pwaInstallBtn = null;
-            showToast('You can install later from browser menu', 'info');
-        });
-        btn.addEventListener('click', async function(e) {
-            if (e.target.closest('.close-btn')) return;
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log('PWA User response:', outcome);
-                deferredPrompt = null;
-                btn.classList.remove('show');
-                setTimeout(() => {
-                    if (btn.parentNode) btn.remove();
-                    pwaInstallBtn = null;
-                }, 400);
-                if (outcome === 'accepted') {
-                    showToast('🎉 Installing OppoGlobe...', 'success');
-                } else {
-                    showToast('You can install later from the browser menu', 'info');
-                }
-            } else {
-                showToast('Open browser menu → "Install App" or "Add to Home Screen"', 'info');
-            }
-        });
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!checkIfInstalled() && localStorage.getItem('pwa_dismissed') !== 'true') {
-            createPwaInstallButton();
-        }
-    });
-
-    window.addEventListener('appinstalled', () => {
-        console.log('🎉 App installed successfully!');
-        pwaInstalled = true;
-        if (pwaInstallBtn) {
-            pwaInstallBtn.classList.remove('show');
-            setTimeout(() => {
-                if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
-                pwaInstallBtn = null;
-            }, 400);
-        }
-        showToast('🎉 Thank you for installing OppoGlobe!', 'success');
-    });
-
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
-        if (e.matches) {
-            pwaInstalled = true;
-            if (pwaInstallBtn) {
-                pwaInstallBtn.classList.remove('show');
-                setTimeout(() => {
-                    if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
-                    pwaInstallBtn = null;
-                }, 400);
-            }
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        if (checkIfInstalled()) {
-            pwaInstalled = true;
-            return;
-        }
-    });
-
-    function detectIOSPWA() {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS && !checkIfInstalled() && !localStorage.getItem('pwa_dismissed')) {
-            setTimeout(() => {
-                if (!pwaInstallBtn && !pwaInstalled) {
-                    const iosHint = document.createElement('div');
-                    iosHint.className = 'pwa-install-btn show';
-                    iosHint.style.background = '#ffffff';
-                    iosHint.style.borderColor = 'rgba(0,0,0,0.1)';
-                    iosHint.innerHTML = `
-                        <span class="btn-icon">
-                            <i class="fas fa-arrow-up" style="font-size:14px;color:#fff;"></i>
-                        </span>
-                        <span class="btn-text">
-                            <span class="main-text">Add to Home Screen</span>
-                            <span class="sub-text">Tap Share → Add to Home Screen</span>
-                        </span>
-                        <button class="close-btn" aria-label="Dismiss">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    document.body.appendChild(iosHint);
-                    iosHint.querySelector('.close-btn').addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        localStorage.setItem('pwa_dismissed', 'true');
-                        iosHint.classList.remove('show');
-                        setTimeout(() => iosHint.remove(), 400);
-                    });
-                    pwaInstallBtn = iosHint;
-                }
-            }, 3000);
-        }
-    }
-    detectIOSPWA();
-
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) return;
-        if (checkIfInstalled() && !pwaInstalled) {
-            pwaInstalled = true;
-            if (pwaInstallBtn) {
-                pwaInstallBtn.classList.remove('show');
-                setTimeout(() => {
-                    if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
-                    pwaInstallBtn = null;
-                }, 400);
-            }
-        }
-    });
 
     // ============================================================
     // UTILITY FUNCTIONS
@@ -3896,7 +3867,7 @@
     }
 
     // ============================================================
-    // ADS - BACKEND INTEGRATION - FULLY DYNAMIC
+    // ADS - BACKEND INTEGRATION
     // ============================================================
     let allAds = [];
     let adIndex = 0;
@@ -4036,9 +4007,7 @@
         if (!ad) {
             ad = getFallbackAds().find(a => a.id === adId);
         }
-        
         if (!ad) return;
-        
         const sessionId = localStorage.getItem('ad_session_id') || 'unknown';
         fetch(`/api/ads/${adId}/record_click/`, {
             method: 'POST',
@@ -4048,7 +4017,6 @@
             },
             body: JSON.stringify({ session_id: sessionId })
         }).catch(() => {});
-        
         if (ad.action === 'view_properties') {
             switchTab('properties');
             setTimeout(() => {
@@ -4078,12 +4046,10 @@
 
     function trackAdClick(adId, link) {
         const sessionId = localStorage.getItem('ad_session_id') || 'unknown';
-        
         let ad = allAds.find(a => a.id === adId);
         if (!ad) {
             ad = getFallbackAds().find(a => a.id === adId);
         }
-        
         fetch(`/api/ads/${adId}/record_click/`, {
             method: 'POST',
             headers: {
@@ -4122,7 +4088,7 @@
     initAdSession();
 
     // ============================================================
-    // FIXED: PROPERTIES - MERGED API APPROACH
+    // FIXED: PROPERTIES
     // ============================================================
     let allProperties = [];
     let currentRating = 0;
@@ -4412,9 +4378,6 @@
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // HELPER FUNCTIONS
-    // ============================================================
     function renderStars(rating) {
         const full = Math.floor(rating);
         const half = rating % 1 >= 0.5;
@@ -4473,7 +4436,6 @@
     function loadTopCreators() {
         const container = document.getElementById('topCreators');
         if (!container) return;
-        
         const creatorMap = new Map();
         allProperties.forEach(p => {
             let ownerName = 'Unknown';
@@ -4576,7 +4538,43 @@
         .catch(() => { btn.innerHTML = original; btn.disabled = false; showToast('Please try again', 'info'); });
     }
 
-    // Share functions are now defined above
+    function toggleShareDropdown(btn) {
+        const content = btn.parentElement.querySelector('.share-dropdown-content');
+        if (content) content.classList.toggle('show');
+    }
+
+    function shareContent(type, id, title, platform) {
+        const url = `${window.location.origin}/${type}/${id}/`;
+        let shareUrl = '';
+        if (platform === 'whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' - ' + url)}`;
+        else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        else if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+        else if (platform === 'linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        else if (platform === 'copy') {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(`${title} - ${url}`).then(() => showToast('Link copied!', 'success'));
+            } else {
+                const input = document.createElement('input');
+                input.value = `${title} - ${url}`;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Link copied!', 'success');
+            }
+            return;
+        }
+        if (shareUrl) window.open(shareUrl, '_blank');
+        const dropdowns = document.querySelectorAll('.share-dropdown-content');
+        dropdowns.forEach(d => d.classList.remove('show'));
+    }
+
+    // Close share dropdowns on click outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.share-dropdown')) {
+            document.querySelectorAll('.share-dropdown-content').forEach(d => d.classList.remove('show'));
+        }
+    });
 
     function togglePropertyInteraction(propertyId, action) {
         const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
@@ -4882,7 +4880,7 @@
     }
 
     // ============================================================
-    // MAINTENANCE - COMPLETE
+    // MAINTENANCE
     // ============================================================
     let maintenanceTags = [];
     let maintenanceQuickImageFile = null;
@@ -5574,7 +5572,7 @@
     }
 
     // ============================================================
-    // EDUCATION SYSTEM - MINIMAL & INTEGRATED
+    // EDUCATION SYSTEM - COMPLETE FIXED
     // ============================================================
     let allEducationItems = [];
     let educationFilter = 'all';
@@ -5600,24 +5598,26 @@
         container.innerHTML = '<div class="text-center py-4"><div class="loading-spinner"></div><p class="mt-2" style="font-size:13px;color:#999;">Loading education content...</p></div>';
         
         Promise.all([
-            fetch('/api/education/bursaries/').then(r => r.json()).catch(() => ({ success: false, bursaries: [] })),
-            fetch('/api/education/universities/').then(r => r.json()).catch(() => ({ success: false, universities: [] })),
-            fetch('/api/education/schools/').then(r => r.json()).catch(() => ({ success: false, schools: [] })),
-            fetch('/api/education/papers/').then(r => r.json()).catch(() => ({ success: false, papers: [] }))
+            fetch('/api/education/bursaries/').then(r => r.json()).catch(() => ({})),
+            fetch('/api/education/universities/').then(r => r.json()).catch(() => ({})),
+            fetch('/api/education/schools/').then(r => r.json()).catch(() => ({})),
+            fetch('/api/education/question-papers/').then(r => r.json()).catch(() => ({ success: false, papers: [] }))
         ]).then(([bursariesData, universitiesData, schoolsData, papersData]) => {
             const items = [];
             
-            if (bursariesData.success && bursariesData.bursaries) {
-                bursariesData.bursaries.forEach(b => {
+            // Process bursaries - YOUR VIEWS RETURN data directly, not wrapped in 'success'
+            const bursaries = bursariesData.bursaries || bursariesData.results || [];
+            if (Array.isArray(bursaries) && bursaries.length > 0) {
+                bursaries.forEach(b => {
                     items.push({
                         type: 'bursary',
                         id: b.id,
                         title: b.title || 'Bursary',
                         description: b.description || '',
                         institution: b.provider || 'Unknown Provider',
-                        image: b.image || b.logo || null,
+                        image: b.image || b.provider_logo || null,
                         badge: '💰 Bursary',
-                        amount: b.amount || 'Varies',
+                        amount: b.amount ? `R${Number(b.amount).toLocaleString()}` : 'Varies',
                         closing_date: b.closing_date || null,
                         level: b.level || 'All Levels',
                         field: b.field_of_study || 'Various',
@@ -5630,8 +5630,10 @@
                 });
             }
             
-            if (universitiesData.success && universitiesData.universities) {
-                universitiesData.universities.forEach(u => {
+            // Process universities
+            const universities = universitiesData.universities || universitiesData.results || [];
+            if (Array.isArray(universities) && universities.length > 0) {
+                universities.forEach(u => {
                     items.push({
                         type: 'university',
                         id: u.id,
@@ -5651,8 +5653,10 @@
                 });
             }
             
-            if (schoolsData.success && schoolsData.schools) {
-                schoolsData.schools.forEach(s => {
+            // Process schools
+            const schools = schoolsData.schools || schoolsData.results || [];
+            if (Array.isArray(schools) && schools.length > 0) {
+                schools.forEach(s => {
                     items.push({
                         type: 'school',
                         id: s.id,
@@ -5673,18 +5677,22 @@
                 });
             }
             
-            if (papersData.success && papersData.papers) {
-                papersData.papers.forEach(p => {
+            // Process question papers - handle gracefully if endpoint fails
+            const papers = papersData.papers || papersData.results || [];
+            if (Array.isArray(papers) && papers.length > 0) {
+                papers.forEach(p => {
+                    const gradeName = p.grade?.name || '';
+                    const subjectName = p.subject?.name || '';
                     items.push({
                         type: 'paper',
                         id: p.id,
                         title: p.title || 'Question Paper',
-                        description: `${p.grade?.name || ''} - ${p.subject?.name || ''}`,
+                        description: `${gradeName} - ${subjectName}`,
                         institution: p.year || '',
                         image: null,
                         badge: '📄 Paper',
-                        grade: p.grade?.name || '',
-                        subject: p.subject?.name || '',
+                        grade: gradeName,
+                        subject: subjectName,
                         year: p.year || '',
                         file_url: p.file || null,
                         file_name: p.file_name || '',
@@ -5699,12 +5707,11 @@
             allEducationItems = items;
             
             renderEduMiniScroll(items.slice(0, 8));
-            
             renderEducationItems(items, container);
-            
             checkEduUserType();
-        }).catch(() => {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4 style="font-size:15px;">Error Loading</h4></div>';
+        }).catch((error) => {
+            console.error('Error loading education content:', error);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4 style="font-size:15px;">Error Loading Education Content</h4><p style="font-size:12px;color:#999;">Please refresh the page</p></div>';
         });
     }
 
@@ -5783,20 +5790,20 @@
             paper: { icon: '📄', label: 'Question Papers' }
         };
         
-        for (const [type, items] of Object.entries(grouped)) {
-            if (items.length === 0) continue;
+        for (const [type, typeItems] of Object.entries(grouped)) {
+            if (typeItems.length === 0) continue;
             
             const label = typeLabels[type] || { icon: '📚', label: type };
             html += `
                 <div style="margin-bottom:12px;">
                     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:0 4px;">
                         <span style="font-size:13px;font-weight:600;color:#191919;">${label.icon} ${label.label}</span>
-                        <span style="font-size:9px;color:#999;background:rgba(0,0,0,0.04);padding:0 8px;border-radius:10px;">${items.length}</span>
+                        <span style="font-size:9px;color:#999;background:rgba(0,0,0,0.04);padding:0 8px;border-radius:10px;">${typeItems.length}</span>
                     </div>
             `;
             
             if (type === 'paper') {
-                items.forEach(p => {
+                typeItems.forEach(p => {
                     html += `
                         <div class="edu-paper-item">
                             <div class="paper-icon"><i class="fas fa-file-pdf"></i></div>
@@ -5804,24 +5811,24 @@
                                 <div class="paper-title">${escapeHtml(p.title)}</div>
                                 <div class="paper-meta">${escapeHtml(p.grade || '')} ${p.subject ? '· ' + escapeHtml(p.subject) : ''} ${p.year ? '· ' + p.year : ''}</div>
                             </div>
-                            <button class="paper-dl" onclick="downloadPaper('${p.id}')"><i class="fas fa-download"></i></button>
+                            ${p.file_url ? `<button class="paper-dl" onclick="downloadPaper('${p.id}')"><i class="fas fa-download"></i></button>` : ''}
                         </div>
                     `;
                 });
             } else {
-                items.forEach(item => {
+                typeItems.forEach(item => {
                     const priceDisplay = item.amount || (item.type === 'university' ? 'Apply Now' : '');
                     const dateDisplay = item.closing_date ? `Closes: ${new Date(item.closing_date).toLocaleDateString()}` : '';
                     
                     html += `
                         <div class="edu-card" onclick="viewEducationItem('${item.type}', '${item.id}')">
                             <div class="property-image-container" style="aspect-ratio:16/9;background:linear-gradient(135deg,#f8f0e7,#e8dcc8);">
-                                <img src="${item.image || '/static/images/default-education.jpg'}" alt="${escapeHtml(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f8f0e7,#e8dcc8)';">
+                                ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f8f0e7,#e8dcc8)';">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.1);font-size:40px;"><i class="fas ${item.type === 'bursary' ? 'fa-hand-holding-heart' : 'fa-university'}"></i></div>`}
                                 <span class="edu-badge ${item.type}">${item.badge}</span>
                             </div>
                             <div class="edu-content">
                                 <div class="edu-title">
-                                    <span class="edu-icon"><i class="fas ${item.type === 'bursary' ? 'fa-hand-holding-heart' : item.type === 'university' ? 'fa-university' : 'fa-school'}"></i></span>
+                                    <span class="edu-icon"><i class="fas ${item.type === 'bursary' ? 'fa-hand-holding-heart' : item.type === 'university' ? 'fa-university' : 'fa-school'}" style="color:#f7971e;margin-right:6px;"></i></span>
                                     ${escapeHtml(item.title)}
                                 </div>
                                 <div class="edu-meta">
@@ -5834,11 +5841,11 @@
                             <div class="edu-footer">
                                 <span class="edu-tag"><i class="fas fa-heart"></i> ${item.likes || 0}</span>
                                 <div class="edu-actions">
-                                    <button class="btn-edu-secondary" onclick="event.stopPropagation();shareEducationItem('${item.type}', '${item.id}', '${escapeHtml(item.title)}')">
+                                    <button class="btn-edu-secondary" onclick="event.stopPropagation();shareEducationItem('${item.type}', '${item.id}', '${escapeHtml(item.title.replace(/'/g, "\\'"))}')">
                                         <i class="fas fa-share-alt"></i> Share
                                     </button>
                                     <button class="btn-edu-primary" onclick="event.stopPropagation();viewEducationItem('${item.type}', '${item.id}')">
-                                        ${item.type === 'bursary' ? 'Apply' : 'View'} <i class="fas fa-arrow-right"></i>
+                                        ${item.type === 'bursary' ? 'Apply' : 'View'} <i class="fas fa-arrow-right" style="font-size:8px;"></i>
                                     </button>
                                 </div>
                             </div>
@@ -5882,9 +5889,10 @@
 
     function downloadPaper(id) {
         showToast('Downloading paper...', 'info');
-        window.location.href = `/api/education/papers/${id}/download/`;
+        window.location.href = `/api/education/question-papers/${id}/download/`;
     }
 
+    // Education Upload Functions
     function showEduUpload(type) {
         eduUploadType = type;
         const modal = document.getElementById('eduUploadModal');
@@ -5892,74 +5900,125 @@
         const fields = document.getElementById('eduUploadFields');
         
         const typeLabels = {
-            school: 'Add School',
-            bursary: 'Add Bursary',
-            university: 'Add University',
-            paper: 'Upload Question Paper'
+            school: '🏫 Add School',
+            bursary: '💰 Add Bursary',
+            university: '🏛️ Add University',
+            paper: '📄 Upload Question Paper'
         };
         title.textContent = typeLabels[type] || 'Add Education Content';
         
         let html = '';
         if (type === 'school') {
             html = `
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">School Name *</label><input type="text" name="name" class="form-control" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">EMIS Number</label><input type="text" name="emis_number" class="form-control" style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label">School Name *</label><input type="text" name="name" class="form-control" required></div>
+                <div class="mb-2"><label class="form-label">EMIS Number</label><input type="text" name="emis_number" class="form-control"></div>
                 <div class="row">
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Province</label><input type="text" name="province" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">City</label><input type="text" name="city" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Province</label><input type="text" name="province" class="form-control"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">City</label><input type="text" name="city" class="form-control"></div></div>
                 </div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Address</label><textarea name="address" class="form-control" rows="2" style="font-size:12px;padding:4px 8px;"></textarea></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">School Logo</label><input type="file" name="logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"></div>
+                <div class="row">
+                    <div class="col-6"><div class="mb-2"><label class="form-label">District</label><input type="text" name="district" class="form-control"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">School Type</label>
+                        <select name="school_type" class="form-control">
+                            <option value="primary">Primary School</option>
+                            <option value="secondary" selected>Secondary School</option>
+                            <option value="combined">Combined School</option>
+                            <option value="special">Special School</option>
+                            <option value="early_childhood">Early Childhood</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div></div>
+                </div>
+                <div class="mb-2"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2"></textarea></div>
+                <div class="mb-2"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
+                <div class="mb-2"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
+                <div class="mb-2"><label class="form-label">Website</label><input type="url" name="website" class="form-control" placeholder="https://"></div>
+                <div class="mb-2"><label class="form-label">Principal Name</label><input type="text" name="principal_name" class="form-control"></div>
+                <div class="mb-2"><label class="form-label">School Logo</label><input type="file" name="logo" accept="image/*" class="form-control"></div>
             `;
         } else if (type === 'bursary') {
             html = `
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Bursary Title *</label><input type="text" name="title" class="form-control" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Provider *</label><input type="text" name="provider" class="form-control" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Description</label><textarea name="description" class="form-control" rows="2" style="font-size:12px;padding:4px 8px;"></textarea></div>
+                <div class="mb-2"><label class="form-label">Bursary Title *</label><input type="text" name="title" class="form-control" required></div>
+                <div class="mb-2"><label class="form-label">Provider *</label><input type="text" name="provider" class="form-control" required></div>
+                <div class="mb-2"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
                 <div class="row">
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Amount</label><input type="text" name="amount" class="form-control" placeholder="e.g. R50,000" style="font-size:12px;padding:4px 8px;"></div></div>
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Closing Date</label><input type="date" name="closing_date" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Amount</label><input type="text" name="amount" class="form-control" placeholder="e.g. R50,000"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Closing Date</label><input type="date" name="closing_date" class="form-control"></div></div>
                 </div>
                 <div class="row">
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Level</label><select name="level" class="form-control" style="font-size:12px;padding:4px 8px;"><option value="">All Levels</option><option value="high_school">High School</option><option value="undergraduate">Undergraduate</option><option value="postgraduate">Postgraduate</option></select></div></div>
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Field of Study</label><input type="text" name="field_of_study" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Level</label>
+                        <select name="level" class="form-control">
+                            <option value="all">All Levels</option>
+                            <option value="high_school">High School</option>
+                            <option value="undergraduate">Undergraduate</option>
+                            <option value="postgraduate">Postgraduate</option>
+                        </select>
+                    </div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Field of Study</label><input type="text" name="field_of_study" class="form-control"></div></div>
                 </div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Application Link</label><input type="url" name="application_link" class="form-control" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Image</label><input type="file" name="image" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"></div>
+                <div class="mb-2"><label class="form-label">Application Link</label><input type="url" name="application_link" class="form-control" placeholder="https://"></div>
+                <div class="mb-2"><label class="form-label">Image</label><input type="file" name="image" accept="image/*" class="form-control"></div>
+                <div class="mb-2"><label class="form-label">Provider Logo</label><input type="file" name="provider_logo" accept="image/*" class="form-control"></div>
             `;
         } else if (type === 'university') {
             html = `
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">University Name *</label><input type="text" name="name" class="form-control" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label">University Name *</label><input type="text" name="name" class="form-control" required></div>
                 <div class="row">
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Province</label><input type="text" name="province" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">City</label><input type="text" name="city" class="form-control" style="font-size:12px;padding:4px 8px;"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Province</label><input type="text" name="province" class="form-control"></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">City</label><input type="text" name="city" class="form-control"></div></div>
                 </div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Description</label><textarea name="description" class="form-control" rows="2" style="font-size:12px;padding:4px 8px;"></textarea></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" name="website" class="form-control" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Logo</label><input type="file" name="logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"></div>
+                <div class="mb-2"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+                <div class="mb-2"><label class="form-label">Website</label><input type="url" name="website" class="form-control" placeholder="https://"></div>
+                <div class="mb-2"><label class="form-label">Logo</label><input type="file" name="logo" accept="image/*" class="form-control"></div>
             `;
         } else if (type === 'paper') {
             html = `
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Paper Title *</label><input type="text" name="title" class="form-control" required style="font-size:12px;padding:4px 8px;"></div>
+                <div class="mb-2"><label class="form-label">Paper Title *</label><input type="text" name="title" class="form-control" required></div>
                 <div class="row">
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Grade *</label><select name="grade_id" class="form-control" required style="font-size:12px;padding:4px 8px;"><option value="">Select Grade</option></select></div></div>
-                    <div class="col-6"><div class="mb-2"><label class="form-label" style="font-size:11px;">Subject *</label><select name="subject_id" class="form-control" required style="font-size:12px;padding:4px 8px;"><option value="">Select Subject</option></select></div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Grade *</label>
+                        <select name="grade_id" class="form-control" required>
+                            <option value="">Select Grade</option>
+                        </select>
+                    </div></div>
+                    <div class="col-6"><div class="mb-2"><label class="form-label">Subject *</label>
+                        <select name="subject_id" class="form-control" required>
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div></div>
                 </div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">Year *</label><input type="number" name="year" class="form-control" required min="2000" max="2026" style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:11px;">PDF File *</label><input type="file" name="file" accept=".pdf" class="form-control" required style="font-size:11px;padding:2px 6px;"></div>
-                <div class="form-check mb-2"><input type="checkbox" name="is_public" class="form-check-input" checked><label class="form-check-label" style="font-size:11px;">Make Public</label></div>
+                <div class="mb-2"><label class="form-label">Year *</label><input type="number" name="year" class="form-control" required min="2000" max="2026"></div>
+                <div class="mb-2"><label class="form-label">PDF File *</label><input type="file" name="file" accept=".pdf" class="form-control" required></div>
+                <div class="form-check"><input type="checkbox" name="is_public" class="form-check-input" checked><label class="form-check-label">Make Public</label></div>
             `;
             
+            // Load grades
             fetch('/api/education/grades/')
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success && data.grades) {
+                    if (data.grades) {
                         const select = document.querySelector('select[name="grade_id"]');
                         if (select) {
                             data.grades.forEach(g => {
                                 const opt = document.createElement('option');
                                 opt.value = g.id;
                                 opt.textContent = g.name;
+                                select.appendChild(opt);
+                            });
+                        }
+                    }
+                }).catch(() => {});
+            
+            // Load subjects
+            fetch('/api/education/subjects/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.subjects) {
+                        const select = document.querySelector('select[name="subject_id"]');
+                        if (select) {
+                            data.subjects.forEach(s => {
+                                const opt = document.createElement('option');
+                                opt.value = s.id;
+                                opt.textContent = s.name;
                                 select.appendChild(opt);
                             });
                         }
@@ -5988,7 +6047,7 @@
             case 'school': endpoint = '/api/education/schools/'; break;
             case 'bursary': endpoint = '/api/education/bursaries/'; break;
             case 'university': endpoint = '/api/education/universities/'; break;
-            case 'paper': endpoint = '/api/education/papers/'; break;
+            case 'paper': endpoint = '/api/education/question-papers/'; break;
             default: endpoint = '/api/education/schools/';
         }
         
@@ -6001,7 +6060,8 @@
         .then(data => {
             btn.innerHTML = original;
             btn.disabled = false;
-            if (data.success) {
+            // Your views return data directly, not wrapped in 'success'
+            if (data.id || data.name || data.title) {
                 closeEduUploadModal();
                 showToast('✅ Upload successful!', 'success');
                 loadEducationContent();
@@ -6246,6 +6306,113 @@
         else if (currentScrollY < lastScrollY - 10 && isNavHidden) { bottomNav.classList.remove('hidden'); isNavHidden = false; }
         lastScrollY = currentScrollY;
     }, { passive: true });
+
+    // ============================================================
+    // PWA INSTALL
+    // ============================================================
+    let deferredPrompt;
+    let pwaInstallBtn = null;
+    let pwaInstalled = false;
+
+    function checkIfInstalled() {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            pwaInstalled = true;
+            return true;
+        }
+        if (localStorage.getItem('pwa_dismissed') === 'true') {
+            return false;
+        }
+        return false;
+    }
+
+    function createPwaInstallButton() {
+        if (pwaInstallBtn || pwaInstalled) return;
+        if (checkIfInstalled()) {
+            pwaInstalled = true;
+            return;
+        }
+        const btn = document.createElement('button');
+        btn.className = 'pwa-install-btn';
+        btn.setAttribute('aria-label', 'Install OppoGlobe App');
+        btn.innerHTML = `
+            <span class="btn-icon">
+                <i class="fas fa-download"></i>
+            </span>
+            <span class="btn-text">
+                <span class="main-text">📱 Install OppoGlobe App</span>
+                <span class="sub-text">Get the full experience</span>
+            </span>
+            <button class="close-btn" aria-label="Dismiss">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        document.body.appendChild(btn);
+        pwaInstallBtn = btn;
+        setTimeout(() => {
+            btn.classList.add('show');
+        }, 500);
+        btn.querySelector('.close-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            localStorage.setItem('pwa_dismissed', 'true');
+            btn.classList.remove('show');
+            setTimeout(() => btn.remove(), 400);
+            pwaInstallBtn = null;
+            showToast('You can install later from browser menu', 'info');
+        });
+        btn.addEventListener('click', async function(e) {
+            if (e.target.closest('.close-btn')) return;
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                btn.classList.remove('show');
+                setTimeout(() => {
+                    if (btn.parentNode) btn.remove();
+                    pwaInstallBtn = null;
+                }, 400);
+                if (outcome === 'accepted') {
+                    showToast('🎉 Installing OppoGlobe...', 'success');
+                } else {
+                    showToast('You can install later from the browser menu', 'info');
+                }
+            } else {
+                showToast('Open browser menu → "Install App" or "Add to Home Screen"', 'info');
+            }
+        });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (!checkIfInstalled() && localStorage.getItem('pwa_dismissed') !== 'true') {
+            createPwaInstallButton();
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        pwaInstalled = true;
+        if (pwaInstallBtn) {
+            pwaInstallBtn.classList.remove('show');
+            setTimeout(() => {
+                if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
+                pwaInstallBtn = null;
+            }, 400);
+        }
+        showToast('🎉 Thank you for installing OppoGlobe!', 'success');
+    });
+
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+        if (e.matches) {
+            pwaInstalled = true;
+            if (pwaInstallBtn) {
+                pwaInstallBtn.classList.remove('show');
+                setTimeout(() => {
+                    if (pwaInstallBtn.parentNode) pwaInstallBtn.remove();
+                    pwaInstallBtn = null;
+                }, 400);
+            }
+        }
+    });
 
     // ============================================================
     // INIT
