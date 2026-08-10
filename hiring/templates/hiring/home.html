@@ -4088,6 +4088,54 @@
     initAdSession();
 
     // ============================================================
+    // MESSAGE PROPERTY OWNER - STEP 1: ADD THIS FUNCTION
+    // ============================================================
+    function messagePropertyOwner(propertyId, propertyTitle) {
+        // Check if user is logged in
+        const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
+        if (!isLoggedIn) {
+            showToast('Please login to message the owner', 'warning');
+            showLogin();
+            return;
+        }
+        
+        // Find the property
+        const property = allProperties.find(p => p.id == propertyId);
+        if (!property) {
+            showToast('Property not found', 'error');
+            return;
+        }
+        
+        // Get owner ID
+        let ownerId = null;
+        if (property.owner) {
+            if (typeof property.owner === 'object') {
+                ownerId = property.owner.id;
+            } else {
+                ownerId = property.owner;
+            }
+        } else if (property.owner_id) {
+            ownerId = property.owner_id;
+        }
+        
+        // Check if user is the owner
+        const currentUserId = parseInt(document.body.dataset.userId || '0');
+        if (ownerId == currentUserId) {
+            showToast('You are the owner of this property', 'info');
+            return;
+        }
+        
+        if (!ownerId) {
+            showToast('Owner not available', 'warning');
+            return;
+        }
+        
+        // Go to messaging
+        const encodedProperty = encodeURIComponent(propertyTitle || property.title || 'Property');
+        window.location.href = `/messaging/?user_id=${ownerId}&property=${encodedProperty}`;
+    }
+
+    // ============================================================
     // FIXED: PROPERTIES
     // ============================================================
     let allProperties = [];
@@ -4310,11 +4358,13 @@
                     <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(p.city || 'Unknown')}, ${escapeHtml(p.country || 'SA')}</div>
                     <div class="property-price">${escapeHtml(priceDisplay)}</div>
                     
+                    <!-- STEP 2: FIXED OWNER NAME LINK -->
                     <div class="content-creator" style="margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;width:100%;">
                         <div class="creator-avatar" onclick="visitProfile('${ownerId}')" title="View ${escapeHtml(ownerName)}'s profile" style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--secondary-color),var(--primary-color));color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;cursor:pointer;">
                             ${ownerInitial}
                         </div>
-                        <span class="creator-name" onclick="visitProfile('${ownerId}')" style="font-size:11px;font-weight:600;color:var(--dark-color);cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                        <!-- UPDATED: Owner name clicks now call messagePropertyOwner -->
+                        <span class="creator-name" onclick="messagePropertyOwner('${p.id}', '${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}')" style="font-size:11px;font-weight:600;color:var(--dark-color);cursor:pointer;white-space:nowrap;flex-shrink:0;">
                             ${escapeHtml(ownerName)}
                             ${badgeLabel ? `<span class="creator-badge ${ownerBadge}" style="font-size:6px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1px 5px;border-radius:8px;font-weight:600;flex-shrink:0;white-space:nowrap;margin-left:2px;">${badgeLabel}</span>` : ''}
                         </span>

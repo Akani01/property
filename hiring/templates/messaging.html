@@ -144,7 +144,6 @@
             border-left: 4px solid #ff589e;
         }
 
-        /* FIXED: Perfect circular avatars */
         .conversation-avatar {
             width: 50px;
             height: 50px;
@@ -351,7 +350,6 @@
             position: relative;
         }
 
-        /* FIXED: Perfect circular profile avatar */
         .profile-avatar-small {
             width: 35px;
             height: 35px;
@@ -492,7 +490,6 @@
             margin-top: 2px;
         }
 
-        /* NEW: Image viewing styles */
         .message-image {
             max-width: 300px;
             max-height: 300px;
@@ -528,7 +525,6 @@
             display: flex;
         }
 
-        /* Image preview modal */
         .image-preview-modal {
             position: fixed;
             top: 0;
@@ -600,7 +596,6 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* File upload styles */
         .file-attachment {
             display: flex;
             align-items: center;
@@ -765,7 +760,6 @@
             display: none;
         }
 
-        /* Message sender name */
         .message-sender {
             font-size: 12px;
             font-weight: 600;
@@ -781,7 +775,6 @@
             color: rgba(255,255,255,0.9);
         }
 
-        /* Container fixes */
         .container-fix {
             display: flex;
             flex-direction: column;
@@ -799,7 +792,6 @@
             height: 100%;
         }
 
-        /* Responsive */
         @media (min-width: 992px) {
             .messages-container {
                 height: calc(100vh - 180px);
@@ -865,7 +857,6 @@
             }
         }
 
-        /* Scrollbar */
         .conversation-list::-webkit-scrollbar,
         .start-conversation-section::-webkit-scrollbar,
         .user-search-results::-webkit-scrollbar,
@@ -1040,7 +1031,7 @@
     <input type="file" id="fileInput" class="file-input" multiple 
            accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.csv,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.bmp,.webp,.svg,.zip,.rar,.7z,.tar,.gz,.mp4,.avi,.mov,.wmv,.flv,.mkv,.mp3,.wav,.ogg,.flac">
 
-    <!-- NEW: Image Preview Modal -->
+    <!-- Image Preview Modal -->
     <div class="image-preview-modal" id="imagePreviewModal">
         <div class="image-preview-content">
             <button class="preview-close" onclick="closeImagePreview()">
@@ -1074,7 +1065,7 @@
         let currentUserUsername = "{{ user.username }}";
         let selectedFiles = [];
         
-        // NEW: Image viewing variables
+        // Image viewing variables
         let currentImageIndex = 0;
         let currentMessageImages = [];
 
@@ -1141,7 +1132,6 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // NEW: Enhanced file icon detection
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
@@ -1160,7 +1150,7 @@
             return iconMap[ext] || 'file';
         }
 
-        // NEW: Image viewing functions
+        // Image viewing functions
         function openImagePreview(imageUrl, imageName) {
             const modal = document.getElementById('imagePreviewModal');
             const previewImage = document.getElementById('previewImage');
@@ -1437,7 +1427,6 @@
         }
 
         function shareSingleFile(fileUrl) {
-            // Simple share function - you can enhance this
             if (navigator.share) {
                 navigator.share({
                     title: 'Shared file',
@@ -1496,6 +1485,40 @@
                     console.error('Error loading users:', error);
                     document.getElementById('availableUsersList').innerHTML = '<div class="no-users-message">Error loading users</div>';
                 });
+        }
+
+        // ============================================
+        // NEW: Check URL parameters for auto-start
+        // ============================================
+        function checkUrlForConversation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user_id');
+            const propertyName = urlParams.get('property');
+            
+            if (userId) {
+                console.log('Auto-starting conversation with user:', userId);
+                
+                // Wait for page to fully load then start conversation
+                setTimeout(() => {
+                    // Try to start conversation
+                    startConversation(userId);
+                    
+                    // If property name was provided, pre-fill message after conversation loads
+                    if (propertyName) {
+                        setTimeout(() => {
+                            const messageInput = document.getElementById('messageInput');
+                            if (messageInput) {
+                                const decodedProperty = decodeURIComponent(propertyName);
+                                messageInput.value = `Hi! I'm interested in your property: ${decodedProperty}`;
+                                messageInput.dispatchEvent(new Event('input'));
+                                messageInput.focus();
+                                // Move cursor to end
+                                messageInput.selectionStart = messageInput.selectionEnd = messageInput.value.length;
+                            }
+                        }, 1500); // Wait for conversation to load
+                    }
+                }, 800);
+            }
         }
 
         function loadConversations() {
@@ -1841,6 +1864,11 @@
             
             loadConversations();
             loadAvailableUsers();
+            
+            // ============================================
+            // NEW: Check URL for auto-start conversation
+            // ============================================
+            checkUrlForConversation();
             
             const searchInput = document.getElementById('searchConversations');
             const searchResults = document.getElementById('userSearchResults');
