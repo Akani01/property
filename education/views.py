@@ -24,14 +24,12 @@ class GradeViewSet(viewsets.ModelViewSet):
     queryset = Grade.objects.filter(is_active=True)
     serializer_class = GradeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = None  # Disable pagination
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.filter(is_active=True)
     serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = None  # Disable pagination
     
     @action(detail=False, methods=['get'])
     def by_grade(self, request):
@@ -48,7 +46,6 @@ class UniversityViewSet(viewsets.ModelViewSet):
     serializer_class = UniversitySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    pagination_class = None  # Disable pagination
     
     @action(detail=False, methods=['get'])
     def by_province(self, request):
@@ -78,7 +75,6 @@ class SchoolViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    pagination_class = None  # Disable pagination
     
     @action(detail=False, methods=['post'])
     def upload_excel(self, request):
@@ -184,7 +180,6 @@ class BursaryViewSet(viewsets.ModelViewSet):
     serializer_class = BursarySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    pagination_class = None  # Disable pagination
     
     @action(detail=False, methods=['get'])
     def featured(self, request):
@@ -215,7 +210,6 @@ class QuestionPaperViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionPaperSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    pagination_class = None  # Disable pagination
     
     def get_queryset(self):
         if self.request.user.is_authenticated:
