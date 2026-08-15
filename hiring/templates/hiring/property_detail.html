@@ -242,24 +242,24 @@
         /* ===== SIDEBAR NAV ===== */
         .sidebar-nav {
             display: none;
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            box-shadow: var(--shadow);
+            padding: 12px 8px;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 900;
+            border: 1px solid var(--border);
+            border-left: none;
         }
 
         @media (min-width: 992px) {
             .sidebar-nav {
-                position: fixed;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                background: white;
-                border-radius: 0 var(--radius) var(--radius) 0;
-                box-shadow: var(--shadow);
-                padding: 12px 8px;
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-                z-index: 900;
-                border: 1px solid var(--border);
-                border-left: none;
+                display: flex !important;
             }
             body { padding-left: 80px; }
         }
@@ -275,6 +275,7 @@
             transition: var(--transition);
             position: relative;
             font-size: 16px;
+            text-decoration: none;
         }
 
         .sidebar-nav .nav-link:hover {
@@ -289,10 +290,21 @@
 
         .sidebar-nav .nav-link .tooltip-text {
             display: none;
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            margin-left: 8px;
         }
 
         .sidebar-nav .nav-link:hover .tooltip-text {
-            display: none;
+            display: block;
         }
 
         /* ===== MAIN LAYOUT ===== */
@@ -601,15 +613,24 @@
         }
 
         .feature-tags .tag {
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             background: var(--primary-light);
             color: var(--primary);
             font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(26,115,232,0.15);
         }
 
         @media (min-width: 768px) {
-            .feature-tags .tag { padding: 4px 14px; font-size: 13px; }
+            .feature-tags .tag { padding: 5px 16px; font-size: 13px; }
+        }
+
+        .feature-tags .tag i {
+            font-size: 10px;
+            color: var(--secondary);
         }
 
         /* ===== LOCATION MAP ===== */
@@ -847,6 +868,158 @@
             background: #d33426;
         }
 
+        .sidebar-card .action-btns .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .sidebar-card .action-btns .btn-success:hover {
+            background: #2d9248;
+        }
+
+        /* ============================================================
+           SOCIAL BUTTONS FOR AGENT CONTACT
+           ============================================================ */
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            border: none;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .social-btn.message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-weight: 600;
+            padding: 12px 16px;
+        }
+
+        .social-btn.message:hover {
+            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+        }
+
+        .social-btn.message .badge-internal {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .social-btn.whatsapp { background: #25D366; }
+        .social-btn.whatsapp:hover { background: #1da851; }
+
+        .social-btn.phone { background: #34a853; }
+        .social-btn.phone:hover { background: #2d9248; }
+
+        .social-btn.email { background: #ea4335; }
+        .social-btn.email:hover { background: #d33426; }
+
+        .social-btn.telegram { background: #0088cc; }
+        .social-btn.telegram:hover { background: #006699; }
+
+        .social-btn.linkedin { background: #0A66C2; }
+        .social-btn.linkedin:hover { background: #0853a0; }
+
+        .social-btn.facebook { background: #1877F2; }
+        .social-btn.facebook:hover { background: #0d65d9; }
+
+        .social-btn.instagram { background: #E4405F; }
+        .social-btn.instagram:hover { background: #c1354a; }
+
+        .social-btn.twitter { background: #000000; }
+        .social-btn.twitter:hover { background: #1a1a1a; }
+
+        .social-btn.youtube { background: #FF0000; }
+        .social-btn.youtube:hover { background: #cc0000; }
+
+        .social-btn.tiktok { background: #000000; }
+        .social-btn.tiktok:hover { background: #1a1a1a; }
+
+        .social-btn.property24 { background: #ff6b00; }
+        .social-btn.property24:hover { background: #e55e00; }
+
+        .social-btn.privateproperty { background: #004d99; }
+        .social-btn.privateproperty:hover { background: #003366; }
+
+        .social-btn.zillow { background: #006aff; }
+        .social-btn.zillow:hover { background: #0055cc; }
+
+        .social-btn.realtor { background: #d2222a; }
+        .social-btn.realtor:hover { background: #b01a22; }
+
+        .social-btn.signal { background: #3a76f0; }
+        .social-btn.signal:hover { background: #2a5fd4; }
+
+        .social-btn.viber { background: #7360f2; }
+        .social-btn.viber:hover { background: #5a4ad4; }
+
+        .social-btn.wechat { background: #07C160; }
+        .social-btn.wechat:hover { background: #06a854; }
+
+        .social-btn.line { background: #00b900; }
+        .social-btn.line:hover { background: #009900; }
+
+        .social-btn.kakao { background: #FEE500; color: #000; }
+        .social-btn.kakao:hover { background: #e6cc00; color: #000; }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .social-links-mini {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .social-links-mini .social-btn {
+            width: auto;
+            padding: 4px 10px;
+            font-size: 11px;
+            min-width: auto;
+        }
+
+        .social-links-mini .social-btn i {
+            font-size: 13px;
+        }
+
+        @media (max-width: 576px) {
+            .social-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+            .social-btn .badge-internal {
+                font-size: 7px;
+                padding: 1px 6px;
+            }
+            .social-links-mini .social-btn {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+            .social-links-mini .social-btn i {
+                font-size: 11px;
+            }
+        }
+
         /* ===== QUICK STATS ===== */
         .stats-grid {
             display: grid;
@@ -943,6 +1116,7 @@
         .toast-item.success { background: var(--secondary); }
         .toast-item.error { background: var(--accent); }
         .toast-item.info { background: var(--primary); }
+        .toast-item.warning { background: var(--warning); color: var(--dark); }
 
         .toast-item .close-toast {
             margin-left: auto;
@@ -1000,6 +1174,7 @@
             transition: var(--transition);
             border: none;
             background: none;
+            text-decoration: none;
         }
 
         @media (min-width: 576px) {
@@ -1024,7 +1199,6 @@
             .stats-grid .stat-item .stat-number { font-size: 18px; }
         }
 
-        /* Fix for very small screens */
         @media (max-width: 360px) {
             .property-gallery .main-image { height: 160px; }
             .property-gallery .thumb-grid .thumb { height: 60px; }
@@ -1034,14 +1208,18 @@
             .mobile-nav a i { font-size: 14px; }
         }
 
-        /* Fix for tablets */
         @media (min-width: 768px) and (max-width: 991px) {
             .info-grid { grid-template-columns: 1fr; }
             .sidebar-card { position: relative; top: 0; }
         }
     </style>
 </head>
-<body>
+<body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" 
+      data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" 
+      data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}" 
+      data-property-id="{{ property.id }}" 
+      data-owner-id="{% if property.owner %}{{ property.owner.id }}{% else %}0{% endif %}"
+      data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{% endif %}">
 
     <!-- ===== SIDEBAR NAV ===== -->
     <nav class="sidebar-nav">
@@ -1074,7 +1252,7 @@
     <!-- ===== HEADER ===== -->
     <header class="header">
         <a href="/" class="header-brand">
-            <img src="/static/images/logo.png" alt="OppoGlobe">
+            <img src="/static/images/logo.png" alt="OppoGlobe" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-weight:700;color:#191919;font-size:20px;font-family:Space Grotesk;\'>OppoGlobe</span>'">
             <span>OppoGlobe</span>
         </a>
 
@@ -1308,11 +1486,16 @@
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-star"></i> Features & Amenities</div>
                     <div class="feature-tags">
-                        {% for feature in property_features %}
-                        <span class="tag"><i class="fas fa-check-circle me-1"></i>{{ feature.name }}</span>
-                        {% empty %}
-                        <span class="text-muted" style="font-size:14px;">No features listed</span>
-                        {% endfor %}
+                        {% if property_features %}
+                            {% for feature in property_features %}
+                            <span class="tag">
+                                {% if feature.icon %}<i class="{{ feature.icon }}"></i>{% else %}<i class="fas fa-check-circle"></i>{% endif %}
+                                {{ feature.name }}
+                            </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted" style="font-size:14px;">No features listed</span>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -1321,6 +1504,7 @@
             <!-- Right Column - Sidebar -->
             <div>
 
+                <!-- Price Card -->
                 <div class="sidebar-card">
                     <div class="price">
                         {{ property.price_currency|default:"ZAR" }} {{ property.base_price|floatformat:0 }}
@@ -1363,6 +1547,279 @@
                             <i class="fas fa-trash"></i> Delete Property
                         </button>
                     </div>
+                </div>
+
+                <!-- ============================================================
+                     AGENT / OWNER CARD - FULLY FIXED WITH DJANGO URL TAGS
+                     ============================================================ -->
+                <div class="sidebar-card">
+                    <div class="card-title"><i class="fas fa-user-tie"></i> Agent / Owner</div>
+                    
+                    <!-- Agent Info -->
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex-shrink:0;">
+                            {{ owner_name|default:"U"|first|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight:600;font-size:14px;">
+                                {{ owner_name|default:"Unknown Agent" }}
+                                {% if is_owner %}
+                                <span class="badge bg-primary" style="font-size:9px;margin-left:4px;">You</span>
+                                {% endif %}
+                            </div>
+                            <div style="font-size:11px;color:var(--gray);">
+                                {% if owner_badge == 'owner' %}
+                                <i class="fas fa-home"></i> Property Owner
+                                {% elif owner_badge == 'admin' or owner_badge == 'business' %}
+                                <i class="fas fa-building"></i> Business Account
+                                {% else %}
+                                <i class="fas fa-user-tie"></i> Agent
+                                {% endif %}
+                            </div>
+                            {% if agent_profile and agent_profile.is_verified %}
+                            <span class="badge bg-success" style="font-size:9px;margin-top:2px;"><i class="fas fa-check-circle"></i> Verified</span>
+                            {% endif %}
+                            {% if agent_profile and agent_profile.is_featured %}
+                            <span class="badge bg-warning text-dark" style="font-size:9px;margin-top:2px;"><i class="fas fa-star"></i> Featured</span>
+                            {% endif %}
+                            {% if agent_profile and agent_profile.years_experience > 0 %}
+                            <span class="badge bg-info" style="font-size:9px;margin-top:2px;">
+                                <i class="fas fa-calendar-alt"></i> {{ agent_profile.years_experience }} years
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Agent Rating (if available) -->
+                    {% if agent_profile and agent_profile.average_rating > 0 %}
+                    <div style="margin-bottom:10px;font-size:13px;">
+                        <span style="color:var(--warning);">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= agent_profile.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% elif forloop.counter <= agent_profile.average_rating|add:0.5 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span style="color:var(--gray);font-size:12px;margin-left:4px;">
+                            {{ agent_profile.average_rating|floatformat:1 }} ({{ agent_profile.total_reviews }} reviews)
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Agent Bio Preview -->
+                    {% if agent_profile and agent_profile.bio %}
+                    <div style="font-size:12px;color:var(--gray);margin-bottom:10px;padding:8px 12px;background:var(--light-gray);border-radius:6px;max-height:60px;overflow:hidden;position:relative;">
+                        {{ agent_profile.bio|truncatechars:120 }}
+                        {% if agent_profile.bio|length > 120 %}
+                        <span style="position:absolute;bottom:0;right:0;background:linear-gradient(to right, transparent, var(--light-gray));padding-left:20px;">
+                            <a href="{% url 'agent_profile_view' agent_profile.id %}" style="color:var(--primary);font-weight:500;">...read more</a>
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- ============================================================
+                         EDIT AGENT PROFILE BUTTON - FIXED WITH DJANGO URL TAGS
+                         ============================================================ -->
+                    {% if is_owner %}
+                    <div class="mb-3">
+                        <a href="{% if agent_profile %}{% url 'agent_profile_edit' agent_profile.id %}?property_id={{ property.id }}{% else %}{% url 'agent_profile_create' %}?property_id={{ property.id }}{% endif %}" 
+                           class="btn btn-success w-100" 
+                           style="font-size:14px;padding:10px;border-radius:8px;font-weight:600;">
+                            <i class="fas fa-user-edit me-2"></i> 
+                            {% if agent_profile %}Edit Your Agent Profile{% else %}Create Your Agent Profile{% endif %}
+                        </a>
+                        <div style="font-size:10px;color:var(--gray);text-align:center;margin-top:4px;">
+                            <i class="fas fa-info-circle"></i> 
+                            {% if agent_profile %}Update your professional details to help clients connect with you{% else %}Set up your professional profile to attract more clients{% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Contact Methods - INTERNAL MESSAGING FIRST -->
+                    <div class="contact-methods">
+                        <!-- 1. INTERNAL MESSAGING - ALWAYS FIRST -->
+                        <button onclick="messagePropertyOwner('{{ property.id }}', '{{ property.title|escapejs }}')" class="social-btn message">
+                            <i class="fas fa-comment"></i> Message {{ owner_name|default:"Agent" }}
+                            <span class="badge-internal">Stay on OppoGlobe</span>
+                        </button>
+
+                        <!-- 2. WhatsApp (if available) -->
+                        {% if agent_profile and agent_profile.whatsapp_number %}
+                        <a href="{{ agent_profile.get_whatsapp_link }}" target="_blank" class="social-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        {% endif %}
+
+                        <!-- 3. Phone (if available) -->
+                        {% if agent_profile and agent_profile.phone_primary %}
+                        <a href="tel:{{ agent_profile.phone_primary }}" class="social-btn phone">
+                            <i class="fas fa-phone"></i> Call
+                            {% if agent_profile.get_phone_display %}
+                            <span style="font-size:10px;opacity:0.8;">{{ agent_profile.get_phone_display }}</span>
+                            {% endif %}
+                        </a>
+                        {% endif %}
+
+                        <!-- 4. Email (if available) -->
+                        {% if agent_profile and agent_profile.email_primary %}
+                        <a href="mailto:{{ agent_profile.email_primary }}" class="social-btn email">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                        {% endif %}
+
+                        <!-- 5. Telegram (if available) -->
+                        {% if agent_profile and agent_profile.telegram_username %}
+                        <a href="{{ agent_profile.get_telegram_link }}" target="_blank" class="social-btn telegram">
+                            <i class="fab fa-telegram-plane"></i> Telegram
+                        </a>
+                        {% endif %}
+
+                        <!-- 6. Signal (if available) -->
+                        {% if agent_profile and agent_profile.signal_number %}
+                        <a href="{{ agent_profile.get_signal_link }}" target="_blank" class="social-btn signal">
+                            <i class="fas fa-lock"></i> Signal
+                        </a>
+                        {% endif %}
+
+                        <!-- 7. Viber (if available) -->
+                        {% if agent_profile and agent_profile.viber_number %}
+                        <a href="{{ agent_profile.get_viber_link }}" target="_blank" class="social-btn viber">
+                            <i class="fab fa-viber"></i> Viber
+                        </a>
+                        {% endif %}
+
+                        <!-- 8. WeChat (if available) -->
+                        {% if agent_profile and agent_profile.wechat_id %}
+                        <a href="#" onclick="showToast('WeChat ID: {{ agent_profile.wechat_id }}', 'info')" class="social-btn wechat">
+                            <i class="fab fa-weixin"></i> WeChat
+                        </a>
+                        {% endif %}
+
+                        <!-- 9. LINE (if available) -->
+                        {% if agent_profile and agent_profile.line_id %}
+                        <a href="{{ agent_profile.get_line_link }}" target="_blank" class="social-btn line">
+                            <i class="fab fa-line"></i> LINE
+                        </a>
+                        {% endif %}
+
+                        <!-- 10. KakaoTalk (if available) -->
+                        {% if agent_profile and agent_profile.kakao_id %}
+                        <a href="{{ agent_profile.get_kakao_link }}" target="_blank" class="social-btn kakao">
+                            <i class="fas fa-comment"></i> KakaoTalk
+                        </a>
+                        {% endif %}
+
+                        <!-- 11. Website (if available) -->
+                        {% if agent_profile and agent_profile.website %}
+                        <a href="{{ agent_profile.clean_url|default:agent_profile.website }}" target="_blank" class="social-btn" style="background:var(--dark);">
+                            <i class="fas fa-globe"></i> Website
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Social Media Links -->
+                    {% if agent_profile and agent_profile.get_active_social_links %}
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+                        <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:6px;">
+                            <i class="fas fa-share-alt"></i> Connect on Social Media
+                        </div>
+                        <div class="social-links-mini">
+                            {% if agent_profile.linkedin_url %}
+                            <a href="{{ agent_profile.linkedin_url }}" target="_blank" class="social-btn linkedin" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            {% endif %}
+                            {% if agent_profile.facebook_url %}
+                            <a href="{{ agent_profile.facebook_url }}" target="_blank" class="social-btn facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            {% endif %}
+                            {% if agent_profile.instagram_url %}
+                            <a href="{{ agent_profile.instagram_url }}" target="_blank" class="social-btn instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                            {% endif %}
+                            {% if agent_profile.twitter_url %}
+                            <a href="{{ agent_profile.twitter_url }}" target="_blank" class="social-btn twitter" title="Twitter/X"><i class="fab fa-twitter"></i></a>
+                            {% endif %}
+                            {% if agent_profile.youtube_url %}
+                            <a href="{{ agent_profile.youtube_url }}" target="_blank" class="social-btn youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+                            {% endif %}
+                            {% if agent_profile.tiktok_url %}
+                            <a href="{{ agent_profile.tiktok_url }}" target="_blank" class="social-btn tiktok" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                            {% endif %}
+                            {% if agent_profile.pinterest_url %}
+                            <a href="{{ agent_profile.pinterest_url }}" target="_blank" class="social-btn" style="background:#E60023;" title="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                            {% endif %}
+                            {% if agent_profile.snapchat_url %}
+                            <a href="{{ agent_profile.snapchat_url }}" target="_blank" class="social-btn" style="background:#FFFC00;color:#000;" title="Snapchat"><i class="fab fa-snapchat-ghost"></i></a>
+                            {% endif %}
+                            {% if agent_profile.reddit_url %}
+                            <a href="{{ agent_profile.reddit_url }}" target="_blank" class="social-btn" style="background:#FF4500;" title="Reddit"><i class="fab fa-reddit-alien"></i></a>
+                            {% endif %}
+                            {% if agent_profile.discord_username %}
+                            <a href="#" onclick="showToast('Discord: {{ agent_profile.discord_username }}', 'info')" class="social-btn" style="background:#5865F2;" title="Discord"><i class="fab fa-discord"></i></a>
+                            {% endif %}
+                            <!-- Real Estate Platforms -->
+                            {% if agent_profile.property24_url %}
+                            <a href="{{ agent_profile.property24_url }}" target="_blank" class="social-btn property24" title="Property24"><i class="fas fa-building"></i></a>
+                            {% endif %}
+                            {% if agent_profile.privateproperty_url %}
+                            <a href="{{ agent_profile.privateproperty_url }}" target="_blank" class="social-btn privateproperty" title="PrivateProperty"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.zillow_url %}
+                            <a href="{{ agent_profile.zillow_url }}" target="_blank" class="social-btn zillow" title="Zillow"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.realtor_url %}
+                            <a href="{{ agent_profile.realtor_url }}" target="_blank" class="social-btn realtor" title="Realtor.com"><i class="fas fa-building"></i></a>
+                            {% endif %}
+                            {% if agent_profile.rightmove_url %}
+                            <a href="{{ agent_profile.rightmove_url }}" target="_blank" class="social-btn" style="background:#0055a4;" title="Rightmove"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.zoopla_url %}
+                            <a href="{{ agent_profile.zoopla_url }}" target="_blank" class="social-btn" style="background:#1a1a2e;" title="Zoopla"><i class="fas fa-building"></i></a>
+                            {% endif %}
+                            {% if agent_profile.onthemarket_url %}
+                            <a href="{{ agent_profile.onthemarket_url }}" target="_blank" class="social-btn" style="background:#ff6b00;" title="OnTheMarket"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.realestatecomau_url %}
+                            <a href="{{ agent_profile.realestatecomau_url }}" target="_blank" class="social-btn" style="background:#e31e24;" title="realestate.com.au"><i class="fas fa-building"></i></a>
+                            {% endif %}
+                            {% if agent_profile.domaincomau_url %}
+                            <a href="{{ agent_profile.domaincomau_url }}" target="_blank" class="social-btn" style="background:#003366;" title="domain.com.au"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.propertyfinder_url %}
+                            <a href="{{ agent_profile.propertyfinder_url }}" target="_blank" class="social-btn" style="background:#E81932;" title="Property Finder"><i class="fas fa-search"></i></a>
+                            {% endif %}
+                            {% if agent_profile.bayut_url %}
+                            <a href="{{ agent_profile.bayut_url }}" target="_blank" class="social-btn" style="background:#0051a3;" title="Bayut"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            {% if agent_profile.dubizzle_url %}
+                            <a href="{{ agent_profile.dubizzle_url }}" target="_blank" class="social-btn" style="background:#ff6b00;" title="Dubizzle"><i class="fas fa-building"></i></a>
+                            {% endif %}
+                            {% if agent_profile.propertyguru_url %}
+                            <a href="{{ agent_profile.propertyguru_url }}" target="_blank" class="social-btn" style="background:#00a651;" title="PropertyGuru"><i class="fas fa-home"></i></a>
+                            {% endif %}
+                            <!-- Business Professional -->
+                            {% if agent_profile.indeed_url %}
+                            <a href="{{ agent_profile.indeed_url }}" target="_blank" class="social-btn" style="background:#2163f3;" title="Indeed"><i class="fas fa-briefcase"></i></a>
+                            {% endif %}
+                            {% if agent_profile.glassdoor_url %}
+                            <a href="{{ agent_profile.glassdoor_url }}" target="_blank" class="social-btn" style="background:#00a162;" title="Glassdoor"><i class="fas fa-door-open"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- ============================================================
+                         VIEW FULL PROFILE - FIXED WITH DJANGO URL TAG
+                         ============================================================ -->
+                    {% if agent_profile %}
+                    <div style="margin-top:10px;text-align:center;padding-top:10px;border-top:1px solid var(--border);">
+                        <a href="{% url 'agent_profile_view' agent_profile.id %}" class="btn btn-outline-primary btn-sm" style="font-size:12px;padding:4px 16px;border-radius:20px;">
+                            <i class="fas fa-user"></i> View Full Agent Profile
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Quick Stats -->
@@ -1408,7 +1865,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ===== TOGGLE DROPDOWN =====
+        // ============================================================
+        // TOGGLE DROPDOWN
+        // ============================================================
         function toggleDropdown(id) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -1424,20 +1883,27 @@
             }
         });
 
-        // Close dropdowns on escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.dropdown-menu-custom.show').forEach(d => d.classList.remove('show'));
             }
         });
 
-        // ===== TOAST =====
+        // ============================================================
+        // TOAST
+        // ============================================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast-item ${type}`;
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
+            };
             toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <i class="fas ${icons[type] || icons.info}"></i>
                 ${message}
                 <button class="close-toast" onclick="this.parentElement.remove()">&times;</button>
             `;
@@ -1445,7 +1911,9 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
-        // ===== GET CSRF TOKEN =====
+        // ============================================================
+        // GET CSRF TOKEN
+        // ============================================================
         function getCSRFToken() {
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
@@ -1455,7 +1923,44 @@
             return null;
         }
 
-        // ===== DELETE PROPERTY =====
+        // ============================================================
+        // GET CURRENT USER INFO
+        // ============================================================
+        const currentUserId = parseInt(document.body.dataset.userId || '0');
+        const currentUsername = document.body.dataset.username || '';
+        const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+        const ownerId = parseInt(document.body.dataset.ownerId || '0');
+        const agentProfileId = parseInt(document.body.dataset.agentProfileId || '0');
+
+        // ============================================================
+        // MESSAGE PROPERTY OWNER - INTERNAL MESSAGING (PRIMARY)
+        // ============================================================
+        function messagePropertyOwner(propertyId, propertyTitle) {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                showToast('Please login to message the owner', 'warning');
+                return;
+            }
+
+            // Check if user is the owner
+            if (ownerId === currentUserId) {
+                showToast('You are the owner of this property', 'info');
+                return;
+            }
+
+            if (!ownerId || ownerId === 0) {
+                showToast('Owner not available', 'warning');
+                return;
+            }
+
+            // Go to internal messaging - STAY ON OPPOGLOBE
+            const encodedProperty = encodeURIComponent(propertyTitle || 'Property');
+            window.location.href = `/messaging/?user_id=${ownerId}&property=${encodedProperty}`;
+        }
+
+        // ============================================================
+        // DELETE PROPERTY
+        // ============================================================
         function deleteProperty(propertyId) {
             if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
                 return;
@@ -1492,6 +1997,17 @@
                 showToast('Network error. Please try again.', 'error');
             });
         }
+
+        // ============================================================
+        // SET OWNER ID FOR MESSAGING
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set owner ID from context for messaging
+            const ownerIdFromContext = "{{ property.owner.id|default:'0' }}";
+            if (ownerIdFromContext && ownerIdFromContext !== '0') {
+                document.body.dataset.ownerId = ownerIdFromContext;
+            }
+        });
     </script>
 </body>
 </html>

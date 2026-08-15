@@ -578,18 +578,332 @@
             .post-actions { flex-wrap: nowrap; overflow-x: auto; }
         }
 
-        /* ===== PROPERTY CARDS ===== */
+        /* ============================================================
+           PROPERTY CARDS - LOCATION BASED HORIZONTAL ROWS
+           ============================================================ */
+        
+        /* Location section container */
+        .location-section {
+            margin-bottom: 30px;
+            padding: 0 4px;
+        }
+        
+        .location-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 6px 0 10px 0;
+            border-bottom: 2px solid rgba(0,0,0,0.06);
+            margin-bottom: 12px;
+        }
+        
+        .location-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .location-header h3 i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .location-header .property-count {
+            font-size: 0.8rem;
+            color: #888;
+            font-weight: 500;
+        }
+        
+        /* Horizontal scroll row - Airbnb style */
+        .property-horizontal-row {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 4px 2px 14px 2px;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        
+        .property-horizontal-row::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .property-horizontal-row::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+        }
+        
+        .property-horizontal-row::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.12);
+            border-radius: 8px;
+        }
+        
+        /* Property card inside horizontal row */
+        .property-horizontal-row .property-card {
+            flex: 0 0 280px;
+            max-width: 280px;
+            min-width: 240px;
+            scroll-snap-align: start;
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 576px) {
+            .property-horizontal-row .property-card {
+                flex: 0 0 220px;
+                min-width: 180px;
+            }
+            .location-header h3 { 
+                font-size: 1.1rem; 
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .property-horizontal-row .property-card {
+                flex: 0 0 180px;
+                min-width: 150px;
+            }
+        }
+
+        /* Individual property card */
         .property-card {
             background: #ffffff;
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            margin-bottom: 14px;
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
         }
-        .property-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
+        .property-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
+        }
         
+        .property-image-container {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            background: #f0f0f0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .property-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .property-card:hover .property-image { transform: scale(1.02); }
+        .property-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 12px 12px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.5));
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .overlay-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+            color: #333;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 40px;
+            min-height: 40px;
+            justify-content: center;
+        }
+        .overlay-btn:hover { transform: scale(1.05); background: #ffffff; }
+        .overlay-btn i { font-size: 15px; margin-bottom: 1px; }
+        .overlay-btn .count { font-size: 10px; font-weight: 600; font-family: var(--font-mono); }
+        .overlay-btn.liked { background: rgba(255,77,61,0.15); border-color: rgba(255,77,61,0.3); }
+        .overlay-btn.liked i { color: var(--primary-color); }
+        .overlay-btn.disliked { background: rgba(255,77,61,0.15); border-color: rgba(255,77,61,0.3); }
+        .overlay-btn.disliked i { color: #ff6b6b; }
+        .overlay-btn.rated { background: rgba(255,183,3,0.15); border-color: rgba(255,183,3,0.3); }
+        .overlay-btn.rated i { color: var(--gold-color); }
+        
+        .property-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.55rem;
+            font-weight: 600;
+            background: var(--primary-color);
+            color: #fff;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .property-badge.featured { background: var(--gold-color); color: #1a1a1a; }
+        .property-badge.premium { background: #4caf50; }
+        .property-content { padding: 8px 12px; }
+        .property-title {
+            font-family: var(--font-display);
+            font-size: clamp(0.9rem, 0.85rem + 0.3vw, 1rem);
+            font-weight: 600;
+            margin-bottom: 1px;
+            color: var(--dark-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .property-location { font-size: 0.75rem; color: #666; }
+        .property-price {
+            font-family: var(--font-mono);
+            font-size: clamp(0.9rem, 0.85rem + 0.3vw, 1rem);
+            font-weight: 700;
+            color: var(--primary-color-deep);
+        }
+        .property-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 12px 4px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .property-rating .rating-number { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--dark-color); }
+        .property-rating .rating-stars { color: #ffc107; font-size: 11px; letter-spacing: 1px; }
+        .property-rating .rating-count { font-size: 10px; color: #999; font-weight: 500; }
+        .property-details {
+            padding: 4px 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .property-detail-item { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #666; }
+        .property-detail-item i { color: var(--primary-color); width: 12px; font-size: 11px; }
+        .property-description {
+            padding: 4px 12px;
+            color: #666;
+            font-size: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 32px;
+        }
+        .property-footer {
+            padding: 4px 12px;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .btn-view-property {
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep));
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 26px;
+            font-size: 10px;
+            transition: var(--transition);
+        }
+        .btn-view-property:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
+        .btn-book {
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color-deep);
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 26px;
+            font-size: 10px;
+            transition: var(--transition);
+        }
+        .btn-book:hover { background: var(--primary-color); color: #fff; }
+        .btn-book.booked { background: #28a745; color: #fff; border-color: #28a745; cursor: default; }
+        .btn-discuss {
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--secondary-color);
+            background: transparent;
+            color: var(--secondary-color);
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 26px;
+            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: var(--transition);
+        }
+        .btn-discuss:hover { background: var(--secondary-color); color: #fff; }
+        .discuss-badge {
+            background: rgba(0,0,0,0.06);
+            border-radius: 6px;
+            padding: 0 5px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+        }
+
+        .content-creator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            flex-wrap: wrap;
+        }
+        .content-creator .creator-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .content-creator .creator-name {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--dark-color);
+            cursor: pointer;
+        }
+        .content-creator .creator-badge {
+            font-size: 6px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .content-creator .creator-badge.owner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        .content-creator .creator-badge.admin {
+            background: linear-gradient(135deg, var(--gold-color), #ff8a00);
+            color: #1a1a1a;
+        }
+        .content-creator .post-time {
+            font-size: 8px;
+            color: #8e8e8e;
+            margin-left: auto;
+        }
+
         /* ============================================================
            EDUCATION - COMPLETE FIXED STYLES
            ============================================================ */
@@ -1245,198 +1559,45 @@
             background: rgba(138, 43, 226, 0.08);
         }
 
-        .property-image-container {
-            position: relative;
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            background: #f0f0f0;
-            overflow: hidden;
-            cursor: pointer;
+        /* ===== FILTERS ===== */
+        .filter-section {
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 12px 14px;
+            margin-bottom: 14px;
         }
-        .property-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .property-card:hover .property-image { transform: scale(1.02); }
-        .property-image-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px 16px 14px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.5));
+        .filter-row {
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        .overlay-btn {
-            display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 8px;
             align-items: center;
-            background: rgba(255,255,255,0.9);
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: var(--radius-sm);
+        }
+        .filter-row select, .filter-row input {
             padding: 6px 10px;
-            color: #333;
-            cursor: pointer;
-            transition: var(--transition);
-            min-width: 48px;
-            min-height: 48px;
-            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 12px;
+            outline: none;
+            flex: 1;
+            min-width: 80px;
+            min-height: 32px;
+            background: #fff;
         }
-        .overlay-btn:hover { transform: scale(1.05); background: #ffffff; }
-        .overlay-btn i { font-size: 18px; margin-bottom: 2px; }
-        .overlay-btn .count { font-size: 11px; font-weight: 600; font-family: var(--font-mono); }
-        .overlay-btn.liked { background: rgba(255,77,61,0.15); border-color: rgba(255,77,61,0.3); }
-        .overlay-btn.liked i { color: var(--primary-color); }
-        .overlay-btn.disliked { background: rgba(255,77,61,0.15); border-color: rgba(255,77,61,0.3); }
-        .overlay-btn.disliked i { color: #ff6b6b; }
-        .overlay-btn.rated { background: rgba(255,183,3,0.15); border-color: rgba(255,183,3,0.3); }
-        .overlay-btn.rated i { color: var(--gold-color); }
-        
-        .property-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.6rem;
-            font-weight: 600;
-            background: var(--primary-color);
-            color: #fff;
-            z-index: 5;
-            pointer-events: none;
-        }
-        .property-badge.featured { background: var(--gold-color); color: #1a1a1a; }
-        .property-badge.premium { background: #4caf50; }
-        .property-content { padding: 10px 14px; }
-        .property-title {
-            font-family: var(--font-display);
-            font-size: clamp(1rem, 0.95rem + 0.4vw, 1.1rem);
-            font-weight: 600;
-            margin-bottom: 2px;
-            color: var(--dark-color);
-        }
-        .property-location { font-size: 0.82rem; color: #666; }
-        .property-price {
-            font-family: var(--font-mono);
-            font-size: clamp(1rem, 0.95rem + 0.5vw, 1.2rem);
-            font-weight: 700;
-            color: var(--primary-color-deep);
-        }
-        .property-rating {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 14px 6px;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .property-rating .rating-number { font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--dark-color); }
-        .property-rating .rating-stars { color: #ffc107; font-size: 12px; letter-spacing: 1px; }
-        .property-rating .rating-count { font-size: 11px; color: #999; font-weight: 500; }
-        .property-details {
-            padding: 6px 14px;
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .property-detail-item { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; color: #666; }
-        .property-detail-item i { color: var(--primary-color); width: 14px; }
-        .property-description {
-            padding: 6px 14px;
-            color: #666;
-            font-size: 0.82rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .property-footer {
-            padding: 6px 14px;
-            background: rgba(0,0,0,0.02);
-            border-top: 1px solid rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .btn-view-property {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
             border: none;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: #fff;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            min-height: 30px;
+            min-height: 32px;
             font-size: 12px;
-            transition: var(--transition);
         }
-        .btn-view-property:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
-        .btn-book {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color-deep);
-            font-weight: 500;
-            cursor: pointer;
-            min-height: 30px;
-            font-size: 12px;
-            transition: var(--transition);
-        }
-        .btn-book:hover { background: var(--primary-color); color: #fff; }
-        .btn-book.booked { background: #28a745; color: #fff; border-color: #28a745; cursor: default; }
-        .btn-discuss {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid var(--secondary-color);
-            background: transparent;
-            color: var(--secondary-color);
-            font-weight: 500;
-            cursor: pointer;
-            min-height: 30px;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: var(--transition);
-        }
-        .btn-discuss:hover { background: var(--secondary-color); color: #fff; }
-        .discuss-badge {
-            background: rgba(0,0,0,0.06);
-            border-radius: 6px;
-            padding: 0 6px;
-            font-family: var(--font-mono);
-            font-size: 10px;
-        }
-
-        /* ===== MAINTENANCE IMAGES ===== */
-        .maintenance-image-container {
-            width: 100%;
-            max-height: 250px;
-            overflow: hidden;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            background: #f0f0f0;
-            position: relative;
-        }
-        .maintenance-image-container img {
-            width: 100%;
-            height: 100%;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        .maintenance-image-container .image-placeholder {
-            width: 100%;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f0f0f0;
-            color: #999;
-            font-size: 14px;
-            border-radius: 6px;
+        .advanced-search-panel {
+            margin-top: 8px;
         }
 
         /* ===== HORIZONTAL CARDS ROW ===== */
@@ -1957,44 +2118,6 @@
             min-height: 32px;
             font-size: 12px;
             font-weight: 600;
-        }
-
-        /* ===== FILTERS ===== */
-        .filter-section {
-            background: #ffffff;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 12px 14px;
-            margin-bottom: 14px;
-        }
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-        .filter-row select, .filter-row input {
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            font-size: 12px;
-            outline: none;
-            flex: 1;
-            min-width: 80px;
-            min-height: 32px;
-            background: #fff;
-        }
-        .filter-btn {
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: none;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 32px;
-            font-size: 12px;
         }
 
         /* ===== MODALS ===== */
@@ -2777,7 +2900,6 @@
                                         {% if user.user_type == 'admin' or user.is_superuser %}
                                             <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property Analytics</a>
                                             <a href="/properties/reports/"><i class="fas fa-file-pdf"></i> Reports</a>
-                                            <a href="/admin-portal/settings/"><i class="fas fa-cog"></i> Settings</a>
                                         {% else %}
                                             <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
                                             <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
@@ -2961,7 +3083,7 @@
                 </div>
             </div>
 
-            <!-- ===== PROPERTIES TAB ===== -->
+            <!-- ===== PROPERTIES TAB - LOCATION BASED HORIZONTAL ROWS ===== -->
             <div id="propertiesTab" class="tab-content active">
                 <div id="propertiesContainer"></div>
             </div>
@@ -3177,7 +3299,6 @@
             <a href="#" onclick="switchTab('management');closeAppsModal()"><i class="fas fa-cog"></i>Manage</a>
         {% endif %}
         <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
-        <a href="/settings/"><i class="fas fa-cog"></i>Settings</a>
         <a href="/alerts/"><i class="fas fa-bell"></i>Alerts</a>
         <a href="/messaging/"><i class="fas fa-envelope"></i>Messages</a>
     </div></div></div></div></div>
@@ -4088,10 +4209,9 @@
     initAdSession();
 
     // ============================================================
-    // MESSAGE PROPERTY OWNER - STEP 1: ADD THIS FUNCTION
+    // MESSAGE PROPERTY OWNER
     // ============================================================
     function messagePropertyOwner(propertyId, propertyTitle) {
-        // Check if user is logged in
         const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
         if (!isLoggedIn) {
             showToast('Please login to message the owner', 'warning');
@@ -4099,14 +4219,12 @@
             return;
         }
         
-        // Find the property
         const property = allProperties.find(p => p.id == propertyId);
         if (!property) {
             showToast('Property not found', 'error');
             return;
         }
         
-        // Get owner ID
         let ownerId = null;
         if (property.owner) {
             if (typeof property.owner === 'object') {
@@ -4118,7 +4236,6 @@
             ownerId = property.owner_id;
         }
         
-        // Check if user is the owner
         const currentUserId = parseInt(document.body.dataset.userId || '0');
         if (ownerId == currentUserId) {
             showToast('You are the owner of this property', 'info');
@@ -4130,13 +4247,12 @@
             return;
         }
         
-        // Go to messaging
         const encodedProperty = encodeURIComponent(propertyTitle || property.title || 'Property');
         window.location.href = `/messaging/?user_id=${ownerId}&property=${encodedProperty}`;
     }
 
     // ============================================================
-    // FIXED: PROPERTIES
+    // FIXED: PROPERTIES - LOCATION BASED HORIZONTAL ROWS
     // ============================================================
     let allProperties = [];
     let currentRating = 0;
@@ -4159,7 +4275,7 @@
                             .then(fallbackData => {
                                 if (fallbackData.success && fallbackData.properties) {
                                     allProperties = fallbackData.properties;
-                                    renderProperties(allProperties, container);
+                                    renderPropertiesByLocation(allProperties, container);
                                     updateUIAfterLoad(allProperties);
                                 } else {
                                     container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4 style="font-size:15px;">No Properties</h4></div>';
@@ -4205,11 +4321,11 @@
                                     return ownerProp;
                                 });
                                 allProperties = mergedProperties;
-                                renderProperties(mergedProperties, container);
+                                renderPropertiesByLocation(mergedProperties, container);
                                 updateUIAfterLoad(mergedProperties);
                             } else {
                                 allProperties = ownerData.properties;
-                                renderProperties(ownerData.properties, container);
+                                renderPropertiesByLocation(ownerData.properties, container);
                                 updateUIAfterLoad(ownerData.properties);
                             }
                         });
@@ -4221,7 +4337,7 @@
                         .then(fallbackData => {
                             if (fallbackData.success && fallbackData.properties) {
                                 allProperties = fallbackData.properties;
-                                renderProperties(allProperties, container);
+                                renderPropertiesByLocation(allProperties, container);
                                 updateUIAfterLoad(allProperties);
                             } else {
                                 container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle text-warning"></i><h4 style="font-size:15px;">Error Loading Properties</h4></div>';
@@ -4249,183 +4365,208 @@
         loadTopCreators();
     }
 
-    function renderProperties(properties, container) {
+    // ============================================================
+    // RENDER PROPERTIES BY LOCATION (AIRBNB STYLE)
+    // ============================================================
+    function renderPropertiesByLocation(properties, container) {
         if (!properties || properties.length === 0) {
             container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><h4 style="font-size:15px;">No Properties Found</h4></div>';
             return;
         }
-        
+
+        // Group properties by city (location)
+        const grouped = {};
+        properties.forEach(p => {
+            const city = (p.city || 'Other Locations').trim();
+            if (!grouped[city]) grouped[city] = [];
+            grouped[city].push(p);
+        });
+
+        // Sort locations alphabetically
+        const sortedLocations = Object.keys(grouped).sort();
+
         let html = '';
-        let adCounter = 0;
-        const adInterval = 3;
+        sortedLocations.forEach(city => {
+            const props = grouped[city];
+            html += `
+                <div class="location-section">
+                    <div class="location-header">
+                        <h3><i class="fas fa-map-pin"></i> ${escapeHtml(city)}</h3>
+                        <span class="property-count">${props.length} properties</span>
+                    </div>
+                    <div class="property-horizontal-row">
+            `;
+            
+            // Render each property card in the horizontal row
+            props.forEach(p => {
+                html += createPropertyCardHTML(p);
+            });
+            
+            // Add an ad after every 4 properties in each location section
+            if (props.length >= 3) {
+                html += renderAdCard();
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
         
-        properties.forEach((p, index) => {
-            let ownerId = 0;
-            let ownerName = 'Unknown';
-            let ownerInitial = 'U';
-            let isOwner = false;
-            let ownerBadge = '';
-            let ownerUserType = '';
-            
-            if (p.owner) {
-                if (typeof p.owner === 'object' && p.owner !== null) {
-                    ownerId = p.owner.id || 0;
-                    ownerName = p.owner.username || p.owner.name || 'Unknown';
-                    ownerUserType = p.owner.user_type || '';
-                    isOwner = (ownerId === currentUserId);
-                    if (isOwner) {
-                        ownerBadge = 'owner';
-                        ownerName = currentUsername || 'You';
-                        ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
-                    } else if (ownerUserType === 'admin' || ownerUserType === 'business') {
-                        ownerBadge = 'admin';
-                    }
-                } else if (typeof p.owner === 'number') {
-                    ownerId = p.owner;
-                    isOwner = (ownerId === currentUserId);
-                    if (isOwner) {
-                        ownerBadge = 'owner';
-                        ownerName = currentUsername || 'You';
-                        ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
-                    } else if (p.owner_name) {
-                        ownerName = p.owner_name;
-                        ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
-                        if (p.owner_user_type === 'admin' || p.owner_user_type === 'business') {
-                            ownerBadge = 'admin';
-                        }
-                    }
-                }
-            }
-            
-            if ((!p.owner || ownerId === 0) && p.owner_name) {
-                ownerName = p.owner_name;
-                ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
-                if (p.owner_user_type === 'admin' || p.owner_user_type === 'business') {
-                    ownerBadge = 'admin';
-                }
-                if (p.owner_name === currentUsername) {
-                    isOwner = true;
-                    ownerBadge = 'owner';
-                }
-            }
-            
-            if (p.owner_id && !p.owner) {
-                ownerId = p.owner_id;
+        // Load property types for filters
+        loadPropertyTypes(properties);
+        updateUIAfterLoad(properties);
+    }
+
+    // ============================================================
+    // CREATE PROPERTY CARD HTML (SAME FEATURES AS ORIGINAL)
+    // ============================================================
+    function createPropertyCardHTML(p) {
+        let ownerId = 0;
+        let ownerName = 'Unknown';
+        let ownerInitial = 'U';
+        let isOwner = false;
+        let ownerBadge = '';
+        let ownerUserType = '';
+        
+        if (p.owner) {
+            if (typeof p.owner === 'object' && p.owner !== null) {
+                ownerId = p.owner.id || 0;
+                ownerName = p.owner.username || p.owner.name || 'Unknown';
+                ownerUserType = p.owner.user_type || '';
                 isOwner = (ownerId === currentUserId);
                 if (isOwner) {
                     ownerBadge = 'owner';
                     ownerName = currentUsername || 'You';
                     ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
+                } else if (ownerUserType === 'admin' || ownerUserType === 'business') {
+                    ownerBadge = 'admin';
+                }
+            } else if (typeof p.owner === 'number') {
+                ownerId = p.owner;
+                isOwner = (ownerId === currentUserId);
+                if (isOwner) {
+                    ownerBadge = 'owner';
+                    ownerName = currentUsername || 'You';
+                    ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
+                } else if (p.owner_name) {
+                    ownerName = p.owner_name;
+                    ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
+                    if (p.owner_user_type === 'admin' || p.owner_user_type === 'business') {
+                        ownerBadge = 'admin';
+                    }
                 }
             }
-            
-            const userLiked = p.user_interaction === 'like';
-            const userDisliked = p.user_interaction === 'dislike';
-            const userRating = p.user_rating || 0;
-            const badgeLabel = ownerBadge === 'owner' ? 'Owner' : ownerBadge === 'admin' ? 'Business' : '';
-            const price = p.price || p.price_amount || 0;
-            const currency = p.price_currency || p.currency || 'ZAR';
-            const priceDisplay = `${currency} ${Number(price).toLocaleString()}`;
-            
-            html += `
-            <div class="property-card" id="property-${p.id}" data-property-id="${p.id}">
-                <div class="property-image-container" onclick="viewProperty('${p.id}')">
-                    <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${escapeHtml(p.title || 'Property')}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22300%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2220%22 font-family=%22sans-serif%22%3ENo Image%3C/text%3E%3C/svg%3E'">
-                    ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
-                    ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
-                    ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
-                    <div class="property-image-overlay">
-                        <button class="overlay-btn ${userLiked ? 'liked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'like')" id="like-btn-${p.id}" title="Like">
-                            <i class="${userLiked ? 'fas' : 'far'} fa-heart"></i>
-                            <span class="count" id="like-count-${p.id}">${p.likes_count || 0}</span>
-                        </button>
-                        <button class="overlay-btn ${userDisliked ? 'disliked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'dislike')" id="dislike-btn-${p.id}" title="Dislike">
-                            <i class="${userDisliked ? 'fas' : 'far'} fa-thumbs-down"></i>
-                            <span class="count" id="dislike-count-${p.id}">${p.dislikes_count || 0}</span>
-                        </button>
-                        <button class="overlay-btn" onclick="event.stopPropagation();openPropertyComments('${p.id}')" title="Comments">
-                            <i class="far fa-comment"></i>
-                            <span class="count" id="comment-count-${p.id}">${p.comments_count || 0}</span>
-                        </button>
-                        <button class="overlay-btn ${userRating > 0 ? 'rated' : ''}" onclick="event.stopPropagation();openRatingModal('${p.id}')" id="rate-btn-${p.id}" title="Rate">
-                            <i class="${userRating > 0 ? 'fas' : 'far'} fa-star"></i>
-                            <span class="count">${userRating > 0 ? userRating : '☆'}</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="property-content">
-                    <h4 class="property-title">${escapeHtml(p.title || 'Untitled')}</h4>
-                    <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(p.city || 'Unknown')}, ${escapeHtml(p.country || 'SA')}</div>
-                    <div class="property-price">${escapeHtml(priceDisplay)}</div>
-                    
-                    <!-- STEP 2: FIXED OWNER NAME LINK -->
-                    <div class="content-creator" style="margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;width:100%;">
-                        <div class="creator-avatar" onclick="visitProfile('${ownerId}')" title="View ${escapeHtml(ownerName)}'s profile" style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--secondary-color),var(--primary-color));color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;cursor:pointer;">
-                            ${ownerInitial}
-                        </div>
-                        <!-- UPDATED: Owner name clicks now call messagePropertyOwner -->
-                        <span class="creator-name" onclick="messagePropertyOwner('${p.id}', '${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}')" style="font-size:11px;font-weight:600;color:var(--dark-color);cursor:pointer;white-space:nowrap;flex-shrink:0;">
-                            ${escapeHtml(ownerName)}
-                            ${badgeLabel ? `<span class="creator-badge ${ownerBadge}" style="font-size:6px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1px 5px;border-radius:8px;font-weight:600;flex-shrink:0;white-space:nowrap;margin-left:2px;">${badgeLabel}</span>` : ''}
-                        </span>
-                        <span class="post-time" style="font-size:9px;color:#8e8e8e;flex-shrink:0;">${p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</span>
-                        
-                        <div class="share-dropdown" style="position:relative;display:inline-block;flex-shrink:0;">
-                            <button class="btn-share" onclick="toggleShareDropdown(this)" style="padding:1px 6px;border-radius:50px;border:none;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;font-weight:500;cursor:pointer;min-height:20px;font-size:9px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;">
-                                <i class="fas fa-share-alt"></i>
-                                <span class="d-none d-sm-inline">Share</span>
-                            </button>
-                            <div class="share-dropdown-content" style="display:none;position:absolute;bottom:100%;right:0;background:#fff;min-width:120px;border:1px solid #eaeaea;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:4px 0;z-index:100;">
-                                <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','whatsapp')" style="display:flex;align-items:center;gap:6px;padding:3px 10px;color:#333;font-size:9px;text-decoration:none;transition:all 0.2s ease;">
-                                    <i class="fab fa-whatsapp" style="color:#25D366;width:14px;text-align:center;"></i> WhatsApp
-                                </a>
-                                <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','facebook')" style="display:flex;align-items:center;gap:6px;padding:3px 10px;color:#333;font-size:9px;text-decoration:none;transition:all 0.2s ease;">
-                                    <i class="fab fa-facebook" style="color:#1877F2;width:14px;text-align:center;"></i> Facebook
-                                </a>
-                                <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','twitter')" style="display:flex;align-items:center;gap:6px;padding:3px 10px;color:#333;font-size:9px;text-decoration:none;transition:all 0.2s ease;">
-                                    <i class="fab fa-twitter" style="color:#000;width:14px;text-align:center;"></i> Twitter
-                                </a>
-                                <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','linkedin')" style="display:flex;align-items:center;gap:6px;padding:3px 10px;color:#333;font-size:9px;text-decoration:none;transition:all 0.2s ease;">
-                                    <i class="fab fa-linkedin" style="color:#0A66C2;width:14px;text-align:center;"></i> LinkedIn
-                                </a>
-                                <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','copy')" style="display:flex;align-items:center;gap:6px;padding:3px 10px;color:#333;font-size:9px;text-decoration:none;transition:all 0.2s ease;">
-                                    <i class="fas fa-link" style="color:#6c757d;width:14px;text-align:center;"></i> Copy Link
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="property-rating">
-                    <span class="rating-number">${(p.average_rating || 0).toFixed(1)}</span>
-                    <span class="rating-stars">${renderStars(p.average_rating || 0)}</span>
-                    <span class="rating-count">(${p.rating_count || 0})</span>
-                </div>
-                <div class="property-details">
-                    <span class="property-detail-item"><i class="fas fa-bed"></i> ${p.bedrooms || 0}</span>
-                    <span class="property-detail-item"><i class="fas fa-bath"></i> ${p.bathrooms || 0}</span>
-                    <span class="property-detail-item"><i class="fas fa-car"></i> ${p.garages || 0}</span>
-                </div>
-                <div class="property-description">${escapeHtml((p.description || 'No description').substring(0, 120))}...</div>
-                <div class="property-footer">
-                    <div class="property-actions">
-                        <button class="btn-view-property" onclick="viewProperty('${p.id}')"><i class="fas fa-eye me-1"></i>View</button>
-                        ${p.status === 'available' ? `<button class="btn-book" onclick="bookProperty('${p.id}')"><i class="fas fa-calendar-plus me-1"></i>Book</button>` : '<button class="btn-book booked" disabled>Booked</button>'}
-                    </div>
-                    <button class="btn-discuss" onclick="discussProperty('${p.id}', '${escapeHtml(p.title || 'this property').replace(/'/g, "\\'")}')">
-                        <i class="fas fa-comments"></i> Discuss <span class="discuss-badge" id="discuss-count-${p.id}">0</span>
+        }
+        
+        if ((!p.owner || ownerId === 0) && p.owner_name) {
+            ownerName = p.owner_name;
+            ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
+            if (p.owner_user_type === 'admin' || p.owner_user_type === 'business') {
+                ownerBadge = 'admin';
+            }
+            if (p.owner_name === currentUsername) {
+                isOwner = true;
+                ownerBadge = 'owner';
+            }
+        }
+        
+        if (p.owner_id && !p.owner) {
+            ownerId = p.owner_id;
+            isOwner = (ownerId === currentUserId);
+            if (isOwner) {
+                ownerBadge = 'owner';
+                ownerName = currentUsername || 'You';
+                ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
+            }
+        }
+
+        const userLiked = p.user_interaction === 'like';
+        const userDisliked = p.user_interaction === 'dislike';
+        const userRating = p.user_rating || 0;
+        const badgeLabel = ownerBadge === 'owner' ? 'Owner' : ownerBadge === 'admin' ? 'Business' : '';
+        const price = p.price || p.price_amount || 0;
+        const currency = p.price_currency || 'ZAR';
+        const priceDisplay = `${currency} ${Number(price).toLocaleString()}`;
+        
+        return `
+        <div class="property-card" id="property-${p.id}" data-property-id="${p.id}">
+            <div class="property-image-container" onclick="viewProperty('${p.id}')">
+                <img src="${p.main_image_url || '/static/images/default-property.jpg'}" class="property-image" alt="${escapeHtml(p.title || 'Property')}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22300%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2220%22 font-family=%22sans-serif%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                ${p.is_featured ? '<span class="property-badge featured">Featured</span>' : ''}
+                ${p.is_premium ? '<span class="property-badge premium">Premium</span>' : ''}
+                ${p.status === 'booked' ? '<span class="property-badge" style="background:#e74c3c;">Booked</span>' : ''}
+                <div class="property-image-overlay">
+                    <button class="overlay-btn ${userLiked ? 'liked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'like')" id="like-btn-${p.id}" title="Like">
+                        <i class="${userLiked ? 'fas' : 'far'} fa-heart"></i>
+                        <span class="count" id="like-count-${p.id}">${p.likes_count || 0}</span>
+                    </button>
+                    <button class="overlay-btn ${userDisliked ? 'disliked' : ''}" onclick="event.stopPropagation();togglePropertyInteraction('${p.id}', 'dislike')" id="dislike-btn-${p.id}" title="Dislike">
+                        <i class="${userDisliked ? 'fas' : 'far'} fa-thumbs-down"></i>
+                        <span class="count" id="dislike-count-${p.id}">${p.dislikes_count || 0}</span>
+                    </button>
+                    <button class="overlay-btn" onclick="event.stopPropagation();openPropertyComments('${p.id}')" title="Comments">
+                        <i class="far fa-comment"></i>
+                        <span class="count" id="comment-count-${p.id}">${p.comments_count || 0}</span>
+                    </button>
+                    <button class="overlay-btn ${userRating > 0 ? 'rated' : ''}" onclick="event.stopPropagation();openRatingModal('${p.id}')" id="rate-btn-${p.id}" title="Rate">
+                        <i class="${userRating > 0 ? 'fas' : 'far'} fa-star"></i>
+                        <span class="count">${userRating > 0 ? userRating : '☆'}</span>
                     </button>
                 </div>
             </div>
-            `;
-            
-            adCounter++;
-            if (adCounter >= adInterval && index < properties.length - 1) {
-                html += renderAdCard();
-                adCounter = 0;
-            }
-        });
-        
-        container.innerHTML = html;
+            <div class="property-content">
+                <h4 class="property-title">${escapeHtml(p.title || 'Untitled')}</h4>
+                <div class="property-location"><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(p.city || 'Unknown')}, ${escapeHtml(p.country || 'SA')}</div>
+                <div class="property-price">${escapeHtml(priceDisplay)}</div>
+                
+                <div class="content-creator" style="margin-top:2px;">
+                    <div class="creator-avatar" onclick="visitProfile('${ownerId}')" title="View ${escapeHtml(ownerName)}'s profile">
+                        ${ownerInitial}
+                    </div>
+                    <span class="creator-name" onclick="messagePropertyOwner('${p.id}', '${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}')">
+                        ${escapeHtml(ownerName)}
+                        ${badgeLabel ? `<span class="creator-badge ${ownerBadge}">${badgeLabel}</span>` : ''}
+                    </span>
+                    <span class="post-time">${p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</span>
+                    
+                    <div class="share-dropdown">
+                        <button class="btn-share" onclick="toggleShareDropdown(this)">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <div class="share-dropdown-content">
+                            <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
+                            <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','facebook')"><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook</a>
+                            <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','twitter')"><i class="fab fa-twitter" style="color:#000;"></i> Twitter</a>
+                            <a href="#" onclick="shareContent('property','${p.id}','${escapeHtml(p.title || 'Property').replace(/'/g, "\\'")}','copy')"><i class="fas fa-link"></i> Copy Link</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="property-rating">
+                <span class="rating-number">${(p.average_rating || 0).toFixed(1)}</span>
+                <span class="rating-stars">${renderStars(p.average_rating || 0)}</span>
+                <span class="rating-count">(${p.rating_count || 0})</span>
+            </div>
+            <div class="property-details">
+                <span class="property-detail-item"><i class="fas fa-bed"></i> ${p.bedrooms || 0}</span>
+                <span class="property-detail-item"><i class="fas fa-bath"></i> ${p.bathrooms || 0}</span>
+                <span class="property-detail-item"><i class="fas fa-car"></i> ${p.garages || 0}</span>
+            </div>
+            <div class="property-description">${escapeHtml((p.description || 'No description').substring(0, 80))}${(p.description || '').length > 80 ? '...' : ''}</div>
+            <div class="property-footer">
+                <div class="property-actions">
+                    <button class="btn-view-property" onclick="viewProperty('${p.id}')"><i class="fas fa-eye me-1"></i>View</button>
+                    ${p.status === 'available' ? `<button class="btn-book" onclick="bookProperty('${p.id}')"><i class="fas fa-calendar-plus me-1"></i>Book</button>` : '<button class="btn-book booked" disabled>Booked</button>'}
+                </div>
+                <button class="btn-discuss" onclick="discussProperty('${p.id}', '${escapeHtml(p.title || 'this property').replace(/'/g, "\\'")}')">
+                    <i class="fas fa-comments"></i> Discuss <span class="discuss-badge" id="discuss-count-${p.id}">0</span>
+                </button>
+            </div>
+        </div>
+        `;
     }
 
     function renderStars(rating) {
@@ -4781,7 +4922,7 @@
             return true;
         });
         const container = document.getElementById('propertiesContainer');
-        if (container) renderProperties(filtered, container);
+        if (container) renderPropertiesByLocation(filtered, container);
         showToast(`Filtered: ${filtered.length} properties`, 'info');
     }
 
@@ -4796,7 +4937,7 @@
             container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><h4 style="font-size:15px;">No Featured Properties</h4></div>';
             return;
         }
-        renderProperties(featured, container);
+        renderPropertiesByLocation(featured, container);
     }
 
     // ============================================================
@@ -5655,7 +5796,7 @@
         ]).then(([bursariesData, universitiesData, schoolsData, papersData]) => {
             const items = [];
             
-            // Process bursaries - YOUR VIEWS RETURN data directly, not wrapped in 'success'
+            // Process bursaries
             const bursaries = bursariesData.bursaries || bursariesData.results || [];
             if (Array.isArray(bursaries) && bursaries.length > 0) {
                 bursaries.forEach(b => {
@@ -5727,7 +5868,7 @@
                 });
             }
             
-            // Process question papers - handle gracefully if endpoint fails
+            // Process question papers
             const papers = papersData.papers || papersData.results || [];
             if (Array.isArray(papers) && papers.length > 0) {
                 papers.forEach(p => {

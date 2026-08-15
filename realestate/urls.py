@@ -28,6 +28,9 @@ router.register(r'jobs', views.JobViewSet, basename='jobs')
 router.register(r'posts', views.PostViewSet, basename='posts')
 router.register(r'videos', views.VideoViewSet, basename='videos')
 
+# ===== AGENT PROFILE API =====
+router.register(r'agent-profiles', views.AgentProfileViewSet, basename='agent-profile')
+
 # Only register driver-locations if real-time tracking is enabled
 if getattr(settings, 'REALESTATE_SETTINGS', {}).get('ENABLE_REAL_TIME_TRACKING', False):
     router.register(r'driver-locations', views.DriverLocationViewSet, basename='driverlocation')
@@ -84,9 +87,44 @@ urlpatterns = [
          views.get_property_rating_summary, 
          name='get_property_rating_summary'),
     path('bookings/<uuid:pk>/', views.booking_detail_view, name='booking_detail'),
+    
     # Share endpoints
     path('api/share/property/<uuid:property_id>/', views.share_property, name='share_property'),
     path('api/share/post/<int:post_id>/', views.share_post, name='share_post'),
     path('api/share/job/<int:job_id>/', views.share_job, name='share_job'),
     path('api/share/education/<str:type>/<int:item_id>/', views.share_education, name='share_education'),
+    
+    # API Routes
+    path('api/agent-for-property/<uuid:property_id>/', views.get_agent_for_property, name='agent-for-property'),
+    
+    # Agent Lists
+    path('api/featured-agents/', views.featured_agents, name='featured-agents'),
+    path('api/top-agents/', views.top_agents, name='top-agents'),
+    
+    # Contact Methods (Internal Messaging First)
+    path('api/agent-contact-methods/<uuid:agent_id>/', views.agent_contact_methods, name='agent-contact-methods'),
+    path('api/check-agent-availability/<uuid:agent_id>/', views.check_agent_availability, name='check-agent-availability'),
+    
+    # Country Detection
+    path('api/detect-country/', views.detect_country_from_number, name='detect-country'),
+    path('api/countries/', views.list_countries, name='list-countries'),
+    
+    # Tracking
+    path('api/track-agent-contact/', views.track_agent_contact, name='track-agent-contact'),
+    
+    # Admin
+    path('api/admin/verify-agent/<uuid:agent_id>/', views.admin_verify_agent, name='admin-verify-agent'),
+    path('api/admin/feature-agent/<uuid:agent_id>/', views.admin_feature_agent, name='admin-feature-agent'),
+
+    # ============================================================
+    # AGENT PROFILE PAGES (HTML)
+    # ============================================================
+    path('agent/create/', views.agent_profile_create, name='agent_profile_create'),
+    path('agent/edit/<int:agent_id>/', views.agent_profile_edit, name='agent_profile_edit'),
+    path('agent/<int:agent_id>/', views.agent_profile_view, name='agent_profile_view'),
+
+    # ============================================================
+    # PROPERTY DETAIL PAGE - USE 'pk' to match the view
+    # ============================================================
+    path('properties/<uuid:pk>/', views.property_detail, name='property_detail'),
 ]

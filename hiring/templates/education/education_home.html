@@ -1,0 +1,1884 @@
+<!-- education/templates/education/education_home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Hub - OppoGlobe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e8458a;
+            --primary-light: #fce4ec;
+            --primary-dark: #c62878;
+            --secondary: #4a6cf7;
+            --dark: #1a1a2e;
+            --gray: #6c757d;
+            --light-gray: #f5f6fa;
+            --border: #e9ecef;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.10);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --transition: all 0.3s ease;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #f0f2f5;
+            font-family: var(--font-body);
+            padding-top: 70px;
+            padding-bottom: 80px;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+        img { max-width: 100%; }
+
+        /* ===== TOP NAVBAR - CLEAN ===== */
+        .header-area {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 64px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .main-nav { padding: 0 32px; }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo img {
+            max-height: 36px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-left: 8px;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        .nav-icons {
+            display: flex;
+            list-style: none;
+            gap: 4px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        @media (min-width: 576px) {
+            .nav-icons { gap: 8px; }
+        }
+
+        .nav-icons a {
+            font-size: 17px;
+            color: #555;
+            transition: var(--transition);
+            padding: 6px 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+        }
+
+        @media (min-width: 576px) {
+            .nav-icons a {
+                min-width: 40px;
+                height: 40px;
+                font-size: 19px;
+                padding: 6px 10px;
+            }
+        }
+
+        .nav-icons a:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .profile-avatar-small {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 576px) {
+            .profile-avatar-small {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+        }
+
+        .profile-avatar-small:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown { position: relative; }
+
+        .profile-menu {
+            position: absolute;
+            top: 42px;
+            right: 0;
+            width: 220px;
+            background: white;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            padding: 6px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: var(--transition);
+            z-index: 1000;
+            border: 1px solid var(--border);
+        }
+
+        .profile-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            color: #444;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .profile-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .profile-menu a i { width: 18px; color: var(--gray); font-size: 14px; }
+        .profile-divider { height: 1px; background: var(--border); margin: 4px 12px; }
+
+        .three-dot-menu { position: relative; }
+
+        .three-dot-menu .dot-btn {
+            font-size: 20px;
+            color: #555;
+            padding: 6px 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+        }
+
+        @media (min-width: 576px) {
+            .three-dot-menu .dot-btn {
+                min-width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+        }
+
+        .three-dot-menu .dot-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .menu-content {
+            position: absolute;
+            right: 0;
+            top: 42px;
+            background: #fff;
+            width: 200px;
+            padding: 6px 0;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: var(--transition);
+            z-index: 1000;
+            border: 1px solid var(--border);
+        }
+
+        .menu-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-content a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            color: #444;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .menu-content a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .menu-content a i { width: 18px; color: var(--gray); font-size: 14px; }
+
+        /* ===== SIDEBAR - WITH WORKING URLS ===== */
+        .desktop-sidebar {
+            width: 220px;
+            background: white;
+            height: calc(100vh - 64px);
+            position: fixed;
+            top: 64px;
+            left: 0;
+            padding: 16px 12px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        @media (max-width: 991px) {
+            .desktop-sidebar {
+                display: none;
+            }
+        }
+
+        .desktop-sidebar .sidebar-section {
+            margin-bottom: 16px;
+        }
+
+        .desktop-sidebar .sidebar-title {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 4px;
+            margin-bottom: 6px;
+        }
+
+        .desktop-sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: #555;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 13px;
+            transition: var(--transition);
+            margin-bottom: 2px;
+        }
+
+        .desktop-sidebar a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .desktop-sidebar a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .desktop-sidebar a.active i {
+            color: white;
+        }
+
+        .desktop-sidebar a i {
+            width: 20px;
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .desktop-sidebar a.active i {
+            color: white;
+        }
+
+        .desktop-sidebar hr {
+            margin: 8px 0;
+            border-color: var(--border);
+        }
+
+        /* Push content right on desktop */
+        @media (min-width: 992px) {
+            body {
+                padding-left: 240px !important;
+            }
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        @media (min-width: 768px) {
+            .main-container { padding: 0 24px; }
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 576px) {
+            .page-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .page-header h1 { font-size: 26px; }
+        }
+
+        .page-header h1 i {
+            color: var(--primary);
+        }
+
+        .page-header .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-back {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            background: white;
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-back:hover {
+            background: var(--light-gray);
+        }
+
+        .btn-add {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--dark);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add:hover {
+            background: #2d2d4a;
+            color: white;
+        }
+
+        /* ===== STATS BANNER ===== */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-banner { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        }
+
+        .stat-card {
+            background: white;
+            padding: 14px 10px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card .emoji { font-size: 22px; display: block; margin-bottom: 2px; }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        @media (max-width: 480px) {
+            .stat-number { font-size: 18px; }
+            .stat-card .emoji { font-size: 18px; }
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--gray);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== FILTER SECTION ===== */
+        .filter-section {
+            background: white;
+            padding: 16px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-section .form-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .filter-section .form-control,
+        .filter-section .form-select {
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            padding: 6px 12px;
+            min-height: 38px;
+            transition: var(--transition);
+            background: white;
+            width: 100%;
+            appearance: auto;
+        }
+
+        .filter-section .form-control:focus,
+        .filter-section .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(232, 69, 138, 0.08);
+        }
+
+        .filter-section .form-select option {
+            padding: 4px 8px;
+        }
+
+        .btn-filter {
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--dark);
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            border: none;
+            width: 100%;
+            min-height: 38px;
+            transition: var(--transition);
+        }
+
+        .btn-filter:hover {
+            background: #2d2d4a;
+            color: white;
+        }
+
+        /* ===== EDUCATION GRID ===== */
+        .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .edu-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* ===== EDUCATION CARD ===== */
+        .edu-card-wrapper {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edu-card-wrapper:hover {
+            transform: translateY(-4px);
+        }
+
+        .edu-card {
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+            overflow: hidden;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .edu-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .edu-card .card-img-top {
+            height: 160px;
+            object-fit: cover;
+            background: var(--light-gray);
+        }
+
+        @media (max-width: 576px) {
+            .edu-card .card-img-top { height: 140px; }
+        }
+
+        .edu-card .position-relative { position: relative; }
+
+        .edu-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .edu-badge.bursary { background: #f7971e; color: #1a1a2e; }
+        .edu-badge.university { background: #4a6cf7; }
+        .edu-badge.school { background: #2ecc71; color: #1a1a2e; }
+        .edu-badge.paper { background: #e74c3c; }
+        .edu-badge.news { background: #1abc9c; color: #1a1a2e; }
+
+        .edu-badge.featured {
+            top: 44px;
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+
+        .edu-card .card-body { padding: 16px; }
+
+        .edu-card .card-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .edu-card .card-text {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .edu-card .card-text i {
+            width: 16px;
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        .edu-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.04);
+            color: var(--gray);
+            margin: 2px 4px 2px 0;
+        }
+
+        .edu-tag.featured {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+
+        .edu-tag.closing-soon {
+            background: #e74c3c;
+            color: #fff;
+            animation: pulseBadge 2s infinite;
+        }
+
+        @keyframes pulseBadge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .edu-card .card-footer {
+            background: transparent;
+            border-top: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-details-badge {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .view-details-badge i {
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .edu-card-wrapper:hover .view-details-badge i {
+            transform: translateX(4px);
+        }
+
+        .btn-share-card {
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--gray);
+            font-size: 11px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-share-card:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .share-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .share-dropdown-content {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: white;
+            min-width: 150px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 6px 0;
+            z-index: 200;
+            animation: slideUp 0.2s ease;
+        }
+
+        .share-dropdown-content.show { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .share-dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            color: #333;
+            font-size: 12px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .share-dropdown-content a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .share-dropdown-content a i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: var(--radius);
+            border: 2px dashed var(--border);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ccc;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--gray);
+        }
+
+        .empty-state p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: white;
+            border-top: 1px solid var(--border);
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        @media (max-width: 991px) {
+            .mobile-bottom-nav {
+                display: flex !important;
+            }
+            body { padding-bottom: 66px; }
+        }
+
+        .mobile-bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            font-size: 9px;
+            color: var(--gray);
+            padding: 4px 6px;
+            transition: var(--transition);
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+        }
+
+        .mobile-bottom-nav a i {
+            font-size: 17px;
+            display: block;
+        }
+
+        .mobile-bottom-nav a.active {
+            color: var(--primary);
+        }
+
+        .mobile-bottom-nav a:hover {
+            color: var(--primary);
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 9999;
+            max-width: calc(100vw - 32px);
+        }
+
+        @media (min-width: 576px) {
+            .toast-container { max-width: 400px; }
+        }
+
+        .toast-item {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .toast-item.success { background: #28a745; }
+        .toast-item.error { background: #dc3545; }
+        .toast-item.info { background: #17a2b8; }
+        .toast-item.warning { background: #ffc107; color: var(--dark); }
+
+        .toast-item .close-toast {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .toast-item .close-toast:hover { color: white; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 575px) {
+            .page-header h1 { font-size: 18px; }
+            .btn-add { font-size: 11px; padding: 6px 14px; }
+            .btn-back { font-size: 11px; padding: 6px 12px; }
+            .filter-section .row > div { margin-bottom: 6px; }
+            .edu-card .card-title { font-size: 13px; }
+            .edu-card .card-text { font-size: 12px; }
+        }
+
+        @media (max-width: 360px) {
+            .page-header h1 { font-size: 15px; }
+            .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .stat-card { padding: 10px 6px; }
+            .stat-number { font-size: 16px; }
+            .stat-label { font-size: 8px; }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--light-gray); }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVBAR ===== -->
+    <header class="header-area">
+        <div class="main-nav">
+            <a href="/" class="logo">
+                <img src="/static/images/logo.png" alt="OppoGlobe" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'logo-text\'>Oppo<span>Globe</span></span>'">
+            </a>
+
+            <ul class="nav-icons">
+                <li><a href="/" title="Home"><i class="fas fa-home"></i></a></li>
+                <li><a href="/#job-listings" title="Browse Jobs"><i class="fas fa-search"></i></a></li>
+
+                {% if user.is_authenticated %}
+                <li><a href="/dashboard" title="Dashboard"><i class="fas fa-th-large"></i></a></li>
+                <li><a href="/messaging/" title="Messages"><i class="fas fa-comment-dots"></i></a></li>
+
+                <li class="profile-dropdown">
+                    <div class="profile-avatar-small" onclick="toggleProfileDropdown()">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
+                        {% if user.user_type == 'applicant' %}
+                        <a href="/applications/"><i class="fas fa-file-alt"></i> Applications</a>
+                        <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+                        {% else %}
+                        <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Manage Jobs</a>
+                        <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
+                        {% endif %}
+                        <div class="profile-divider"></div>
+                        <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
+                        <a href="/preferences/"><i class="fas fa-cog"></i> Preferences</a>
+                        <div class="profile-divider"></div>
+                        <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </li>
+
+                <li class="three-dot-menu">
+                    <button class="dot-btn" onclick="toggleThreeDotMenu()">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div class="menu-content" id="threeDotMenu">
+                        {% if user.user_type == 'applicant' %}
+                        <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
+                        <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+                        <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+                        <a href="/profile/documents/"><i class="fas fa-file-upload"></i> Documents</a>
+                        {% else %}
+                        <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
+                        <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
+                        <a href="/admin-portal/analytics/"><i class="fas fa-chart-bar"></i> Analytics</a>
+                        {% endif %}
+                    </div>
+                </li>
+
+                {% else %}
+                <li><a href="#" onclick="showLogin()" title="Login"><i class="fas fa-sign-in-alt"></i></a></li>
+                <li><a href="#" onclick="showSignup()" title="Sign Up"><i class="fas fa-user-plus"></i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </header>
+
+    <!-- ===== DESKTOP SIDEBAR - WITH WORKING URLS ===== -->
+    <div class="desktop-sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Profile</div>
+            <a href="/profile/"><i class="fas fa-user"></i> My Profile</a>
+            <a href="/applications/"><i class="fas fa-file-alt"></i> Applications</a>
+        </div>
+
+        <hr>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Education</div>
+            <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> My Education</a>
+            <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i> Education Hub</a>
+            <!-- These now link back to the education hub with hashtags -->
+            <a href="/education/#bursaries"><i class="fas fa-hand-holding-heart"></i> Bursaries</a>
+            <a href="/education/#papers"><i class="fas fa-file-pdf"></i> Question Papers</a>
+        </div>
+
+        <hr>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Quick Links</div>
+            <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
+            <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+            <a href="/profile/documents/"><i class="fas fa-file-upload"></i> Documents</a>
+        </div>
+
+        <hr>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Resources</div>
+            <a href="/education/#news"><i class="fas fa-newspaper"></i> Education News</a>
+            <a href="/education/#universities"><i class="fas fa-university"></i> Universities</a>
+            <a href="/education/#schools"><i class="fas fa-school"></i> Schools</a>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-graduation-cap"></i>
+                Education Hub
+            </h1>
+            <div class="header-actions">
+                <a href="/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                {% if is_admin %}
+                <button class="btn-add" onclick="openModal('bursary')">
+                    <i class="fas fa-plus"></i> Add Content
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stat-card">
+                <span class="emoji">💰</span>
+                <div class="stat-number" id="statBursaries">{{ bursaries|length }}</div>
+                <div class="stat-label">Bursaries</div>
+            </div>
+            <div class="stat-card">
+                <span class="emoji">🏛️</span>
+                <div class="stat-number">{{ universities|length }}</div>
+                <div class="stat-label">Universities</div>
+            </div>
+            <div class="stat-card">
+                <span class="emoji">🏫</span>
+                <div class="stat-number">{{ schools|length }}</div>
+                <div class="stat-label">Schools</div>
+            </div>
+            <div class="stat-card">
+                <span class="emoji">📄</span>
+                <div class="stat-number">{{ papers|length }}</div>
+                <div class="stat-label">Papers</div>
+            </div>
+            <div class="stat-card">
+                <span class="emoji">📰</span>
+                <div class="stat-number">{{ news|length }}</div>
+                <div class="stat-label">News</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="form-label">Search</label>
+                    <input type="text" id="eduSearch" class="form-control" placeholder="🔍 Search..." onkeyup="filterContent()">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Grade</label>
+                    <select id="eduGradeFilter" class="form-select" onchange="filterContent()">
+                        <option value="">All Grades</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade.id }}">{{ grade.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Field</label>
+                    <select id="eduFieldFilter" class="form-select" onchange="filterContent()">
+                        <option value="">All Fields</option>
+                        {% for field in available_fields %}
+                        <option value="{{ field }}">{{ field }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Level</label>
+                    <select id="eduLevelFilter" class="form-select" onchange="filterContent()">
+                        <option value="">All Levels</option>
+                        {% for level in available_levels %}
+                        <option value="{{ level }}">{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn-filter w-100" onclick="filterContent()">
+                        <i class="fas fa-filter me-2"></i>Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Grid -->
+        <div class="edu-grid" id="gridAll">
+            <!-- Bursaries -->
+            {% for bursary in bursaries %}
+            <div class="edu-card-wrapper" 
+                 data-type="bursary" 
+                 data-title="{{ bursary.title|lower }}" 
+                 data-field="{{ bursary.field_of_study }}" 
+                 data-level="{{ bursary.level }}"
+                 data-url="{% url 'education_bursary_detail' bursary.id %}">
+                <div class="card edu-card">
+                    <div class="position-relative">
+                        {% if bursary.provider_logo %}
+                        <img src="{{ bursary.provider_logo.url }}" class="card-img-top" alt="{{ bursary.title }}" loading="lazy">
+                        {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #f8f0e7, #e8dcc8); height:160px;">
+                            <i class="fas fa-hand-holding-heart" style="font-size:40px;color:rgba(0,0,0,0.08);"></i>
+                        </div>
+                        {% endif %}
+                        <span class="edu-badge bursary">💰 Bursary</span>
+                        {% if bursary.is_featured %}
+                        <span class="edu-badge featured">⭐ Featured</span>
+                        {% endif %}
+                        {% if bursary.days_until_closing and bursary.days_until_closing < 14 %}
+                        <span class="edu-badge" style="top:78px;background:#e74c3c;color:#fff;">🔥 Closing Soon</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ bursary.title }}</h5>
+                        <p class="card-text"><i class="fas fa-building"></i> {{ bursary.provider }}</p>
+                        <p class="card-text"><i class="fas fa-calendar-alt"></i> Closes: {{ bursary.closing_date|date:"M d, Y" }}</p>
+                        <div class="mb-2">
+                            <span class="edu-tag">{{ bursary.get_field_of_study_display }}</span>
+                            <span class="edu-tag">{{ bursary.get_level_display }}</span>
+                            {% if bursary.amount %}
+                            <span class="edu-tag">R{{ bursary.amount|floatformat:0 }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="card-text">{{ bursary.description|truncatewords:12 }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="view-details-badge">
+                            Click to view <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <div class="share-dropdown">
+                            <button class="btn-share-card" onclick="event.stopPropagation();toggleShareDropdown(this)">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <div class="share-dropdown-content">
+                                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','whatsapp')">
+                                    <i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp
+                                </a>
+                                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','facebook')">
+                                    <i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook
+                                </a>
+                                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','twitter')">
+                                    <i class="fab fa-twitter" style="color:#000;"></i> Twitter/X
+                                </a>
+                                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','copy')">
+                                    <i class="fas fa-link"></i> Copy Link
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>No Bursaries Available</h3>
+                <p>Check back later for new opportunities</p>
+            </div>
+            {% endfor %}
+
+            <!-- Universities -->
+            {% for uni in universities %}
+            <div class="edu-card-wrapper" 
+                 data-type="university" 
+                 data-title="{{ uni.name|lower }}" 
+                 data-field="{{ uni.province }}"
+                 data-url="{% url 'education_university_detail' uni.id %}">
+                <div class="card edu-card">
+                    <div class="position-relative">
+                        {% if uni.logo %}
+                        <img src="{{ uni.logo.url }}" class="card-img-top" alt="{{ uni.name }}" loading="lazy">
+                        {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #e8f0fe, #d4e4f7); height:160px;">
+                            <i class="fas fa-university" style="font-size:40px;color:rgba(0,0,0,0.08);"></i>
+                        </div>
+                        {% endif %}
+                        <span class="edu-badge university">🏛️ University</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ uni.name }}</h5>
+                        <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ uni.city }}, {{ uni.province }}</p>
+                        <p class="card-text">{{ uni.description|truncatewords:12 }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="edu-tag">{{ uni.province }}</span>
+                        <span class="view-details-badge">
+                            Click to view <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-university"></i>
+                <h3>No Universities Listed</h3>
+                <p>Universities will appear here when added</p>
+            </div>
+            {% endfor %}
+
+            <!-- Schools -->
+            {% for school in schools %}
+            <div class="edu-card-wrapper" 
+                 data-type="school" 
+                 data-title="{{ school.name|lower }}" 
+                 data-field="{{ school.province }}"
+                 data-url="{% url 'education_school_detail' school.id %}">
+                <div class="card edu-card">
+                    <div class="position-relative">
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); height:160px;">
+                            <i class="fas fa-school" style="font-size:40px;color:rgba(0,0,0,0.08);"></i>
+                        </div>
+                        <span class="edu-badge school">🏫 School</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ school.name }}</h5>
+                        <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ school.city }}, {{ school.province }}</p>
+                        <p class="card-text">
+                            <span class="edu-tag">{{ school.get_school_type_display }}</span>
+                            {% if school.emis_number %}
+                            <span class="edu-tag">EMIS: {{ school.emis_number }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="edu-tag">{{ school.province }}</span>
+                        <span class="view-details-badge">
+                            Click to view <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-school"></i>
+                <h3>No Schools Listed</h3>
+                <p>Schools will appear here when added</p>
+            </div>
+            {% endfor %}
+
+            <!-- Question Papers -->
+            {% for paper in papers %}
+            <div class="edu-card-wrapper" 
+                 data-type="paper" 
+                 data-title="{{ paper.title|lower }}" 
+                 data-field="{{ paper.subject.name|lower }}"
+                 data-url="{% url 'education_paper_detail' paper.id %}">
+                <div class="card edu-card">
+                    <div class="position-relative">
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); height:160px;">
+                            <i class="fas fa-file-pdf" style="font-size:40px;color:rgba(0,0,0,0.08);"></i>
+                        </div>
+                        <span class="edu-badge paper">📄 Paper</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ paper.title }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-graduation-cap"></i> {{ paper.grade.name }}
+                            <i class="fas fa-book ms-2"></i> {{ paper.subject.name }}
+                            <i class="fas fa-calendar ms-2"></i> {{ paper.year }}
+                        </p>
+                        <div class="mb-2">
+                            {% if paper.term %}
+                            <span class="edu-tag">{{ paper.term }}</span>
+                            {% endif %}
+                            {% if paper.paper_number %}
+                            <span class="edu-tag">Paper {{ paper.paper_number }}</span>
+                            {% endif %}
+                            <span class="edu-tag"><i class="fas fa-download"></i> {{ paper.download_count }}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="edu-tag">{{ paper.year }}</span>
+                        <span class="view-details-badge">
+                            Click to view <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-file-pdf"></i>
+                <h3>No Question Papers</h3>
+                <p>Question papers will appear here when uploaded</p>
+            </div>
+            {% endfor %}
+
+            <!-- News -->
+            {% for item in news %}
+            <div class="edu-card-wrapper" 
+                 data-type="news" 
+                 data-title="{{ item.title|lower }}"
+                 data-url="{% url 'education_news_detail' item.id %}">
+                <div class="card edu-card">
+                    <div class="position-relative">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" loading="lazy">
+                        {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); height:160px;">
+                            <i class="fas fa-newspaper" style="font-size:40px;color:rgba(0,0,0,0.08);"></i>
+                        </div>
+                        {% endif %}
+                        <span class="edu-badge news">📰 News</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-user"></i> {{ item.author.username|default:"Admin" }}
+                            <i class="fas fa-calendar-alt ms-2"></i> {{ item.published_at|date:"M d, Y" }}
+                        </p>
+                        <p class="card-text">{{ item.summary|default:item.content|truncatewords:20 }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="edu-tag">{{ item.published_at|date:"Y" }}</span>
+                        <span class="view-details-badge">
+                            Read more <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h3>No News Updates</h3>
+                <p>Stay tuned for education news</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== MOBILE BOTTOM NAV ===== -->
+    <div class="mobile-bottom-nav">
+        <a href="/"><i class="fas fa-home"></i>Home</a>
+        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i>Edu</a>
+        <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal fade" id="eduModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius:var(--radius);">
+                <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px;">
+                    <h5 class="modal-title" id="modalTitle" style="font-family:var(--font-display);font-weight:600;">
+                        <i class="fas fa-plus-circle me-2" style="color:var(--primary);"></i>Add Education Content
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="padding:20px;">
+                    <form id="eduForm" enctype="multipart/form-data">
+                        <div id="modalBody"></div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid var(--border);padding:12px 20px;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:var(--radius-sm);">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="modalSubmitBtn" onclick="submitForm()" style="border-radius:var(--radius-sm);background:var(--dark);border:none;padding:8px 24px;">
+                        <i class="fas fa-save me-2"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ============================================================
+        // TOGGLE FUNCTIONS
+        // ============================================================
+        function toggleProfileDropdown() {
+            document.getElementById("profileMenu").classList.toggle("show");
+        }
+
+        function toggleThreeDotMenu() {
+            document.getElementById("threeDotMenu").classList.toggle("show");
+        }
+
+        document.addEventListener("click", function(e) {
+            const profileMenu = document.getElementById("profileMenu");
+            const avatar = document.querySelector(".profile-avatar-small");
+            if (avatar && profileMenu && !avatar.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.remove("show");
+            }
+
+            const threeDotMenu = document.getElementById("threeDotMenu");
+            const dotBtn = document.querySelector(".three-dot-menu .dot-btn");
+            if (dotBtn && threeDotMenu && !dotBtn.contains(e.target) && !threeDotMenu.contains(e.target)) {
+                threeDotMenu.classList.remove("show");
+            }
+        });
+
+        // ============================================================
+        // CARD CLICK
+        // ============================================================
+        document.addEventListener("click", function(e) {
+            const wrapper = e.target.closest(".edu-card-wrapper");
+            if (wrapper) {
+                if (e.target.closest(".share-dropdown") || e.target.closest(".btn-share-card")) {
+                    return;
+                }
+                const url = wrapper.dataset.url;
+                if (url) {
+                    window.location.href = url;
+                }
+            }
+        });
+
+        // ============================================================
+        // SHARE FUNCTIONS
+        // ============================================================
+        function toggleShareDropdown(btn) {
+            const dropdown = btn.parentElement.querySelector('.share-dropdown-content');
+            document.querySelectorAll('.share-dropdown-content.show').forEach(d => {
+                if (d !== dropdown) d.classList.remove('show');
+            });
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.share-dropdown')) {
+                document.querySelectorAll('.share-dropdown-content').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        function shareContent(type, id, title, platform) {
+            const url = `${window.location.origin}/education/${type}/${id}/`;
+            const text = `${title} - ${url}`;
+            let shareUrl = '';
+
+            if (platform === 'whatsapp') {
+                shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            } else if (platform === 'facebook') {
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+            } else if (platform === 'twitter') {
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+            } else if (platform === 'copy') {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('✅ Link copied to clipboard!', 'success');
+                    }).catch(() => {
+                        fallbackCopy(text);
+                    });
+                } else {
+                    fallbackCopy(text);
+                }
+                return;
+            }
+
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+            }
+
+            document.querySelectorAll('.share-dropdown-content').forEach(d => d.classList.remove('show'));
+            showToast('📤 Shared successfully!', 'success');
+        }
+
+        function fallbackCopy(text) {
+            const input = document.createElement('input');
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            showToast('✅ Link copied to clipboard!', 'success');
+        }
+
+        // ============================================================
+        // FILTER CONTENT
+        // ============================================================
+        function filterContent() {
+            const search = document.getElementById('eduSearch').value.toLowerCase();
+            const gradeFilter = document.getElementById('eduGradeFilter').value;
+            const fieldFilter = document.getElementById('eduFieldFilter').value;
+            const levelFilter = document.getElementById('eduLevelFilter').value;
+
+            const cards = document.querySelectorAll('#gridAll .edu-card-wrapper');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.dataset.title || '';
+                const field = card.dataset.field || '';
+                const level = card.dataset.level || '';
+
+                let show = true;
+
+                if (search && !title.includes(search)) {
+                    show = false;
+                }
+                if (fieldFilter && field !== fieldFilter) {
+                    show = false;
+                }
+                if (levelFilter && level !== levelFilter) {
+                    show = false;
+                }
+
+                card.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+
+            const visibleBursaries = document.querySelectorAll('#gridAll .edu-card-wrapper[data-type="bursary"]:not([style*="display: none"])').length;
+            document.getElementById('statBursaries').textContent = visibleBursaries;
+        }
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
+            };
+            toast.innerHTML = `
+                <i class="fas ${icons[type] || icons.info}"></i>
+                ${message}
+                <button class="close-toast" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
+        let modalType = '';
+        let modalInstance = null;
+
+        function openModal(type) {
+            modalType = type;
+            modalInstance = new bootstrap.Modal(document.getElementById('eduModal'));
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const titles = {
+                bursary: '💰 Add Bursary',
+                university: '🏛️ Add University',
+                school: '🏫 Add School',
+                paper: '📄 Upload Question Paper',
+                news: '📰 Add News'
+            };
+            title.textContent = titles[type] || 'Add Content';
+
+            let html = '';
+            if (type === 'bursary') {
+                html = `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title *</label>
+                        <input type="text" name="title" class="form-control" required placeholder="Bursary title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Provider *</label>
+                        <input type="text" name="provider" class="form-control" required placeholder="Organization name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="Describe the bursary"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Field of Study</label>
+                            <select name="field_of_study" class="form-select">
+                                <option value="engineering">Engineering</option>
+                                <option value="medicine">Medicine</option>
+                                <option value="business">Business</option>
+                                <option value="arts">Arts</option>
+                                <option value="science">Science</option>
+                                <option value="education">Education</option>
+                                <option value="law">Law</option>
+                                <option value="technology">Technology</option>
+                                <option value="agriculture">Agriculture</option>
+                                <option value="health">Health Sciences</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Level</label>
+                            <select name="level" class="form-select">
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="postgraduate">Postgraduate</option>
+                                <option value="phd">PhD</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="certificate">Certificate</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Amount</label>
+                            <input type="number" name="amount" class="form-control" placeholder="e.g. 50000">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Closing Date *</label>
+                            <input type="date" name="closing_date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Requirements</label>
+                        <textarea name="requirements" class="form-control" rows="2" placeholder="Eligibility requirements"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Provider Logo</label>
+                        <input type="file" name="provider_logo" class="form-control" accept="image/*">
+                    </div>
+                `;
+            } else if (type === 'university') {
+                html = `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">University Name *</label>
+                        <input type="text" name="name" class="form-control" required placeholder="University name">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Province</label>
+                            <input type="text" name="province" class="form-control" placeholder="Province">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">City</label>
+                            <input type="text" name="city" class="form-control" placeholder="City">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="University description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Website</label>
+                        <input type="url" name="website" class="form-control" placeholder="https://university.ac.za">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Logo</label>
+                        <input type="file" name="logo" class="form-control" accept="image/*">
+                    </div>
+                `;
+            } else if (type === 'school') {
+                html = `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">School Name *</label>
+                        <input type="text" name="name" class="form-control" required placeholder="School name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">EMIS Number</label>
+                        <input type="text" name="emis_number" class="form-control" placeholder="EMIS number">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Province</label>
+                            <input type="text" name="province" class="form-control" placeholder="Province">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">City</label>
+                            <input type="text" name="city" class="form-control" placeholder="City">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">School Type</label>
+                        <select name="school_type" class="form-select">
+                            <option value="primary">Primary School</option>
+                            <option value="secondary" selected>Secondary School</option>
+                            <option value="combined">Combined School</option>
+                            <option value="special">Special Needs School</option>
+                            <option value="early_childhood">Early Childhood</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                `;
+            } else if (type === 'paper') {
+                html = `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Paper Title *</label>
+                        <input type="text" name="title" class="form-control" required placeholder="Question paper title">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Grade *</label>
+                            <select name="grade_id" class="form-select" required>
+                                <option value="">Select Grade</option>
+                                {% for grade in grades %}
+                                <option value="{{ grade.id }}">{{ grade.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Subject *</label>
+                            <select name="subject_id" class="form-select" required>
+                                <option value="">Select Subject</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Year *</label>
+                            <input type="number" name="year" class="form-control" required min="2000" max="2026" value="2026">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">PDF File *</label>
+                            <input type="file" name="file" class="form-control" accept=".pdf" required>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'news') {
+                html = `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title *</label>
+                        <input type="text" name="title" class="form-control" required placeholder="News title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Content *</label>
+                        <textarea name="content" class="form-control" rows="3" required placeholder="Full news content"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="general">General</option>
+                            <option value="bursary">Bursary News</option>
+                            <option value="university">University News</option>
+                            <option value="school">School News</option>
+                            <option value="exam">Exam Updates</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Image</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                    </div>
+                `;
+            }
+
+            body.innerHTML = html;
+            modalInstance.show();
+        }
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let c of cookies) {
+                const [name, value] = c.trim().split('=');
+                if (name === 'csrftoken') return decodeURIComponent(value);
+            }
+            return '';
+        }
+
+        function submitForm() {
+            const form = document.getElementById('eduForm');
+            const formData = new FormData(form);
+            const btn = document.getElementById('modalSubmitBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            let endpoint = '';
+            switch (modalType) {
+                case 'bursary': endpoint = '/api/education/bursaries/'; break;
+                case 'university': endpoint = '/api/education/universities/'; break;
+                case 'school': endpoint = '/api/education/schools/'; break;
+                case 'paper': endpoint = '/api/education/papers/'; break;
+                case 'news': endpoint = '/api/education/news/'; break;
+                default:
+                    showToast('Invalid type', 'error');
+                    btn.innerHTML = original;
+                    btn.disabled = false;
+                    return;
+            }
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (data.id || data.success) {
+                    modalInstance.hide();
+                    showToast('✅ Saved successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = original;
+                btn.disabled = false;
+                showToast('❌ Network error. Please try again.', 'error');
+            });
+        }
+
+        // ============================================================
+        // LOGIN/SIGNUP FUNCTIONS
+        // ============================================================
+        function showLogin() {
+            showToast('Please login to continue', 'info');
+            window.location.href = '/login/';
+        }
+
+        function showSignup() {
+            showToast('Create an account to get started', 'info');
+            window.location.href = '/signup/';
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            filterContent();
+
+            document.getElementById('eduModal').addEventListener('click', function(e) {
+                if (e.target === this && modalInstance) {
+                    modalInstance.hide();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalInstance) {
+                    modalInstance.hide();
+                }
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('eduSearch').focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -3,6 +3,11 @@ from . import views
 from . import message_views
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
+from hiring.password_reset import (
+    password_reset_request,
+    password_reset_confirm,
+    password_reset_validate_token
+)
 
 
 # URL patterns for messaging - use this as a separate include
@@ -231,7 +236,7 @@ urlpatterns = [
     path('properties/add/', views.property_add, name='property_add'),
     path('properties/<uuid:property_id>/edit/', views.property_edit, name='property_edit'),
     path('properties/<uuid:property_id>/delete/', views.property_delete, name='property_delete'),
-    path('properties/<uuid:property_id>/', views.property_detail, name='property_detail'),
+
     
     # Property Rooms
     path('properties/<uuid:property_id>/rooms/', views.property_rooms_manage, name='property_rooms_manage'),
@@ -296,4 +301,10 @@ urlpatterns = [
     path('api/push/subscribe/', views.save_push_subscription, name='save_push_subscription'),
     path('api/push/test/', views.send_test_notification, name='send_test_notification'),
     path('api/get-properties-with-owner/', views.get_properties_with_owner, name='get_properties_with_owner'),
+    # urls
+    path('api/auth/password-reset/', password_reset_request, name='password_reset'),
+    path('api/auth/password-reset-confirm/', password_reset_confirm, name='password_reset_confirm'),
+    path('api/auth/password-reset-validate/', password_reset_validate_token, name='password_reset_validate'),
+
 ]
+

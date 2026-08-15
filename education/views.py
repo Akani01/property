@@ -6,7 +6,11 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 import pandas as pd
+from django.shortcuts import get_object_or_404, render, redirect
 import os
+from django import template
+
+register = template.Library()
 from .models import (
     Grade, Subject, University, School, Bursary, QuestionPaper,
     BursaryApplication, UniversityApplication, SchoolApplication, EducationNews
@@ -348,3 +352,152 @@ class EducationNewsViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser or self.request.user.user_type == 'admin':
             return EducationNews.objects.all()
         return self.queryset
+
+
+# education/views.py - Make sure these are at the bottom
+
+def education_home(request):
+    """Single unified education page for all education content"""
+    from django.db.models import Q
+    from django.utils import timezone
+    
+    # Get all active data
+    grades = Grade.objects.filter(is_active=True).order_by('order')
+    subjects = Subject.objects.filter(is_active=True).order_by('name')
+    universities = University.objects.filter(is_active=True).order_by('name')
+    schools = School.objects.filter(is_active=True).order_by('name')
+    
+    # Get active bursaries
+    bursaries = Bursary.objects.filter(
+        is_active=True, 
+        closing_date__gte=timezone.now().date()
+    ).order_by('-created_at')[:50]
+    
+    # Get question papers
+    papers = QuestionPaper.objects.filter(is_public=True).select_related('grade', 'subject').order_by('-year', 'subject__name')[:50]
+    
+    # Get education news
+    news = EducationNews.objects.filter(is_published=True).order_by('-published_at')[:10]
+    
+    # Get field choices for filters
+    field_choices = dict(Bursary.FIELD_CHOICES)
+    level_choices = dict(Bursary.LEVEL_CHOICES)
+    
+    # Get distinct fields and levels from database
+    available_fields = Bursary.objects.filter(is_active=True).values_list('field_of_study', flat=True).distinct()
+    available_levels = Bursary.objects.filter(is_active=True).values_list('level', flat=True).distinct()
+    
+    # Check if user is admin/business
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin')
+    
+    context = {
+        'grades': grades,
+        'subjects': subjects,
+        'universities': universities,
+        'schools': schools,
+        'bursaries': bursaries,
+        'papers': papers,
+        'news': news,
+        'field_choices': field_choices,
+        'level_choices': level_choices,
+        'available_fields': available_fields,
+        'available_levels': available_levels,
+        'is_admin': is_admin,
+    }
+    
+    return render(request, 'education/education_home.html', context)
+
+
+def bursary_detail(request, pk):
+    """View bursary details"""
+    from django.utils import timezone
+    bursary = get_object_or_404(Bursary, id=pk, is_active=True)
+    
+    universities = bursary.universities.filter(is_active=True)
+    grades = bursary.grades.filter(is_active=True)
+    
+    similar = Bursary.objects.filter(
+        is_active=True,
+        closing_date__gte=timezone.now().date()
+    ).exclude(id=pk).filter(
+        Q(field_of_study=bursary.field_of_study) | 
+        Q(level=bursary.level)
+    ).distinct()[:5]
+    
+    context = {
+        'bursary': bursary,
+        'universities': universities,
+        'grades': grades,
+        'similar': similar,
+        'days_left': bursary.days_until_closing(),
+    }
+    
+    return render(request, 'education/bursary_detail.html', context)
+
+
+def university_detail(request, pk):
+    university = get_object_or_404(University, id=pk, is_active=True)
+    bursaries = university.bursaries.filter(is_active=True, closing_date__gte=timezone.now().date())[:10]
+    context = {'university': university, 'bursaries': bursaries}
+    return render(request, 'education/university_detail.html', context)
+
+
+def school_detail(request, pk):
+    school = get_object_or_404(School, id=pk, is_active=True)
+    context = {'school': school}
+    return render(request, 'education/school_detail.html', context)
+
+
+def paper_detail(request, pk):
+    paper = get_object_or_404(QuestionPaper, id=pk, is_public=True)
+    paper.download_count += 1
+    paper.save()
+    context = {'paper': paper}
+    return render(request, 'education/paper_detail.html', context)
+
+
+def news_detail(request, pk):
+    news_item = get_object_or_404(EducationNews, id=pk, is_published=True)
+    context = {'news': news_item}
+    return render(request, 'education/news_detail.html', context)
+
+
+
+@register.filter
+def get_item(dictionary, key):
+    """Get an item from a dictionary by key"""
+    if dictionary is None:
+        return None
+    return dictionary.get(key, key)
+
+
+
+# education/views.py - Add this function
+
+def news_list(request):
+    """View all education news articles"""
+    from django.core.paginator import Paginator
+    
+    # Get all published news
+    news_items = EducationNews.objects.filter(is_published=True).order_by('-published_at')
+    
+    # Paginate
+    paginator = Paginator(news_items, 20)
+    page = request.GET.get('page', 1)
+    news_page = paginator.get_page(page)
+    
+    # Get categories for filter
+    categories = EducationNews.objects.filter(is_published=True).values_list('category', flat=True).distinct()
+    category_choices = dict(EducationNews.CATEGORY_CHOICES)
+    
+    # Check if user is admin
+    is_admin = request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin')
+    
+    context = {
+        'news_items': news_page,
+        'categories': categories,
+        'category_choices': category_choices,
+        'is_admin': is_admin,
+    }
+    
+    return render(request, 'education/news_list.html', context)   

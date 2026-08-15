@@ -542,3 +542,23 @@ class NoThrottle(BaseThrottle):
 
 # In your view, you can use:
 # throttle_classes = [NoThrottle]
+# ============================================
+# EMAIL CONFIGURATION FOR PASSWORD RESET
+# ============================================
+
+# Email settings (using Gmail as example)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ivinakani@gmail.com')
+
+# For development (console output)
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Password reset settings
+PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
+PASSWORD_RESET_EMAIL_TEMPLATE = 'registration/password_reset_email.html'
