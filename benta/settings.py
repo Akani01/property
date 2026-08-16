@@ -124,15 +124,10 @@ AUTH_USER_MODEL = 'hiring.CustomUser'
 # ============================================================
 # GOOGLE OAUTH 2.0 SETTINGS
 # ============================================================
-
-# Get Google Client ID from environment variable
+# Get Google credentials from environment variables
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')  # ← ADD THIS LINE!
 
-# If GOOGLE_CLIENT_ID is not set in environment, you can set it here for development
-if not GOOGLE_CLIENT_ID and DEBUG:
-    # For development, you can hardcode your Client ID here temporarily
-    # GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'
-    pass
 
 
 
