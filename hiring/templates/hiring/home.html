@@ -23,6 +23,23 @@
         /* ============================================================
            ROOT VARIABLES & RESET (LIGHT & FAST MODE)
            ============================================================ */
+
+        /* SCALE UP THE WHOLE INTERFACE */
+        body {
+            font-size: 16px;  /* WAS smaller */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: -0.02em;
+        }
+        .btn, button, .btn-action, .tab-btn {
+            font-size: 14px !important;  /* BIGGER */
+            padding: 10px 18px !important;
+        }
+        .post-text, .property-description, .job-description {
+            font-size: 15px !important;
+            line-height: 1.6 !important;
+        }
+
         :root {
             --primary-color: #ff4d3d;
             --primary-color-deep: #c62828;
@@ -763,9 +780,9 @@
 
         /* Property card inside horizontal row */
         .property-horizontal-row .property-card {
-            flex: 0 0 280px;
-            max-width: 280px;
-            min-width: 240px;
+            flex: 0 0 340px;  /* ← BIGGER! */
+            max-width: 340px;
+            min-width: 290px;
             scroll-snap-align: start;
             margin-bottom: 0;
         }
@@ -804,7 +821,7 @@
 
         .property-image-container {
             position: relative;
-            aspect-ratio: 16 / 9;
+            aspect-ratio: 16 / 10;
             width: 100%;
             background: #f0f0f0;
             overflow: hidden;
@@ -3589,21 +3606,32 @@
             transform: scale(1.06);
         }
 
-        /* ===== MOBILE ===== */
         .mobile-bottom-nav {
             display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 52px;
-            background: #ffffff;
-            border-top: 1px solid var(--glass-border);
+            height: 72px;
+            background: rgba(255, 255, 255, 0.85);  /* ← TRANSPARENT (85% opacity) */
+            backdrop-filter: blur(12px);             /* ← GLASS EFFECT */
+            -webkit-backdrop-filter: blur(12px);     /* ← FOR SAFARI */
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
             justify-content: space-around;
             align-items: center;
             z-index: 9999;
-            box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
+            padding-bottom: 8px;
         }
+
+        .mobile-bottom-nav a {
+            color: rgba(255, 255, 255, 0.8);  /* ← WHITE ICONS */
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);  /* ← SHADOW FOR VISIBILITY */
+        }
+        .mobile-bottom-nav a.active {
+            color: #ffffff;  /* ← BRIGHT WHITE FOR ACTIVE */
+        }
+
         .mobile-bottom-nav.hidden {
             transform: translateY(100%);
             opacity: 0;
@@ -3622,9 +3650,9 @@
             min-height: 36px;
         }
         .mobile-bottom-nav a i {
-            font-size: 16px;
+            font-size: 22px;  /* ← WAS 16px, NOW BIGGER */
             display: block;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
         }
         .mobile-bottom-nav a.active {
             color: var(--primary-color-deep);
@@ -4116,6 +4144,37 @@
                 padding: 7px 12px;
             }
         }
+
+        .auth-btn {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .auth-btn-signin {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color-deep);
+        }
+        .auth-btn-signin:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .auth-btn-signup {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255, 77, 61, 0.25);
+        }
+        .auth-btn-signup:hover {
+            transform: scale(1.03);
+        }
+
+        .auth-btn.hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -4192,16 +4251,18 @@
                                 </div>
                             </li>
                         {% else %}
-                            <li><a href="#" onclick="showLogin()"><i class="fas fa-sign-in-alt"></i></a></li>
+                            <!-- BIG VISIBLE AUTH BUTTONS -->
                             <li>
-                                <div class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-user-plus"></i></a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#" onclick="showSignup()"><i class="fas fa-user me-2"></i>User Signup</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="showBusinessSignup()"><i class="fas fa-building me-2"></i>Business Signup</a></li>
-                                    </ul>
-                                </div>
+                                <button class="auth-btn auth-btn-signin" onclick="showLogin()">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </button>
                             </li>
+                            <li>
+                                <button class="auth-btn auth-btn-signup" onclick="showSignup()">
+                                    <i class="fas fa-user-plus"></i> Sign Up
+                                </button>
+                            </li>
+                            <li><a href="#" class="apps-sticker" onclick="showAppsModal()"><i class="fas fa-th"></i></a></li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -6953,6 +7014,23 @@
                         </div>
                     `).join('');
         }
+
+        function updateAuthButtons() {
+            const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+            const authBtns = document.querySelectorAll('.auth-btn');
+            const userMenu = document.querySelector('.profile-dropdown');
+            
+            if (isLoggedIn) {
+                authBtns.forEach(btn => btn.classList.add('hidden'));
+                if (userMenu) userMenu.style.display = 'block';
+            } else {
+                authBtns.forEach(btn => btn.classList.remove('hidden'));
+                if (userMenu) userMenu.style.display = 'none';
+            }
+        }
+
+        // Call this when page loads
+        document.addEventListener('DOMContentLoaded', updateAuthButtons);
 
         function viewJob(id) { window.location.href = `/jobs/${id}/`; }
 

@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'django.contrib.sites',
     'rest_framework_simplejwt',
     'social_auth',
@@ -277,6 +278,12 @@ TIME_ZONE = 'Africa/Johannesburg'
 USE_I18N = True
 USE_TZ = True
 
+
+# ===== AUTHENTICATION BACKENDS =====
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 # -------------------------------------------------------------------
 # ALLAUTH SETTINGS - UPDATED (Fixed deprecation warnings)
 # -------------------------------------------------------------------

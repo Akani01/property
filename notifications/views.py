@@ -30,18 +30,18 @@ class NotificationPagination(PageNumberPagination):
     max_page_size = 100
     page_query_param = 'page'
 
-
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = NotificationPagination
-    
+
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        
+
+        # Unread count with cache
         unread_count = cache.get(f"notif_unread_{request.user.id}")
         if unread_count is None:
             unread_count = Notification.objects.filter(
@@ -49,12 +49,30 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 is_read=False
             ).count()
             cache.set(f"notif_unread_{request.user.id}", unread_count, 60 * 5)
-        
-        page = self.paginate_queryset(queryset)
-        
+
+        # Manual pagination – get page object
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response({
+            # Build flat response (no DRF wrapper)
+            return Response({
+                'status': 'success',
+                'data': {
+                    'notifications': serializer.data,
+                    'total_count': queryset.count(),
+                    'unread_count': unread_count,
+                    'page': int(request.query_params.get('page', 1)),
+                    'page_size': paginator.page_size,
+                    'total_pages': (queryset.count() + paginator.page_size - 1) // paginator.page_size,
+                    'has_next': page.has_next() if hasattr(page, 'has_next') else False,
+                }
+            })
+        else:
+            # No pagination (should not happen with default pagination)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response({
                 'status': 'success',
                 'data': {
                     'notifications': serializer.data,
@@ -62,22 +80,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     'unread_count': unread_count,
                 }
             })
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({
-            'status': 'success',
-            'data': {
-                'notifications': serializer.data,
-                'total_count': queryset.count(),
-                'unread_count': unread_count,
-            }
-        })
-    
+
     @action(detail=False, methods=['get'])
     def unread(self, request):
         notifications = self.get_queryset().filter(is_read=False)
         page = self.paginate_queryset(notifications)
-        
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response({
@@ -88,7 +96,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     'has_unread': notifications.exists()
                 }
             })
-        
+
         serializer = self.get_serializer(notifications, many=True)
         return Response({
             'status': 'success',
@@ -98,44 +106,44 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'has_unread': notifications.exists()
             }
         })
-    
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
         queryset = self.get_queryset()
         days = request.query_params.get('days', 30)
-        
+
         try:
             days = int(days)
         except ValueError:
             days = 30
-        
+
         since = timezone.now() - timezone.timedelta(days=days)
         notifications = queryset.filter(created_at__gte=since)
-        
+
         total = notifications.count()
         unread = notifications.filter(is_read=False).count()
         read = notifications.filter(is_read=True).count()
         dismissed = notifications.filter(is_dismissed=True).count()
-        
+
         by_type = notifications.values('notification_type').annotate(
             count=Count('id')
         ).order_by('-count')
-        
+
         by_type_dict = {}
         for item in by_type:
             by_type_dict[item['notification_type']] = item['count']
-        
+
         by_priority = notifications.values('priority').annotate(
             count=Count('id')
         ).order_by('-count')
-        
+
         by_priority_dict = {}
         for item in by_priority:
             by_priority_dict[item['priority']] = item['count']
-        
+
         recent = notifications.order_by('-created_at')[:10]
         recent_serializer = self.get_serializer(recent, many=True)
-        
+
         return Response({
             'status': 'success',
             'data': {
@@ -149,25 +157,22 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'days': days
             }
         })
-    
+
     @action(detail=False, methods=['get'])
     def realtime(self, request):
         """Get real-time notifications for the user - FIXED: No cache dependency"""
         try:
-            # Get unread count directly from database
             unread_count = Notification.objects.filter(
-                recipient=request.user, 
+                recipient=request.user,
                 is_read=False
             ).count()
-            
-            # Get recent notifications for realtime display (last 5)
+
             recent = Notification.objects.filter(
                 recipient=request.user
             ).order_by('-created_at')[:5]
-            
-            # Serialize the notifications
+
             serializer = self.get_serializer(recent, many=True)
-            
+
             return Response({
                 'status': 'success',
                 'data': {
@@ -181,17 +186,16 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-    
+
     @action(detail=False, methods=['get'])
     def unread_count(self, request):
         """Get unread notification count - FIXED: No cache dependency"""
         try:
-            # Get count directly from database
             count = Notification.objects.filter(
-                recipient=request.user, 
+                recipient=request.user,
                 is_read=False
             ).count()
-            
+
             return Response({
                 'status': 'success',
                 'data': {
@@ -204,7 +208,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-    
+
     @action(detail=True, methods=['post'])
     def mark_read(self, request, pk=None):
         notification = self.get_object()
@@ -216,7 +220,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': 'Notification marked as read',
             'data': serializer.data
         })
-    
+
     @action(detail=True, methods=['post'])
     def mark_unread(self, request, pk=None):
         notification = self.get_object()
@@ -228,7 +232,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': 'Notification marked as unread',
             'data': serializer.data
         })
-    
+
     @action(detail=True, methods=['post'])
     def dismiss(self, request, pk=None):
         notification = self.get_object()
@@ -240,7 +244,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': 'Notification dismissed',
             'data': serializer.data
         })
-    
+
     @action(detail=True, methods=['post'])
     def click(self, request, pk=None):
         notification = self.get_object()
@@ -251,7 +255,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': 'Notification marked as clicked',
             'data': serializer.data
         })
-    
+
     @action(detail=False, methods=['post'])
     def mark_all_read(self, request):
         count = self.get_queryset().filter(is_read=False).update(
@@ -264,7 +268,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': f'{count} notifications marked as read',
             'data': {'count': count}
         })
-    
+
     @action(detail=False, methods=['post'])
     def clear_all(self, request):
         count = self.get_queryset().count()
@@ -275,7 +279,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'message': f'{count} notifications cleared',
             'data': {'count': count}
         })
-    
+
     @action(detail=False, methods=['post'])
     def create_test_notification(self, request):
         """Create a test notification for the current user"""
@@ -291,32 +295,32 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 priority='medium',
                 metadata={'test': True}
             )
-            
+
             serializer = self.get_serializer(notification)
             return Response({
                 'status': 'success',
                 'message': 'Test notification created successfully',
                 'data': serializer.data
             }, status=status.HTTP_201_CREATED)
-            
+
         except Exception as e:
             logger.error(f"Error creating test notification: {str(e)}")
             return Response({
                 'status': 'error',
                 'message': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     @action(detail=False, methods=['post'])
     def create_notification(self, request):
         serializer = CreateNotificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         try:
             recipient = User.objects.get(id=serializer.validated_data['recipient_id'])
             sender = None
             if serializer.validated_data.get('sender_id'):
                 sender = User.objects.get(id=serializer.validated_data['sender_id'])
-            
+
             # Get related objects
             property_ref = None
             job = None
@@ -324,7 +328,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             maintenance = None
             post = None
             comment = None
-            
+
             if serializer.validated_data.get('property_id'):
                 from django.apps import apps
                 Property = apps.get_model('realestate', 'Property')
@@ -332,7 +336,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     property_ref = Property.objects.get(id=serializer.validated_data['property_id'])
                 except Property.DoesNotExist:
                     pass
-            
+
             if serializer.validated_data.get('job_id'):
                 from django.apps import apps
                 JobListing = apps.get_model('hiring', 'JobListing')
@@ -340,7 +344,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     job = JobListing.objects.get(id=serializer.validated_data['job_id'])
                 except JobListing.DoesNotExist:
                     pass
-            
+
             if serializer.validated_data.get('booking_id'):
                 from django.apps import apps
                 Booking = apps.get_model('realestate', 'Booking')
@@ -348,7 +352,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     booking = Booking.objects.get(id=serializer.validated_data['booking_id'])
                 except Booking.DoesNotExist:
                     pass
-            
+
             if serializer.validated_data.get('maintenance_id'):
                 from django.apps import apps
                 MaintenanceRequest = apps.get_model('realestate', 'MaintenanceRequest')
@@ -356,7 +360,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     maintenance = MaintenanceRequest.objects.get(id=serializer.validated_data['maintenance_id'])
                 except MaintenanceRequest.DoesNotExist:
                     pass
-            
+
             if serializer.validated_data.get('post_id'):
                 from django.apps import apps
                 Post = apps.get_model('hiring', 'Post')
@@ -364,7 +368,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     post = Post.objects.get(id=serializer.validated_data['post_id'])
                 except Post.DoesNotExist:
                     pass
-            
+
             if serializer.validated_data.get('comment_id'):
                 from django.apps import apps
                 Comment = apps.get_model('hiring', 'Comment')
@@ -372,7 +376,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                     comment = Comment.objects.get(id=serializer.validated_data['comment_id'])
                 except Comment.DoesNotExist:
                     pass
-            
+
             notification = Notification.objects.create(
                 recipient=recipient,
                 sender=sender,
@@ -390,17 +394,16 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 post=post,
                 comment=comment
             )
-            
-            # Clear unread count cache for recipient
+
             cache.delete(f"notif_unread_{recipient.id}")
-            
+
             response_serializer = self.get_serializer(notification)
             return Response({
                 'status': 'success',
                 'message': 'Notification created successfully',
                 'data': response_serializer.data
             }, status=status.HTTP_201_CREATED)
-            
+
         except User.DoesNotExist:
             return Response({
                 'status': 'error',
@@ -412,26 +415,26 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'status': 'error',
                 'message': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     @action(detail=False, methods=['post'])
     def bulk_create(self, request):
         serializer = BulkNotificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         try:
             recipient_ids = serializer.validated_data['recipient_ids']
             sender = None
             if serializer.validated_data.get('sender_id'):
                 sender = User.objects.get(id=serializer.validated_data['sender_id'])
-            
+
             exclude_self = serializer.validated_data.get('exclude_self', True)
             notifications = []
             errors = []
-            
+
             for recipient_id in recipient_ids:
                 if exclude_self and sender and str(sender.id) == str(recipient_id):
                     continue
-                
+
                 try:
                     recipient = User.objects.get(id=recipient_id)
                     notification = Notification.objects.create(
@@ -446,13 +449,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
                         metadata=serializer.validated_data.get('metadata', {})
                     )
                     notifications.append(notification)
-                    
-                    # Clear unread count cache for each recipient
+
                     cache.delete(f"notif_unread_{recipient.id}")
-                    
+
                 except Exception as e:
                     errors.append(f"Error for user {recipient_id}: {str(e)}")
-            
+
             return Response({
                 'status': 'success',
                 'message': f'Successfully sent {len(notifications)} notifications',
@@ -468,7 +470,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                 'message': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+            
 class NotificationPreferenceViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationPreferenceSerializer
     permission_classes = [IsAuthenticated]
