@@ -232,6 +232,24 @@ else:
 
 DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),  # ← ADD THIS LINE!
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
 # -------------------------------------------------------------------
 # STATIC & MEDIA FILES - FULLY FIXED
 # -------------------------------------------------------------------
