@@ -17,7 +17,7 @@ message_urlpatterns = [
     path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
     path('sw.js', views.pwa_sw, name='pwa_sw'),
     path('offline/', views.offline_page, name='offline'),
-     
+    
     # Push notification subscription endpoint
     path('api/notifications/subscribe/', views.subscribe_to_notifications, name='subscribe_notifications'),
     # Conversations
@@ -32,7 +32,7 @@ message_urlpatterns = [
     # Users
     path('users/', message_views.UserViewSet.as_view({'get': 'list'}), name='user-list'),
     path('users/search/', message_views.UserViewSet.as_view({'get': 'search'}), name='user-search'),
-    
+    path('api/messages/unread-count/', message_views.ConversationViewSet.as_view({'get': 'unread_count'}), name='api_message_unread_count'),
     # User Status
     path('user-status/update/', message_views.update_user_status, name='update-user-status'),
     path('user-status/<str:user_id>/', message_views.get_user_status, name='get-user-status'),
