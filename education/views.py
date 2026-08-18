@@ -1,16 +1,26 @@
+# education/views.py - COMPLETE (Original + New Functions)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q, Count
+from django.utils import timezone
+from django.urls import reverse
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.db.models import Q, Count
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 import pandas as pd
-from django.shortcuts import get_object_or_404, render, redirect
 import os
+import re
+import json
 from django import template
+from django.template import Library
 
 register = template.Library()
+
 from .models import (
     Grade, Subject, University, School, Bursary, QuestionPaper,
     BursaryApplication, UniversityApplication, SchoolApplication, EducationNews
@@ -23,6 +33,10 @@ from .serializers import (
 
 User = get_user_model()
 
+
+# ============================================
+# API VIEWSETS
+# ============================================
 
 class GradeViewSet(viewsets.ModelViewSet):
     queryset = Grade.objects.filter(is_active=True)
@@ -71,7 +85,6 @@ class UniversityViewSet(viewsets.ModelViewSet):
             )
             serializer = self.get_serializer(universities, many=True)
             return Response({'success': True, 'universities': serializer.data})
-        return Response({'success': False, 'error': 'search query required'})
 
 
 class SchoolViewSet(viewsets.ModelViewSet):
@@ -82,7 +95,6 @@ class SchoolViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def upload_excel(self, request):
-        """Upload Excel file with school data"""
         if not request.user.is_superuser and not request.user.user_type == 'admin':
             return Response({'success': False, 'error': 'Admin access required'}, status=403)
         
@@ -95,7 +107,6 @@ class SchoolViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'success': False, 'error': f'Invalid Excel file: {str(e)}'})
         
-        # Expected columns: name, emis_number, school_type, province, district, city, address, phone, email, website, principal_name
         required_columns = ['name']
         for col in required_columns:
             if col not in df.columns:
@@ -108,7 +119,6 @@ class SchoolViewSet(viewsets.ModelViewSet):
         for index, row in df.iterrows():
             try:
                 school_type = row.get('school_type', 'secondary')
-                # Validate school_type
                 valid_types = ['primary', 'secondary', 'combined', 'special', 'early_childhood', 'other']
                 if school_type not in valid_types:
                     school_type = 'secondary'
@@ -202,7 +212,6 @@ class BursaryViewSet(viewsets.ModelViewSet):
         if field:
             bursaries = bursaries.filter(field_of_study=field)
         
-        # Filter by closing date (only show open bursaries)
         bursaries = bursaries.filter(closing_date__gte=timezone.now().date())
         
         serializer = self.get_serializer(bursaries, many=True)
@@ -222,7 +231,6 @@ class QuestionPaperViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def upload_multiple(self, request):
-        """Upload multiple question papers at once"""
         if not request.user.is_authenticated:
             return Response({'success': False, 'error': 'Authentication required'}, status=401)
         
@@ -248,7 +256,6 @@ class QuestionPaperViewSet(viewsets.ModelViewSet):
         
         for file in files:
             try:
-                # Auto-extract title from filename
                 base_name = os.path.splitext(file.name)[0]
                 title = base_name.replace('_', ' ').replace('-', ' ').title()
                 
@@ -354,40 +361,33 @@ class EducationNewsViewSet(viewsets.ModelViewSet):
         return self.queryset
 
 
-# education/views.py - Make sure these are at the bottom
+# ============================================
+# ============================================
+# ORIGINAL HTML VIEWS (KEEP AS IS)
+# ============================================
+# ============================================
 
 def education_home(request):
     """Single unified education page for all education content"""
-    from django.db.models import Q
-    from django.utils import timezone
-    
-    # Get all active data
     grades = Grade.objects.filter(is_active=True).order_by('order')
     subjects = Subject.objects.filter(is_active=True).order_by('name')
     universities = University.objects.filter(is_active=True).order_by('name')
     schools = School.objects.filter(is_active=True).order_by('name')
     
-    # Get active bursaries
     bursaries = Bursary.objects.filter(
         is_active=True, 
         closing_date__gte=timezone.now().date()
     ).order_by('-created_at')[:50]
     
-    # Get question papers
     papers = QuestionPaper.objects.filter(is_public=True).select_related('grade', 'subject').order_by('-year', 'subject__name')[:50]
-    
-    # Get education news
     news = EducationNews.objects.filter(is_published=True).order_by('-published_at')[:10]
     
-    # Get field choices for filters
     field_choices = dict(Bursary.FIELD_CHOICES)
     level_choices = dict(Bursary.LEVEL_CHOICES)
     
-    # Get distinct fields and levels from database
     available_fields = Bursary.objects.filter(is_active=True).values_list('field_of_study', flat=True).distinct()
     available_levels = Bursary.objects.filter(is_active=True).values_list('level', flat=True).distinct()
     
-    # Check if user is admin/business
     is_admin = request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin')
     
     context = {
@@ -409,10 +409,7 @@ def education_home(request):
 
 
 def bursary_detail(request, pk):
-    """View bursary details"""
-    from django.utils import timezone
     bursary = get_object_or_404(Bursary, id=pk, is_active=True)
-    
     universities = bursary.universities.filter(is_active=True)
     grades = bursary.grades.filter(is_active=True)
     
@@ -462,35 +459,15 @@ def news_detail(request, pk):
     return render(request, 'education/news_detail.html', context)
 
 
-
-@register.filter
-def get_item(dictionary, key):
-    """Get an item from a dictionary by key"""
-    if dictionary is None:
-        return None
-    return dictionary.get(key, key)
-
-
-
-# education/views.py - Add this function
-
 def news_list(request):
-    """View all education news articles"""
-    from django.core.paginator import Paginator
-    
-    # Get all published news
     news_items = EducationNews.objects.filter(is_published=True).order_by('-published_at')
-    
-    # Paginate
     paginator = Paginator(news_items, 20)
     page = request.GET.get('page', 1)
     news_page = paginator.get_page(page)
     
-    # Get categories for filter
     categories = EducationNews.objects.filter(is_published=True).values_list('category', flat=True).distinct()
     category_choices = dict(EducationNews.CATEGORY_CHOICES)
     
-    # Check if user is admin
     is_admin = request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin')
     
     context = {
@@ -500,4 +477,657 @@ def news_list(request):
         'is_admin': is_admin,
     }
     
-    return render(request, 'education/news_list.html', context)   
+    return render(request, 'education/news_list.html', context)
+
+
+# ============================================
+# ============================================
+# NEW HTML VIEWS (ADD THESE)
+# ============================================
+# ============================================
+
+def parse_application_message(message):
+    """Parse a single message input into structured data"""
+    data = {}
+    lines = message.split('\n')
+    
+    patterns = {
+        'full_name': r'(?:Full[_\s]+Names?|Name[s]?|Applicant[s]?)[\s:]+([^\n]+)',
+        'email': r'(?:Email|E-Mail)[\s:]+([^\n@]+@[^\n]+)',
+        'phone': r'(?:Phone|Cell|Mobile|Tel|Contact)[\s:]+([^\n]+)',
+        'id_number': r'(?:ID|ID Number|Identity Number)[\s:]+([^\n]+)',
+        'date_of_birth': r'(?:Birth Date|Date of Birth|DOB)[\s:]+([^\n]+)',
+        'current_institution': r'(?:Current School|Current Institution|School)[\s:]+([^\n]+)',
+        'academic_average': r'(?:Average|Academic Average|Percentage)[\s:]+([^\n]+)',
+        'motivation': r'(?:Motivation|Why|Reason)[\s:]+([^\n]+)',
+        'parent_name': r'(?:Parent Name|Guardian Name|Parent Full Name)[\s:]+([^\n]+)',
+        'parent_phone': r'(?:Parent Phone|Guardian Phone)[\s:]+([^\n]+)',
+        'parent_email': r'(?:Parent Email|Guardian Email)[\s:]+([^\n@]+@[^\n]+)',
+        'previous_school': r'(?:Previous School|Last School)[\s:]+([^\n]+)',
+        'student_full_name': r'(?:Student Name|Learner Name|Full Name)[\s:]+([^\n]+)',
+        'student_email': r'(?:Student Email|Learner Email)[\s:]+([^\n@]+@[^\n]+)',
+        'student_phone': r'(?:Student Phone|Learner Phone)[\s:]+([^\n]+)',
+        'program_of_interest': r'(?:Program|Course|Program of Interest)[\s:]+([^\n]+)',
+        'program_code': r'(?:Program Code|Course Code)[\s:]+([^\n]+)',
+    }
+    
+    for key, pattern in patterns.items():
+        match = re.search(pattern, message, re.IGNORECASE)
+        if match:
+            data[key] = match.group(1).strip()
+    
+    return data
+
+
+@login_required
+def apply_selection(request):
+    """Step 1: Select what you want to apply for (Bursary, University, or School)"""
+    context = {
+        'bursaries': Bursary.objects.filter(is_active=True, closing_date__gte=timezone.now().date()).order_by('-created_at')[:20],
+        'universities': University.objects.filter(is_active=True).order_by('name')[:20],
+        'schools': School.objects.filter(is_active=True).order_by('name')[:20],
+        'has_applications': BursaryApplication.objects.filter(applicant=request.user).exists() or 
+                           UniversityApplication.objects.filter(applicant=request.user).exists() or
+                           SchoolApplication.objects.filter(applicant=request.user).exists()
+    }
+    return render(request, 'education/apply_selection.html', context)
+
+
+@login_required
+def apply_bursary(request, bursary_id=None):
+    """Complete bursary application form with selection"""
+    bursary = None
+    if bursary_id:
+        bursary = get_object_or_404(Bursary, id=bursary_id, is_active=True)
+    
+    existing_app = None
+    if bursary:
+        existing_app = BursaryApplication.objects.filter(
+            applicant=request.user,
+            bursary=bursary
+        ).first()
+    
+    available_bursaries = Bursary.objects.filter(
+        is_active=True, 
+        closing_date__gte=timezone.now().date()
+    ).order_by('-created_at')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action', 'save')
+        data = request.POST.copy()
+        
+        if data.get('message_input'):
+            parsed = parse_application_message(data.get('message_input'))
+            for key, value in parsed.items():
+                if value:
+                    data[key] = value
+        
+        selected_bursary_id = data.get('selected_bursary')
+        if selected_bursary_id:
+            try:
+                bursary = Bursary.objects.get(id=selected_bursary_id, is_active=True)
+            except Bursary.DoesNotExist:
+                messages.error(request, 'Selected bursary not found')
+                bursary = None
+        
+        if not bursary:
+            messages.error(request, 'Please select a bursary to apply for')
+            return redirect('education_apply_bursary')
+        
+        application_data = {
+            'full_name': data.get('full_name', '').strip() or data.get('full_names', '').strip(),
+            'email': data.get('email', '').strip(),
+            'phone': data.get('phone', '').strip(),
+            'id_number': data.get('id_number', '').strip(),
+            'date_of_birth': data.get('date_of_birth', '') or data.get('birth_date', ''),
+            'current_institution': data.get('current_institution', '').strip(),
+            'academic_average': data.get('academic_average', '').strip(),
+            'motivation': data.get('motivation', '').strip(),
+            'current_institution_type': data.get('current_institution_type', 'other'),
+        }
+        
+        files = {}
+        for field in ['cv', 'academic_transcript', 'id_document', 'other_documents']:
+            if request.FILES.get(field):
+                files[field] = request.FILES[field]
+        
+        try:
+            if existing_app:
+                for key, value in application_data.items():
+                    setattr(existing_app, key, value)
+                existing_app.updated_at = timezone.now()
+                existing_app.save()
+                app = existing_app
+            else:
+                app_data = {
+                    'applicant': request.user,
+                    'bursary': bursary,
+                    'full_name': application_data['full_name'],
+                    'email': application_data['email'],
+                    'phone': application_data['phone'],
+                    'id_number': application_data['id_number'],
+                    'date_of_birth': application_data['date_of_birth'],
+                    'current_institution': application_data['current_institution'],
+                    'academic_average': application_data['academic_average'],
+                    'motivation': application_data['motivation'],
+                    'current_institution_type': application_data['current_institution_type'],
+                    'status': 'draft',
+                }
+                app = BursaryApplication.objects.create(**app_data)
+            
+            for field, file_obj in files.items():
+                if hasattr(app, field):
+                    setattr(app, field, file_obj)
+            app.save()
+            
+            if action == 'submit':
+                app.submit()
+                messages.success(request, f'🎉 Your application for {bursary.title} has been submitted successfully!')
+                return redirect('education_application_success', app_id=app.id)
+            else:
+                messages.success(request, '✅ Your application has been saved as draft')
+                return redirect('education_my_applications')
+                
+        except Exception as e:
+            messages.error(request, f'Error saving application: {str(e)}')
+            return redirect('education_apply_bursary', bursary_id=bursary.id)
+    
+    draft_data = {}
+    if existing_app and existing_app.status == 'draft':
+        draft_data = {
+            'full_name': existing_app.full_name,
+            'email': existing_app.email,
+            'phone': existing_app.phone,
+            'id_number': existing_app.id_number,
+            'date_of_birth': existing_app.date_of_birth.strftime('%Y-%m-%d') if existing_app.date_of_birth else '',
+            'current_institution': existing_app.current_institution,
+            'academic_average': existing_app.academic_average,
+            'motivation': existing_app.motivation,
+            'current_institution_type': existing_app.current_institution_type,
+        }
+    
+    context = {
+        'bursary': bursary,
+        'available_bursaries': available_bursaries,
+        'application': existing_app,
+        'draft_data': draft_data,
+        'has_application': bool(existing_app),
+        'can_submit': existing_app.status == 'draft' if existing_app else True,
+        'academic_years': range(2020, 2027),
+        'provinces': ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'],
+        'status_choices': BursaryApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/apply_bursary.html', context)
+
+
+@login_required
+def apply_university(request, university_id=None):
+    """Complete university application form with selection"""
+    university = None
+    if university_id:
+        university = get_object_or_404(University, id=university_id, is_active=True)
+    
+    existing_app = None
+    if university:
+        existing_app = UniversityApplication.objects.filter(
+            applicant=request.user,
+            university=university
+        ).first()
+    
+    available_universities = University.objects.filter(is_active=True).order_by('name')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action', 'save')
+        data = request.POST.copy()
+        
+        if data.get('message_input'):
+            parsed = parse_application_message(data.get('message_input'))
+            for key, value in parsed.items():
+                if value:
+                    data[key] = value
+        
+        selected_university_id = data.get('selected_university')
+        if selected_university_id:
+            try:
+                university = University.objects.get(id=selected_university_id, is_active=True)
+            except University.DoesNotExist:
+                messages.error(request, 'Selected university not found')
+                university = None
+        
+        if not university:
+            messages.error(request, 'Please select a university to apply for')
+            return redirect('education_apply_university')
+        
+        application_data = {
+            'full_name': data.get('full_name', '').strip() or data.get('full_names', '').strip(),
+            'email': data.get('email', '').strip(),
+            'phone': data.get('phone', '').strip(),
+            'id_number': data.get('id_number', '').strip(),
+            'date_of_birth': data.get('date_of_birth', '') or data.get('birth_date', ''),
+            'academic_average': data.get('academic_average', '').strip(),
+            'motivation': data.get('motivation', '').strip(),
+            'program_of_interest': data.get('program_of_interest', '').strip(),
+            'program_code': data.get('program_code', '').strip(),
+        }
+        
+        files = {}
+        for field in ['cv', 'academic_transcript', 'id_document']:
+            if request.FILES.get(field):
+                files[field] = request.FILES[field]
+        
+        try:
+            if existing_app:
+                for key, value in application_data.items():
+                    setattr(existing_app, key, value)
+                existing_app.updated_at = timezone.now()
+                existing_app.save()
+                app = existing_app
+            else:
+                app_data = {
+                    'applicant': request.user,
+                    'university': university,
+                    'full_name': application_data['full_name'],
+                    'email': application_data['email'],
+                    'phone': application_data['phone'],
+                    'id_number': application_data['id_number'],
+                    'date_of_birth': application_data['date_of_birth'],
+                    'academic_average': application_data['academic_average'],
+                    'motivation': application_data['motivation'],
+                    'program_of_interest': application_data['program_of_interest'],
+                    'program_code': application_data['program_code'],
+                    'status': 'draft',
+                }
+                app = UniversityApplication.objects.create(**app_data)
+            
+            for field, file_obj in files.items():
+                if hasattr(app, field):
+                    setattr(app, field, file_obj)
+            app.save()
+            
+            if action == 'submit':
+                app.submit()
+                messages.success(request, f'🎉 Your application for {university.name} has been submitted successfully!')
+                return redirect('education_application_success', app_id=app.id)
+            else:
+                messages.success(request, '✅ Your application has been saved as draft')
+                return redirect('education_my_applications')
+                
+        except Exception as e:
+            messages.error(request, f'Error saving application: {str(e)}')
+            return redirect('education_apply_university', university_id=university.id)
+    
+    draft_data = {}
+    if existing_app and existing_app.status == 'draft':
+        draft_data = {
+            'full_name': existing_app.full_name,
+            'email': existing_app.email,
+            'phone': existing_app.phone,
+            'id_number': existing_app.id_number,
+            'date_of_birth': existing_app.date_of_birth.strftime('%Y-%m-%d') if existing_app.date_of_birth else '',
+            'academic_average': existing_app.academic_average,
+            'motivation': existing_app.motivation,
+            'program_of_interest': existing_app.program_of_interest,
+            'program_code': existing_app.program_code,
+        }
+    
+    context = {
+        'university': university,
+        'available_universities': available_universities,
+        'application': existing_app,
+        'draft_data': draft_data,
+        'has_application': bool(existing_app),
+        'can_submit': existing_app.status == 'draft' if existing_app else True,
+        'academic_years': range(2020, 2027),
+        'provinces': ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'],
+        'status_choices': UniversityApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/apply_university.html', context)
+
+
+@login_required
+def apply_school(request, school_id=None):
+    """Complete school application form with selection"""
+    school = None
+    if school_id:
+        school = get_object_or_404(School, id=school_id, is_active=True)
+    
+    existing_app = None
+    if school:
+        existing_app = SchoolApplication.objects.filter(
+            applicant=request.user,
+            school=school
+        ).first()
+    
+    available_schools = School.objects.filter(is_active=True).order_by('name')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action', 'save')
+        data = request.POST.copy()
+        
+        if data.get('message_input'):
+            parsed = parse_application_message(data.get('message_input'))
+            for key, value in parsed.items():
+                if value:
+                    data[key] = value
+        
+        selected_school_id = data.get('selected_school')
+        if selected_school_id:
+            try:
+                school = School.objects.get(id=selected_school_id, is_active=True)
+            except School.DoesNotExist:
+                messages.error(request, 'Selected school not found')
+                school = None
+        
+        if not school:
+            messages.error(request, 'Please select a school to apply for')
+            return redirect('education_apply_school')
+        
+        application_data = {
+            'student_full_name': data.get('student_full_name', '').strip() or data.get('full_name', '').strip(),
+            'student_email': data.get('student_email', '').strip() or data.get('email', '').strip(),
+            'student_phone': data.get('student_phone', '').strip() or data.get('phone', '').strip(),
+            'id_number': data.get('id_number', '').strip(),
+            'date_of_birth': data.get('date_of_birth', '') or data.get('birth_date', ''),
+            'parent_name': data.get('parent_name', '').strip() or data.get('guardian_full_names', '').strip(),
+            'parent_phone': data.get('parent_phone', '').strip() or data.get('guardian_phone', '').strip(),
+            'parent_email': data.get('parent_email', '').strip() or data.get('guardian_email', '').strip(),
+            'previous_school': data.get('previous_school', '').strip(),
+            'motivation': data.get('motivation', '').strip(),
+            'additional_notes': data.get('additional_notes', '').strip(),
+        }
+        
+        files = {}
+        for field in ['birth_certificate', 'report_card']:
+            if request.FILES.get(field):
+                files[field] = request.FILES[field]
+        
+        try:
+            if existing_app:
+                for key, value in application_data.items():
+                    setattr(existing_app, key, value)
+                existing_app.updated_at = timezone.now()
+                existing_app.save()
+                app = existing_app
+            else:
+                app_data = {
+                    'applicant': request.user,
+                    'school': school,
+                    'student_full_name': application_data['student_full_name'],
+                    'student_email': application_data['student_email'],
+                    'student_phone': application_data['student_phone'],
+                    'id_number': application_data['id_number'],
+                    'date_of_birth': application_data['date_of_birth'],
+                    'parent_name': application_data['parent_name'],
+                    'parent_phone': application_data['parent_phone'],
+                    'parent_email': application_data['parent_email'],
+                    'previous_school': application_data['previous_school'],
+                    'motivation': application_data['motivation'],
+                    'status': 'draft',
+                }
+                app = SchoolApplication.objects.create(**app_data)
+            
+            for field, file_obj in files.items():
+                if hasattr(app, field):
+                    setattr(app, field, file_obj)
+            app.save()
+            
+            if action == 'submit':
+                app.submit()
+                messages.success(request, f'🎉 Your application for {school.name} has been submitted successfully!')
+                return redirect('education_application_success', app_id=app.id)
+            else:
+                messages.success(request, '✅ Your application has been saved as draft')
+                return redirect('education_my_applications')
+                
+        except Exception as e:
+            messages.error(request, f'Error saving application: {str(e)}')
+            return redirect('education_apply_school', school_id=school.id)
+    
+    draft_data = {}
+    if existing_app and existing_app.status == 'draft':
+        draft_data = {
+            'student_full_name': existing_app.student_full_name,
+            'student_email': existing_app.student_email,
+            'student_phone': existing_app.student_phone,
+            'id_number': existing_app.id_number,
+            'date_of_birth': existing_app.date_of_birth.strftime('%Y-%m-%d') if existing_app.date_of_birth else '',
+            'parent_name': existing_app.parent_name,
+            'parent_phone': existing_app.parent_phone,
+            'parent_email': existing_app.parent_email,
+            'previous_school': existing_app.previous_school,
+            'motivation': existing_app.motivation,
+        }
+    
+    context = {
+        'school': school,
+        'available_schools': available_schools,
+        'application': existing_app,
+        'draft_data': draft_data,
+        'has_application': bool(existing_app),
+        'can_submit': existing_app.status == 'draft' if existing_app else True,
+        'status_choices': SchoolApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/apply_school.html', context)
+
+
+@login_required
+def my_applications(request):
+    """View all education applications for the current user"""
+    bursary_apps = BursaryApplication.objects.filter(applicant=request.user).select_related('bursary')
+    university_apps = UniversityApplication.objects.filter(applicant=request.user).select_related('university')
+    school_apps = SchoolApplication.objects.filter(applicant=request.user).select_related('school')
+    
+    all_applications = []
+    
+    for app in bursary_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'bursary',
+            'type_display': 'Bursary',
+            'title': app.bursary.title if app.bursary else 'No Bursary',
+            'institution': app.bursary.provider if app.bursary else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(BursaryApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_bursary_application_detail', args=[app.id])
+        })
+    
+    for app in university_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'university',
+            'type_display': 'University',
+            'title': app.university.name if app.university else 'No University',
+            'institution': app.university.name if app.university else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(UniversityApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_university_application_detail', args=[app.id])
+        })
+    
+    for app in school_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'school',
+            'type_display': 'School',
+            'title': app.school.name if app.school else 'No School',
+            'institution': app.school.name if app.school else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(SchoolApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_school_application_detail', args=[app.id])
+        })
+    
+    all_applications.sort(key=lambda x: x['created_at'], reverse=True)
+    
+    paginator = Paginator(all_applications, 20)
+    page = request.GET.get('page', 1)
+    applications_page = paginator.get_page(page)
+    
+    status_counts = {}
+    for app in all_applications:
+        status_counts[app['status']] = status_counts.get(app['status'], 0) + 1
+    
+    context = {
+        'applications': applications_page,
+        'total_count': len(all_applications),
+        'status_counts': status_counts,
+        'status_choices': [
+            ('draft', 'Draft'),
+            ('submitted', 'Submitted'),
+            ('under_review', 'Under Review'),
+            ('shortlisted', 'Shortlisted'),
+            ('interview', 'Interview Scheduled'),
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),
+            ('withdrawn', 'Withdrawn'),
+        ]
+    }
+    
+    return render(request, 'education/my_applications.html', context)
+
+
+@login_required
+def bursary_application_detail(request, pk):
+    application = get_object_or_404(BursaryApplication, id=pk, applicant=request.user)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_status':
+            new_status = request.POST.get('status')
+            if new_status in dict(BursaryApplication.STATUS_CHOICES):
+                application.status = new_status
+                application.save()
+                messages.success(request, f'Application status updated to {application.get_status_display()}')
+                return redirect('education_bursary_application_detail', pk=application.id)
+        
+        elif action == 'withdraw':
+            application.status = 'withdrawn'
+            application.save()
+            messages.success(request, 'Application has been withdrawn')
+            return redirect('education_bursary_application_detail', pk=application.id)
+        
+        elif action == 'submit':
+            if application.status == 'draft':
+                application.submit()
+                messages.success(request, 'Application submitted successfully!')
+                return redirect('education_bursary_application_detail', pk=application.id)
+    
+    context = {
+        'application': application,
+        'type': 'bursary',
+        'type_display': 'Bursary',
+        'status_choices': BursaryApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/application_detail.html', context)
+
+
+@login_required
+def university_application_detail(request, pk):
+    application = get_object_or_404(UniversityApplication, id=pk, applicant=request.user)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_status':
+            new_status = request.POST.get('status')
+            if new_status in dict(UniversityApplication.STATUS_CHOICES):
+                application.status = new_status
+                application.save()
+                messages.success(request, f'Application status updated to {application.get_status_display()}')
+                return redirect('education_university_application_detail', pk=application.id)
+        
+        elif action == 'withdraw':
+            application.status = 'withdrawn'
+            application.save()
+            messages.success(request, 'Application has been withdrawn')
+            return redirect('education_university_application_detail', pk=application.id)
+        
+        elif action == 'submit':
+            if application.status == 'draft':
+                application.submit()
+                messages.success(request, 'Application submitted successfully!')
+                return redirect('education_university_application_detail', pk=application.id)
+    
+    context = {
+        'application': application,
+        'type': 'university',
+        'type_display': 'University',
+        'status_choices': UniversityApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/application_detail.html', context)
+
+
+@login_required
+def school_application_detail(request, pk):
+    application = get_object_or_404(SchoolApplication, id=pk, applicant=request.user)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_status':
+            new_status = request.POST.get('status')
+            if new_status in dict(SchoolApplication.STATUS_CHOICES):
+                application.status = new_status
+                application.save()
+                messages.success(request, f'Application status updated to {application.get_status_display()}')
+                return redirect('education_school_application_detail', pk=application.id)
+        
+        elif action == 'withdraw':
+            application.status = 'withdrawn'
+            application.save()
+            messages.success(request, 'Application has been withdrawn')
+            return redirect('education_school_application_detail', pk=application.id)
+        
+        elif action == 'submit':
+            if application.status == 'draft':
+                application.submit()
+                messages.success(request, 'Application submitted successfully!')
+                return redirect('education_school_application_detail', pk=application.id)
+    
+    context = {
+        'application': application,
+        'type': 'school',
+        'type_display': 'School',
+        'status_choices': SchoolApplication.STATUS_CHOICES,
+    }
+    
+    return render(request, 'education/application_detail.html', context)
+
+
+@login_required
+def application_success(request, app_id):
+    app = get_object_or_404(BursaryApplication, id=app_id, applicant=request.user)
+    
+    context = {
+        'application': app,
+        'type': 'bursary',
+    }
+    
+    return render(request, 'education/application_success.html', context)
+
+
+# ============================================
+# TEMPLATE FILTERS
+# ============================================
+
+@register.filter
+def get_item(dictionary, key):
+    if dictionary is None:
+        return None
+    return dictionary.get(key, key)

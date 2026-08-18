@@ -120,6 +120,7 @@
             justify-content: center;
             min-width: 36px;
             height: 36px;
+            text-decoration: none;
         }
 
         @media (min-width: 576px) {
@@ -197,6 +198,7 @@
             color: #444;
             font-size: 13px;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .profile-menu a:hover {
@@ -268,6 +270,7 @@
             color: #444;
             font-size: 13px;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .menu-content a:hover {
@@ -425,6 +428,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
 
         .btn-back:hover {
@@ -443,11 +447,56 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
 
         .btn-add:hover {
             background: #2d2d4a;
             color: white;
+        }
+
+        /* ===== NEW: APPLY BUTTON STYLES ===== */
+        .btn-apply-primary {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-apply-primary:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-applications {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 2px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-applications:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
         }
 
         /* ===== STATS BANNER ===== */
@@ -921,7 +970,7 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 575px) {
             .page-header h1 { font-size: 18px; }
-            .btn-add { font-size: 11px; padding: 6px 14px; }
+            .btn-add, .btn-apply-primary, .btn-applications { font-size: 11px; padding: 6px 14px; }
             .btn-back { font-size: 11px; padding: 6px 12px; }
             .filter-section .row > div { margin-bottom: 6px; }
             .edu-card .card-title { font-size: 13px; }
@@ -1021,6 +1070,8 @@
             <div class="sidebar-title">Education</div>
             <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> My Education</a>
             <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i> Education Hub</a>
+            <a href="/education/apply/"><i class="fas fa-pen"></i> Apply Now</a>
+            <a href="/education/my-applications/"><i class="fas fa-file-alt"></i> My Applications</a>
             <!-- These now link back to the education hub with hashtags -->
             <a href="/education/#bursaries"><i class="fas fa-hand-holding-heart"></i> Bursaries</a>
             <a href="/education/#papers"><i class="fas fa-file-pdf"></i> Question Papers</a>
@@ -1057,6 +1108,13 @@
             <div class="header-actions">
                 <a href="/" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <!-- ===== NEW: APPLY & APPLICATIONS BUTTONS ===== -->
+                <a href="/education/apply/" class="btn-apply-primary">
+                    <i class="fas fa-pen"></i> Apply Now
+                </a>
+                <a href="/education/my-applications/" class="btn-applications">
+                    <i class="fas fa-file-alt"></i> My Applications
                 </a>
                 {% if is_admin %}
                 <button class="btn-add" onclick="openModal('bursary')">

@@ -1,3 +1,5 @@
+# education/models.py - COMPLETE UPDATED VERSION (WITHOUT unique_together)
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
@@ -65,6 +67,7 @@ class University(models.Model):
         blank=True,
         null=True
     )
+    is_public = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -246,7 +249,6 @@ class QuestionPaper(models.Model):
         return f"{self.subject.name} - {self.grade.name} ({self.year})"
     
     def save(self, *args, **kwargs):
-        # Auto-extract file name if not provided
         if self.file and not self.file_name:
             self.file_name = os.path.basename(self.file.name)
         if self.file:
@@ -257,8 +259,12 @@ class QuestionPaper(models.Model):
         super().save(*args, **kwargs)
 
 
+# ============================================
+# BURSARY APPLICATION MODEL - NO UNIQUE CONSTRAINT
+# ============================================
+
 class BursaryApplication(models.Model):
-    """User applications for bursaries"""
+    """User applications for bursaries - Users can apply to multiple bursaries"""
     STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -334,10 +340,14 @@ class BursaryApplication(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Bursary Application'
         verbose_name_plural = 'Bursary Applications'
-        unique_together = ['applicant', 'bursary']
+        # REMOVED: unique_together = ['applicant', 'bursary']
+        # Users can now apply to multiple bursaries
     
     def __str__(self):
         return f"{self.applicant.username} - {self.bursary.title}"
+    
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
     
     def submit(self):
         self.status = 'submitted'
@@ -345,8 +355,12 @@ class BursaryApplication(models.Model):
         self.save()
 
 
+# ============================================
+# UNIVERSITY APPLICATION MODEL - NO UNIQUE CONSTRAINT
+# ============================================
+
 class UniversityApplication(models.Model):
-    """User applications to universities"""
+    """User applications to universities - Users can apply to multiple universities"""
     STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -412,14 +426,27 @@ class UniversityApplication(models.Model):
         ordering = ['-created_at']
         verbose_name = 'University Application'
         verbose_name_plural = 'University Applications'
-        unique_together = ['applicant', 'university']
+        # REMOVED: unique_together = ['applicant', 'university']
+        # Users can now apply to multiple universities
     
     def __str__(self):
         return f"{self.applicant.username} - {self.university.name}"
+    
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
+    
+    def submit(self):
+        self.status = 'submitted'
+        self.submitted_at = timezone.now()
+        self.save()
 
+
+# ============================================
+# SCHOOL APPLICATION MODEL - NO UNIQUE CONSTRAINT
+# ============================================
 
 class SchoolApplication(models.Model):
-    """User applications to schools"""
+    """User applications to schools - Users can apply to multiple schools"""
     STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -453,6 +480,8 @@ class SchoolApplication(models.Model):
     # Academic details
     current_grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
     previous_school = models.CharField(max_length=200, blank=True)
+    motivation = models.TextField(blank=True)
+    additional_notes = models.TextField(blank=True)
     
     # Documents
     birth_certificate = models.FileField(
@@ -467,6 +496,18 @@ class SchoolApplication(models.Model):
         null=True,
         validators=[FileExtensionValidator(['pdf'])]
     )
+    id_document = models.FileField(
+        upload_to='school_applications/id_docs/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png'])]
+    )
+    guardian_id = models.FileField(
+        upload_to='school_applications/guardian_id/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png'])]
+    )
     
     admin_notes = models.TextField(blank=True)
     
@@ -478,14 +519,35 @@ class SchoolApplication(models.Model):
         ordering = ['-created_at']
         verbose_name = 'School Application'
         verbose_name_plural = 'School Applications'
-        unique_together = ['applicant', 'school']
+        # REMOVED: unique_together = ['applicant', 'school']
+        # Users can now apply to multiple schools
     
     def __str__(self):
         return f"{self.applicant.username} - {self.school.name}"
+    
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
+    
+    def submit(self):
+        self.status = 'submitted'
+        self.submitted_at = timezone.now()
+        self.save()
 
+
+# ============================================
+# EDUCATION NEWS MODEL
+# ============================================
 
 class EducationNews(models.Model):
     """News and updates for the education section"""
+    CATEGORY_CHOICES = (
+        ('bursary', 'Bursary News'),
+        ('university', 'University News'),
+        ('school', 'School News'),
+        ('general', 'General'),
+        ('exam', 'Exam Updates'),
+    )
+    
     title = models.CharField(max_length=200)
     content = models.TextField()
     summary = models.TextField(blank=True)
@@ -495,13 +557,7 @@ class EducationNews(models.Model):
         null=True
     )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    category = models.CharField(max_length=50, blank=True, choices=[
-        ('bursary', 'Bursary News'),
-        ('university', 'University News'),
-        ('school', 'School News'),
-        ('general', 'General'),
-        ('exam', 'Exam Updates'),
-    ])
+    category = models.CharField(max_length=50, blank=True, choices=CATEGORY_CHOICES)
     is_published = models.BooleanField(default=True)
     published_at = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)

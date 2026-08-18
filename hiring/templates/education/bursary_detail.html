@@ -12,9 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #ff589e;
-            --primary-dark: #e8458a;
-            --primary-light: #ffe0ec;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
             --secondary: #667eea;
             --gold: #ffd700;
             --dark: #1a1a2e;
@@ -121,6 +121,7 @@
             justify-content: center;
             min-width: 36px;
             height: 36px;
+            text-decoration: none;
         }
 
         @media (min-width: 576px) {
@@ -145,7 +146,7 @@
         .profile-avatar-small {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -168,7 +169,7 @@
 
         .profile-avatar-small:hover {
             transform: scale(1.05);
-            box-shadow: 0 2px 12px rgba(255, 88, 158, 0.3);
+            box-shadow: 0 2px 12px rgba(37, 99, 235, 0.3);
         }
 
         .profile-menu {
@@ -202,6 +203,7 @@
             color: #444;
             font-size: 13px;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .profile-menu a:hover {
@@ -286,6 +288,7 @@
             color: #444;
             font-size: 13px;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .menu-content a:hover {
@@ -660,6 +663,7 @@
             border: none;
             cursor: pointer;
             min-height: 44px;
+            width: 100%;
         }
 
         .btn-custom:hover {
@@ -678,12 +682,13 @@
         }
 
         .btn-success-custom {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            background: #16a34a;
             color: #fff;
         }
 
         .btn-success-custom:hover {
-            box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3);
+            background: #15803d;
+            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.3);
             color: #fff;
         }
 
@@ -983,7 +988,7 @@
                         </div>
                         {% endif %}
 
-                        <!-- Eligibility (Without Institutions) -->
+                        <!-- Eligibility -->
                         <div class="detail-section">
                             <h3><i class="fas fa-users"></i> Eligibility</h3>
                             <div class="meta-grid">
@@ -1080,14 +1085,20 @@
                         </div>
                         {% endif %}
 
-                        <!-- Action Buttons -->
+                        <!-- ===== UPDATED ACTION BUTTONS ===== -->
                         <div class="action-buttons">
                             {% if user.is_authenticated %}
-                            <a href="#" class="btn-custom btn-success-custom" onclick="showToast('🎯 Application form coming soon!', 'info')">
-                                <i class="fas fa-paper-plane"></i> Apply Now
-                            </a>
+                                {% if bursary %}
+                                <a href="{% url 'education_apply_bursary_with_id' bursary.id %}" class="btn-custom btn-success-custom">
+                                    <i class="fas fa-paper-plane"></i> Apply Now
+                                </a>
+                                {% else %}
+                                <a href="{% url 'education_apply_bursary' %}" class="btn-custom btn-success-custom">
+                                    <i class="fas fa-paper-plane"></i> Apply Now
+                                </a>
+                                {% endif %}
                             {% else %}
-                            <a href="/api/auth/login/" class="btn-custom btn-primary-custom">
+                            <a href="/login/?next={{ request.path }}" class="btn-custom btn-primary-custom">
                                 <i class="fas fa-sign-in-alt"></i> Login to Apply
                             </a>
                             {% endif %}

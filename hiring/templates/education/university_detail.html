@@ -186,8 +186,65 @@
         .sidebar-card .info-row a { color: var(--primary); font-weight: 500; }
         .sidebar-card .info-row a:hover { text-decoration: underline; }
 
-        .btn-outline-custom { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius-sm); border: 2px solid var(--border); background: transparent; color: var(--dark); font-weight: 500; font-size: 13px; transition: var(--transition); width: 100%; justify-content: center; }
-        .btn-outline-custom:hover { border-color: var(--dark); background: var(--light-gray); }
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            min-height: 44px;
+            width: 100%;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary-custom {
+            background: var(--dark);
+            color: #fff;
+        }
+
+        .btn-primary-custom:hover {
+            background: #2d2d4a;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(26,26,46,0.25);
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+        }
+
+        .btn-success-custom:hover {
+            box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3);
+            color: #fff;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-outline-custom:hover {
+            border-color: var(--dark);
+            background: var(--light-gray);
+        }
 
         .share-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
         .share-btn { padding: 5px 12px; border-radius: 6px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; transition: var(--transition); color: #fff; display: inline-flex; align-items: center; gap: 5px; flex: 1; justify-content: center; min-height: 32px; }
@@ -369,13 +426,11 @@
 
                     <!-- LEFT COLUMN -->
                     <div>
-                        <!-- Description -->
                         <div class="detail-section">
                             <h3><i class="fas fa-align-left"></i> About</h3>
                             <p>{{ university.description|default:"No description available."|linebreaks }}</p>
                         </div>
 
-                        <!-- Contact Information -->
                         <div class="detail-section">
                             <h3><i class="fas fa-address-card"></i> Contact Information</h3>
                             <div class="row g-2">
@@ -402,7 +457,6 @@
                             </div>
                         </div>
 
-                        <!-- Related Bursaries -->
                         {% if bursaries %}
                         <div class="detail-section">
                             <h3><i class="fas fa-hand-holding-heart"></i> Available Bursaries</h3>
@@ -418,7 +472,6 @@
 
                     <!-- RIGHT COLUMN (SIDEBAR) -->
                     <div class="sidebar">
-                        <!-- Quick Info -->
                         <div class="sidebar-card">
                             <h4><i class="fas fa-info-circle"></i> Quick Info</h4>
                             <div class="info-row">
@@ -441,12 +494,28 @@
                             {% endif %}
                         </div>
 
-                        <!-- Action Buttons -->
-                        <a href="/education/" class="btn-outline-custom">
-                            <i class="fas fa-arrow-left"></i> Back to All
-                        </a>
+                        <!-- ===== UPDATED ACTION BUTTONS ===== -->
+                        <div class="action-buttons">
+                            {% if user.is_authenticated %}
+                                {% if university %}
+                                <a href="{% url 'education_apply_university_with_id' university.id %}" class="btn-custom btn-success-custom">
+                                    <i class="fas fa-paper-plane"></i> Apply Now
+                                </a>
+                                {% else %}
+                                <a href="{% url 'education_apply_university' %}" class="btn-custom btn-success-custom">
+                                    <i class="fas fa-paper-plane"></i> Apply Now
+                                </a>
+                                {% endif %}
+                            {% else %}
+                            <a href="/login/?next={{ request.path }}" class="btn-custom btn-primary-custom">
+                                <i class="fas fa-sign-in-alt"></i> Login to Apply
+                            </a>
+                            {% endif %}
+                            <a href="/education/" class="btn-custom btn-outline-custom">
+                                <i class="fas fa-arrow-left"></i> Back to All
+                            </a>
+                        </div>
 
-                        <!-- Share -->
                         <div class="sidebar-card">
                             <h4><i class="fas fa-share-alt"></i> Share</h4>
                             <div class="share-buttons">

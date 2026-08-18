@@ -1,4 +1,5 @@
-# education/urls.py
+# education/urls.py - UPDATED (Keeping ALL original routes + adding new ones)
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
@@ -16,8 +17,9 @@ router.register(r'university-applications', views.UniversityApplicationViewSet, 
 router.register(r'school-applications', views.SchoolApplicationViewSet, basename='education-school-application')
 router.register(r'news', views.EducationNewsViewSet, basename='education-news')
 
-# HTML View URLs (for the education pages)
+# HTML View URLs
 html_urlpatterns = [
+    # ===== ORIGINAL ROUTES (KEEP AS IS) =====
     # Education Hub - main page
     path('', views.education_home, name='education_home'),
     
@@ -27,9 +29,29 @@ html_urlpatterns = [
     path('school/<int:pk>/', views.school_detail, name='education_school_detail'),
     path('paper/<int:pk>/', views.paper_detail, name='education_paper_detail'),
     path('news/<int:pk>/', views.news_detail, name='education_news_detail'),
+    
+    # ===== NEW APPLICATION ROUTES (ADD THESE) =====
+    # Application System - Selection & Apply
+    path('apply/', views.apply_selection, name='education_apply_selection'),
+    path('apply/bursary/', views.apply_bursary, name='education_apply_bursary'),
+    path('apply/bursary/<int:bursary_id>/', views.apply_bursary, name='education_apply_bursary_with_id'),
+    path('apply/university/', views.apply_university, name='education_apply_university'),
+    path('apply/university/<int:university_id>/', views.apply_university, name='education_apply_university_with_id'),
+    path('apply/school/', views.apply_school, name='education_apply_school'),
+    path('apply/school/<int:school_id>/', views.apply_school, name='education_apply_school_with_id'),
+    
+    # My Applications
+    path('my-applications/', views.my_applications, name='education_my_applications'),
+    path('bursary-application/<uuid:pk>/', views.bursary_application_detail, name='education_bursary_application_detail'),
+    path('university-application/<uuid:pk>/', views.university_application_detail, name='education_university_application_detail'),
+    path('school-application/<uuid:pk>/', views.school_application_detail, name='education_school_application_detail'),
+    path('application-success/<uuid:app_id>/', views.application_success, name='education_application_success'),
 ]
 
-# API URLs
+# API URLs - KEEP YOUR ORIGINAL STRUCTURE
 urlpatterns = [
     path('', include(router.urls)),
 ]
+
+# ===== IMPORTANT: Add the HTML URLs to the urlpatterns =====
+urlpatterns += html_urlpatterns
