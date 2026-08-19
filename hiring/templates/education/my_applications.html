@@ -1,3 +1,4 @@
+<!-- education/templates/education/my_applications.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,7 +41,6 @@
         a { text-decoration: none; color: inherit; }
         button { cursor: pointer; border: none; background: none; }
 
-        /* Navbar - Same as education_home */
         .header-area {
             background: #ffffff;
             border-bottom: 1px solid var(--border);
@@ -143,7 +143,6 @@
         .profile-menu a i { width: 18px; color: var(--gray); font-size: 14px; }
         .profile-divider { height: 1px; background: var(--border); margin: 4px 12px; }
 
-        /* Sidebar */
         .desktop-sidebar {
             width: 220px;
             background: white;
@@ -187,7 +186,6 @@
         .desktop-sidebar hr { margin: 8px 0; border-color: var(--border); }
         @media (min-width: 992px) { body { padding-left: 240px !important; } }
 
-        /* Main Container */
         .apps-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -495,7 +493,7 @@
             </a>
             <ul class="nav-icons">
                 <li><a href="/" title="Home"><i class="fas fa-home"></i></a></li>
-                <li><a href="/education/" title="Education Hub"><i class="fas fa-graduation-cap"></i></a></li>
+                <li><a href="/api/education/" title="Education Hub"><i class="fas fa-graduation-cap"></i></a></li>
                 {% if user.is_authenticated %}
                 <li class="profile-dropdown">
                     <div class="profile-avatar-small" onclick="toggleProfileDropdown()">
@@ -503,7 +501,7 @@
                     </div>
                     <div class="profile-menu" id="profileMenu">
                         <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
-                        <a href="/education/apply/"><i class="fas fa-pen"></i> Apply</a>
+                        <a href="/api/education/apply/"><i class="fas fa-pen"></i> Apply</a>
                         <div class="profile-divider"></div>
                         <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
@@ -519,11 +517,11 @@
     <div class="desktop-sidebar">
         <div class="sidebar-title">Profile</div>
         <a href="/profile/"><i class="fas fa-user"></i> My Profile</a>
-        <a href="/education/my-applications/" class="active"><i class="fas fa-file-alt"></i> Applications</a>
+        <a href="/api/education/my-applications/" class="active"><i class="fas fa-file-alt"></i> Applications</a>
         <hr>
         <div class="sidebar-title">Education</div>
-        <a href="/education/"><i class="fas fa-graduation-cap"></i> Education Hub</a>
-        <a href="/education/apply/"><i class="fas fa-pen"></i> Apply Now</a>
+        <a href="/api/education/"><i class="fas fa-graduation-cap"></i> Education Hub</a>
+        <a href="/api/education/apply/"><i class="fas fa-pen"></i> Apply Now</a>
         <hr>
         <div class="sidebar-title">Quick Links</div>
         <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
@@ -538,7 +536,7 @@
             <h1><i class="fas fa-file-alt"></i> My Applications</h1>
             <div class="d-flex gap-2 flex-wrap">
                 <span class="total-badge">{{ total_count }} Total</span>
-                <a href="/education/apply/" class="btn-apply-now">
+                <a href="/api/education/apply/" class="btn-apply-now">
                     <i class="fas fa-plus"></i> New Application
                 </a>
             </div>
@@ -551,7 +549,7 @@
             </button>
             {% for status_code, status_label in status_choices %}
             <button class="filter-btn" data-filter="{{ status_code }}" onclick="filterApps('{{ status_code }}')">
-                {{ status_label }} <span class="count">{{ status_counts|get_item:status_code|default:"0" }}</span>
+                {{ status_label }} <span class="count">{{ status_counts|default:''|get_item:status_code|default:"0" }}</span>
             </button>
             {% endfor %}
         </div>
@@ -617,7 +615,7 @@
             <i class="fas fa-file-alt"></i>
             <h3>No Applications Yet</h3>
             <p>You haven't submitted any applications yet. Start your application journey today!</p>
-            <a href="/education/apply/" class="btn-apply-now" style="display:inline-flex;margin-top:16px;">
+            <a href="/api/education/apply/" class="btn-apply-now" style="display:inline-flex;margin-top:16px;">
                 <i class="fas fa-plus"></i> Start Application
             </a>
         </div>
@@ -629,7 +627,7 @@
     <div class="mobile-bottom-nav">
         <a href="/"><i class="fas fa-home"></i>Home</a>
         <a href="/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-        <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i>Edu</a>
+        <a href="/api/education/" class="active"><i class="fas fa-graduation-cap"></i>Edu</a>
         <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
     </div>
 

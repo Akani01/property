@@ -45,7 +45,6 @@
         button { cursor: pointer; border: none; background: none; }
         img { max-width: 100%; }
 
-        /* ===== TOP NAVBAR - CLEAN ===== */
         .header-area {
             background: #ffffff;
             border-bottom: 1px solid var(--border);
@@ -280,7 +279,6 @@
 
         .menu-content a i { width: 18px; color: var(--gray); font-size: 14px; }
 
-        /* ===== SIDEBAR - WITH WORKING URLS ===== */
         .desktop-sidebar {
             width: 220px;
             background: white;
@@ -358,14 +356,12 @@
             border-color: var(--border);
         }
 
-        /* Push content right on desktop */
         @media (min-width: 992px) {
             body {
                 padding-left: 240px !important;
             }
         }
 
-        /* ===== MAIN CONTENT ===== */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -376,7 +372,6 @@
             .main-container { padding: 0 24px; }
         }
 
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             flex-direction: column;
@@ -455,7 +450,6 @@
             color: white;
         }
 
-        /* ===== NEW: APPLY BUTTON STYLES ===== */
         .btn-apply-primary {
             padding: 8px 20px;
             border-radius: var(--radius-sm);
@@ -499,7 +493,6 @@
             background: var(--primary-light);
         }
 
-        /* ===== STATS BANNER ===== */
         .stats-banner {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -552,7 +545,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===== FILTER SECTION ===== */
         .filter-section {
             background: white;
             padding: 16px 18px;
@@ -612,7 +604,6 @@
             color: white;
         }
 
-        /* ===== EDUCATION GRID ===== */
         .edu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -626,7 +617,6 @@
             }
         }
 
-        /* ===== EDUCATION CARD ===== */
         .edu-card-wrapper {
             cursor: pointer;
             transition: var(--transition);
@@ -842,7 +832,6 @@
             font-size: 14px;
         }
 
-        /* ===== EMPTY STATE ===== */
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -869,7 +858,6 @@
             font-size: 14px;
         }
 
-        /* ===== MOBILE BOTTOM NAV ===== */
         .mobile-bottom-nav {
             display: none;
             position: fixed;
@@ -919,7 +907,6 @@
             color: var(--primary);
         }
 
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             top: 80px;
@@ -967,7 +954,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 575px) {
             .page-header h1 { font-size: 18px; }
             .btn-add, .btn-apply-primary, .btn-applications { font-size: 11px; padding: 6px 14px; }
@@ -985,7 +971,6 @@
             .stat-label { font-size: 8px; }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: var(--light-gray); }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -1056,7 +1041,7 @@
         </div>
     </header>
 
-    <!-- ===== DESKTOP SIDEBAR - WITH WORKING URLS ===== -->
+    <!-- ===== DESKTOP SIDEBAR - SIMPLIFIED (NO BROKEN LINKS) ===== -->
     <div class="desktop-sidebar">
         <div class="sidebar-section">
             <div class="sidebar-title">Profile</div>
@@ -1069,12 +1054,8 @@
         <div class="sidebar-section">
             <div class="sidebar-title">Education</div>
             <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> My Education</a>
-            <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i> Education Hub</a>
-            <a href="/education/apply/"><i class="fas fa-pen"></i> Apply Now</a>
-            <a href="/education/my-applications/"><i class="fas fa-file-alt"></i> My Applications</a>
-            <!-- These now link back to the education hub with hashtags -->
-            <a href="/education/#bursaries"><i class="fas fa-hand-holding-heart"></i> Bursaries</a>
-            <a href="/education/#papers"><i class="fas fa-file-pdf"></i> Question Papers</a>
+            <a href="#" class="active"><i class="fas fa-graduation-cap"></i> Education Hub</a>
+            <!-- ===== BROKEN LINKS REMOVED ===== -->
         </div>
 
         <hr>
@@ -1084,15 +1065,6 @@
             <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
             <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
             <a href="/profile/documents/"><i class="fas fa-file-upload"></i> Documents</a>
-        </div>
-
-        <hr>
-
-        <div class="sidebar-section">
-            <div class="sidebar-title">Resources</div>
-            <a href="/education/#news"><i class="fas fa-newspaper"></i> Education News</a>
-            <a href="/education/#universities"><i class="fas fa-university"></i> Universities</a>
-            <a href="/education/#schools"><i class="fas fa-school"></i> Schools</a>
         </div>
     </div>
 
@@ -1109,11 +1081,11 @@
                 <a href="/" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <!-- ===== NEW: APPLY & APPLICATIONS BUTTONS ===== -->
-                <a href="/education/apply/" class="btn-apply-primary">
+                <!-- ===== WORKING URLs ===== -->
+                <a href="/api/education/apply/" class="btn-apply-primary">
                     <i class="fas fa-pen"></i> Apply Now
                 </a>
-                <a href="/education/my-applications/" class="btn-applications">
+                <a href="/api/education/my-applications/" class="btn-applications">
                     <i class="fas fa-file-alt"></i> My Applications
                 </a>
                 {% if is_admin %}
@@ -1197,14 +1169,14 @@
 
         <!-- Education Grid -->
         <div class="edu-grid" id="gridAll">
-            <!-- Bursaries -->
+            <!-- ===== BURSARIES ===== -->
             {% for bursary in bursaries %}
             <div class="edu-card-wrapper" 
                  data-type="bursary" 
                  data-title="{{ bursary.title|lower }}" 
                  data-field="{{ bursary.field_of_study }}" 
                  data-level="{{ bursary.level }}"
-                 data-url="{% url 'education_bursary_detail' bursary.id %}">
+                 data-url="/api/education/bursary/{{ bursary.id }}/">
                 <div class="card edu-card">
                     <div class="position-relative">
                         {% if bursary.provider_logo %}
@@ -1269,13 +1241,13 @@
             </div>
             {% endfor %}
 
-            <!-- Universities -->
+            <!-- ===== UNIVERSITIES ===== -->
             {% for uni in universities %}
             <div class="edu-card-wrapper" 
                  data-type="university" 
                  data-title="{{ uni.name|lower }}" 
                  data-field="{{ uni.province }}"
-                 data-url="{% url 'education_university_detail' uni.id %}">
+                 data-url="/api/education/university/{{ uni.id }}/">
                 <div class="card edu-card">
                     <div class="position-relative">
                         {% if uni.logo %}
@@ -1308,13 +1280,13 @@
             </div>
             {% endfor %}
 
-            <!-- Schools -->
+            <!-- ===== SCHOOLS ===== -->
             {% for school in schools %}
             <div class="edu-card-wrapper" 
                  data-type="school" 
                  data-title="{{ school.name|lower }}" 
                  data-field="{{ school.province }}"
-                 data-url="{% url 'education_school_detail' school.id %}">
+                 data-url="/api/education/school/{{ school.id }}/">
                 <div class="card edu-card">
                     <div class="position-relative">
                         <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); height:160px;">
@@ -1348,13 +1320,13 @@
             </div>
             {% endfor %}
 
-            <!-- Question Papers -->
+            <!-- ===== QUESTION PAPERS ===== -->
             {% for paper in papers %}
             <div class="edu-card-wrapper" 
                  data-type="paper" 
                  data-title="{{ paper.title|lower }}" 
                  data-field="{{ paper.subject.name|lower }}"
-                 data-url="{% url 'education_paper_detail' paper.id %}">
+                 data-url="/api/education/paper/{{ paper.id }}/">
                 <div class="card edu-card">
                     <div class="position-relative">
                         <div class="card-img-top d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); height:160px;">
@@ -1395,12 +1367,12 @@
             </div>
             {% endfor %}
 
-            <!-- News -->
+            <!-- ===== NEWS ===== -->
             {% for item in news %}
             <div class="edu-card-wrapper" 
                  data-type="news" 
                  data-title="{{ item.title|lower }}"
-                 data-url="{% url 'education_news_detail' item.id %}">
+                 data-url="/api/education/news/{{ item.id }}/">
                 <div class="card edu-card">
                     <div class="position-relative">
                         {% if item.image %}
@@ -1442,7 +1414,7 @@
     <div class="mobile-bottom-nav">
         <a href="/"><i class="fas fa-home"></i>Home</a>
         <a href="/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-        <a href="/education/" class="active"><i class="fas fa-graduation-cap"></i>Edu</a>
+        <a href="#" class="active"><i class="fas fa-graduation-cap"></i>Edu</a>
         <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
     </div>
 
@@ -1476,9 +1448,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ============================================================
-        // TOGGLE FUNCTIONS
-        // ============================================================
         function toggleProfileDropdown() {
             document.getElementById("profileMenu").classList.toggle("show");
         }
@@ -1501,9 +1470,6 @@
             }
         });
 
-        // ============================================================
-        // CARD CLICK
-        // ============================================================
         document.addEventListener("click", function(e) {
             const wrapper = e.target.closest(".edu-card-wrapper");
             if (wrapper) {
@@ -1517,9 +1483,6 @@
             }
         });
 
-        // ============================================================
-        // SHARE FUNCTIONS
-        // ============================================================
         function toggleShareDropdown(btn) {
             const dropdown = btn.parentElement.querySelector('.share-dropdown-content');
             document.querySelectorAll('.share-dropdown-content.show').forEach(d => {
@@ -1535,7 +1498,7 @@
         });
 
         function shareContent(type, id, title, platform) {
-            const url = `${window.location.origin}/education/${type}/${id}/`;
+            const url = `${window.location.origin}/api/education/${type}/${id}/`;
             const text = `${title} - ${url}`;
             let shareUrl = '';
 
@@ -1576,9 +1539,6 @@
             showToast('✅ Link copied to clipboard!', 'success');
         }
 
-        // ============================================================
-        // FILTER CONTENT
-        // ============================================================
         function filterContent() {
             const search = document.getElementById('eduSearch').value.toLowerCase();
             const gradeFilter = document.getElementById('eduGradeFilter').value;
@@ -1613,9 +1573,6 @@
             document.getElementById('statBursaries').textContent = visibleBursaries;
         }
 
-        // ============================================================
-        // TOAST
-        // ============================================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -1635,9 +1592,6 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
-        // ============================================================
-        // MODAL FUNCTIONS
-        // ============================================================
         let modalType = '';
         let modalInstance = null;
 
@@ -1902,9 +1856,6 @@
             });
         }
 
-        // ============================================================
-        // LOGIN/SIGNUP FUNCTIONS
-        // ============================================================
         function showLogin() {
             showToast('Please login to continue', 'info');
             window.location.href = '/login/';
@@ -1915,9 +1866,6 @@
             window.location.href = '/signup/';
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             filterContent();
 

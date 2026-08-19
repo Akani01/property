@@ -207,7 +207,176 @@ class JobAlertAdmin(admin.ModelAdmin):
     get_applicant.short_description = 'Applicant'
     get_applicant.admin_order_field = 'applicant__first_name'
 
-# Register all models with their custom admin classes
+# =============================================================
+# NEW ADMIN CLASSES FOR POST AND MESSAGES
+# =============================================================
+
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'post_type', 'visibility', 'is_published', 'created_at', 'total_engagement')
+    list_filter = ('post_type', 'visibility', 'is_published', 'created_at')
+    search_fields = ('title', 'content', 'author__username', 'author__email', 'tags')
+    readonly_fields = ('created_at', 'updated_at', 'edited_at', 'views', 'likes', 'dislikes', 'shares', 'comment_count', 'average_rating', 'rating_count')
+    list_per_page = 25
+    filter_horizontal = ('likes', 'dislikes')  # Many-to-many fields
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('author', 'company', 'post_type', 'title', 'content')
+        }),
+        ('Media & Attachments', {
+            'fields': ('image', 'video', 'video_url')
+        }),
+        ('Visibility & Tags', {
+            'fields': ('visibility', 'tags')
+        }),
+        ('Engagement Metrics', {
+            'fields': ('views', 'likes', 'dislikes', 'shares', 'comment_count', 'average_rating', 'rating_count'),
+            'classes': ('collapse',)
+        }),
+        ('Publishing', {
+            'fields': ('is_published', 'is_edited', 'created_at', 'updated_at', 'edited_at')
+        })
+    )
+
+    def total_engagement(self, obj):
+        return obj.total_engagement()
+    total_engagement.short_description = 'Total Engagement'
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('get_content_preview', 'author', 'post_or_job', 'created_at', 'is_edited')
+    list_filter = ('created_at', 'is_edited')
+    search_fields = ('content', 'author__username', 'author__email', 'post__title', 'job_listing__title')
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 30
+    fieldsets = (
+        (None, {
+            'fields': ('post', 'job_listing', 'author', 'content', 'parent_comment')
+        }),
+        ('System', {
+            'fields': ('is_edited', 'created_at', 'updated_at')
+        })
+    )
+
+    def get_content_preview(self, obj):
+        return obj.content[:50] + ('...' if len(obj.content) > 50 else '')
+    get_content_preview.short_description = 'Content Preview'
+
+    def post_or_job(self, obj):
+        if obj.post:
+            return f"Post: {obj.post.title}"
+        elif obj.job_listing:
+            return f"Job: {obj.job_listing.title}"
+        return "Orphan"
+    post_or_job.short_description = 'Attached To'
+
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('user__username', 'post__title')
+    readonly_fields = ('created_at',)
+
+class PostViewAdmin(admin.ModelAdmin):
+    list_display = ('post', 'user', 'ip_address', 'viewed_at')
+    list_filter = ('viewed_at',)
+    search_fields = ('post__title', 'user__username', 'ip_address')
+    readonly_fields = ('viewed_at',)
+
+# Conversation and Messages
+class MessageRecipientInline(admin.TabularInline):
+    model = MessageRecipient
+    extra = 1
+    fields = ('recipient', 'is_read', 'read_at')
+    readonly_fields = ('read_at',)
+
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'conversation', 'sender', 'message_type', 'content_preview', 'is_read', 'created_at')
+    list_filter = ('message_type', 'is_read', 'created_at')
+    search_fields = ('content', 'sender__username', 'sender__email', 'conversation__id')
+    readonly_fields = ('id', 'created_at', 'updated_at', 'delivered_at', 'read_at')
+    inlines = [MessageRecipientInline]
+    list_per_page = 30
+    fieldsets = (
+        (None, {
+            'fields': ('conversation', 'sender', 'content', 'message_type')
+        }),
+        ('File Attachment', {
+            'fields': ('file', 'file_name', 'file_size', 'file_mime_type')
+        }),
+        ('Threading', {
+            'fields': ('parent_message', 'is_forwarded', 'original_sender')
+        }),
+        ('Status', {
+            'fields': ('is_read', 'delivered_at', 'read_at', 'created_at', 'updated_at')
+        })
+    )
+
+    def content_preview(self, obj):
+        return obj.content[:50] + ('...' if len(obj.content) > 50 else '') if obj.content else '(No text)'
+    content_preview.short_description = 'Content Preview'
+
+class ConversationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'participant_list', 'created_at', 'updated_at', 'is_active')
+    list_filter = ('is_active', 'created_at', 'updated_at')
+    search_fields = ('id', 'participants__username', 'participants__email')
+    readonly_fields = ('id', 'created_at', 'updated_at')
+    filter_horizontal = ('participants',)
+    list_per_page = 30
+    fieldsets = (
+        (None, {
+            'fields': ('participants', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        })
+    )
+
+    def participant_list(self, obj):
+        return ", ".join([user.username for user in obj.participants.all()])
+    participant_list.short_description = 'Participants'
+
+class UserStatusAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_online', 'last_seen', 'typing_to')
+    list_filter = ('is_online', 'last_seen')
+    search_fields = ('user__username', 'user__email')
+    readonly_fields = ('last_seen',)
+
+# Register new models
+admin.site.register(Post, PostAdmin)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Rating, RatingAdmin)
+admin.site.register(PostView, PostViewAdmin)
+admin.site.register(Conversation, ConversationAdmin)
+admin.site.register(Message, MessageAdmin)
+admin.site.register(MessageRecipient)  # standalone, though also used as inline
+admin.site.register(UserStatus, UserStatusAdmin)
+
+# Optionally register Video and VideoComment (if you want them too)
+class VideoAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'privacy', 'is_published', 'views', 'created_at')
+    list_filter = ('privacy', 'is_published', 'created_at')
+    search_fields = ('title', 'description', 'author__username', 'author__email')
+    readonly_fields = ('views', 'shares', 'watch_time', 'average_watch_percentage', 'created_at', 'updated_at')
+    filter_horizontal = ('likes',)
+
+class VideoCommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'video', 'author', 'content_preview', 'created_at', 'is_active')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('content', 'author__username', 'author__email', 'video__title')
+    readonly_fields = ('id', 'created_at', 'updated_at')
+    filter_horizontal = ('likes',)
+
+    def content_preview(self, obj):
+        return obj.content[:50] + ('...' if len(obj.content) > 50 else '')
+    content_preview.short_description = 'Content'
+
+# Uncomment if you want Video and VideoComment in admin:
+# admin.site.register(Video, VideoAdmin)
+# admin.site.register(VideoComment, VideoCommentAdmin)
+
+# =============================================================
+# END NEW ADMIN REGISTRATIONS
+# =============================================================
+
+# Register all models with their custom admin classes (existing)
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(ApplicantProfile, ApplicantProfileAdmin)
 admin.site.register(JobListing, JobListingAdmin)
