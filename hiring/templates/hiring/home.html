@@ -3615,11 +3615,41 @@
     
     <!-- ===== MOBILE BOTTOM NAV ===== -->
     <nav id="mobileBottomNav" class="mobile-bottom-nav">
-        <a href="#" onclick="switchTab('properties')" class="active"><i class="fas fa-home"></i><span>Property</span></a>
-        <a href="#" onclick="switchTab('reels')"><i class="fas fa-video"></i><span>Reels</span></a>
-        <a href="#" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i><span>Feed</span></a>
-        <a href="#" onclick="switchTab('maintenance')"><i class="fas fa-tools"></i><span>Maint.</span></a>
-        <a href="#" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
+
+        <a href="#" onclick="switchTab('properties')" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Property</span>
+        </a>
+
+        <a href="#" onclick="switchTab('reels')" class="nav-item">
+            <i class="fas fa-video"></i>
+            <span>Reels</span>
+        </a>
+
+        <!-- CENTER -->
+        <div class="maintenance-option" onclick="switchTab('maintenance')">
+
+            <span class="maintenance-title">Wash Car</span>
+
+            <div class="car-btn">  
+                <i class="fas fa-car"></i>
+                <span class="car-pulse"></span>
+            </div>
+
+            <span class="maintenance-subtitle">Maint.</span>
+
+        </div>
+
+        <a href="#" onclick="switchTab('feed')" class="nav-item">
+            <i class="fas fa-newspaper"></i>
+            <span>Feed</span>
+        </a>
+
+        <a href="#" onclick="switchTab('jobs')" class="nav-item">
+            <i class="fas fa-briefcase"></i>
+            <span>Jobs</span>
+        </a>
+
     </nav>
     <!-- ===== FOOTER ===== -->
     <footer class="site-footer">
@@ -7125,6 +7155,246 @@
             }
             .edu-card .edu-actions {
                 justify-content: flex-end;
+            }
+        }
+
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+
+            height: 70px;
+
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            align-items: center;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-radius: 22px;
+
+            border: 1px solid rgba(0, 0, 0, 0.06);
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.05);
+
+            padding: 5px 6px;
+
+            z-index: 9999;
+        }
+
+
+        /* SIDE NAV ITEMS */
+
+        .nav-item {
+            height: 60px;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 4px;
+
+            text-decoration: none;
+
+            color: #777;
+
+            font-size: 10px;
+
+            transition: all 0.2s ease;
+        }
+
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+
+        .nav-item.active {
+            color: #28a745;
+        }
+
+
+        /* ===============================
+        CENTER MAINTENANCE
+        ================================ */
+
+        .maintenance-option {
+            height: 60px;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            line-height: 1;
+        }
+
+
+        /* WASH CAR TITLE */
+
+        .maintenance-title {
+            font-size: 10px;
+
+            font-weight: 600;
+
+            color: #222;
+
+            margin-bottom: 4px;
+        }
+
+
+        /* GREEN CAR */
+
+        .car-btn {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #28a745;
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+
+            box-shadow:
+                0 4px 10px rgba(40, 167, 69, 0.28);
+
+            transition: transform 0.2s ease;
+        }
+
+
+        .maintenance-option:hover .car-btn {
+            transform: scale(1.08);
+        }
+
+
+        /* MAINT */
+
+        .maintenance-subtitle {
+            font-size: 8px;
+
+            color: #888;
+
+            margin-top: 4px;
+        }
+
+
+        /* ===============================
+        SMALL PHONES
+        ================================ */
+
+        @media (max-width: 480px) {
+
+            .mobile-bottom-nav {
+                left: 7px;
+                right: 7px;
+                bottom: 7px;
+
+                height: 68px;
+
+                border-radius: 20px;
+            }
+
+            .nav-item {
+                font-size: 9px;
+            }
+
+            .nav-item i {
+                font-size: 17px;
+            }
+
+            .car-btn {
+                width: 34px;
+                height: 34px;
+            }
+
+            .maintenance-title {
+                font-size: 9px;
+            }
+
+            .maintenance-subtitle {
+                font-size: 8px;
+            }
+        }
+
+        .car-btn {
+            position: relative;
+
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #28a745;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+
+            box-shadow:
+                0 4px 10px rgba(40, 167, 69, 0.28);
+        }
+
+
+        /* LITTLE GREEN SIGNAL DOT */
+
+        .car-pulse {
+            position: absolute;
+
+            width: 8px;
+            height: 8px;
+
+            background: #39ff14;
+
+            border-radius: 50%;
+
+            top: -2px;
+            right: -2px;
+
+            box-shadow:
+                0 0 0 0 rgba(57, 255, 20, 0.7);
+
+            animation: carPulse 1.6s infinite;
+        }
+
+
+        @keyframes carPulse {
+
+            0% {
+                transform: scale(0.9);
+                box-shadow:
+                    0 0 0 0 rgba(57, 255, 20, 0.7);
+            }
+
+            50% {
+                transform: scale(1.2);
+                box-shadow:
+                    0 0 0 6px rgba(57, 255, 20, 0);
+            }
+
+            100% {
+                transform: scale(0.9);
+                box-shadow:
+                    0 0 0 0 rgba(57, 255, 20, 0);
             }
         }
     </style>
