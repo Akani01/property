@@ -132,7 +132,7 @@ GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')  # ← ADD THI
 
 
 # PWA settings
-PWA_APP_NAME = 'Tolleya'
+PWA_APP_NAME = 'OppoGlobe'
 PWA_APP_DESCRIPTION = "Find your dream property"
 PWA_APP_THEME_COLOR = '#c62828'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
