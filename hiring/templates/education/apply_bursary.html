@@ -581,11 +581,31 @@
             font-size: 14px;
         }
 
-        .form-actions {
+        /* ===== STEP BUTTONS ===== */
+        .step-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
+            justify-content: space-between;
+            gap: 10px;
             flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .step-buttons .btn-outline-custom,
+        .step-buttons .btn-primary-custom,
+        .step-buttons .btn-success-custom {
+            flex: 0 1 auto;
+        }
+
+        @media (max-width: 576px) {
+            .step-buttons {
+                flex-direction: column;
+            }
+            .step-buttons .btn-outline-custom,
+            .step-buttons .btn-primary-custom,
+            .step-buttons .btn-success-custom {
+                flex: 1 1 100%;
+                width: 100%;
+            }
         }
 
         .btn-primary-custom {
@@ -600,7 +620,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            flex: 1;
             justify-content: center;
             min-width: 120px;
         }
@@ -624,7 +643,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            flex: 1;
             justify-content: center;
             min-width: 120px;
         }
@@ -646,7 +664,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            flex: 1;
             justify-content: center;
             min-width: 120px;
         }
@@ -656,6 +673,34 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
             color: white;
+        }
+
+        /* ===== Form actions (step 5) ===== */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-actions .btn-outline-custom,
+        .form-actions .btn-primary-custom,
+        .form-actions .btn-success-custom {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        @media (max-width: 576px) {
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions .btn-outline-custom,
+            .form-actions .btn-primary-custom,
+            .form-actions .btn-success-custom {
+                flex: none;
+                width: 100%;
+            }
         }
 
         .preview-section {
@@ -708,8 +753,6 @@
 
         @media (max-width: 576px) {
             .preview-section .preview-grid { grid-template-columns: 1fr; }
-            .form-actions { flex-direction: column; }
-            .btn-primary-custom, .btn-outline-custom, .btn-success-custom { flex: none; width: 100%; }
         }
 
         .toast-container {
@@ -954,8 +997,8 @@
                     </div>
                     {% endif %}
 
-                    <div class="d-flex justify-content-end mt-3">
-                        <button type="button" class="btn-primary-custom" onclick="goToStep(2)" style="flex:none;">
+                    <div class="step-buttons">
+                        <button type="button" class="btn-primary-custom" onclick="goToStep(2)" style="flex:1;">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1036,11 +1079,11 @@
                         <textarea name="motivation" class="form-control" rows="3" required placeholder="Why do you want this bursary? Tell us about yourself and your goals...">{{ draft_data.motivation|default:'' }}</textarea>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn-outline-custom" onclick="goToStep(1)" style="flex:none;">
+                    <div class="step-buttons">
+                        <button type="button" class="btn-outline-custom" onclick="goToStep(1)">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button type="button" class="btn-primary-custom" onclick="goToStep(3)" style="flex:none;">
+                        <button type="button" class="btn-primary-custom" onclick="goToStep(3)">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1074,11 +1117,11 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn-outline-custom" onclick="goToStep(2)" style="flex:none;">
+                    <div class="step-buttons">
+                        <button type="button" class="btn-outline-custom" onclick="goToStep(2)">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button type="button" class="btn-primary-custom" onclick="goToStep(4)" style="flex:none;">
+                        <button type="button" class="btn-primary-custom" onclick="goToStep(4)">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1146,11 +1189,11 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn-outline-custom" onclick="goToStep(3)" style="flex:none;">
+                    <div class="step-buttons">
+                        <button type="button" class="btn-outline-custom" onclick="goToStep(3)">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button type="button" class="btn-primary-custom" onclick="goToStep(5)" style="flex:none;">
+                        <button type="button" class="btn-primary-custom" onclick="goToStep(5)">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1179,13 +1222,13 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-outline-custom" onclick="goToStep(4)" style="flex:none;">
+                        <button type="button" class="btn-outline-custom" onclick="goToStep(4)">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button type="submit" name="action" value="save" class="btn-primary-custom" style="flex:1;">
+                        <button type="submit" name="action" value="save" class="btn-primary-custom">
                             <i class="fas fa-save"></i> Save Draft
                         </button>
-                        <button type="submit" name="action" value="submit" class="btn-success-custom" style="flex:1;">
+                        <button type="submit" name="action" value="submit" class="btn-success-custom">
                             <i class="fas fa-paper-plane"></i> Submit Application
                         </button>
                     </div>

@@ -27,7 +27,11 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             background: #f8f9fa;
@@ -39,9 +43,18 @@
             overflow-x: hidden;
         }
 
-        a { text-decoration: none; color: inherit; }
-        button { cursor: pointer; border: none; background: none; }
-        img { max-width: 100%; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        img {
+            max-width: 100%;
+        }
 
         /* ===== HEADER ===== */
         .header {
@@ -50,7 +63,7 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(255,255,255,0.92);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
@@ -62,7 +75,10 @@
         }
 
         @media (min-width: 768px) {
-            .header { padding: 0 24px; height: 64px; }
+            .header {
+                padding: 0 24px;
+                height: 64px;
+            }
         }
 
         .header-brand {
@@ -75,12 +91,19 @@
         }
 
         @media (min-width: 768px) {
-            .header-brand { font-size: 20px; gap: 10px; }
+            .header-brand {
+                font-size: 20px;
+                gap: 10px;
+            }
         }
 
-        .header-brand img { height: 28px; }
+        .header-brand img {
+            height: 28px;
+        }
         @media (min-width: 768px) {
-            .header-brand img { height: 36px; }
+            .header-brand img {
+                height: 36px;
+            }
         }
 
         .header-actions {
@@ -90,7 +113,9 @@
         }
 
         @media (min-width: 768px) {
-            .header-actions { gap: 8px; }
+            .header-actions {
+                gap: 8px;
+            }
         }
 
         .header-actions .btn-icon {
@@ -130,7 +155,11 @@
         }
 
         @media (min-width: 576px) {
-            .user-badge { display: inline-block; padding: 4px 14px; font-size: 12px; }
+            .user-badge {
+                display: inline-block;
+                padding: 4px 14px;
+                font-size: 12px;
+            }
         }
 
         .avatar {
@@ -150,12 +179,16 @@
         }
 
         @media (min-width: 768px) {
-            .avatar { width: 36px; height: 36px; font-size: 14px; }
+            .avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
         }
 
         .avatar:hover {
             transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
         }
 
         .avatar.business {
@@ -163,8 +196,10 @@
         }
 
         /* ===== DROPDOWNS ===== */
-        .dropdown-container { position: relative; }
-        
+        .dropdown-container {
+            position: relative;
+        }
+
         .dropdown-menu-custom {
             position: absolute;
             top: calc(100% + 8px);
@@ -172,7 +207,7 @@
             min-width: 200px;
             background: white;
             border-radius: var(--radius);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
             padding: 8px 0;
             opacity: 0;
             visibility: hidden;
@@ -183,7 +218,9 @@
         }
 
         @media (min-width: 768px) {
-            .dropdown-menu-custom { min-width: 220px; }
+            .dropdown-menu-custom {
+                min-width: 220px;
+            }
         }
 
         .dropdown-menu-custom.show {
@@ -226,7 +263,10 @@
         }
 
         @media (min-width: 768px) {
-            .dropdown-menu-custom .dropdown-item i { width: 20px; font-size: 16px; }
+            .dropdown-menu-custom .dropdown-item i {
+                width: 20px;
+                font-size: 16px;
+            }
         }
 
         .dropdown-menu-custom .dropdown-divider {
@@ -236,7 +276,9 @@
         }
 
         @media (min-width: 768px) {
-            .dropdown-menu-custom .dropdown-divider { margin: 6px 16px; }
+            .dropdown-menu-custom .dropdown-divider {
+                margin: 6px 16px;
+            }
         }
 
         /* ===== SIDEBAR NAV ===== */
@@ -261,7 +303,9 @@
             .sidebar-nav {
                 display: flex !important;
             }
-            body { padding-left: 80px; }
+            body {
+                padding-left: 80px;
+            }
         }
 
         .sidebar-nav .nav-link {
@@ -315,7 +359,9 @@
         }
 
         @media (min-width: 768px) {
-            .main-layout { padding: 0 20px; }
+            .main-layout {
+                padding: 0 20px;
+            }
         }
 
         /* ===== PAGE HEADER ===== */
@@ -347,18 +393,25 @@
         }
 
         @media (min-width: 576px) {
-            .page-header h1 { font-size: 20px; }
+            .page-header h1 {
+                font-size: 20px;
+            }
         }
 
         @media (min-width: 768px) {
-            .page-header h1 { font-size: 24px; gap: 12px; }
+            .page-header h1 {
+                font-size: 24px;
+                gap: 12px;
+            }
         }
 
-        .page-header h1 i { color: var(--primary); }
-        .page-header .subtitle { 
-            color: var(--gray); 
-            font-size: 12px; 
-            font-weight: 400; 
+        .page-header h1 i {
+            color: var(--primary);
+        }
+        .page-header .subtitle {
+            color: var(--gray);
+            font-size: 12px;
+            font-weight: 400;
             display: block;
             width: 100%;
         }
@@ -388,7 +441,9 @@
         }
 
         @media (min-width: 576px) {
-            .page-header .btn-back { width: auto; }
+            .page-header .btn-back {
+                width: auto;
+            }
         }
 
         .page-header .btn-back:hover {
@@ -406,7 +461,9 @@
         }
 
         @media (min-width: 576px) {
-            .property-gallery { gap: 10px; }
+            .property-gallery {
+                gap: 10px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -421,18 +478,40 @@
             height: 200px;
             background: var(--light-gray);
             overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .property-gallery .main-image:hover::after {
+            content: '\f065';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.35);
+            color: white;
+            font-size: 32px;
+            transition: var(--transition);
         }
 
         @media (min-width: 576px) {
-            .property-gallery .main-image { height: 250px; }
+            .property-gallery .main-image {
+                height: 250px;
+            }
         }
 
         @media (min-width: 768px) {
-            .property-gallery .main-image { height: 350px; }
+            .property-gallery .main-image {
+                height: 350px;
+            }
         }
 
         @media (min-width: 992px) {
-            .property-gallery .main-image { height: 400px; }
+            .property-gallery .main-image {
+                height: 400px;
+            }
         }
 
         .property-gallery .main-image img {
@@ -448,7 +527,9 @@
         }
 
         @media (min-width: 576px) {
-            .property-gallery .thumb-grid { gap: 10px; }
+            .property-gallery .thumb-grid {
+                gap: 10px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -464,24 +545,176 @@
             overflow: hidden;
             cursor: pointer;
             transition: var(--transition);
+            position: relative;
+        }
+        .property-gallery .thumb-grid .thumb:hover::after {
+            content: '\f065';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 20px;
         }
 
         @media (min-width: 576px) {
-            .property-gallery .thumb-grid .thumb { height: 100px; }
+            .property-gallery .thumb-grid .thumb {
+                height: 100px;
+            }
         }
 
         @media (min-width: 768px) {
-            .property-gallery .thumb-grid .thumb { height: 169px; }
+            .property-gallery .thumb-grid .thumb {
+                height: 169px;
+            }
         }
 
         .property-gallery .thumb-grid .thumb:hover {
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         .property-gallery .thumb-grid .thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* ===== LIGHTBOX / FULLSCREEN VIEWER ===== */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 16px;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .lightbox-overlay .lightbox-close {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            color: white;
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.15);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: none;
+            z-index: 10000;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .lightbox-overlay .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        .lightbox-overlay .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 32px;
+            background: rgba(255, 255, 255, 0.12);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .lightbox-overlay .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        .lightbox-overlay .lightbox-nav.prev {
+            left: 16px;
+        }
+        .lightbox-overlay .lightbox-nav.next {
+            right: 16px;
+        }
+        .lightbox-overlay .lightbox-counter {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 18px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10000;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .lightbox-overlay .lightbox-image-wrap {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100vw;
+            max-height: 100vh;
+            padding: 60px 20px 80px;
+        }
+        .lightbox-overlay .lightbox-image-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        @media (min-width: 768px) {
+            .lightbox-overlay .lightbox-nav {
+                width: 56px;
+                height: 56px;
+                font-size: 36px;
+            }
+            .lightbox-overlay .lightbox-nav.prev {
+                left: 24px;
+            }
+            .lightbox-overlay .lightbox-nav.next {
+                right: 24px;
+            }
+            .lightbox-overlay .lightbox-close {
+                top: 24px;
+                right: 28px;
+                font-size: 32px;
+                width: 52px;
+                height: 52px;
+            }
+            .lightbox-overlay .lightbox-counter {
+                bottom: 32px;
+                font-size: 15px;
+                padding: 8px 24px;
+            }
         }
 
         /* ===== INFO CARDS ===== */
@@ -492,11 +725,16 @@
         }
 
         @media (min-width: 768px) {
-            .info-grid { gap: 20px; }
+            .info-grid {
+                gap: 20px;
+            }
         }
 
         @media (min-width: 992px) {
-            .info-grid { grid-template-columns: 2fr 1fr; gap: 24px; }
+            .info-grid {
+                grid-template-columns: 2fr 1fr;
+                gap: 24px;
+            }
         }
 
         .info-card {
@@ -508,11 +746,16 @@
         }
 
         @media (min-width: 768px) {
-            .info-card { padding: 20px; margin-bottom: 20px; }
+            .info-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
         }
 
         @media (min-width: 992px) {
-            .info-card { padding: 24px; }
+            .info-card {
+                padding: 24px;
+            }
         }
 
         .info-card .card-title {
@@ -525,10 +768,16 @@
         }
 
         @media (min-width: 768px) {
-            .info-card .card-title { font-size: 18px; margin-bottom: 16px; gap: 10px; }
+            .info-card .card-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+                gap: 10px;
+            }
         }
 
-        .info-card .card-title i { color: var(--primary); }
+        .info-card .card-title i {
+            color: var(--primary);
+        }
 
         .info-card .info-row {
             display: flex;
@@ -547,10 +796,14 @@
         }
 
         @media (min-width: 768px) {
-            .info-card .info-row { padding: 10px 0; }
+            .info-card .info-row {
+                padding: 10px 0;
+            }
         }
 
-        .info-card .info-row:last-child { border-bottom: none; }
+        .info-card .info-row:last-child {
+            border-bottom: none;
+        }
 
         .info-card .info-row .label {
             font-weight: 500;
@@ -567,7 +820,9 @@
         }
 
         @media (min-width: 768px) {
-            .info-card .info-row .label { width: 140px; }
+            .info-card .info-row .label {
+                width: 140px;
+            }
         }
 
         .info-card .info-row .value {
@@ -577,7 +832,9 @@
         }
 
         @media (min-width: 576px) {
-            .info-card .info-row .value { font-size: 14px; }
+            .info-card .info-row .value {
+                font-size: 14px;
+            }
         }
 
         .info-card .info-row .value .badge-status {
@@ -595,11 +852,26 @@
             }
         }
 
-        .badge-status.available { background: #e8f5e9; color: #2e7d32; }
-        .badge-status.booked { background: #fff3e0; color: #e65100; }
-        .badge-status.pending { background: #e3f2fd; color: #1565c0; }
-        .badge-status.sold { background: #fce4ec; color: #c62828; }
-        .badge-status.maintenance { background: #f5f5f5; color: #616161; }
+        .badge-status.available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .badge-status.booked {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .badge-status.pending {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        .badge-status.sold {
+            background: #fce4ec;
+            color: #c62828;
+        }
+        .badge-status.maintenance {
+            background: #f5f5f5;
+            color: #616161;
+        }
 
         .feature-tags {
             display: flex;
@@ -609,7 +881,10 @@
         }
 
         @media (min-width: 768px) {
-            .feature-tags { gap: 8px; margin-top: 8px; }
+            .feature-tags {
+                gap: 8px;
+                margin-top: 8px;
+            }
         }
 
         .feature-tags .tag {
@@ -621,11 +896,14 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            border: 1px solid rgba(26,115,232,0.15);
+            border: 1px solid rgba(26, 115, 232, 0.15);
         }
 
         @media (min-width: 768px) {
-            .feature-tags .tag { padding: 5px 16px; font-size: 13px; }
+            .feature-tags .tag {
+                padding: 5px 16px;
+                font-size: 13px;
+            }
         }
 
         .feature-tags .tag i {
@@ -645,11 +923,17 @@
         }
 
         @media (min-width: 576px) {
-            .location-map-container { height: 250px; margin-top: 10px; }
+            .location-map-container {
+                height: 250px;
+                margin-top: 10px;
+            }
         }
 
         @media (min-width: 768px) {
-            .location-map-container { height: 300px; margin-top: 12px; }
+            .location-map-container {
+                height: 300px;
+                margin-top: 12px;
+            }
         }
 
         .location-map-container iframe {
@@ -677,7 +961,10 @@
         }
 
         @media (min-width: 768px) {
-            .location-map-container .map-placeholder i { font-size: 48px; margin-bottom: 12px; }
+            .location-map-container .map-placeholder i {
+                font-size: 48px;
+                margin-bottom: 12px;
+            }
         }
 
         .location-map-container .map-placeholder .address-text {
@@ -687,7 +974,10 @@
         }
 
         @media (min-width: 768px) {
-            .location-map-container .map-placeholder .address-text { font-size: 14px; max-width: 80%; }
+            .location-map-container .map-placeholder .address-text {
+                font-size: 14px;
+                max-width: 80%;
+            }
         }
 
         .map-actions {
@@ -729,7 +1019,9 @@
         }
 
         @media (min-width: 768px) {
-            .map-actions .btn-map { padding: 8px 20px; }
+            .map-actions .btn-map {
+                padding: 8px 20px;
+            }
         }
 
         .btn-map-primary {
@@ -740,7 +1032,7 @@
         .btn-map-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
         }
 
         .btn-map-secondary {
@@ -760,7 +1052,7 @@
         .btn-map-success:hover {
             background: #2d9248;
             transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(52,168,83,0.3);
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
         }
 
         /* ===== SIDEBAR CARD ===== */
@@ -773,7 +1065,10 @@
         }
 
         @media (min-width: 768px) {
-            .sidebar-card { padding: 20px; margin-bottom: 20px; }
+            .sidebar-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
         }
 
         @media (min-width: 992px) {
@@ -791,11 +1086,15 @@
         }
 
         @media (min-width: 576px) {
-            .sidebar-card .price { font-size: 28px; }
+            .sidebar-card .price {
+                font-size: 28px;
+            }
         }
 
         @media (min-width: 768px) {
-            .sidebar-card .price { font-size: 32px; }
+            .sidebar-card .price {
+                font-size: 32px;
+            }
         }
 
         .sidebar-card .price small {
@@ -805,7 +1104,9 @@
         }
 
         @media (min-width: 768px) {
-            .sidebar-card .price small { font-size: 16px; }
+            .sidebar-card .price small {
+                font-size: 16px;
+            }
         }
 
         .sidebar-card .action-btns {
@@ -816,7 +1117,10 @@
         }
 
         @media (min-width: 768px) {
-            .sidebar-card .action-btns { gap: 10px; margin-top: 16px; }
+            .sidebar-card .action-btns {
+                gap: 10px;
+                margin-top: 16px;
+            }
         }
 
         .sidebar-card .action-btns .btn {
@@ -899,7 +1203,7 @@
         .social-btn:hover {
             transform: translateY(-2px);
             color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .social-btn.message {
@@ -909,11 +1213,11 @@
         }
 
         .social-btn.message:hover {
-            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
         }
 
         .social-btn.message .badge-internal {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 2px 10px;
             border-radius: 20px;
             font-size: 9px;
@@ -921,62 +1225,140 @@
             margin-left: 4px;
         }
 
-        .social-btn.whatsapp { background: #25D366; }
-        .social-btn.whatsapp:hover { background: #1da851; }
+        .social-btn.whatsapp {
+            background: #25D366;
+        }
+        .social-btn.whatsapp:hover {
+            background: #1da851;
+        }
 
-        .social-btn.phone { background: #34a853; }
-        .social-btn.phone:hover { background: #2d9248; }
+        .social-btn.phone {
+            background: #34a853;
+        }
+        .social-btn.phone:hover {
+            background: #2d9248;
+        }
 
-        .social-btn.email { background: #ea4335; }
-        .social-btn.email:hover { background: #d33426; }
+        .social-btn.email {
+            background: #ea4335;
+        }
+        .social-btn.email:hover {
+            background: #d33426;
+        }
 
-        .social-btn.telegram { background: #0088cc; }
-        .social-btn.telegram:hover { background: #006699; }
+        .social-btn.telegram {
+            background: #0088cc;
+        }
+        .social-btn.telegram:hover {
+            background: #006699;
+        }
 
-        .social-btn.linkedin { background: #0A66C2; }
-        .social-btn.linkedin:hover { background: #0853a0; }
+        .social-btn.linkedin {
+            background: #0A66C2;
+        }
+        .social-btn.linkedin:hover {
+            background: #0853a0;
+        }
 
-        .social-btn.facebook { background: #1877F2; }
-        .social-btn.facebook:hover { background: #0d65d9; }
+        .social-btn.facebook {
+            background: #1877F2;
+        }
+        .social-btn.facebook:hover {
+            background: #0d65d9;
+        }
 
-        .social-btn.instagram { background: #E4405F; }
-        .social-btn.instagram:hover { background: #c1354a; }
+        .social-btn.instagram {
+            background: #E4405F;
+        }
+        .social-btn.instagram:hover {
+            background: #c1354a;
+        }
 
-        .social-btn.twitter { background: #000000; }
-        .social-btn.twitter:hover { background: #1a1a1a; }
+        .social-btn.twitter {
+            background: #000000;
+        }
+        .social-btn.twitter:hover {
+            background: #1a1a1a;
+        }
 
-        .social-btn.youtube { background: #FF0000; }
-        .social-btn.youtube:hover { background: #cc0000; }
+        .social-btn.youtube {
+            background: #FF0000;
+        }
+        .social-btn.youtube:hover {
+            background: #cc0000;
+        }
 
-        .social-btn.tiktok { background: #000000; }
-        .social-btn.tiktok:hover { background: #1a1a1a; }
+        .social-btn.tiktok {
+            background: #000000;
+        }
+        .social-btn.tiktok:hover {
+            background: #1a1a1a;
+        }
 
-        .social-btn.property24 { background: #ff6b00; }
-        .social-btn.property24:hover { background: #e55e00; }
+        .social-btn.property24 {
+            background: #ff6b00;
+        }
+        .social-btn.property24:hover {
+            background: #e55e00;
+        }
 
-        .social-btn.privateproperty { background: #004d99; }
-        .social-btn.privateproperty:hover { background: #003366; }
+        .social-btn.privateproperty {
+            background: #004d99;
+        }
+        .social-btn.privateproperty:hover {
+            background: #003366;
+        }
 
-        .social-btn.zillow { background: #006aff; }
-        .social-btn.zillow:hover { background: #0055cc; }
+        .social-btn.zillow {
+            background: #006aff;
+        }
+        .social-btn.zillow:hover {
+            background: #0055cc;
+        }
 
-        .social-btn.realtor { background: #d2222a; }
-        .social-btn.realtor:hover { background: #b01a22; }
+        .social-btn.realtor {
+            background: #d2222a;
+        }
+        .social-btn.realtor:hover {
+            background: #b01a22;
+        }
 
-        .social-btn.signal { background: #3a76f0; }
-        .social-btn.signal:hover { background: #2a5fd4; }
+        .social-btn.signal {
+            background: #3a76f0;
+        }
+        .social-btn.signal:hover {
+            background: #2a5fd4;
+        }
 
-        .social-btn.viber { background: #7360f2; }
-        .social-btn.viber:hover { background: #5a4ad4; }
+        .social-btn.viber {
+            background: #7360f2;
+        }
+        .social-btn.viber:hover {
+            background: #5a4ad4;
+        }
 
-        .social-btn.wechat { background: #07C160; }
-        .social-btn.wechat:hover { background: #06a854; }
+        .social-btn.wechat {
+            background: #07C160;
+        }
+        .social-btn.wechat:hover {
+            background: #06a854;
+        }
 
-        .social-btn.line { background: #00b900; }
-        .social-btn.line:hover { background: #009900; }
+        .social-btn.line {
+            background: #00b900;
+        }
+        .social-btn.line:hover {
+            background: #009900;
+        }
 
-        .social-btn.kakao { background: #FEE500; color: #000; }
-        .social-btn.kakao:hover { background: #e6cc00; color: #000; }
+        .social-btn.kakao {
+            background: #FEE500;
+            color: #000;
+        }
+        .social-btn.kakao:hover {
+            background: #e6cc00;
+            color: #000;
+        }
 
         .contact-methods {
             display: flex;
@@ -1028,11 +1410,15 @@
         }
 
         @media (min-width: 576px) {
-            .stats-grid { gap: 10px; }
+            .stats-grid {
+                gap: 10px;
+            }
         }
 
         @media (min-width: 768px) {
-            .stats-grid { gap: 12px; }
+            .stats-grid {
+                gap: 12px;
+            }
         }
 
         .stats-grid .stat-item {
@@ -1043,7 +1429,9 @@
         }
 
         @media (min-width: 768px) {
-            .stats-grid .stat-item { padding: 12px; }
+            .stats-grid .stat-item {
+                padding: 12px;
+            }
         }
 
         .stats-grid .stat-item .stat-number {
@@ -1052,7 +1440,9 @@
         }
 
         @media (min-width: 768px) {
-            .stats-grid .stat-item .stat-number { font-size: 24px; }
+            .stats-grid .stat-item .stat-number {
+                font-size: 24px;
+            }
         }
 
         .stats-grid .stat-item .stat-label {
@@ -1061,13 +1451,23 @@
         }
 
         @media (min-width: 768px) {
-            .stats-grid .stat-item .stat-label { font-size: 12px; }
+            .stats-grid .stat-item .stat-label {
+                font-size: 12px;
+            }
         }
 
-        .stat-number.primary { color: var(--primary); }
-        .stat-number.success { color: var(--secondary); }
-        .stat-number.warning { color: var(--warning); }
-        .stat-number.accent { color: var(--accent); }
+        .stat-number.primary {
+            color: var(--primary);
+        }
+        .stat-number.success {
+            color: var(--secondary);
+        }
+        .stat-number.warning {
+            color: var(--warning);
+        }
+        .stat-number.accent {
+            color: var(--accent);
+        }
 
         /* ===== TOAST ===== */
         .toast-container {
@@ -1113,29 +1513,48 @@
             }
         }
 
-        .toast-item.success { background: var(--secondary); }
-        .toast-item.error { background: var(--accent); }
-        .toast-item.info { background: var(--primary); }
-        .toast-item.warning { background: var(--warning); color: var(--dark); }
+        .toast-item.success {
+            background: var(--secondary);
+        }
+        .toast-item.error {
+            background: var(--accent);
+        }
+        .toast-item.info {
+            background: var(--primary);
+        }
+        .toast-item.warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
 
         .toast-item .close-toast {
             margin-left: auto;
             background: none;
             border: none;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 16px;
             cursor: pointer;
         }
 
         @media (min-width: 768px) {
-            .toast-item .close-toast { font-size: 18px; }
+            .toast-item .close-toast {
+                font-size: 18px;
+            }
         }
 
-        .toast-item .close-toast:hover { color: white; }
+        .toast-item .close-toast:hover {
+            color: white;
+        }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(60px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* ===== MOBILE BOTTOM NAV ===== */
@@ -1155,12 +1574,19 @@
         }
 
         @media (min-width: 992px) {
-            .mobile-nav { display: none; }
-            body { padding-bottom: 40px; }
+            .mobile-nav {
+                display: none;
+            }
+            body {
+                padding-bottom: 40px;
+            }
         }
 
         @media (min-width: 768px) {
-            .mobile-nav { height: 60px; padding: 6px 0; }
+            .mobile-nav {
+                height: 60px;
+                padding: 6px 0;
+            }
         }
 
         .mobile-nav a {
@@ -1178,48 +1604,100 @@
         }
 
         @media (min-width: 576px) {
-            .mobile-nav a { font-size: 10px; padding: 4px 12px; gap: 2px; }
+            .mobile-nav a {
+                font-size: 10px;
+                padding: 4px 12px;
+                gap: 2px;
+            }
         }
 
-        .mobile-nav a i { font-size: 18px; }
-        @media (min-width: 576px) { .mobile-nav a i { font-size: 20px; } }
-        .mobile-nav a.active { color: var(--primary); }
-        .mobile-nav a:hover { color: var(--primary); }
+        .mobile-nav a i {
+            font-size: 18px;
+        }
+        @media (min-width: 576px) {
+            .mobile-nav a i {
+                font-size: 20px;
+            }
+        }
+        .mobile-nav a.active {
+            color: var(--primary);
+        }
+        .mobile-nav a:hover {
+            color: var(--primary);
+        }
 
         /* ===== RESPONSIVE FINE-TUNING ===== */
         @media (max-width: 575px) {
-            .header-brand span { display: none; }
-            .header-actions .btn-icon.hide-mobile { display: none; }
-            .avatar { width: 26px; height: 26px; font-size: 10px; }
-            .page-header h1 { font-size: 16px; }
-            .page-header .subtitle { font-size: 11px; }
-            .info-card .card-title { font-size: 14px; }
-            .sidebar-card .price { font-size: 20px; }
-            .sidebar-card .price small { font-size: 12px; }
-            .stats-grid .stat-item .stat-number { font-size: 18px; }
+            .header-brand span {
+                display: none;
+            }
+            .header-actions .btn-icon.hide-mobile {
+                display: none;
+            }
+            .avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 10px;
+            }
+            .page-header h1 {
+                font-size: 16px;
+            }
+            .page-header .subtitle {
+                font-size: 11px;
+            }
+            .info-card .card-title {
+                font-size: 14px;
+            }
+            .sidebar-card .price {
+                font-size: 20px;
+            }
+            .sidebar-card .price small {
+                font-size: 12px;
+            }
+            .stats-grid .stat-item .stat-number {
+                font-size: 18px;
+            }
         }
 
         @media (max-width: 360px) {
-            .property-gallery .main-image { height: 160px; }
-            .property-gallery .thumb-grid .thumb { height: 60px; }
-            .info-card { padding: 12px; }
-            .sidebar-card { padding: 12px; }
-            .mobile-nav a { font-size: 8px; padding: 2px 4px; }
-            .mobile-nav a i { font-size: 14px; }
+            .property-gallery .main-image {
+                height: 160px;
+            }
+            .property-gallery .thumb-grid .thumb {
+                height: 60px;
+            }
+            .info-card {
+                padding: 12px;
+            }
+            .sidebar-card {
+                padding: 12px;
+            }
+            .mobile-nav a {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+            .mobile-nav a i {
+                font-size: 14px;
+            }
         }
 
         @media (min-width: 768px) and (max-width: 991px) {
-            .info-grid { grid-template-columns: 1fr; }
-            .sidebar-card { position: relative; top: 0; }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-card {
+                position: relative;
+                top: 0;
+            }
         }
     </style>
 </head>
-<body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" 
-      data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" 
-      data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}" 
-      data-property-id="{{ property.id }}" 
-      data-owner-id="{% if property.owner %}{{ property.owner.id }}{% else %}0{% endif %}"
-      data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{% endif %}">
+<body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}"
+data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}"
+data-property-id="{{ property.id }}"
+data-owner-id="{% if property.owner %}{{ property.owner.id }}{% else %}0{% endif %}"
+data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{% endif %}">
 
     <!-- ===== SIDEBAR NAV ===== -->
     <nav class="sidebar-nav">
@@ -1306,32 +1784,32 @@
         </div>
 
         <!-- Gallery -->
-        <div class="property-gallery">
-            <div class="main-image">
+        <div class="property-gallery" id="propertyGallery">
+            <div class="main-image" data-index="0">
                 {% if main_image %}
-                <img src="{{ main_image }}" alt="{{ property.title }}">
+                <img src="{{ main_image }}" alt="{{ property.title }}" id="galleryMainImg">
                 {% else %}
                 <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--light-gray);color:#ccc;">
                     <i class="fas fa-home" style="font-size:48px;"></i>
                 </div>
                 {% endif %}
             </div>
-            <div class="thumb-grid">
+            <div class="thumb-grid" id="thumbGrid">
                 {% for image in property_images|slice:"1:5" %}
-                <div class="thumb">
-                    <img src="{{ image }}" alt="Property image">
+                <div class="thumb" data-index="{{ forloop.counter }}">
+                    <img src="{{ image }}" alt="Property image {{ forloop.counter }}">
                 </div>
                 {% empty %}
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
+                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="1">
                     <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
+                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="2">
                     <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
+                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="3">
                     <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;">
+                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="4">
                     <i class="fas fa-image" style="font-size:24px;"></i>
                 </div>
                 {% endfor %}
@@ -1350,10 +1828,10 @@
                     <p style="line-height:1.8;color:var(--gray);font-size:14px;">{{ property.description|default:"No description provided." }}</p>
                 </div>
 
-                <!-- Details -->
+                <!-- Property Details -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-info-circle"></i> Property Details</div>
-                    
+
                     <div class="info-row">
                         <span class="label">Property Type</span>
                         <span class="value">{{ property.property_type.name|default:"Not specified" }}</span>
@@ -1392,10 +1870,29 @@
                     </div>
                 </div>
 
+                <!-- ============================================================
+                     FEATURES & AMENITIES — MOVED HERE (below Property Details)
+                     ============================================================ -->
+                <div class="info-card">
+                    <div class="card-title"><i class="fas fa-star"></i> Features & Amenities</div>
+                    <div class="feature-tags">
+                        {% if property_features %}
+                        {% for feature in property_features %}
+                        <span class="tag">
+                            {% if feature.icon %}<i class="{{ feature.icon }}"></i>{% else %}<i class="fas fa-check-circle"></i>{% endif %}
+                            {{ feature.name }}
+                        </span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="text-muted" style="font-size:14px;">No features listed</span>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- Location with Map -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-map-marker-alt"></i> Location & Map</div>
-                    
+
                     <div class="info-row">
                         <span class="label">Address</span>
                         <span class="value">{{ property.address|default:"Not specified" }}</span>
@@ -1432,70 +1929,45 @@
                     <!-- Map -->
                     <div class="location-map-container">
                         {% if property.latitude and property.longitude %}
-                            <iframe 
-                                src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_MAPS_API_KEY }}&q={{ property.latitude }},{{ property.longitude }}&zoom=15"
-                                allowfullscreen loading="lazy">
-                            </iframe>
+                        <iframe src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_MAPS_API_KEY }}&q={{ property.latitude }},{{ property.longitude }}&zoom=15" allowfullscreen loading="lazy">
+                        </iframe>
                         {% elif property.address %}
-                            <div class="map-placeholder">
-                                <i class="fas fa-map-pin" style="color:var(--primary);"></i>
-                                <div class="address-text">
-                                    <strong>{{ property.title }}</strong><br>
-                                    {{ property.address }}<br>
-                                    {{ property.city }}, {{ property.country }}
-                                </div>
-                                <div style="margin-top:8px;color:#999;font-size:11px;">
-                                    <i class="fas fa-info-circle"></i> Click "View on Google Maps"
-                                </div>
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-pin" style="color:var(--primary);"></i>
+                            <div class="address-text">
+                                <strong>{{ property.title }}</strong><br>
+                                {{ property.address }}<br>
+                                {{ property.city }}, {{ property.country }}
                             </div>
+                            <div style="margin-top:8px;color:#999;font-size:11px;">
+                                <i class="fas fa-info-circle"></i> Click "View on Google Maps"
+                            </div>
+                        </div>
                         {% else %}
-                            <div class="map-placeholder">
-                                <i class="fas fa-map-marker-alt" style="color:#ccc;"></i>
-                                <div class="address-text">No location information available</div>
-                            </div>
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-marker-alt" style="color:#ccc;"></i>
+                            <div class="address-text">No location information available</div>
+                        </div>
                         {% endif %}
                     </div>
 
                     <!-- Map Actions -->
                     <div class="map-actions">
                         {% if property.latitude and property.longitude %}
-                            <a href="https://www.google.com/maps/dir/?api=1&destination={{ property.latitude }},{{ property.longitude }}" 
-                               target="_blank" 
-                               class="btn-map btn-map-success">
-                                <i class="fas fa-directions"></i> Get Directions
-                            </a>
-                            <a href="https://www.google.com/maps/place/{{ property.latitude }},{{ property.longitude }}" 
-                               target="_blank" 
-                               class="btn-map btn-map-primary">
-                                <i class="fas fa-external-link-alt"></i> View on Maps
-                            </a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ property.latitude }},{{ property.longitude }}" target="_blank" class="btn-map btn-map-success">
+                            <i class="fas fa-directions"></i> Get Directions
+                        </a>
+                        <a href="https://www.google.com/maps/place/{{ property.latitude }},{{ property.longitude }}" target="_blank" class="btn-map btn-map-primary">
+                            <i class="fas fa-external-link-alt"></i> View on Maps
+                        </a>
                         {% elif property.address %}
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ property.address|urlencode }},{{ property.city|urlencode }},{{ property.country|urlencode }}" 
-                               target="_blank" 
-                               class="btn-map btn-map-primary">
-                                <i class="fas fa-external-link-alt"></i> View on Maps
-                            </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ property.address|urlencode }},{{ property.city|urlencode }},{{ property.country|urlencode }}" target="_blank" class="btn-map btn-map-primary">
+                            <i class="fas fa-external-link-alt"></i> View on Maps
+                        </a>
                         {% endif %}
                         <a href="/property-map/" class="btn-map btn-map-secondary">
                             <i class="fas fa-map"></i> Open Map View
                         </a>
-                    </div>
-                </div>
-
-                <!-- Features -->
-                <div class="info-card">
-                    <div class="card-title"><i class="fas fa-star"></i> Features & Amenities</div>
-                    <div class="feature-tags">
-                        {% if property_features %}
-                            {% for feature in property_features %}
-                            <span class="tag">
-                                {% if feature.icon %}<i class="{{ feature.icon }}"></i>{% else %}<i class="fas fa-check-circle"></i>{% endif %}
-                                {{ feature.name }}
-                            </span>
-                            {% endfor %}
-                        {% else %}
-                            <span class="text-muted" style="font-size:14px;">No features listed</span>
-                        {% endif %}
                     </div>
                 </div>
 
@@ -1550,11 +2022,11 @@
                 </div>
 
                 <!-- ============================================================
-                     AGENT / OWNER CARD - FULLY FIXED WITH DJANGO URL TAGS
+                     AGENT / OWNER CARD
                      ============================================================ -->
                 <div class="sidebar-card">
                     <div class="card-title"><i class="fas fa-user-tie"></i> Agent / Owner</div>
-                    
+
                     <!-- Agent Info -->
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex-shrink:0;">
@@ -1590,18 +2062,18 @@
                         </div>
                     </div>
 
-                    <!-- Agent Rating (if available) -->
+                    <!-- Agent Rating -->
                     {% if agent_profile and agent_profile.average_rating > 0 %}
                     <div style="margin-bottom:10px;font-size:13px;">
                         <span style="color:var(--warning);">
                             {% for i in "12345"|make_list %}
-                                {% if forloop.counter <= agent_profile.average_rating %}
-                                    <i class="fas fa-star"></i>
-                                {% elif forloop.counter <= agent_profile.average_rating|add:0.5 %}
-                                    <i class="fas fa-star-half-alt"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
+                            {% if forloop.counter <= agent_profile.average_rating %}
+                            <i class="fas fa-star"></i>
+                            {% elif forloop.counter <= agent_profile.average_rating|add:0.5 %}
+                            <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                            <i class="far fa-star"></i>
+                            {% endif %}
                             {% endfor %}
                         </span>
                         <span style="color:var(--gray);font-size:12px;margin-left:4px;">
@@ -1622,40 +2094,33 @@
                     </div>
                     {% endif %}
 
-                    <!-- ============================================================
-                         EDIT AGENT PROFILE BUTTON - FIXED WITH DJANGO URL TAGS
-                         ============================================================ -->
+                    <!-- Edit Agent Profile -->
                     {% if is_owner %}
                     <div class="mb-3">
-                        <a href="{% if agent_profile %}{% url 'agent_profile_edit' agent_profile.id %}?property_id={{ property.id }}{% else %}{% url 'agent_profile_create' %}?property_id={{ property.id }}{% endif %}" 
-                           class="btn btn-success w-100" 
-                           style="font-size:14px;padding:10px;border-radius:8px;font-weight:600;">
-                            <i class="fas fa-user-edit me-2"></i> 
+                        <a href="{% if agent_profile %}{% url 'agent_profile_edit' agent_profile.id %}?property_id={{ property.id }}{% else %}{% url 'agent_profile_create' %}?property_id={{ property.id }}{% endif %}" class="btn btn-success w-100" style="font-size:14px;padding:10px;border-radius:8px;font-weight:600;">
+                            <i class="fas fa-user-edit me-2"></i>
                             {% if agent_profile %}Edit Your Agent Profile{% else %}Create Your Agent Profile{% endif %}
                         </a>
                         <div style="font-size:10px;color:var(--gray);text-align:center;margin-top:4px;">
-                            <i class="fas fa-info-circle"></i> 
+                            <i class="fas fa-info-circle"></i>
                             {% if agent_profile %}Update your professional details to help clients connect with you{% else %}Set up your professional profile to attract more clients{% endif %}
                         </div>
                     </div>
                     {% endif %}
 
-                    <!-- Contact Methods - INTERNAL MESSAGING FIRST -->
+                    <!-- Contact Methods -->
                     <div class="contact-methods">
-                        <!-- 1. INTERNAL MESSAGING - ALWAYS FIRST -->
                         <button onclick="messagePropertyOwner('{{ property.id }}', '{{ property.title|escapejs }}')" class="social-btn message">
                             <i class="fas fa-comment"></i> Message {{ owner_name|default:"Agent" }}
                             <span class="badge-internal">Stay on OppoGlobe</span>
                         </button>
 
-                        <!-- 2. WhatsApp (if available) -->
                         {% if agent_profile and agent_profile.whatsapp_number %}
                         <a href="{{ agent_profile.get_whatsapp_link }}" target="_blank" class="social-btn whatsapp">
                             <i class="fab fa-whatsapp"></i> WhatsApp
                         </a>
                         {% endif %}
 
-                        <!-- 3. Phone (if available) -->
                         {% if agent_profile and agent_profile.phone_primary %}
                         <a href="tel:{{ agent_profile.phone_primary }}" class="social-btn phone">
                             <i class="fas fa-phone"></i> Call
@@ -1665,56 +2130,48 @@
                         </a>
                         {% endif %}
 
-                        <!-- 4. Email (if available) -->
                         {% if agent_profile and agent_profile.email_primary %}
                         <a href="mailto:{{ agent_profile.email_primary }}" class="social-btn email">
                             <i class="fas fa-envelope"></i> Email
                         </a>
                         {% endif %}
 
-                        <!-- 5. Telegram (if available) -->
                         {% if agent_profile and agent_profile.telegram_username %}
                         <a href="{{ agent_profile.get_telegram_link }}" target="_blank" class="social-btn telegram">
                             <i class="fab fa-telegram-plane"></i> Telegram
                         </a>
                         {% endif %}
 
-                        <!-- 6. Signal (if available) -->
                         {% if agent_profile and agent_profile.signal_number %}
                         <a href="{{ agent_profile.get_signal_link }}" target="_blank" class="social-btn signal">
                             <i class="fas fa-lock"></i> Signal
                         </a>
                         {% endif %}
 
-                        <!-- 7. Viber (if available) -->
                         {% if agent_profile and agent_profile.viber_number %}
                         <a href="{{ agent_profile.get_viber_link }}" target="_blank" class="social-btn viber">
                             <i class="fab fa-viber"></i> Viber
                         </a>
                         {% endif %}
 
-                        <!-- 8. WeChat (if available) -->
                         {% if agent_profile and agent_profile.wechat_id %}
                         <a href="#" onclick="showToast('WeChat ID: {{ agent_profile.wechat_id }}', 'info')" class="social-btn wechat">
                             <i class="fab fa-weixin"></i> WeChat
                         </a>
                         {% endif %}
 
-                        <!-- 9. LINE (if available) -->
                         {% if agent_profile and agent_profile.line_id %}
                         <a href="{{ agent_profile.get_line_link }}" target="_blank" class="social-btn line">
                             <i class="fab fa-line"></i> LINE
                         </a>
                         {% endif %}
 
-                        <!-- 10. KakaoTalk (if available) -->
                         {% if agent_profile and agent_profile.kakao_id %}
                         <a href="{{ agent_profile.get_kakao_link }}" target="_blank" class="social-btn kakao">
                             <i class="fas fa-comment"></i> KakaoTalk
                         </a>
                         {% endif %}
 
-                        <!-- 11. Website (if available) -->
                         {% if agent_profile and agent_profile.website %}
                         <a href="{{ agent_profile.clean_url|default:agent_profile.website }}" target="_blank" class="social-btn" style="background:var(--dark);">
                             <i class="fas fa-globe"></i> Website
@@ -1759,7 +2216,6 @@
                             {% if agent_profile.discord_username %}
                             <a href="#" onclick="showToast('Discord: {{ agent_profile.discord_username }}', 'info')" class="social-btn" style="background:#5865F2;" title="Discord"><i class="fab fa-discord"></i></a>
                             {% endif %}
-                            <!-- Real Estate Platforms -->
                             {% if agent_profile.property24_url %}
                             <a href="{{ agent_profile.property24_url }}" target="_blank" class="social-btn property24" title="Property24"><i class="fas fa-building"></i></a>
                             {% endif %}
@@ -1799,7 +2255,6 @@
                             {% if agent_profile.propertyguru_url %}
                             <a href="{{ agent_profile.propertyguru_url }}" target="_blank" class="social-btn" style="background:#00a651;" title="PropertyGuru"><i class="fas fa-home"></i></a>
                             {% endif %}
-                            <!-- Business Professional -->
                             {% if agent_profile.indeed_url %}
                             <a href="{{ agent_profile.indeed_url }}" target="_blank" class="social-btn" style="background:#2163f3;" title="Indeed"><i class="fas fa-briefcase"></i></a>
                             {% endif %}
@@ -1810,9 +2265,6 @@
                     </div>
                     {% endif %}
 
-                    <!-- ============================================================
-                         VIEW FULL PROFILE - FIXED WITH DJANGO URL TAG
-                         ============================================================ -->
                     {% if agent_profile %}
                     <div style="margin-top:10px;text-align:center;padding-top:10px;border-top:1px solid var(--border);">
                         <a href="{% url 'agent_profile_view' agent_profile.id %}" class="btn btn-outline-primary btn-sm" style="font-size:12px;padding:4px 16px;border-radius:20px;">
@@ -1851,6 +2303,23 @@
 
     </div>
 
+    <!-- ===== LIGHTBOX / FULLSCREEN VIEWER ===== -->
+    <div class="lightbox-overlay" id="lightboxOverlay" role="dialog" aria-modal="true" aria-label="Image viewer">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close fullscreen view">
+            <i class="fas fa-times"></i>
+        </button>
+        <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous image">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="lightbox-nav next" id="lightboxNext" aria-label="Next image">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="lightbox-image-wrap" id="lightboxImageWrap">
+            <img id="lightboxImg" src="" alt="Property image fullscreen">
+        </div>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
+    </div>
+
     <!-- ===== MOBILE NAV ===== -->
     <nav class="mobile-nav">
         <a href="/admin-portal/"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
@@ -1863,7 +2332,8 @@
     <!-- ===== TOAST CONTAINER ===== -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+    </script>
     <script>
         // ============================================================
         // TOGGLE DROPDOWN
@@ -1933,27 +2403,21 @@
         const agentProfileId = parseInt(document.body.dataset.agentProfileId || '0');
 
         // ============================================================
-        // MESSAGE PROPERTY OWNER - INTERNAL MESSAGING (PRIMARY)
+        // MESSAGE PROPERTY OWNER - INTERNAL MESSAGING
         // ============================================================
         function messagePropertyOwner(propertyId, propertyTitle) {
-            // Check if user is logged in
             if (!isLoggedIn) {
                 showToast('Please login to message the owner', 'warning');
                 return;
             }
-
-            // Check if user is the owner
             if (ownerId === currentUserId) {
                 showToast('You are the owner of this property', 'info');
                 return;
             }
-
             if (!ownerId || ownerId === 0) {
                 showToast('Owner not available', 'warning');
                 return;
             }
-
-            // Go to internal messaging - STAY ON OPPOGLOBE
             const encodedProperty = encodeURIComponent(propertyTitle || 'Property');
             window.location.href = `/messaging/?user_id=${ownerId}&property=${encodedProperty}`;
         }
@@ -1965,49 +2429,181 @@
             if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
                 return;
             }
-
             const btn = event.target.closest('button');
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
             btn.disabled = true;
 
             fetch(`/api/properties/${propertyId}/delete/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Property deleted successfully', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/properties/manage/';
-                    }, 1500);
-                } else {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Property deleted successfully', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/properties/manage/';
+                        }, 1500);
+                    } else {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                        showToast(data.error || 'Failed to delete property', 'error');
+                    }
+                })
+                .catch(() => {
                     btn.innerHTML = originalHtml;
                     btn.disabled = false;
-                    showToast(data.error || 'Failed to delete property', 'error');
-                }
-            })
-            .catch(() => {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-                showToast('Network error. Please try again.', 'error');
-            });
+                    showToast('Network error. Please try again.', 'error');
+                });
         }
 
         // ============================================================
-        // SET OWNER ID FOR MESSAGING
+        // LIGHTBOX / FULLSCREEN IMAGE VIEWER
         // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
+        (function() {
+            // Gather all image URLs from the gallery
+            const imageUrls = [];
+            const mainImg = document.getElementById('galleryMainImg');
+            if (mainImg) {
+                imageUrls.push(mainImg.src);
+            } else {
+                // fallback: use the main container's background or placeholder
+                const mainContainer = document.querySelector('.property-gallery .main-image');
+                if (mainContainer) {
+                    const bg = mainContainer.style.backgroundImage;
+                    if (bg && bg.includes('url(')) {
+                        const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
+                        if (match) imageUrls.push(match[1]);
+                    }
+                }
+                // if still empty, push a placeholder
+                if (imageUrls.length === 0) {
+                    imageUrls.push('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect fill="%23f1f3f4" width="800" height="600"/%3E%3Ctext x="400" y="300" font-family="sans-serif" font-size="24" fill="%23999" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E');
+                }
+            }
+
+            // Thumbnails
+            const thumbs = document.querySelectorAll('#thumbGrid .thumb img');
+            thumbs.forEach(img => {
+                if (img.src && !imageUrls.includes(img.src)) {
+                    imageUrls.push(img.src);
+                }
+            });
+
+            // If we still have fewer than 2, duplicate the main image to have at least 2
+            while (imageUrls.length < 2) {
+                imageUrls.push(imageUrls[0] || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect fill="%23f1f3f4" width="800" height="600"/%3E%3Ctext x="400" y="300" font-family="sans-serif" font-size="24" fill="%23999" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E');
+            }
+
+            let currentIndex = 0;
+            const overlay = document.getElementById('lightboxOverlay');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const counter = document.getElementById('lightboxCounter');
+            const closeBtn = document.getElementById('lightboxClose');
+            const prevBtn = document.getElementById('lightboxPrev');
+            const nextBtn = document.getElementById('lightboxNext');
+
+            function openLightbox(index) {
+                if (!imageUrls.length || index < 0 || index >= imageUrls.length) return;
+                currentIndex = index;
+                lightboxImg.src = imageUrls[currentIndex];
+                counter.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function goToPrev() {
+                const newIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+                openLightbox(newIndex);
+            }
+
+            function goToNext() {
+                const newIndex = (currentIndex + 1) % imageUrls.length;
+                openLightbox(newIndex);
+            }
+
+            // Click events on gallery images
+            const mainImageContainer = document.querySelector('.property-gallery .main-image');
+            if (mainImageContainer) {
+                mainImageContainer.addEventListener('click', function(e) {
+                    // Don't open if it's a placeholder without image
+                    const img = this.querySelector('img');
+                    if (!img || !img.src || img.src.includes('placeholder')) {
+                        // still open with available images
+                    }
+                    openLightbox(0);
+                });
+            }
+
+            document.querySelectorAll('#thumbGrid .thumb').forEach((thumb, idx) => {
+                thumb.addEventListener('click', function() {
+                    // find the actual image index: if this thumb has a data-index, use it, else use the loop index + 1
+                    const dataIndex = parseInt(this.dataset.index);
+                    let idxToUse = dataIndex ? dataIndex : idx + 1;
+                    // ensure it's within bounds
+                    if (idxToUse >= imageUrls.length) idxToUse = imageUrls.length - 1;
+                    openLightbox(idxToUse);
+                });
+            });
+
+            // Close button
+            closeBtn.addEventListener('click', closeLightbox);
+
+            // Prev / Next
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+
+            // Keyboard
+            document.addEventListener('keydown', function(e) {
+                if (!overlay.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') goToPrev();
+                if (e.key === 'ArrowRight') goToNext();
+            });
+
+            // Click outside image to close
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay || e.target === document.getElementById('lightboxImageWrap')) {
+                    closeLightbox();
+                }
+            });
+
+            // Touch swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+            overlay.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            overlay.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 40) {
+                    if (diff > 0) goToNext();
+                    else goToPrev();
+                }
+            }, { passive: true });
+
+            // Expose openLightbox globally so other scripts can use it
+            window.openLightbox = openLightbox;
+            window.closeLightbox = closeLightbox;
+
             // Set owner ID from context for messaging
             const ownerIdFromContext = "{{ property.owner.id|default:'0' }}";
             if (ownerIdFromContext && ownerIdFromContext !== '0') {
                 document.body.dataset.ownerId = ownerIdFromContext;
             }
-        });
+
+            console.log('✅ Lightbox initialized with', imageUrls.length, 'images');
+        })();
     </script>
 </body>
 </html>
