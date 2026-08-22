@@ -1131,3 +1131,164 @@ def get_item(dictionary, key):
     if dictionary is None:
         return None
     return dictionary.get(key, key)
+
+
+# education/views.py - ADD THESE 4 FUNCTIONS at the end of the file
+
+# ============================================================
+# LISTING VIEWS - ADD THESE FUNCTIONS
+# ============================================================
+
+def bursary_list(request):
+    """List all bursaries with filters"""
+    bursaries = Bursary.objects.filter(is_active=True).order_by('-created_at')
+    
+    # Filter by level
+    level = request.GET.get('level')
+    if level:
+        bursaries = bursaries.filter(level=level)
+    
+    # Filter by field of study
+    field = request.GET.get('field')
+    if field:
+        bursaries = bursaries.filter(field_of_study__icontains=field)
+    
+    # Search
+    search = request.GET.get('search')
+    if search:
+        bursaries = bursaries.filter(
+            Q(title__icontains=search) | 
+            Q(provider__icontains=search) |
+            Q(description__icontains=search)
+        )
+    
+    # Pagination
+    paginator = Paginator(bursaries, 12)
+    page = request.GET.get('page', 1)
+    bursaries_page = paginator.get_page(page)
+    
+    context = {
+        'bursaries': bursaries_page,
+        'page_title': 'Bursaries',
+        'page_description': 'Find bursaries and scholarships to fund your education',
+        'active_page': 'bursaries',
+        'levels': Bursary.LEVEL_CHOICES,
+    }
+    return render(request, 'education/bursary_list.html', context)
+
+
+def school_list(request):
+    """List all schools with filters"""
+    schools = School.objects.filter(is_active=True).order_by('name')
+    
+    # Filter by province
+    province = request.GET.get('province')
+    if province:
+        schools = schools.filter(province=province)
+    
+    # Filter by school type
+    school_type = request.GET.get('school_type')
+    if school_type:
+        schools = schools.filter(school_type=school_type)
+    
+    # Search
+    search = request.GET.get('search')
+    if search:
+        schools = schools.filter(
+            Q(name__icontains=search) | 
+            Q(city__icontains=search) |
+            Q(province__icontains=search)
+        )
+    
+    # Pagination
+    paginator = Paginator(schools, 12)
+    page = request.GET.get('page', 1)
+    schools_page = paginator.get_page(page)
+    
+    context = {
+        'schools': schools_page,
+        'page_title': 'Schools',
+        'page_description': 'Find schools and educational institutions',
+        'active_page': 'schools',
+        'provinces': School.objects.values_list('province', flat=True).distinct(),
+        'school_types': School.SCHOOL_TYPE_CHOICES,
+    }
+    return render(request, 'education/school_list.html', context)
+
+
+def university_list(request):
+    """List all universities with filters"""
+    universities = University.objects.filter(is_active=True).order_by('name')
+    
+    # Filter by province
+    province = request.GET.get('province')
+    if province:
+        universities = universities.filter(province=province)
+    
+    # Search
+    search = request.GET.get('search')
+    if search:
+        universities = universities.filter(
+            Q(name__icontains=search) | 
+            Q(city__icontains=search) |
+            Q(province__icontains=search)
+        )
+    
+    # Pagination
+    paginator = Paginator(universities, 12)
+    page = request.GET.get('page', 1)
+    universities_page = paginator.get_page(page)
+    
+    context = {
+        'universities': universities_page,
+        'page_title': 'Universities',
+        'page_description': 'Find universities and higher education institutions',
+        'active_page': 'universities',
+        'provinces': University.objects.values_list('province', flat=True).distinct(),
+    }
+    return render(request, 'education/university_list.html', context)
+
+
+def paper_list(request):
+    """List all question papers with filters"""
+    papers = QuestionPaper.objects.filter(is_public=True, is_active=True).order_by('-year', '-created_at')
+    
+    # Filter by grade
+    grade_id = request.GET.get('grade')
+    if grade_id:
+        papers = papers.filter(grade_id=grade_id)
+    
+    # Filter by subject
+    subject_id = request.GET.get('subject')
+    if subject_id:
+        papers = papers.filter(subject_id=subject_id)
+    
+    # Filter by year
+    year = request.GET.get('year')
+    if year:
+        papers = papers.filter(year=year)
+    
+    # Search
+    search = request.GET.get('search')
+    if search:
+        papers = papers.filter(
+            Q(title__icontains=search) | 
+            Q(grade__name__icontains=search) |
+            Q(subject__name__icontains=search)
+        )
+    
+    # Pagination
+    paginator = Paginator(papers, 12)
+    page = request.GET.get('page', 1)
+    papers_page = paginator.get_page(page)
+    
+    context = {
+        'papers': papers_page,
+        'page_title': 'Question Papers',
+        'page_description': 'Download past question papers and study materials',
+        'active_page': 'papers',
+        'grades': Grade.objects.filter(is_active=True).order_by('order'),
+        'subjects': Subject.objects.filter(is_active=True).order_by('name'),
+        'years': QuestionPaper.objects.values_list('year', flat=True).distinct().order_by('-year'),
+    }
+    return render(request, 'education/paper_list.html', context)

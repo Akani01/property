@@ -347,7 +347,7 @@ class PropertyDetailSerializer(PropertySerializer):
             }
             for a in availability
         ]
-        
+    
 
 class PropertyCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating properties"""

@@ -4,6 +4,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 import uuid
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.decorators import login_required, user_passes_test  # <-- ADD THIS
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from rest_framework.views import APIView
@@ -9771,227 +9776,6 @@ def posts_page(request):
     return render(request, 'post.html')
 
 
-class PasswordResetRequestView(APIView):
-    """
-    Simple password reset request view
-    For development/testing - returns reset link in response
-    """
-    permission_classes = [AllowAny]
-    
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            email = data.get('email', '').strip().lower()
-            
-            if not email:
-                return Response({
-                    'success': False,
-                    'error': 'Email is required',
-                    'errors': {'email': ['Email is required']}
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Check if user exists with this email - USE CustomUser
-            try:
-                user = CustomUser.objects.get(email=email, is_active=True)
-            except CustomUser.DoesNotExist:
-                # For security, don't reveal if email exists or not
-                return Response({
-                    'success': True,
-                    'message': 'If your email exists in our system, you will receive a password reset link shortly.'
-                }, status=status.HTTP_200_OK)
-            
-            # Generate a simple token (for development only)
-            timestamp = int(time.time())
-            token = hashlib.sha256(f"{user.id}{timestamp}{settings.SECRET_KEY}".encode()).hexdigest()[:40]
-            full_token = f"{timestamp}-{token}"
-            
-            # Create reset link
-            # Update this with your actual domain
-            reset_url = f"http://localhost:8000/reset-password/?token={full_token}&email={email}"
-            
-            # For development: Log the reset link
-            print(f"\n{'='*60}")
-            print(f"PASSWORD RESET LINK (DEV MODE)")
-            print(f"{'='*60}")
-            print(f"User: {user.username} ({email})")
-            print(f"Reset URL: {reset_url}")
-            print(f"{'='*60}\n")
-            
-            # Store token in session for validation
-            request.session[f'reset_token_{user.id}'] = token
-            request.session[f'reset_token_timestamp_{user.id}'] = timestamp
-            
-            return Response({
-                'success': True,
-                'message': 'Password reset link generated successfully.',
-                'reset_url': reset_url  # Only include in development!
-            }, status=status.HTTP_200_OK)
-            
-        except json.JSONDecodeError:
-            return Response({
-                'success': False,
-                'error': 'Invalid JSON data'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            logger.error(f"Password reset request error: {str(e)}")
-            return Response({
-                'success': False,
-                'error': 'An unexpected error occurred. Please try again.'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class PasswordResetConfirmView(APIView):
-    """
-    Password reset confirmation view
-    """
-    permission_classes = [AllowAny]
-    
-    def validate_password(self, password):
-        """Validate password strength"""
-        errors = []
-        
-        if len(password) < 8:
-            errors.append('Password must be at least 8 characters long.')
-        
-        if not any(char.isupper() for char in password):
-            errors.append('Password must contain at least one uppercase letter.')
-        
-        if not any(char.islower() for char in password):
-            errors.append('Password must contain at least one lowercase letter.')
-        
-        if not any(char.isdigit() for char in password):
-            errors.append('Password must contain at least one number.')
-        
-        return errors
-    
-    def validate_token(self, token, user_id):
-        """Validate reset token"""
-        try:
-            token_parts = token.split('-', 1)
-            if len(token_parts) != 2:
-                return False, "Invalid token format"
-            
-            timestamp = int(token_parts[0])
-            token_value = token_parts[1]
-            
-            # Check if token is expired (24 hours)
-            current_time = int(time.time())
-            if current_time - timestamp > 86400:  # 24 hours in seconds
-                return False, "Reset link has expired"
-            
-            # Check if token matches stored token
-            stored_token = self.request.session.get(f'reset_token_{user_id}')
-            stored_timestamp = self.request.session.get(f'reset_token_timestamp_{user_id}')
-            
-            if not stored_token or not stored_timestamp:
-                return False, "Invalid reset token"
-            
-            if stored_token != token_value or stored_timestamp != timestamp:
-                return False, "Invalid reset token"
-            
-            return True, "Valid token"
-            
-        except (ValueError, IndexError) as e:
-            return False, "Invalid token format"
-    
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            token = data.get('token', '')
-            email = data.get('email', '').strip().lower()
-            new_password = data.get('new_password', '')
-            confirm_password = data.get('confirm_password', '')
-            
-            errors = {}
-            
-            # Validate required fields
-            if not token:
-                errors['token'] = ['Reset token is required']
-            if not email:
-                errors['email'] = ['Email is required']
-            if not new_password:
-                errors['new_password'] = ['New password is required']
-            if not confirm_password:
-                errors['confirm_password'] = ['Please confirm your password']
-            
-            if errors:
-                return Response({
-                    'success': False,
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Check if passwords match
-            if new_password != confirm_password:
-                errors['confirm_password'] = ['Passwords do not match']
-                return Response({
-                    'success': False,
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Validate password strength
-            password_errors = self.validate_password(new_password)
-            if password_errors:
-                errors['new_password'] = password_errors
-                return Response({
-                    'success': False,
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Get user - USE CustomUser
-            try:
-                user = CustomUser.objects.get(email=email, is_active=True)
-            except CustomUser.DoesNotExist:
-                errors['email'] = ['Invalid email address']
-                return Response({
-                    'success': False,
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Validate token
-            is_valid, token_message = self.validate_token(token, user.id)
-            if not is_valid:
-                errors['token'] = [token_message]
-                return Response({
-                    'success': False,
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Set new password
-            try:
-                user.set_password(new_password)
-                user.save()
-                
-                # Clear the reset token from session
-                request.session.pop(f'reset_token_{user.id}', None)
-                request.session.pop(f'reset_token_timestamp_{user.id}', None)
-                
-                logger.info(f"Password reset successful for user: {user.username}")
-                
-                return Response({
-                    'success': True,
-                    'message': 'Password has been reset successfully. You can now login with your new password.'
-                }, status=status.HTTP_200_OK)
-                
-            except Exception as save_error:
-                logger.error(f"Failed to save new password for user {user.username}: {str(save_error)}")
-                return Response({
-                    'success': False,
-                    'error': 'Failed to update password. Please try again.'
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-        except json.JSONDecodeError:
-            return Response({
-                'success': False,
-                'error': 'Invalid JSON data'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            logger.error(f"Password reset confirm error: {str(e)}")
-            return Response({
-                'success': False,
-                'error': 'An unexpected error occurred. Please try again.'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 # ===== VIDEO FEED VIEWS =====
 
 @api_view(['GET'])
@@ -11026,4 +10810,829 @@ def get_properties_with_owner(request):
         return Response({
             'success': False,
             'error': str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+
+def is_superuser(user):
+    """Check if user is superuser"""
+    return user.is_superuser
+
+def has_admin_access(user):
+    """Check if user has admin access"""
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser or user.is_staff:
+        return True
+    if hasattr(user, 'user_type') and user.user_type == 'admin':
+        return True
+    return False
+
+def has_business_access(user):
+    """Check if user has business/admin access"""
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser or user.is_staff:
+        return True
+    if hasattr(user, 'user_type') and user.user_type == 'admin':
+        return True
+    try:
+        if hasattr(user, 'business_profile'):
+            return True
+    except:
+        pass
+    return False
+
+def admin_required(view_func):
+    """Decorator to require admin access"""
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not has_admin_access(request.user):
+            return HttpResponseForbidden("You don't have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+def superuser_required(view_func):
+    """Decorator to require superuser access"""
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You don't have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+# ============================================================
+# BLOG VIEWS (ONLY ONE DEFINITION)
+# ============================================================
+
+def blog_list(request):
+    """Lists all published blog posts with inline editing for superusers"""
+    posts = BlogPost.objects.filter(is_published=True).order_by('-created_at')
+    
+    paginator = Paginator(posts, 10)
+    page = request.GET.get('page')
+    try:
+        posts_page = paginator.page(page)
+    except PageNotAnInteger:
+        posts_page = paginator.page(1)
+    except EmptyPage:
+        posts_page = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Blog',
+        'page_description': 'Read the latest property tips and news',
+        'active_page': 'blog',
+        'posts': posts_page,
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+        'total_posts': posts.count(),
+    }
+    return render(request, 'hiring/blog_list.html', context)
+
+
+def blog_detail(request, slug):
+    """Shows a single blog post by slug with inline editing for superusers"""
+    post = get_object_or_404(BlogPost, slug=slug, is_published=True)
+    
+    related_posts = BlogPost.objects.filter(
+        is_published=True
+    ).exclude(id=post.id)[:3]
+    
+    context = {
+        'page_title': post.title,
+        'page_description': post.meta_description or post.excerpt[:160],
+        'active_page': 'blog',
+        'post': post,
+        'related_posts': related_posts,
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+        'can_delete': request.user.is_superuser,
+    }
+    return render(request, 'hiring/blog_detail.html', context)
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def blog_create_api(request):
+    """API endpoint for superusers to create blog posts"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        title = data.get('title', '').strip()
+        content = data.get('content', '').strip()
+        excerpt = data.get('excerpt', '')[:300]
+        
+        if not title or not content:
+            return JsonResponse({'success': False, 'error': 'Title and content are required'})
+        
+        slug = re.sub(r'[^a-zA-Z0-9]+', '-', title.lower()).strip('-')
+        if BlogPost.objects.filter(slug=slug).exists():
+            slug = f"{slug}-{BlogPost.objects.count() + 1}"
+        
+        post = BlogPost.objects.create(
+            title=title,
+            slug=slug,
+            content=content,
+            excerpt=excerpt,
+            author=request.user.username,
+            is_published=True,
+            publish_date=timezone.now()
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Blog post created successfully!',
+            'post_id': post.id,
+            'slug': post.slug,
+            'redirect_url': f'/blog/{post.slug}/'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def blog_update_api(request, post_id):
+    """API endpoint for superusers to update blog posts"""
+    if request.method != 'PUT':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        post = get_object_or_404(BlogPost, id=post_id)
+        data = json.loads(request.body)
+        
+        if 'title' in data and data['title'].strip():
+            post.title = data['title'].strip()
+        if 'content' in data and data['content'].strip():
+            post.content = data['content'].strip()
+        if 'excerpt' in data:
+            post.excerpt = data['excerpt'][:300]
+        if 'is_published' in data:
+            post.is_published = data['is_published']
+        
+        post.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Blog post updated successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def blog_delete_api(request, post_id):
+    """API endpoint for superusers to delete blog posts"""
+    if request.method != 'DELETE':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        post = get_object_or_404(BlogPost, id=post_id)
+        post.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Blog post deleted successfully!'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+# ============================================================
+# CAREER VIEWS (ONLY ONE DEFINITION)
+# ============================================================
+
+def career_list(request):
+    """Lists all active job openings with inline editing for superusers"""
+    jobs = Career.objects.filter(is_active=True).order_by('-created_at')
+    
+    context = {
+        'page_title': 'Careers',
+        'page_description': 'Join the OppoGlobe team and make an impact',
+        'active_page': 'careers',
+        'jobs': jobs,
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+        'total_jobs': jobs.count(),
+        'company_culture': {
+            'title': 'Why Join OppoGlobe?',
+            'points': [
+                {'icon': 'fa-users', 'text': 'Work with a passionate team'},
+                {'icon': 'fa-rocket', 'text': 'Growth and learning opportunities'},
+                {'icon': 'fa-home', 'text': 'Remote-first work culture'},
+                {'icon': 'fa-heart', 'text': 'Make a real impact'},
+            ]
+        },
+        'benefits': [
+            'Competitive salary package',
+            'Health insurance',
+            'Flexible working hours',
+            'Annual learning budget',
+            'Team retreats',
+            'Performance bonuses'
+        ]
+    }
+    return render(request, 'hiring/careers.html', context)
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def career_create_api(request):
+    """API endpoint for superusers to create career openings"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        title = data.get('title', '').strip()
+        location = data.get('location', '').strip()
+        employment_type = data.get('employment_type', 'full_time')
+        description = data.get('description', '').strip()
+        requirements = data.get('requirements', '').strip()
+        
+        if not title or not location or not description:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Title, location, and description are required'
+            })
+        
+        career = Career.objects.create(
+            title=title,
+            location=location,
+            employment_type=employment_type,
+            description=description,
+            requirements=requirements,
+            is_active=True
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Career opportunity created successfully!',
+            'career_id': career.id
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def career_update_api(request, career_id):
+    """API endpoint for superusers to update career openings"""
+    if request.method != 'PUT':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        career = get_object_or_404(Career, id=career_id)
+        data = json.loads(request.body)
+        
+        if 'title' in data:
+            career.title = data['title'].strip()
+        if 'location' in data:
+            career.location = data['location'].strip()
+        if 'employment_type' in data:
+            career.employment_type = data['employment_type']
+        if 'description' in data:
+            career.description = data['description'].strip()
+        if 'requirements' in data:
+            career.requirements = data['requirements'].strip()
+        if 'is_active' in data:
+            career.is_active = data['is_active']
+        
+        career.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Career opportunity updated successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def career_delete_api(request, career_id):
+    """API endpoint for superusers to delete career openings"""
+    if request.method != 'DELETE':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        career = get_object_or_404(Career, id=career_id)
+        career.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Career opportunity deleted successfully!'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+# ============================================================
+# FAQ VIEWS (ONLY ONE DEFINITION)
+# ============================================================
+
+def faq_list(request):
+    """Lists all published FAQs with inline editing for superusers"""
+    faqs = FAQ.objects.filter(is_published=True).order_by('category', 'order')
+    
+    categories = {}
+    for faq in faqs:
+        category = faq.category or 'General'
+        if category not in categories:
+            categories[category] = []
+        categories[category].append(faq)
+    
+    context = {
+        'page_title': 'Frequently Asked Questions',
+        'page_description': 'Find answers to common questions about OppoGlobe',
+        'active_page': 'faq',
+        'categories': categories,
+        'faq_count': faqs.count(),
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/faq.html', context)
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def faq_create_api(request):
+    """API endpoint for superusers to create FAQs"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        question = data.get('question', '').strip()
+        answer = data.get('answer', '').strip()
+        category = data.get('category', 'General').strip()
+        
+        if not question or not answer:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Question and answer are required'
+            })
+        
+        max_order = FAQ.objects.filter(category=category).aggregate(models.Max('order'))['order__max'] or 0
+        
+        faq = FAQ.objects.create(
+            question=question,
+            answer=answer,
+            category=category,
+            order=max_order + 1,
+            is_published=True
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'FAQ created successfully!',
+            'faq_id': faq.id
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def faq_update_api(request, faq_id):
+    """API endpoint for superusers to update FAQs"""
+    if request.method != 'PUT':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        faq = get_object_or_404(FAQ, id=faq_id)
+        data = json.loads(request.body)
+        
+        if 'question' in data:
+            faq.question = data['question'].strip()
+        if 'answer' in data:
+            faq.answer = data['answer'].strip()
+        if 'category' in data:
+            faq.category = data['category'].strip()
+        if 'order' in data:
+            faq.order = int(data['order'])
+        if 'is_published' in data:
+            faq.is_published = data['is_published']
+        
+        faq.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'FAQ updated successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def faq_delete_api(request, faq_id):
+    """API endpoint for superusers to delete FAQs"""
+    if request.method != 'DELETE':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        faq = get_object_or_404(FAQ, id=faq_id)
+        faq.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'FAQ deleted successfully!'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+# ============================================================
+# CONTACT VIEWS (ONLY ONE DEFINITION)
+# ============================================================
+
+def contact_view(request):
+    """Displays contact form and handles submissions"""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject', 'General')
+        message = request.POST.get('message')
+        
+        if name and email and message:
+            ContactMessage.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            messages.success(request, 'Your message has been sent. We\'ll get back to you soon!')
+            return redirect('hiring:contact')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+    
+    context = {
+        'page_title': 'Contact Us',
+        'page_description': 'Get in touch with the OppoGlobe team',
+        'active_page': 'contact',
+        'is_superuser': request.user.is_superuser,
+        'contact_info': {
+            'address': '123 Property Street, Sandton, Johannesburg, 2196',
+            'phone': '+27 10 123 4567',
+            'email': 'support@oppoglobe.com',
+            'hours': 'Mon - Fri: 8:00 AM - 5:00 PM SAST'
+        }
+    }
+    return render(request, 'hiring/contact.html', context)
+
+
+@login_required
+@user_passes_test(is_superuser)
+def contact_messages_view(request):
+    """View all contact messages (superuser only)"""
+    messages_list = ContactMessage.objects.all().order_by('-created_at')
+    context = {
+        'page_title': 'Contact Messages',
+        'page_description': 'View all contact messages',
+        'active_page': 'contact',
+        'messages': messages_list,
+        'is_superuser': request.user.is_superuser,
+    }
+    return render(request, 'hiring/contact_messages.html', context)
+
+
+@login_required
+@user_passes_test(is_superuser)
+@csrf_exempt
+def contact_message_mark_read_api(request, message_id):
+    """Mark a contact message as read"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        message = get_object_or_404(ContactMessage, id=message_id)
+        message.is_read = True
+        message.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Message marked as read'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+# ============================================================
+# STATIC PAGES (About, Privacy, Cookies, Terms, Help)
+# ============================================================
+
+def about_view(request):
+    """About Us page"""
+    context = {
+        'page_title': 'About OppoGlobe',
+        'page_description': 'Learn about OppoGlobe - your trusted property platform',
+        'active_page': 'about',
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/about.html', context)
+
+
+def privacy_view(request):
+    """Privacy Policy page"""
+    context = {
+        'page_title': 'Privacy Policy',
+        'page_description': 'Learn how OppoGlobe protects your privacy',
+        'active_page': 'privacy',
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/privacy.html', context)
+
+
+def cookies_view(request):
+    """Cookies Policy page"""
+    context = {
+        'page_title': 'Cookies Policy',
+        'page_description': 'Learn how OppoGlobe uses cookies',
+        'active_page': 'cookies',
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/cookies.html', context)
+
+
+def terms_view(request):
+    """Terms of Service page"""
+    context = {
+        'page_title': 'Terms of Service',
+        'page_description': 'Read the terms and conditions for using OppoGlobe',
+        'active_page': 'terms',
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/terms.html', context)
+
+
+def help_view(request):
+    """Help Center page"""
+    context = {
+        'page_title': 'Help Center',
+        'page_description': 'Find answers to common questions and get support',
+        'active_page': 'help',
+        'is_superuser': request.user.is_superuser,
+        'can_edit': request.user.is_superuser,
+    }
+    return render(request, 'hiring/help.html', context)
+
+
+# ============================================================
+# NEWSLETTER API (ONLY ONE DEFINITION)
+# ============================================================
+
+@csrf_exempt
+def subscribe_newsletter(request):
+    """API endpoint for newsletter subscription"""
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'error': 'Method not allowed'
+        }, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        
+        if not email:
+            return JsonResponse({
+                'success': False,
+                'error': 'Email is required'
+            }, status=400)
+        
+        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid email format'
+            }, status=400)
+        
+        subscriber, created = NewsletterSubscriber.objects.get_or_create(email=email)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Subscribed successfully!',
+            'created': created
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON format'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+
+# ============================================
+# PASSWORD RESET REQUEST - API View
+# ============================================
+class PasswordResetRequestView(APIView):
+    """Handle password reset request via API - works with frontend"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        try:
+            # Handle both JSON and form data
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+                email = data.get('email', '').strip().lower()
+            else:
+                email = request.POST.get('email', '').strip().lower()
+            
+            if not email:
+                return Response({
+                    'success': False,
+                    'message': 'Email is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if user exists (but don't reveal for security)
+            try:
+                user = CustomUser.objects.get(email=email, is_active=True)
+                
+                # Generate reset token
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                # Build reset link for frontend
+                # Your frontend will handle the reset with this link
+                reset_link = request.build_absolute_uri(
+                    f'/reset-password/{uid}/{token}/'
+                )
+                
+                # Also provide API confirm endpoint
+                api_confirm_link = request.build_absolute_uri(
+                    f'/api/auth/password-reset-confirm/'
+                )
+                
+                # Send email with both options
+                subject = "Password Reset Request - Tolleya"
+                message = f"""
+                Hello {user.get_full_name() or user.username},
+                
+                You requested a password reset for your Tolleya account.
+                
+                Click the link below to reset your password:
+                {reset_link}
+                
+                Or use this link for API confirmation:
+                {api_confirm_link}
+                
+                Token: {uid}-{token}
+                
+                This link will expire in 24 hours.
+                
+                If you didn't request this, please ignore this email.
+                
+                Best regards,
+                Tolleya Team
+                """
+                
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+                
+                logger.info(f"Password reset requested for user: {user.username}")
+                
+                # Store token temporarily for verification (optional)
+                request.session[f'reset_uid_{user.id}'] = uid
+                request.session[f'reset_token_{user.id}'] = token
+                request.session[f'reset_timestamp_{user.id}'] = int(timezone.now().timestamp())
+                
+                return Response({
+                    'success': True,
+                    'message': 'Password reset link sent to your email',
+                    'reset_link': reset_link  # For testing
+                }, status=status.HTTP_200_OK)
+                
+            except CustomUser.DoesNotExist:
+                # Don't reveal if user exists
+                return Response({
+                    'success': True,
+                    'message': 'If an account exists with this email, you will receive a reset link.'
+                }, status=status.HTTP_200_OK)
+                
+        except json.JSONDecodeError:
+            return Response({
+                'success': False,
+                'message': 'Invalid JSON data'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Password reset request error: {str(e)}")
+            return Response({
+                'success': False,
+                'message': 'An error occurred. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============================================
+# PASSWORD RESET CONFIRM - API View
+# ============================================
+#Reset Password
+# View to Handle Password Reset Request
+def custom_password_reset_request(request):
+    if request.method == "POST":
+        form = CustomPasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            user = CustomUser.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = request.build_absolute_uri(f"/reset/{uid}/{token}/")
+
+            # Send reset email
+            send_mail(
+                "Password Reset Request",
+                f"Click the link below to reset your password:\n{reset_link}",
+                "noreply@elimcircuit.com",
+                [email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "Password reset link sent to your email.")
+            return redirect("custom_password_reset_done") 
+
+    else:
+        form = CustomPasswordResetForm()
+
+    return render(request, "custom_auth/password_reset_form.html", {"form": form})
+
+# Reset done
+def custom_password_reset_done(request):
+    return render(request, "custom_auth/password_reset_done.html")
+
+
+# View to Handle Password Reset Confirmation
+def custom_password_reset_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            new_password = request.POST.get("password")
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Your password has been reset successfully.")
+            return redirect("login_page")
+
+        return render(request, "custom_auth/password_reset_confirm.html")
+
+    messages.error(request, "The password reset link is invalid or has expired.")
+    return redirect("password_reset_request")

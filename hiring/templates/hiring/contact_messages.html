@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Messages | OppoGlobe{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-4 fw-bold">Contact Messages</h1>
+                    <p class="lead text-muted">View all messages from users</p>
+                </div>
+                <div>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-secondary">
+            
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>
+            <hr class="mb-4">
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            {% if messages %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in messages %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ msg.name }}</td>
+                            <td>{{ msg.email }}</td>
+                            <td>{{ msg.subject }}</td>
+                            <td>{{ msg.message|truncatechars:50 }}</td>
+                            <td>{{ msg.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if msg.is_read %}
+                                <span class="badge bg-success">Read</span>
+                                {% else %}
+                                <span class="badge bg-warning">Unread</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h4>No messages</h4>
+                <p class="text-muted">You haven't received any contact messages yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

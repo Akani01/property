@@ -3,11 +3,8 @@ from . import views
 from . import message_views
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
-from hiring.password_reset import (
-    password_reset_request,
-    password_reset_confirm,
-    password_reset_validate_token
-)
+from django.contrib.auth import views as auth_views
+
 
 
 # URL patterns for messaging - use this as a separate include
@@ -206,13 +203,6 @@ urlpatterns = [
     path('api/feed/', views.api_home_feed, name='api_home_feed'),
     path('api/posts/stats/', views.api_post_stats, name='api_post_stats'),
     path('api/posts/user-stats/', views.api_user_post_stats, name='api_user_post_stats'),
-    # Password reset pages
-    path('forgot-password/', TemplateView.as_view(template_name='forgot_password.html'), name='forgot_password'),
-    path('reset-password/', TemplateView.as_view(template_name='reset_password.html'), name='reset_password'),
-    
-    # API endpoints (you'll need to create these views)
-    path('api/auth/password-reset/', views.PasswordResetRequestView.as_view(), name='password_reset'),
-    path('api/auth/password-reset-confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     
     # properties
     path('api/properties/', views.get_properties_api, name='api_properties'),
@@ -302,9 +292,56 @@ urlpatterns = [
     path('api/push/test/', views.send_test_notification, name='send_test_notification'),
     path('api/get-properties-with-owner/', views.get_properties_with_owner, name='get_properties_with_owner'),
     # urls
-    path('api/auth/password-reset/', password_reset_request, name='password_reset'),
-    path('api/auth/password-reset-confirm/', password_reset_confirm, name='password_reset_confirm'),
-    path('api/auth/password-reset-validate/', password_reset_validate_token, name='password_reset_validate'),
+   
 
+    # Static pages (dynamic)
+     # ============================================================
+    # STATIC PAGES
+    # ============================================================
+    path('about/', views.about_view, name='about'),
+    path('privacy/', views.privacy_view, name='privacy'),
+    path('cookies/', views.cookies_view, name='cookies'),
+    path('terms/', views.terms_view, name='terms'),
+    path('help/', views.help_view, name='help'),
+    
+    # ============================================================
+    # BLOG
+    # ============================================================
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('api/blog/create/', views.blog_create_api, name='blog_create_api'),
+    path('api/blog/update/<int:post_id>/', views.blog_update_api, name='blog_update_api'),
+    path('api/blog/delete/<int:post_id>/', views.blog_delete_api, name='blog_delete_api'),
+    
+    # ============================================================
+    # CAREERS
+    # ============================================================
+    path('careers/', views.career_list, name='careers'),
+    path('api/career/create/', views.career_create_api, name='career_create_api'),
+    path('api/career/update/<int:career_id>/', views.career_update_api, name='career_update_api'),
+    path('api/career/delete/<int:career_id>/', views.career_delete_api, name='career_delete_api'),
+    
+    # ============================================================
+    # FAQ
+    # ============================================================
+    path('faq/', views.faq_list, name='faq'),
+    path('api/faq/create/', views.faq_create_api, name='faq_create_api'),
+    path('api/faq/update/<int:faq_id>/', views.faq_update_api, name='faq_update_api'),
+    path('api/faq/delete/<int:faq_id>/', views.faq_delete_api, name='faq_delete_api'),
+    
+    # ============================================================
+    # CONTACT
+    # ============================================================
+    path('contact/', views.contact_view, name='contact'),
+    path('contact/messages/', views.contact_messages_view, name='contact_messages'),
+    
+    # ============================================================
+    # NEWSLETTER
+    # ============================================================
+    path('api/newsletter/subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
+    #password reset
+    path("password_reset/", views.custom_password_reset_request, name="password_reset_request"),
+    path("reset/<uidb64>/<token>/", views.custom_password_reset_confirm, name="password_reset_confirm"),
+    
 ]
 

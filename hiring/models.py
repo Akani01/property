@@ -9,6 +9,7 @@ from .validators import validate_file_size, validate_video_file_extension, valid
 from django.db.models import Avg, Count
 import json
 from datetime import timedelta
+from django.urls import reverse
 import re
 from collections import Counter
 
@@ -1085,3 +1086,172 @@ class PushSubscription(models.Model):
     
     def __str__(self):
         return f"Subscription for {self.user or 'Anonymous'}"
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+
+class Page(models.Model):
+    """Editable static pages: About, Contact, Privacy, Terms, Cookies, Help, etc."""
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, help_text="URL slug, e.g., 'about'")
+    content = models.TextField(help_text="Use HTML for rich formatting.")
+    meta_description = models.CharField(max_length=160, blank=True, help_text="SEO description")
+    keywords = models.CharField(max_length=200, blank=True, help_text="Comma-separated keywords")
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('pages:page_detail', kwargs={'slug': self.slug})
+
+    class Meta:
+        ordering = ['title']
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    content = models.TextField()
+    excerpt = models.CharField(max_length=300, blank=True)
+    featured_image = models.ImageField(upload_to='blog/', blank=True, null=True)
+    author = models.CharField(max_length=100, default='OppoGlobe Team')
+    publish_date = models.DateTimeField(default=timezone.now)
+    is_published = models.BooleanField(default=True)
+    meta_description = models.CharField(max_length=160, blank=True)
+    keywords = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('pages:blog_detail', kwargs={'slug': self.slug})
+
+    class Meta:
+        ordering = ['-publish_date']
+
+class Career(models.Model):
+    EMPLOYMENT_TYPES = (
+        ('full_time', 'Full-Time'),
+        ('part_time', 'Part-Time'),
+        ('contract', 'Contract'),
+        ('internship', 'Internship'),
+        ('remote', 'Remote'),
+    )
+    title = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    employment_type = models.CharField(max_length=20, choices=EMPLOYMENT_TYPES, default='full_time')
+    description = models.TextField(help_text="Detailed job description")
+    requirements = models.TextField(blank=True, help_text="Optional requirements")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-created_at']
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=300)
+    answer = models.TextField()
+    category = models.CharField(max_length=100, blank=True, default='General')
+    order = models.PositiveIntegerField(default=0)
+    is_published = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        ordering = ['category', 'order']
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+
+
+
+class StaticPage(models.Model):
+    """
+    Model for static pages like Privacy Policy, Terms of Service, etc.
+    """
+    PAGE_TYPES = [
+        ('privacy', 'Privacy Policy'),
+        ('terms', 'Terms of Service'),
+        ('cookies', 'Cookies Policy'),
+        ('help', 'Help Center'),
+        ('about', 'About Us'),
+        ('contact', 'Contact Us'),
+        ('faq', 'FAQ'),
+        ('careers', 'Careers'),
+        ('blog', 'Blog'),
+    ]
+    
+    page_type = models.CharField(max_length=50, choices=PAGE_TYPES, unique=True, db_index=True)
+    title = models.CharField(max_length=200)
+    content = models.TextField(help_text="HTML content for the page. Use <h1>, <p>, <ul>, etc.")
+    meta_description = models.CharField(max_length=200, blank=True, help_text="SEO meta description")
+    meta_keywords = models.CharField(max_length=200, blank=True, help_text="SEO meta keywords")
+    last_updated = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    # For sections (like Privacy Policy sections)
+    sections = models.JSONField(default=list, blank=True, help_text="List of sections with title and content. Format: [{\"title\": \"Section 1\", \"content\": \"Content here\"}]")
+    
+    # FIXED: Use CustomUser instead of User
+    updated_by = models.ForeignKey(
+        'CustomUser',  # Changed from 'User' to 'CustomUser'
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='updated_static_pages'
+    )
+    
+    class Meta:
+        ordering = ['page_type']
+        verbose_name = 'Static Page'
+        verbose_name_plural = 'Static Pages'
+    
+    def __str__(self):
+        return f"{self.get_page_type_display()} - {self.title}"
+    
+    def get_absolute_url(self):
+        from django.urls import reverse
+        try:
+            return reverse(self.page_type)
+        except:
+            return f'/{self.page_type}/'
+    
+    def get_sections_as_list(self):
+        """Return sections as a list of dicts"""
+        if isinstance(self.sections, list):
+            return self.sections
+        return []
+    
+    def get_sections_as_json(self):
+        """Return sections as JSON string"""
+        import json
+        return json.dumps(self.get_sections_as_list())
+    
+    def save(self, *args, **kwargs):
+        # Ensure sections is always a list
+        if not self.sections:
+            self.sections = []
+        super().save(*args, **kwargs)

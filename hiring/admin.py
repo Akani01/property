@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django import forms
+from django.urls import reverse
 from .models import *
 
 class CustomUserAdmin(UserAdmin):
@@ -395,3 +398,102 @@ admin.site.register(JobAlert, JobAlertAdmin)
 admin.site.site_header = "Hiring Portal Platform Administration"
 admin.site.site_title = "System Admin"
 admin.site.index_title = "Welcome to Hiring Portal Platform Administration"
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}
+    list_display = ['title', 'slug', 'is_published', 'updated_at']
+    search_fields = ['title', 'content']
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}
+    list_display = ['title', 'author', 'publish_date', 'is_published']
+    list_filter = ['is_published', 'publish_date']
+    search_fields = ['title', 'content']
+
+@admin.register(Career)
+class CareerAdmin(admin.ModelAdmin):
+    list_display = ['title', 'location', 'employment_type', 'is_active', 'created_at']
+    list_filter = ['is_active', 'employment_type']
+    search_fields = ['title', 'description']
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ['question', 'category', 'order', 'is_published']
+    list_editable = ['order', 'is_published']
+    list_filter = ['category', 'is_published']
+    search_fields = ['question', 'answer']
+
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    list_display = ['email', 'subscribed_at', 'is_active']
+    list_editable = ['is_active']
+    search_fields = ['email']
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'subject', 'created_at', 'is_read']
+    list_editable = ['is_read']
+    search_fields = ['name', 'email', 'message']
+
+
+class StaticPageForm(forms.ModelForm):
+    class Meta:
+        model = StaticPage
+        fields = '__all__'
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 20, 'class': 'monospace', 'style': 'width: 100%; font-family: monospace;'}),
+            'sections': forms.Textarea(attrs={'rows': 10, 'class': 'monospace', 'style': 'width: 100%; font-family: monospace;'}),
+        }
+    
+    def clean_sections(self):
+        data = self.cleaned_data.get('sections', [])
+        if isinstance(data, str):
+            try:
+                import json
+                return json.loads(data)
+            except json.JSONDecodeError:
+                return []
+        return data
+
+@admin.register(StaticPage)
+class StaticPageAdmin(admin.ModelAdmin):
+    form = StaticPageForm
+    list_display = ['page_type', 'title', 'last_updated', 'is_active', 'updated_by', 'preview_link']
+    list_filter = ['page_type', 'is_active', 'last_updated']
+    search_fields = ['title', 'content', 'meta_description', 'page_type']
+    readonly_fields = ['created_at', 'last_updated', 'preview_link']
+    
+    fieldsets = (
+        ('Page Information', {
+            'fields': ('page_type', 'title', 'is_active')
+        }),
+        ('Content', {
+            'fields': ('content', 'sections'),
+            'classes': ('wide',),
+            'description': 'For pages with sections (like Privacy Policy), use the sections field with JSON format: [{"title": "Section 1", "content": "Content here"}]'
+        }),
+        ('SEO & Meta', {
+            'fields': ('meta_description', 'meta_keywords'),
+            'classes': ('collapse',)
+        }),
+        ('Metadata', {
+            'fields': ('created_at', 'last_updated', 'updated_by', 'preview_link'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def preview_link(self, obj):
+        try:
+            url = reverse(obj.page_type)
+            return mark_safe(f'<a href="{url}" target="_blank">🔗 View Page</a>')
+        except:
+            return f'/{obj.page_type}/ (no URL configured)'
+    preview_link.short_description = 'Preview'
+    
+    def save_model(self, request, obj, form, change):
+        if request.user.is_superuser:
+            obj.updated_by = request.user
+        super().save_model(request, obj, form, change)

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Help Center" }} – OppoGlobe Support{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ page_description|default:'Find answers to common questions, guides on using OppoGlobe, and contact information for support.' }}">
+    <meta name="keywords" content="help, support, FAQ, guides, OppoGlobe, troubleshooting">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Help Center" }}</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-5 fw-bold mb-3">{{ page_title|default:"Help Center" }}</h1>
+            <p class="text-muted mb-4">{{ page_description|default:"Find answers to common questions and get support" }}</p>
+            
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" id="helpSearch" placeholder="Search for help topics..." onkeyup="searchHelp(this.value)">
+                    <button class="btn btn-primary" onclick="searchHelp(document.getElementById('helpSearch').value)">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Help Categories -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('getting-started')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-rocket fa-2x text-primary mb-2"></i>
+                            <h5 class="card-title">Getting Started</h5>
+                            <p class="card-text small text-muted">Learn the basics of OppoGlobe</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('properties')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-home fa-2x text-success mb-2"></i>
+                            <h5 class="card-title">Properties</h5>
+                            <p class="card-text small text-muted">List, find, and manage properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('account')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-cog fa-2x text-warning mb-2"></i>
+                            <h5 class="card-title">Account & Security</h5>
+                            <p class="card-text small text-muted">Manage your account settings</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('payments')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
+                            <h5 class="card-title">Payments & Bookings</h5>
+                            <p class="card-text small text-muted">Transactions and reservations</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('jobs')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-briefcase fa-2x text-danger mb-2"></i>
+                            <h5 class="card-title">Jobs & Careers</h5>
+                            <p class="card-text small text-muted">Job listings and applications</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm" onclick="filterHelp('maintenance')">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tools fa-2x text-secondary mb-2"></i>
+                            <h5 class="card-title">Maintenance</h5>
+                            <p class="card-text small text-muted">Property maintenance requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if page.content %}
+                {{ page.content|safe }}
+            {% else %}
+                <!-- Default FAQ content -->
+                <h3 class="mb-3">Frequently Asked Questions</h3>
+                
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I create an account?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Click the "Sign Up" button in the top right corner. Fill in your details including username, email, phone number, and password. You can also sign up using Google for a faster experience.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How do I list a property?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Once logged in, click "List Property" from the sidebar or apps menu. Fill in the property details including title, location, price, and upload images. Your listing will be reviewed and published.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                How do I book a property?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Find a property you like and click the "Book" button on the property card. You'll be able to select dates and submit a booking request. The property owner will be notified.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How do I contact support?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can contact us through the <a href="{% url 'contact' %}">Contact page</a> or email us directly at <a href="mailto:support@oppoglobe.com">support@oppoglobe.com</a>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Is OppoGlobe free to use?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, OppoGlobe is free to use for browsing properties and basic features. Premium features may be available for business users and property owners.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Contact Support -->
+            <div class="mt-5 p-4 bg-light rounded">
+                <h4><i class="fas fa-headset me-2"></i>Still Need Help?</h4>
+                <p>Our support team is here to assist you.</p>
+                <a href="{% url 'contact' %}" class="btn btn-primary">
+                    <i class="fas fa-envelope me-1"></i> Contact Support
+                </a>
+                <a href="mailto:support@oppoglobe.com" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-envelope me-1"></i> support@oppoglobe.com
+                </a>
+            </div>
+            
+            <!-- Only show edit link for superusers -->
+            {% if user.is_superuser %}
+            <div class="mt-4 p-3 bg-light rounded border border-warning">
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1 text-warning"></i> 
+                    <strong>Admin Access:</strong> You are viewing this as a superuser.
+                    <a href="/admin/hiring/staticpage/4/change/" class="text-primary ms-2">
+                        <i class="fas fa-edit me-1"></i> Edit this page
+                    </a>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function searchHelp(query) {
+    if (!query || query.length < 2) {
+        // Show all FAQs
+        document.querySelectorAll('.accordion-item').forEach(item => {
+            item.style.display = '';
+        });
+        return;
+    }
+    query = query.toLowerCase();
+    document.querySelectorAll('.accordion-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+
+function filterHelp(category) {
+    // Scroll to FAQ section
+    document.querySelector('.accordion')?.scrollIntoView({ behavior: 'smooth' });
+    showToast('Showing help for: ' + category.replace('-', ' '), 'info');
+}
+</script>
+{% endblock %}
