@@ -11579,6 +11579,157 @@ class PasswordResetRequestView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class PasswordResetConfirmView(APIView):
+    """
+    Password reset confirmation view
+    """
+    permission_classes = [AllowAny]
+    
+    def validate_password(self, password):
+        """Validate password strength"""
+        errors = []
+        
+        if len(password) < 8:
+            errors.append('Password must be at least 8 characters long.')
+        
+        if not any(char.isupper() for char in password):
+            errors.append('Password must contain at least one uppercase letter.')
+        
+        if not any(char.islower() for char in password):
+            errors.append('Password must contain at least one lowercase letter.')
+        
+        if not any(char.isdigit() for char in password):
+            errors.append('Password must contain at least one number.')
+        
+        return errors
+    
+    def validate_token(self, token, user_id):
+        """Validate reset token"""
+        try:
+            token_parts = token.split('-', 1)
+            if len(token_parts) != 2:
+                return False, "Invalid token format"
+            
+            timestamp = int(token_parts[0])
+            token_value = token_parts[1]
+            
+            # Check if token is expired (24 hours)
+            current_time = int(time.time())
+            if current_time - timestamp > 86400:  # 24 hours in seconds
+                return False, "Reset link has expired"
+            
+            # Check if token matches stored token
+            stored_token = self.request.session.get(f'reset_token_{user_id}')
+            stored_timestamp = self.request.session.get(f'reset_token_timestamp_{user_id}')
+            
+            if not stored_token or not stored_timestamp:
+                return False, "Invalid reset token"
+            
+            if stored_token != token_value or stored_timestamp != timestamp:
+                return False, "Invalid reset token"
+            
+            return True, "Valid token"
+            
+        except (ValueError, IndexError) as e:
+            return False, "Invalid token format"
+    
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            token = data.get('token', '')
+            email = data.get('email', '').strip().lower()
+            new_password = data.get('new_password', '')
+            confirm_password = data.get('confirm_password', '')
+            
+            errors = {}
+            
+            # Validate required fields
+            if not token:
+                errors['token'] = ['Reset token is required']
+            if not email:
+                errors['email'] = ['Email is required']
+            if not new_password:
+                errors['new_password'] = ['New password is required']
+            if not confirm_password:
+                errors['confirm_password'] = ['Please confirm your password']
+            
+            if errors:
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if passwords match
+            if new_password != confirm_password:
+                errors['confirm_password'] = ['Passwords do not match']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Validate password strength
+            password_errors = self.validate_password(new_password)
+            if password_errors:
+                errors['new_password'] = password_errors
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Get user - USE CustomUser
+            try:
+                user = CustomUser.objects.get(email=email, is_active=True)
+            except CustomUser.DoesNotExist:
+                errors['email'] = ['Invalid email address']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Validate token
+            is_valid, token_message = self.validate_token(token, user.id)
+            if not is_valid:
+                errors['token'] = [token_message]
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Set new password
+            try:
+                user.set_password(new_password)
+                user.save()
+                
+                # Clear the reset token from session
+                request.session.pop(f'reset_token_{user.id}', None)
+                request.session.pop(f'reset_token_timestamp_{user.id}', None)
+                
+                logger.info(f"Password reset successful for user: {user.username}")
+                
+                return Response({
+                    'success': True,
+                    'message': 'Password has been reset successfully. You can now login with your new password.'
+                }, status=status.HTTP_200_OK)
+                
+            except Exception as save_error:
+                logger.error(f"Failed to save new password for user {user.username}: {str(save_error)}")
+                return Response({
+                    'success': False,
+                    'error': 'Failed to update password. Please try again.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        except json.JSONDecodeError:
+            return Response({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Password reset confirm error: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'An unexpected error occurred. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 # ============================================
 # PASSWORD RESET CONFIRM - API View
 # ============================================

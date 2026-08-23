@@ -340,8 +340,13 @@ urlpatterns = [
     # ============================================================
     path('api/newsletter/subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
     #password reset
-    path("password_reset/", views.custom_password_reset_request, name="password_reset_request"),
-    path("reset/<uidb64>/<token>/", views.custom_password_reset_confirm, name="password_reset_confirm"),
+    # Password reset pages
+    path('forgot-password/', TemplateView.as_view(template_name='forgot_password.html'), name='forgot_password'),
+    path('reset-password/', TemplateView.as_view(template_name='reset_password.html'), name='reset_password'),
+    
+    # API endpoints (you'll need to create these views)
+    path('api/auth/password-reset/', views.PasswordResetRequestView.as_view(), name='password_reset'),
+    path('api/auth/password-reset-confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     
 ]
 
