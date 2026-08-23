@@ -10646,7 +10646,7 @@ def send_test_notification(request):
     try:
         from webpush import send_user_notification
         payload = {
-            'head': '🔔 Tolleya Test',
+            'head': '🔔 OppoGlobe Test',
             'body': 'Your PWA is working! 🎉',
             'icon': '/static/hiring/icons/icon-192.png',
             'badge': '/static/hiring/icons/icon-72x72.png',
@@ -10684,8 +10684,8 @@ def pwa_manifest(request):
     
     # Fallback - return inline manifest
     fallback_manifest = {
-        "name": "Tolleya - Find Your Dream Property",
-        "short_name": "Tolleya",
+        "name": "OppoGlobe - Find Your Dream Property",
+        "short_name": "OppoGlobe",
         "start_url": "/",
         "display": "standalone",
         "background_color": "#ffffff",
@@ -11516,11 +11516,11 @@ class PasswordResetRequestView(APIView):
                 )
                 
                 # Send email with both options
-                subject = "Password Reset Request - Tolleya"
+                subject = "Password Reset Request - OppoGlobe"
                 message = f"""
                 Hello {user.get_full_name() or user.username},
                 
-                You requested a password reset for your Tolleya account.
+                You requested a password reset for your OppoGlobe account.
                 
                 Click the link below to reset your password:
                 {reset_link}
@@ -11535,7 +11535,7 @@ class PasswordResetRequestView(APIView):
                 If you didn't request this, please ignore this email.
                 
                 Best regards,
-                Tolleya Team
+                OppoGlobe Team
                 """
                 
                 send_mail(
