@@ -19,7 +19,7 @@
      crossorigin="anonymous">
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
+    
     <style>
         /* ============================================================
            ROOT VARIABLES & RESET
@@ -3731,103 +3731,710 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ============================================================
+         // ============================================================
         // GOOGLE SIGN-IN / LOGIN
         // ============================================================
-        const GOOGLE_CLIENT_ID = '402309405742-cffefeqgl5dj875c5q1t5pqpm87jl53u.apps.googleusercontent.com';
+
+        const GOOGLE_CLIENT_ID =
+            '402309405742-cffefeqgl5dj875c5q1t5pqpm87jl53u.apps.googleusercontent.com';
+
+        let googleInitialized = false;
+        let googleInitializing = false;
+
+
+        // ============================================================
+        // GOOGLE LOGIN
+        // ============================================================
 
         function handleGoogleLogin(response) {
+
+            console.log('✅ Google login callback received');
+
+            if (!response || !response.credential) {
+                console.error('❌ Google did not return a credential');
+                showToast('Google login failed. No credential received.', 'error');
+                return;
+            }
+
             showToast('🔄 Signing in with Google...', 'info');
+
             fetch('/api/auth/google-login/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    credential: response.credential
+                })
             })
-            .then(res => res.json())
+            .then(async response => {
+
+                console.log('Google login HTTP status:', response.status);
+
+                const contentType = response.headers.get('content-type') || '';
+
+                if (!contentType.includes('application/json')) {
+                    const text = await response.text();
+
+                    console.error(
+                        '❌ Server returned non-JSON response:',
+                        text
+                    );
+
+                    throw new Error(
+                        'Server returned an invalid response.'
+                    );
+                }
+
+                return response.json();
+            })
             .then(data => {
+
+                console.log('Google login response:', data);
+
                 if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
-                    showToast('🎉 Welcome back!', 'success');
-                    setTimeout(() => location.reload(), 1000);
+
+                    const modalElement =
+                        document.getElementById('loginModal');
+
+                    if (modalElement) {
+
+                        const modal =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }
+
+                    showToast(
+                        '🎉 Welcome back!',
+                        'success'
+                    );
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+
                 } else {
-                    showToast(data.error || 'Google login failed', 'error');
+
+                    console.error(
+                        '❌ Google login failed:',
+                        data
+                    );
+
+                    showToast(
+                        data.error || 'Google login failed',
+                        'error'
+                    );
                 }
             })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
+            .catch(error => {
+
+                console.error(
+                    '🔥 Google login error:',
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    'Network error. Please try again.',
+                    'error'
+                );
+            });
         }
+
+
+        // ============================================================
+        // GOOGLE SIGNUP
+        // ============================================================
 
         function handleGoogleSignup(response) {
-            showToast('🔄 Creating account with Google...', 'info');
+
+            console.log('✅ Google signup callback received');
+
+            if (!response || !response.credential) {
+
+                console.error(
+                    '❌ Google did not return a signup credential'
+                );
+
+                showToast(
+                    'Google signup failed. No credential received.',
+                    'error'
+                );
+
+                return;
+            }
+
+            showToast(
+                '🔄 Creating account with Google...',
+                'info'
+            );
+
             fetch('/api/auth/google-signup/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    credential: response.credential
+                })
             })
-            .then(res => res.json())
+            .then(async response => {
+
+                console.log(
+                    'Google signup HTTP status:',
+                    response.status
+                );
+
+                const contentType =
+                    response.headers.get('content-type') || '';
+
+                if (!contentType.includes('application/json')) {
+
+                    const text = await response.text();
+
+                    console.error(
+                        '❌ Server returned non-JSON response:',
+                        text
+                    );
+
+                    throw new Error(
+                        'Server returned an invalid response.'
+                    );
+                }
+
+                return response.json();
+            })
             .then(data => {
+
+                console.log(
+                    'Google signup response:',
+                    data
+                );
+
                 if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
-                    showToast('🎉 Account created!', 'success');
-                    setTimeout(() => location.reload(), 1000);
+
+                    const modalElement =
+                        document.getElementById('signupModal');
+
+                    if (modalElement) {
+
+                        const modal =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }
+
+                    showToast(
+                        '🎉 Account created!',
+                        'success'
+                    );
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+
                 } else {
-                    showToast(data.error || 'Google signup failed', 'error');
+
+                    console.error(
+                        '❌ Google signup failed:',
+                        data
+                    );
+
+                    showToast(
+                        data.error || 'Google signup failed',
+                        'error'
+                    );
                 }
             })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
+            .catch(error => {
+
+                console.error(
+                    '🔥 Google signup error:',
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    'Network error. Please try again.',
+                    'error'
+                );
+            });
         }
+
+
+        // ============================================================
+        // GOOGLE BUSINESS SIGNUP
+        // ============================================================
 
         function handleGoogleBusinessSignup(response) {
-            showToast('🔄 Creating business account with Google...', 'info');
+
+            console.log(
+                '✅ Google business signup callback received'
+            );
+
+            if (!response || !response.credential) {
+
+                console.error(
+                    '❌ Google did not return a business credential'
+                );
+
+                showToast(
+                    'Google business signup failed. No credential received.',
+                    'error'
+                );
+
+                return;
+            }
+
+            showToast(
+                '🔄 Creating business account with Google...',
+                'info'
+            );
+
             fetch('/api/auth/google-business-signup/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    credential: response.credential
+                })
             })
-            .then(res => res.json())
+            .then(async response => {
+
+                console.log(
+                    'Google business signup HTTP status:',
+                    response.status
+                );
+
+                const contentType =
+                    response.headers.get('content-type') || '';
+
+                if (!contentType.includes('application/json')) {
+
+                    const text = await response.text();
+
+                    console.error(
+                        '❌ Server returned non-JSON response:',
+                        text
+                    );
+
+                    throw new Error(
+                        'Server returned an invalid response.'
+                    );
+                }
+
+                return response.json();
+            })
             .then(data => {
+
+                console.log(
+                    'Google business signup response:',
+                    data
+                );
+
                 if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'))?.hide();
-                    showToast('🎉 Business account created!', 'success');
-                    setTimeout(() => window.location.href = data.redirect_to || '/admin-portal/', 2000);
+
+                    const modalElement =
+                        document.getElementById(
+                            'businessSignupModal'
+                        );
+
+                    if (modalElement) {
+
+                        const modal =
+                            bootstrap.Modal.getInstance(
+                                modalElement
+                            );
+
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }
+
+                    showToast(
+                        '🎉 Business account created!',
+                        'success'
+                    );
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            data.redirect_to ||
+                            '/admin-portal/';
+
+                    }, 1500);
+
                 } else {
-                    showToast(data.error || 'Google business signup failed', 'error');
+
+                    console.error(
+                        '❌ Google business signup failed:',
+                        data
+                    );
+
+                    showToast(
+                        data.error ||
+                        'Google business signup failed',
+                        'error'
+                    );
                 }
             })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
+            .catch(error => {
+
+                console.error(
+                    '🔥 Google business signup error:',
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    'Network error. Please try again.',
+                    'error'
+                );
+            });
         }
+
+
+        // ============================================================
+        // DETERMINE WHICH GOOGLE ACTION TO PERFORM
+        // ============================================================
+
+        function googleCredentialCallback(response) {
+
+            console.log(
+                '🔥 GOOGLE GSI CALLBACK FIRED'
+            );
+
+            const loginModal =
+                document.getElementById('loginModal');
+
+            const signupModal =
+                document.getElementById('signupModal');
+
+            const businessModal =
+                document.getElementById('businessSignupModal');
+
+
+            // LOGIN
+            if (
+                loginModal &&
+                loginModal.classList.contains('show')
+            ) {
+
+                console.log(
+                    '➡️ Processing Google LOGIN'
+                );
+
+                handleGoogleLogin(response);
+
+                return;
+            }
+
+
+            // NORMAL SIGNUP
+            if (
+                signupModal &&
+                signupModal.classList.contains('show')
+            ) {
+
+                console.log(
+                    '➡️ Processing Google SIGNUP'
+                );
+
+                handleGoogleSignup(response);
+
+                return;
+            }
+
+
+            // BUSINESS SIGNUP
+            if (
+                businessModal &&
+                businessModal.classList.contains('show')
+            ) {
+
+                console.log(
+                    '➡️ Processing Google BUSINESS SIGNUP'
+                );
+
+                handleGoogleBusinessSignup(response);
+
+                return;
+            }
+
+
+            // FALLBACK
+            console.log(
+                '➡️ No modal detected. Defaulting to Google LOGIN.'
+            );
+
+            handleGoogleLogin(response);
+        }
+
+
+        // ============================================================
+        // INITIALIZE GOOGLE GSI
+        // ============================================================
 
         function initGoogleSignIn() {
-            if (typeof google === 'undefined') { setTimeout(initGoogleSignIn, 500); return; }
+
+            // Already initialized
+            if (googleInitialized) {
+                console.log(
+                    'ℹ️ Google GSI already initialized.'
+                );
+                return;
+            }
+
+
+            // Prevent multiple initialization attempts
+            if (googleInitializing) {
+                return;
+            }
+
+
+            // Google library not loaded yet
+            if (
+                typeof google === 'undefined' ||
+                !google.accounts ||
+                !google.accounts.id
+            ) {
+
+                console.log(
+                    '⏳ Google Identity Services not loaded yet...'
+                );
+
+                setTimeout(() => {
+                    initGoogleSignIn();
+                }, 500);
+
+                return;
+            }
+
+
+            googleInitializing = true;
+
+
             try {
+
+                console.log(
+                    '🚀 Initializing Google Identity Services...'
+                );
+
+
+                // --------------------------------------------------------
+                // INITIALIZE
+                // --------------------------------------------------------
+
                 google.accounts.id.initialize({
+
                     client_id: GOOGLE_CLIENT_ID,
-                    callback: function(response) {
-                        const loginModal = document.getElementById('loginModal');
-                        const signupModal = document.getElementById('signupModal');
-                        const businessModal = document.getElementById('businessSignupModal');
-                        if (loginModal && loginModal.classList.contains('show')) handleGoogleLogin(response);
-                        else if (signupModal && signupModal.classList.contains('show')) handleGoogleSignup(response);
-                        else if (businessModal && businessModal.classList.contains('show')) handleGoogleBusinessSignup(response);
-                        else handleGoogleLogin(response);
-                    },
+
+                    callback: googleCredentialCallback,
+
                     cancel_on_tap_outside: false,
-                    auto_select: false,
+
+                    auto_select: false
+
                 });
-                const loginBtnContainer = document.getElementById('googleLoginBtn');
-                if (loginBtnContainer) google.accounts.id.renderButton(loginBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signin_with', size: 'large', width: '100%', logo_alignment: 'left' });
-                const signupBtnContainer = document.getElementById('googleSignupBtn');
-                if (signupBtnContainer) google.accounts.id.renderButton(signupBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signup_with', size: 'large', width: '100%', logo_alignment: 'left' });
-                const businessBtnContainer = document.getElementById('googleBusinessSignupBtn');
-                if (businessBtnContainer) google.accounts.id.renderButton(businessBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signup_with', size: 'large', width: '100%', logo_alignment: 'left' });
-            } catch (error) { console.error('Error initializing Google Sign-In:', error); }
+
+
+                // --------------------------------------------------------
+                // LOGIN BUTTON
+                // --------------------------------------------------------
+
+                const loginBtn =
+                    document.getElementById(
+                        'googleLoginBtn'
+                    );
+
+                if (loginBtn) {
+
+                    loginBtn.innerHTML = '';
+
+                    google.accounts.id.renderButton(
+                        loginBtn,
+                        {
+                            type: 'standard',
+                            shape: 'pill',
+                            theme: 'outline',
+                            text: 'signin_with',
+                            size: 'large',
+                            width: '100%',
+                            logo_alignment: 'left'
+                        }
+                    );
+
+                    console.log(
+                        '✅ Google login button rendered.'
+                    );
+                }
+
+
+                // --------------------------------------------------------
+                // SIGNUP BUTTON
+                // --------------------------------------------------------
+
+                const signupBtn =
+                    document.getElementById(
+                        'googleSignupBtn'
+                    );
+
+                if (signupBtn) {
+
+                    signupBtn.innerHTML = '';
+
+                    google.accounts.id.renderButton(
+                        signupBtn,
+                        {
+                            type: 'standard',
+                            shape: 'pill',
+                            theme: 'outline',
+                            text: 'signup_with',
+                            size: 'large',
+                            width: '100%',
+                            logo_alignment: 'left'
+                        }
+                    );
+
+                    console.log(
+                        '✅ Google signup button rendered.'
+                    );
+                }
+
+
+                // --------------------------------------------------------
+                // BUSINESS SIGNUP BUTTON
+                // --------------------------------------------------------
+
+                const businessBtn =
+                    document.getElementById(
+                        'googleBusinessSignupBtn'
+                    );
+
+                if (businessBtn) {
+
+                    businessBtn.innerHTML = '';
+
+                    google.accounts.id.renderButton(
+                        businessBtn,
+                        {
+                            type: 'standard',
+                            shape: 'pill',
+                            theme: 'outline',
+                            text: 'signup_with',
+                            size: 'large',
+                            width: '100%',
+                            logo_alignment: 'left'
+                        }
+                    );
+
+                    console.log(
+                        '✅ Google business signup button rendered.'
+                    );
+                }
+
+
+                googleInitialized = true;
+                googleInitializing = false;
+
+                console.log(
+                    '🎉 GOOGLE GSI INITIALIZATION COMPLETE'
+                );
+
+            } catch (error) {
+
+                googleInitializing = false;
+
+                console.error(
+                    '❌ Google GSI initialization error:',
+                    error
+                );
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', function() { setTimeout(initGoogleSignIn, 1000); });
-        document.addEventListener('shown.bs.modal', function(event) {
-            if (['loginModal', 'signupModal', 'businessSignupModal'].includes(event.target.id)) setTimeout(initGoogleSignIn, 300);
-        });
-        window.onGoogleLibraryLoad = function() { initGoogleSignIn(); };
 
+        // ============================================================
+        // PAGE LOAD
+        // ============================================================
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                console.log(
+                    '📄 DOM loaded — starting Google GSI...'
+                );
+
+                setTimeout(
+                    initGoogleSignIn,
+                    500
+                );
+            }
+        );
+
+
+        // ============================================================
+        // MODAL OPEN
+        // ============================================================
+
+        document.addEventListener(
+            'shown.bs.modal',
+            function (event) {
+
+                const allowedModals = [
+                    'loginModal',
+                    'signupModal',
+                    'businessSignupModal'
+                ];
+
+                if (
+                    allowedModals.includes(
+                        event.target.id
+                    )
+                ) {
+
+                    console.log(
+                        '📱 Auth modal opened:',
+                        event.target.id
+                    );
+
+                    // Only initialize if it has not already happened
+                    if (!googleInitialized) {
+
+                        setTimeout(
+                            initGoogleSignIn,
+                            300
+                        );
+                    }
+                }
+            }
+        );
+
+
+        // ============================================================
+        // GOOGLE LIBRARY CALLBACK
+        // ============================================================
+
+        window.onGoogleLibraryLoad = function () {
+
+            console.log(
+                '🌐 Google Identity Services library loaded.'
+            );
+
+            initGoogleSignIn();
+        };
         // ============================================================
         // UTILITY FUNCTIONS
         // ============================================================
