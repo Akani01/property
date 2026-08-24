@@ -3539,62 +3539,69 @@
         </div></div></div>
     </div>
 
+   <!-- ===== SIGNUP MODAL (User + Business toggle) ===== -->
     <div class="modal fade" id="signupModal" tabindex="-1">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Create Account 🚀</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body">
-            <div id="googleSignupBtn" style="margin-bottom:12px;"></div>
-            <div class="auth-divider">or sign up with email</div>
-            <form id="signupForm">
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Mobile Phone *</label><input type="tel" class="form-control" name="mobile_phone" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Create Account</button>
-            </form>
-            <div class="text-center mt-2" style="font-size:11px;color:#999;">
-                Already have an account? <a href="#" onclick="showLogin();$('#signupModal').modal('hide');" style="color:var(--primary-color);">Login</a>
-            </div>
-        </div></div></div>
-    </div>
-
-    <div class="modal fade" id="businessSignupModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin: 10px auto; max-height: 95vh;">
-            <div class="modal-content" style="border-radius:16px;max-height:95vh;">
-                <div class="modal-header" style="flex-shrink:0;padding:12px 16px;">
-                    <h5 class="modal-title" style="font-size:14px;">🏢 Create Business Account</h5>
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-size:14px;">Create Account 🚀</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" style="overflow-y:auto;padding:12px 16px;padding-bottom:20px;">
-                    <div id="googleBusinessSignupBtn" style="margin-bottom:12px;"></div>
-                    <div class="auth-divider">or sign up with email</div>
-                    <form id="businessSignupForm" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Company Information</h6>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Logo</label><input type="file" name="company_logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"><small class="text-muted" style="font-size:9px;">Optional</small></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Name *</label><input type="text" class="form-control" name="company_name" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Industry</label><select name="industry" class="form-control" id="industrySelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Industry</option></select></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Size</label><select name="company_size" class="form-control" id="companySizeSelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Size</option></select></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" class="form-control" name="website" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Account Information</h6>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Contact Phone</label><input type="tel" class="form-control" name="phone_number" style="font-size:12px;padding:4px 8px;"></div>
-                            </div>
+                <div class="modal-body">
+                    <!-- Toggle between User and Business -->
+                    <div class="mb-3 d-flex justify-content-center gap-3">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="accountType" id="userType" value="user" checked>
+                            <label class="form-check-label" for="userType">👤 User</label>
                         </div>
-                        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description" style="font-size:12px;padding:4px 8px;"></textarea></div>
-                        <button type="submit" class="btn btn-primary w-100" id="businessSignupBtn" style="font-size:12px;padding:8px;min-height:42px;"><span id="businessSignupBtnText">Create Business Account</span></button>
-                    </form>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="accountType" id="businessType" value="business">
+                            <label class="form-check-label" for="businessType">🏢 Business</label>
+                        </div>
+                    </div>
+
+                    <!-- ===== USER FIELDS ===== -->
+                    <div id="userFields">
+                        <form id="signupForm">
+                            <!-- Your existing user fields -->
+                            <div class="mb-2"><label class="form-label" style="font-size:12px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
+                            <div class="mb-2"><label class="form-label" style="font-size:12px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
+                            <div class="mb-2"><label class="form-label" style="font-size:12px;">Mobile Phone *</label><input type="tel" class="form-control" name="mobile_phone" required style="font-size:12px;padding:4px 8px;"></div>
+                            <div class="mb-2"><label class="form-label" style="font-size:12px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                            <div class="mb-2"><label class="form-label" style="font-size:12px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                            <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Create User Account</button>
+                        </form>
+                    </div>
+
+                    <!-- ===== BUSINESS FIELDS ===== -->
+                    <div id="businessFields" style="display:none;">
+                        <form id="businessSignupFormIntegrated" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Company Information</h6>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Logo</label><input type="file" name="company_logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"><small class="text-muted" style="font-size:9px;">Optional</small></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Name *</label><input type="text" class="form-control" name="company_name" required style="font-size:12px;padding:4px 8px;"></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Industry</label><select name="industry" class="form-control" id="industrySelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Industry</option></select></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Size</label><select name="company_size" class="form-control" id="companySizeSelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Size</option></select></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" class="form-control" name="website" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Account Information</h6>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPasswordIntegrated" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessPasswordIntegrated', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPasswordIntegrated" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPasswordIntegrated', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
+                                    <div class="mb-2"><label class="form-label" style="font-size:11px;">Contact Phone</label><input type="tel" class="form-control" name="phone_number" style="font-size:12px;padding:4px 8px;"></div>
+                                </div>
+                            </div>
+                            <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description" style="font-size:12px;padding:4px 8px;"></textarea></div>
+                            <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:8px;min-height:42px;"><span id="businessSignupBtnTextIntegrated">Create Business Account</span></button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- ===== AI CHAT ===== -->
     <div id="aiChatPopup">
         <div class="chat-header">
@@ -6808,6 +6815,57 @@
             })
             .catch(() => showToast('Network error. Please try again.', 'error'));
         });
+
+        // Toggle between User and Business signup
+        const userTypeRadio = document.getElementById('userType');
+        const businessTypeRadio = document.getElementById('businessType');
+        const userFields = document.getElementById('userFields');
+        const businessFields = document.getElementById('businessFields');
+
+        function toggleSignupFields() {
+            if (userTypeRadio.checked) {
+                userFields.style.display = 'block';
+                businessFields.style.display = 'none';
+            } else {
+                userFields.style.display = 'none';
+                businessFields.style.display = 'block';
+                loadBusinessFormData(); // load industries & company sizes
+            }
+        }
+
+        userTypeRadio.addEventListener('change', toggleSignupFields);
+        businessTypeRadio.addEventListener('change', toggleSignupFields);
+
+        document.getElementById('businessSignupFormIntegrated')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const btn = document.querySelector('#businessSignupFormIntegrated button[type="submit"]');
+            const textSpan = document.getElementById('businessSignupBtnTextIntegrated');
+            const originalText = textSpan.textContent;
+            const password = document.getElementById('businessPasswordIntegrated')?.value || '';
+            const confirm = document.getElementById('businessConfirmPasswordIntegrated')?.value || '';
+            if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
+            textSpan.textContent = 'Creating account...';
+            btn.disabled = true;
+            fetch('/api/business-signup/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                textSpan.textContent = originalText;
+                btn.disabled = false;
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
+                    showToast('Business account created!', 'success');
+                    setTimeout(() => window.location.href = data.redirect_to || '/admin-portal/', 2000);
+                } else {
+                    showToast(data.error || 'Signup failed', 'error');
+                }
+            })
+            .catch(() => { textSpan.textContent = originalText; btn.disabled = false; showToast('Network error', 'error'); });
+        });
         // ============================================================
         // INIT
         // ============================================================
@@ -6848,6 +6906,53 @@
     MANAGEMENT CARD STYLES (quick fix)
     ============================================================ -->
     <style>
+
+        /* ============================================================
+        FIX: Signup modal scroll + always-visible footer
+        ============================================================ */
+
+        /* Make modal content a flex column */
+        #signupModal .modal-content {
+            display: flex;
+            flex-direction: column;
+            max-height: 92vh;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        /* Fixed header */
+        #signupModal .modal-header {
+            flex-shrink: 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Scrollable body */
+        #signupModal .modal-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 16px 20px;
+            max-height: none; /* let flex handle it */
+        }
+
+        /* Fixed footer */
+        #signupModal .modal-footer {
+            flex-shrink: 0;
+            border-top: 1px solid #dee2e6;
+            background: #fff;
+            padding: 12px 20px;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* On small screens, reduce padding */
+        @media (max-width: 576px) {
+            #signupModal .modal-body {
+                padding: 12px 14px;
+            }
+            #signupModal .modal-footer {
+                padding: 10px 14px;
+            }
+        }
+
         .management-card {
             background: #ffffff;
             border: 1px solid var(--glass-border);
@@ -8024,6 +8129,7 @@
                     0 0 0 0 rgba(57, 255, 20, 0);
             }
         }
+        
     </style>
 </body>
 </html>
