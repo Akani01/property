@@ -11474,563 +11474,227 @@ def subscribe_newsletter(request):
 
 
 
-# ============================================================
-# PASSWORD RESET REQUEST
-
-# ============================================================
 
 class PasswordResetRequestView(APIView):
-
+    """
+    Handle password reset request via API - works with frontend.
+    Sends an email with a reset link and a combined token.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
-
         try:
-
-            # ------------------------------------------------
-            # GET EMAIL
-            # ------------------------------------------------
-
+            # Parse email from JSON or form data
             if request.content_type == 'application/json':
-
-                try:
-                    data = json.loads(request.body)
-                except json.JSONDecodeError:
-                    return Response(
-                        {
-                            'success': False,
-                            'message': 'Invalid JSON data.'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
+                data = json.loads(request.body)
                 email = data.get('email', '').strip().lower()
-
             else:
-
-                email = request.POST.get(
-                    'email',
-                    ''
-                ).strip().lower()
-
-
-            # ------------------------------------------------
-            # VALIDATE EMAIL
-            # ------------------------------------------------
+                email = request.POST.get('email', '').strip().lower()
 
             if not email:
+                return Response({
+                    'success': False,
+                    'message': 'Email is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-                return Response(
-                    {
-                        'success': False,
-                        'message': 'Email is required.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # FIND USER
-            # ------------------------------------------------
-
+            # Check if user exists and is active
             try:
-
-                user = CustomUser.objects.get(
-                    email=email,
-                    is_active=True
-                )
-
+                user = CustomUser.objects.get(email=email, is_active=True)
             except CustomUser.DoesNotExist:
+                # Do not reveal whether the user exists (security)
+                return Response({
+                    'success': True,
+                    'message': 'If an account exists with this email, you will receive a reset link.'
+                }, status=status.HTTP_200_OK)
 
-                # Don't reveal whether the account exists.
-
-                return Response(
-                    {
-                        'success': True,
-                        'message': (
-                            'If an account exists with this email, '
-                            'you will receive a password reset link.'
-                        )
-                    },
-                    status=status.HTTP_200_OK
-                )
-
-
-            # ------------------------------------------------
-            # GENERATE DJANGO RESET TOKEN
-            # ------------------------------------------------
-
+            # Generate token and uid
             token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            uid = urlsafe_base64_encode(
-                force_bytes(user.pk)
+            # Build the reset link for the frontend (optional)
+            reset_link = request.build_absolute_uri(
+                f'/reset-password/{uid}/{token}/'
             )
 
-
-            # ------------------------------------------------
-            # PRODUCTION FRONTEND URL
-            # ------------------------------------------------
-
-            frontend_url = getattr(
-                settings,
-                'FRONTEND_URL',
-                ''
-            ).rstrip('/')
-
-
-            if not frontend_url:
-
-                logger.error(
-                    'FRONTEND_URL is not configured in settings.'
-                )
-
-                return Response(
-                    {
-                        'success': False,
-                        'message': (
-                            'Password reset is temporarily unavailable. '
-                            'Please contact support.'
-                        )
-                    },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-
-            # ------------------------------------------------
-            # BUILD RESET LINK
-            # ------------------------------------------------
-
-            reset_link = (
-                f'{frontend_url}/reset-password/'
-                f'{uid}/{token}/'
+            # Also provide the API endpoint – frontend will send the combined token
+            api_confirm_link = request.build_absolute_uri(
+                '/api/auth/password-reset-confirm/'
             )
 
+            # Combined token for API usage (uid-token)
+            combined_token = f"{uid}-{token}"
 
-            # ------------------------------------------------
-            # EMAIL
-            # ------------------------------------------------
-
-            subject = 'Password Reset Request - OppoGlobe'
-
+            # Send email
+            subject = "Password Reset Request - OppoGlobe"
             message = f"""
 Hello {user.get_full_name() or user.username},
 
 You requested a password reset for your OppoGlobe account.
 
-Click the link below to create a new password:
-
+Click the link below to reset your password:
 {reset_link}
 
-This password reset link is valid for a limited period.
+Or use the API endpoint with this token:
+{api_confirm_link}
 
-If you did not request a password reset, please ignore this email.
+Token (to be sent in the request body):
+{combined_token}
+
+This token will expire in 24 hours.
+
+If you didn't request this, please ignore this email.
 
 Best regards,
 OppoGlobe Team
 """
-
-
-            # ------------------------------------------------
-            # SEND EMAIL
-            # ------------------------------------------------
-
             send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
                 fail_silently=False,
             )
 
+            logger.info(f"Password reset requested for user: {user.username}")
 
-            # ------------------------------------------------
-            # LOG SUCCESS
-            # ------------------------------------------------
+            # (Optional) return the reset link for testing
+            return Response({
+                'success': True,
+                'message': 'Password reset link sent to your email',
+                'reset_link': reset_link,      # for testing
+                'token': combined_token        # for testing via API
+            }, status=status.HTTP_200_OK)
 
-            logger.info(
-                f'Password reset email sent for user: '
-                f'{user.username}'
-            )
-
-
-            # ------------------------------------------------
-            # RESPONSE
-            # ------------------------------------------------
-
-            return Response(
-                {
-                    'success': True,
-                    'message': (
-                        'Password reset link sent to your email.'
-                    )
-                },
-                status=status.HTTP_200_OK
-            )
-
-
+        except json.JSONDecodeError:
+            return Response({
+                'success': False,
+                'message': 'Invalid JSON data'
+            }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            logger.error(f"Password reset request error: {str(e)}")
+            return Response({
+                'success': False,
+                'message': 'An error occurred. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            logger.exception(
-                f'Password reset request error: {str(e)}'
-            )
-
-            return Response(
-                {
-                    'success': False,
-                    'message': (
-                        'Unable to send password reset email. '
-                        'Please try again later.'
-                    )
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-
-# ============================================================
-# PASSWORD RESET CONFIRM
-# POST /api/auth/password-reset-confirm/
-# ============================================================
 
 class PasswordResetConfirmView(APIView):
-
+    """
+    Password reset confirmation – expects a combined token (uid-token)
+    in the 'token' field, along with email, new_password, confirm_password.
+    """
     permission_classes = [AllowAny]
 
-
-    # --------------------------------------------------------
-    # PASSWORD VALIDATION
-    # --------------------------------------------------------
-
     def validate_password(self, password):
-
+        """Validate password strength (returns list of error messages)."""
         errors = []
-
-
         if len(password) < 8:
-
-            errors.append(
-                'Password must be at least 8 characters long.'
-            )
-
-
-        if not any(
-            char.isupper()
-            for char in password
-        ):
-
-            errors.append(
-                'Password must contain at least one uppercase letter.'
-            )
-
-
-        if not any(
-            char.islower()
-            for char in password
-        ):
-
-            errors.append(
-                'Password must contain at least one lowercase letter.'
-            )
-
-
-        if not any(
-            char.isdigit()
-            for char in password
-        ):
-
-            errors.append(
-                'Password must contain at least one number.'
-            )
-
-
+            errors.append('Password must be at least 8 characters long.')
+        if not any(char.isupper() for char in password):
+            errors.append('Password must contain at least one uppercase letter.')
+        if not any(char.islower() for char in password):
+            errors.append('Password must contain at least one lowercase letter.')
+        if not any(char.isdigit() for char in password):
+            errors.append('Password must contain at least one number.')
         return errors
 
-
-    # --------------------------------------------------------
-    # POST
-    # --------------------------------------------------------
-
     def post(self, request):
-
         try:
+            data = json.loads(request.body)
+            combined_token = data.get('token', '').strip()
+            email = data.get('email', '').strip().lower()
+            new_password = data.get('new_password', '')
+            confirm_password = data.get('confirm_password', '')
 
-            # ------------------------------------------------
-            # GET DATA
-            # ------------------------------------------------
-
-            if request.content_type == 'application/json':
-
-                try:
-                    data = json.loads(request.body)
-
-                except json.JSONDecodeError:
-
-                    return Response(
-                        {
-                            'success': False,
-                            'message': 'Invalid JSON data.'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
-            else:
-
-                data = request.POST
-
-
-            email = data.get(
-                'email',
-                ''
-            ).strip().lower()
-
-            uid = data.get(
-                'uid',
-                ''
-            ).strip()
-
-            token = data.get(
-                'token',
-                ''
-            ).strip()
-
-            new_password = data.get(
-                'new_password',
-                ''
-            )
-
-            confirm_password = data.get(
-                'confirm_password',
-                ''
-            )
-
-
-            # ------------------------------------------------
-            # REQUIRED FIELDS
-            # ------------------------------------------------
-
+            # --- Validate required fields ---
             errors = {}
-
-
+            if not combined_token:
+                errors['token'] = ['Reset token is required']
             if not email:
-
-                errors['email'] = [
-                    'Email is required.'
-                ]
-
-
-            if not uid:
-
-                errors['uid'] = [
-                    'Reset user ID is required.'
-                ]
-
-
-            if not token:
-
-                errors['token'] = [
-                    'Reset token is required.'
-                ]
-
-
+                errors['email'] = ['Email is required']
             if not new_password:
-
-                errors['new_password'] = [
-                    'New password is required.'
-                ]
-
-
+                errors['new_password'] = ['New password is required']
             if not confirm_password:
-
-                errors['confirm_password'] = [
-                    'Please confirm your password.'
-                ]
-
+                errors['confirm_password'] = ['Please confirm your password']
 
             if errors:
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': errors
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # PASSWORD MATCH
-            # ------------------------------------------------
-
-            if new_password != confirm_password:
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': {
-                            'confirm_password': [
-                                'Passwords do not match.'
-                            ]
-                        }
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # PASSWORD STRENGTH
-            # ------------------------------------------------
-
-            password_errors = self.validate_password(
-                new_password
-            )
-
-
-            if password_errors:
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': {
-                            'new_password': password_errors
-                        }
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # DECODE USER ID
-            # ------------------------------------------------
-
-            from django.utils.encoding import force_str
-            from django.utils.http import urlsafe_base64_decode
-
-            try:
-
-                user_id = force_str(
-                    urlsafe_base64_decode(uid)
-                )
-
-            except (
-                TypeError,
-                ValueError,
-                OverflowError
-            ):
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': {
-                            'token': [
-                                'Invalid password reset link.'
-                            ]
-                        }
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # FIND USER
-            # ------------------------------------------------
-
-            try:
-
-                user = CustomUser.objects.get(
-                    pk=user_id,
-                    email=email,
-                    is_active=True
-                )
-
-            except CustomUser.DoesNotExist:
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': {
-                            'email': [
-                                'Invalid password reset link.'
-                            ]
-                        }
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # VALIDATE DJANGO TOKEN
-            # ------------------------------------------------
-
-            if not default_token_generator.check_token(
-                user,
-                token
-            ):
-
-                return Response(
-                    {
-                        'success': False,
-                        'errors': {
-                            'token': [
-                                'This password reset link is '
-                                'invalid or has expired.'
-                            ]
-                        }
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-
-            # ------------------------------------------------
-            # SAVE NEW PASSWORD
-            # ------------------------------------------------
-
-            user.set_password(
-                new_password
-            )
-
-            user.save(
-                update_fields=['password']
-            )
-
-
-            # ------------------------------------------------
-            # SUCCESS LOG
-            # ------------------------------------------------
-
-            logger.info(
-                f'Password reset successful for user: '
-                f'{user.username}'
-            )
-
-
-            # ------------------------------------------------
-            # RESPONSE
-            # ------------------------------------------------
-
-            return Response(
-                {
-                    'success': True,
-                    'message': (
-                        'Password has been reset successfully. '
-                        'You can now log in with your new password.'
-                    )
-                },
-                status=status.HTTP_200_OK
-            )
-
-
-        except Exception as e:
-
-            logger.exception(
-                f'Password reset confirmation error: {str(e)}'
-            )
-
-            return Response(
-                {
+                return Response({
                     'success': False,
-                    'message': (
-                        'Unable to reset your password. '
-                        'Please try again.'
-                    )
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Check password match ---
+            if new_password != confirm_password:
+                errors['confirm_password'] = ['Passwords do not match']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Validate password strength ---
+            password_errors = self.validate_password(new_password)
+            if password_errors:
+                errors['new_password'] = password_errors
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Decode the combined token (uid-token) ---
+            try:
+                uid, token = combined_token.split('-', 1)
+            except ValueError:
+                errors['token'] = ['Invalid token format. Expected "uid-token".']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Decode uid and fetch user ---
+            try:
+                uid_decoded = force_str(urlsafe_base64_decode(uid))
+                user = CustomUser.objects.get(pk=uid_decoded, is_active=True)
+            except (TypeError, ValueError, CustomUser.DoesNotExist):
+                errors['email'] = ['Invalid email or user.']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Verify token using Django's built-in generator (stateless) ---
+            if not default_token_generator.check_token(user, token):
+                errors['token'] = ['Invalid or expired token.']
+                return Response({
+                    'success': False,
+                    'errors': errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # --- Set new password ---
+            try:
+                user.set_password(new_password)
+                user.save()
+                logger.info(f"Password reset successful for user: {user.username}")
+
+                return Response({
+                    'success': True,
+                    'message': 'Password has been reset successfully. You can now login with your new password.'
+                }, status=status.HTTP_200_OK)
+
+            except Exception as save_error:
+                logger.error(f"Failed to save new password for user {user.username}: {str(save_error)}")
+                return Response({
+                    'success': False,
+                    'error': 'Failed to update password. Please try again.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except json.JSONDecodeError:
+            return Response({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Password reset confirm error: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'An unexpected error occurred. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
