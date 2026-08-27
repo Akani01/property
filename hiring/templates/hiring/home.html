@@ -6063,6 +6063,7 @@
             fetch(`/api/videos/feed/?page=${page}&page_size=10`)
                 .then(res => res.json())
                 .then(data => {
+                    reelsState.isLoading = false;
                     if (data.success) {
                         const newReels = data.videos || [];
                         reelsState.reels = page === 1 ? newReels : [...reelsState.reels, ...newReels];
@@ -6072,18 +6073,51 @@
                         else appendReels(newReels);
                         renderHorizontalCards();
                         renderReelsHorizontalStrip();
+                    } else {
+                        // Show error or empty state
+                        if (page === 1) {
+                            container.innerHTML = `
+                                <div class="empty-state text-center py-5" style="background:transparent;border:none;color:#fff;">
+                                    <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#ff6b6b;"></i>
+                                    <h4 style="color:#fff;margin-top:12px;">Could not load reels</h4>
+                                    <p style="color:#999;">Please try again later.</p>
+                                    <button class="btn btn-primary mt-3" onclick="loadReels(1)">Retry</button>
+                                </div>
+                            `;
+                        }
                     }
-                    reelsState.isLoading = false;
                 })
-                .catch(() => { reelsState.isLoading = false;
+                .catch(() => {
+                    reelsState.isLoading = false;
+                    if (page === 1) {
+                        container.innerHTML = `
+                            <div class="empty-state text-center py-5" style="background:transparent;border:none;color:#fff;">
+                                <i class="fas fa-wifi" style="font-size:3rem;color:#ff6b6b;"></i>
+                                <h4 style="color:#fff;margin-top:12px;">Network Error</h4>
+                                <p style="color:#999;">Check your connection and try again.</p>
+                                <button class="btn btn-primary mt-3" onclick="loadReels(1)">Retry</button>
+                            </div>
+                        `;
+                    }
                     renderHorizontalCards();
-                    renderReelsHorizontalStrip(); });
+                    renderReelsHorizontalStrip();
+                });
         }
 
         function renderReels(reels) {
             const container = document.getElementById('reelsFeedContainer');
             if (!container) return;
             container.innerHTML = '';
+            if (!reels || reels.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state text-center py-5" style="background:transparent;border:none;color:#fff;">
+                        <i class="fas fa-video" style="font-size:3rem;color:#555;"></i>
+                        <h4 style="color:#fff;margin-top:12px;">No Reels Yet</h4>
+                        <p style="color:#999;">Be the first to upload a reel!</p>
+                    </div>
+                `;
+                return;
+            }
             reels.forEach(v => container.appendChild(createReelElement(v)));
             setupReelObserver();
         }
