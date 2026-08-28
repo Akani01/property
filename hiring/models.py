@@ -88,6 +88,12 @@ class ApplicantProfile(models.Model):
     current_salary = models.CharField(max_length=20, choices=SALARY_RANGE_CHOICES, blank=True, null=True)
     desired_salary = models.CharField(max_length=20, choices=SALARY_RANGE_CHOICES, blank=True, null=True)
     introduction = models.TextField(blank=True)
+    avatar = models.ImageField(
+        upload_to='avatars/%Y/%m/%d/',
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
+    )
     profile_completeness = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

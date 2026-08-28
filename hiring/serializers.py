@@ -205,7 +205,8 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'is_citizen', 'national_id', 'passport_number', 'birth_date',
             'current_home_location', 'has_drivers_license', 'has_own_transport',
             'preferred_job_title', 'availability', 'willing_to_relocate',
-            'current_salary', 'desired_salary', 'introduction'
+            'current_salary', 'desired_salary', 'introduction',
+            'avatar'   # ✅ ADD THIS
         ]
         extra_kwargs = {
             'first_name': {'required': False, 'allow_blank': True},
@@ -1586,8 +1587,13 @@ class VideoCommentSerializer(serializers.ModelSerializer):
         return "Unknown User"
     
     def get_author_avatar(self, obj):
-        if hasattr(obj.author, 'applicantprofile') and obj.author.applicantprofile.avatar:
-            return obj.author.applicantprofile.avatar.url
+        if obj.author:
+            try:
+                profile = obj.author.applicantprofile
+                if profile.avatar:  # Now the field exists
+                    return profile.avatar.url
+            except ApplicantProfile.DoesNotExist:
+                pass
         return None
     
     def get_author_username(self, obj):
@@ -1667,8 +1673,13 @@ class VideoSerializer(serializers.ModelSerializer):
         return "Unknown User"
     
     def get_author_avatar(self, obj):
-        if hasattr(obj.author, 'applicantprofile') and obj.author.applicantprofile.avatar:
-            return obj.author.applicantprofile.avatar.url
+        if obj.author:
+            try:
+                profile = obj.author.applicantprofile
+                if profile.avatar:  # Now the field exists
+                    return profile.avatar.url
+            except ApplicantProfile.DoesNotExist:
+                pass
         return None
     
     def get_author_username(self, obj):

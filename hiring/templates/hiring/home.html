@@ -4743,19 +4743,29 @@
                 return;
             }
             const slice = reels.slice(0, 10);
-            container.innerHTML = slice.map(reel => `<div class="reel-thumb-card" data-reel-id="${reel.id}" onclick="handleReelThumbClick('${reel.id}')">
-                <div class="thumb"><img src="${reel.thumbnail_url || ''}" alt="${escapeHtml(reel.title || 'Reel')}" loading="lazy" onerror="this.style.display='none';this.parentElement.style.background='#333';"><div class="play-icon"><i class="fas fa-play-circle"></i></div></div>
-                <div class="info"><div class="title">${escapeHtml(reel.title || 'Untitled')}</div><div class="author">${escapeHtml(reel.author_name || 'Unknown')}</div></div>
-            </div>`).join('');
-        }
-
-        function handleReelThumbClick(reelId) {
-            switchTab('reels');
-            setTimeout(() => {
-                const target = document.querySelector(`.reels-item[data-reel-id="${reelId}"]`);
-                if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    const video = target.querySelector('video'); if (video) video.play(); }
-            }, 500);
+            container.innerHTML = slice.map(reel => `
+                <div class="reel-thumb-card" data-reel-id="${reel.id}" onclick="handleReelThumbClick('${reel.id}')">
+                    <div class="thumb" style="position:relative;background:#000;aspect-ratio:9/16;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                        <video 
+                            src="${reel.video_url || ''}" 
+                            muted 
+                            loop 
+                            playsinline 
+                            preload="metadata"
+                            style="width:100%;height:100%;object-fit:cover;"
+                            onmouseenter="this.play()" 
+                            onmouseleave="this.pause()"
+                        ></video>
+                        <div class="play-icon" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:24px;text-shadow:0 2px 12px rgba(0,0,0,0.6);opacity:0.8;pointer-events:none;">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="info">
+                        <div class="title">${escapeHtml(reel.title || 'Untitled')}</div>
+                        <div class="author">${escapeHtml(reel.author_name || 'Unknown')}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // ============================================================
