@@ -223,7 +223,43 @@ def video_feed_page(request):
     return render(request, 'hiring/video_feed.html')
 
 
-    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_video_view(request, video_id):
+    """
+    Increment the view count for a video.
+    Expects a POST request with no body required.
+    """
+    try:
+        # Import your Video model – adjust the import path as needed.
+        # If your Video model is in realestate.models, uncomment the line below.
+        # from realestate.models import Video
+        video = get_object_or_404(Video, id=video_id, is_published=True)
+
+        # Atomically increment views using F() to avoid race conditions
+        from django.db.models import F
+        video.views = F('views') + 1
+        video.save(update_fields=['views'])
+        video.refresh_from_db()  # get the updated value
+
+        return Response({
+            'success': True,
+            'views': video.views
+        })
+
+    except Video.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': 'Video not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.error(f"Error incrementing video views: {str(e)}")
+        return Response({
+            'success': False,
+            'error': 'Failed to update view count'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+         
 
 # ===== PROPERTY TYPES API =====
 def get_property_types_api(request):

@@ -749,114 +749,511 @@
             margin: 16px 0 20px 0;
             padding: 0 4px;
         }
+
         .reels-strip .strip-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 8px 8px 8px;
+            padding: 0 4px 10px 4px;
         }
+
         .reels-strip .strip-header h6 {
             font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             color: #191919;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
+
         .reels-strip .strip-header h6 i {
             color: var(--primary-color);
+            font-size: 18px;
         }
+
         .reels-strip .strip-header .see-all {
-            font-size: 11px;
+            font-size: 12px;
             color: rgba(0, 0, 0, 0.5);
             cursor: pointer;
             transition: var(--transition);
             font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.03);
         }
+
         .reels-strip .strip-header .see-all:hover {
             color: #000;
+            background: rgba(0, 0, 0, 0.06);
         }
+
         .reels-strip .reels-horizontal-scroll {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             overflow-x: auto;
-            padding: 4px 4px 10px 4px;
+            padding: 4px 4px 14px 4px;
             scrollbar-width: thin;
             -webkit-overflow-scrolling: touch;
             scroll-snap-type: x proximity;
         }
+
         .reels-strip .reels-horizontal-scroll::-webkit-scrollbar {
             height: 6px;
         }
+
         .reels-strip .reels-horizontal-scroll::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.03);
+            background: rgba(0, 0, 0, 0.04);
             border-radius: 8px;
         }
+
         .reels-strip .reels-horizontal-scroll::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.12);
+            background: rgba(0, 0, 0, 0.15);
             border-radius: 8px;
         }
+
+       /* ----- REEL THUMB CARD – WIDE & COMPACT ----- */
         .reels-strip .reels-horizontal-scroll .reel-thumb-card {
-            flex: 0 0 150px;
+            flex: 0 0 280px;            /* card width */
+            width: 280px;
             scroll-snap-align: start;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius);
             overflow: hidden;
             cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            background: #fff;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            background: #ffffff;
+            position: relative;
         }
+
         .reels-strip .reels-horizontal-scroll .reel-thumb-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+            border-color: rgba(255, 77, 61, 0.15);
         }
+
+        /* ----- THUMB CONTAINER – NEW ASPECT RATIO (4:5) ----- */
         .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb {
             position: relative;
             width: 100%;
-            aspect-ratio: 9 / 16;
-            background: #000;
+            aspect-ratio: 4 / 5;          /* ← reduced height */
+            background: #0a0a0a;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb img {
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
         }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card:hover .thumb video {
+            transform: scale(1.04);
+        }
+
+        /* ----- GRADIENT OVERLAY ----- */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .thumb-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ----- PLAY ICON – REDUCED SIZE FOR COMPACT CARD ----- */
         .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: #fff;
-            font-size: 24px;
-            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-            opacity: 0.8;
-            transition: var(--transition);
+            z-index: 3;
             pointer-events: none;
+            opacity: 0.92;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+            font-size: 22px;
+            margin-left: 2px; /* center play triangle */
+        }
+
         .reels-strip .reels-horizontal-scroll .reel-thumb-card:hover .thumb .play-icon {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.1);
+            transform: translate(-50%, -50%) scale(1.08);
+            background: rgba(255, 77, 61, 0.25);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 40px rgba(255, 77, 61, 0.2);
         }
+
+        /* Optional: remove duration badge if you don't have it */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon .reel-duration {
+            display: none; /* or keep it, but adjust font-size */
+        }
+
+        /* ----- VIEWS BADGE (top-right) ----- */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .views-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 4;
+            font-size: 9px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.2px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .views-badge i {
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ----- INFO SECTION ----- */
         .reels-strip .reels-horizontal-scroll .reel-thumb-card .info {
-            padding: 6px 8px 8px 8px;
+            padding: 10px 12px 12px 12px;
+            background: #ffffff;
+            position: relative;
+            z-index: 2;
         }
+
         .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .title {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 600;
             color: #191919;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
-            font-size: 9px;
-            color: #888;
+            line-height: 1.3;
+            margin-bottom: 2px;
         }
 
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
+            font-size: 11px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author .avatar-dot {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 18px;
+            flex-shrink: 0;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author .author-name {
+            max-width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini {
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: 500;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini i {
+            color: var(--primary-color);
+            font-size: 11px;
+        }
+
+        /* ----- RESPONSIVE TWEAKS ----- */
+        @media (max-width: 768px) {
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card {
+                flex: 0 0 200px;
+                width: 200px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
+                width: 40px;
+                height: 40px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card {
+                flex: 0 0 160px;
+                width: 160px;
+                border-radius: 10px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
+                width: 34px;
+                height: 34px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+                font-size: 14px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .title {
+                font-size: 11px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
+                font-size: 9px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini {
+                font-size: 8px;
+            }
+        }
+        /* ----- PLAY ICON – LARGE & MODERN ----- */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 36px;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0.92;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+            font-size: 28px;
+            margin-left: 3px; /* center the play triangle */
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card:hover .thumb .play-icon {
+            transform: translate(-50%, -50%) scale(1.08);
+            background: rgba(255, 77, 61, 0.25);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 40px rgba(255, 77, 61, 0.2);
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon .reel-duration {
+            position: absolute;
+            bottom: -22px;
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1px 8px;
+            border-radius: 8px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        /* ----- VIEWS BADGE (top-right) ----- */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .views-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 4;
+            font-size: 9px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.2px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .views-badge i {
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ----- INFO SECTION ----- */
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info {
+            padding: 10px 12px 12px 12px;
+            background: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #191919;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+            margin-bottom: 2px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
+            font-size: 11px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author .avatar-dot {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 18px;
+            flex-shrink: 0;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author .author-name {
+            max-width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini {
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: 500;
+        }
+
+        .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini i {
+            color: var(--primary-color);
+            font-size: 11px;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 768px) {
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card {
+                flex: 0 0 165px;
+                width: 165px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 28px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+                font-size: 22px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .title {
+                font-size: 12px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card {
+                flex: 0 0 140px;
+                width: 140px;
+                border-radius: 10px;
+            }
+            .reels-strip .reels-horizontal-scroll {
+                gap: 10px;
+                padding: 4px 2px 12px 2px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .play-icon i {
+                font-size: 18px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info {
+                padding: 6px 8px 8px 8px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .title {
+                font-size: 11px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author {
+                font-size: 9px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .author .avatar-dot {
+                width: 14px;
+                height: 14px;
+                line-height: 14px;
+                font-size: 6px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .info .likes-mini {
+                font-size: 8px;
+            }
+            .reels-strip .reels-horizontal-scroll .reel-thumb-card .thumb .views-badge {
+                font-size: 7px;
+                padding: 1px 6px;
+            }
+            .reels-strip .strip-header h6 {
+                font-size: 13px;
+            }
+            .reels-strip .strip-header .see-all {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+        }
         /* ============================================================
            PROPERTY CARDS – REDESIGNED (PROFESSIONAL & CLEAN)
            ============================================================ */
@@ -4739,35 +5136,181 @@
             if (!container) return;
             const reels = reelsState.reels || [];
             if (reels.length === 0) {
-                container.innerHTML = `<div style="width:100%;text-align:center;padding:10px 0;color:rgba(0,0,0,0.2);font-size:12px;"><i class="fas fa-video" style="font-size:18px;display:block;margin-bottom:4px;"></i>No reels yet. Be the first to upload!</div>`;
+                container.innerHTML = `
+                    <div style="width:100%;text-align:center;padding:18px 0;color:rgba(0,0,0,0.25);font-size:13px;">
+                        <i class="fas fa-video" style="font-size:28px;display:block;margin-bottom:8px;color:rgba(0,0,0,0.1);"></i>
+                        No reels yet. Be the first to upload!
+                    </div>
+                `;
                 return;
             }
             const slice = reels.slice(0, 10);
             container.innerHTML = slice.map(reel => `
                 <div class="reel-thumb-card" data-reel-id="${reel.id}" onclick="handleReelThumbClick('${reel.id}')">
-                    <div class="thumb" style="position:relative;background:#000;aspect-ratio:9/16;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                    <div class="thumb">
                         <video 
                             src="${reel.video_url || ''}" 
                             muted 
                             loop 
                             playsinline 
                             preload="metadata"
-                            style="width:100%;height:100%;object-fit:cover;"
                             onmouseenter="this.play()" 
                             onmouseleave="this.pause()"
                         ></video>
-                        <div class="play-icon" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:24px;text-shadow:0 2px 12px rgba(0,0,0,0.6);opacity:0.8;pointer-events:none;">
-                            <i class="fas fa-play-circle"></i>
+                        <div class="thumb-gradient"></div>
+                        <div class="play-icon">
+                            <i class="fas fa-play"></i>
+                            <span class="reel-duration">${reel.duration || '0:15'}</span>
+                        </div>
+                        <div class="views-badge">
+                            <i class="fas fa-eye"></i> ${formatNumber(reel.views || 0)}
                         </div>
                     </div>
                     <div class="info">
                         <div class="title">${escapeHtml(reel.title || 'Untitled')}</div>
-                        <div class="author">${escapeHtml(reel.author_name || 'Unknown')}</div>
+                        <div class="author-row">
+                            <div class="author">
+                                <span class="avatar-dot">${escapeHtml((reel.author_name || 'U')[0].toUpperCase())}</span>
+                                <span class="author-name">${escapeHtml(reel.author_name || 'Unknown')}</span>
+                            </div>
+                            <span class="likes-mini">
+                                <i class="fas fa-heart"></i> ${formatNumber(reel.likes_count || 0)}
+                            </span>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
+        // Helper: format numbers (e.g., 1500 → 1.5K)
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        // ============================================================
+        // HANDLE THUMBNAIL CLICK → PLAY REEL
+        // ============================================================
+        // ============================================================
+        // HANDLE THUMBNAIL CLICK (for horizontal strip)
+        // ============================================================
+        function handleReelThumbClick(reelId) {
+            switchTab('reels');
+            setTimeout(() => {
+                const target = document.querySelector(`.reels-item[data-reel-id="${reelId}"]`);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const video = target.querySelector('video');
+                    if (video) video.play();
+                } else {
+                    // If not loaded, reload and retry
+                    loadReels(1);
+                    setTimeout(() => {
+                        const retryTarget = document.querySelector(`.reels-item[data-reel-id="${reelId}"]`);
+                        if (retryTarget) {
+                            retryTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const video = retryTarget.querySelector('video');
+                            if (video) video.play();
+                        }
+                    }, 800);
+                }
+            }, 400);
+        }
+
+        // ============================================================
+        // INCREMENT VIEWS (API call + UI update)
+        // ============================================================
+        function incrementReelView(reelId) {
+            fetch(`/api/videos/${reelId}/view/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateReelViewCount(reelId, data.views);
+                }
+            })
+            .catch(() => { /* ignore network errors */ });
+        }
+
+        // ============================================================
+        // UPDATE UI VIEW COUNT (both feed and strip)
+        // ============================================================
+        function updateReelViewCount(reelId, newCount) {
+            // Update in the horizontal strip
+            const stripBadge = document.querySelector(`.reel-thumb-card[data-reel-id="${reelId}"] .views-badge`);
+            if (stripBadge) {
+                stripBadge.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(newCount)}`;
+            }
+
+            // Update in the full feed (if visible)
+            const feedBadge = document.querySelector(`.reels-item[data-reel-id="${reelId}"] .views-badge`);
+            if (feedBadge) {
+                feedBadge.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(newCount)}`;
+            }
+        }
+
+        // Helper to format numbers (e.g., 1500 → 1.5K)
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+        // ============================================================
+        // INCREMENT REEL VIEWS (API + optimistic UI)
+        // ============================================================
+        function incrementReelView(reelId) {
+            // Call the backend API to record a view
+            fetch(`/api/videos/${reelId}/view/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the view count in the UI (both in feed and horizontal strip)
+                    updateReelViewCount(reelId, data.views);
+                }
+            })
+            .catch(() => {
+                // If API fails, just ignore – we don't want to break the experience
+            });
+        }
+
+        // ============================================================
+        // UPDATE UI VIEW COUNT
+        // ============================================================
+        function updateReelViewCount(reelId, newCount) {
+            // Update in the horizontal strip
+            const stripCard = document.querySelector(`.reel-thumb-card[data-reel-id="${reelId}"] .views-badge`);
+            if (stripCard) {
+                stripCard.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(newCount)}`;
+            }
+
+            // Update in the full reels feed (if currently on that tab)
+            const feedItem = document.querySelector(`.reels-item[data-reel-id="${reelId}"] .views-badge`);
+            if (feedItem) {
+                feedItem.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(newCount)}`;
+            }
+        }
+
+        // ============================================================
+        // (Optional) Update video element to call view on play
+        // ============================================================
+        // In the createReelElement function, add a 'play' event listener
+        // to call incrementReelView when the user plays the video.
+        // If you've already defined createReelElement, update it like this:
+        // (modify the existing function)
         // ============================================================
         // ADVANCED SEARCH
         // ============================================================
@@ -6142,24 +6685,119 @@
             const div = document.createElement('div');
             div.className = 'reels-item';
             div.dataset.reelId = reel.id;
+
+            // ---- VIDEO ----
             const videoEl = document.createElement('video');
             videoEl.src = reel.video_url;
             videoEl.loop = true;
             videoEl.muted = true;
             videoEl.playsInline = true;
-            videoEl.addEventListener('dblclick', function(e) { e.preventDefault(); if (!document.fullscreenElement) this
-                    .requestFullscreen?.(); else document.exitFullscreen?.(); });
+
+            // Increment views when the user plays the video (only once)
+            videoEl.addEventListener('play', function onPlay() {
+                incrementReelView(reel.id);
+                videoEl.removeEventListener('play', onPlay);
+            });
+
+            videoEl.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                if (!document.fullscreenElement) this.requestFullscreen?.();
+                else document.exitFullscreen?.();
+            });
             div.appendChild(videoEl);
+
+            // ---- GRADIENT OVERLAY (for readability) ----
+            const gradient = document.createElement('div');
+            gradient.className = 'thumb-gradient';
+            gradient.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 55%;
+                background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+                pointer-events: none;
+                z-index: 2;
+            `;
+            div.appendChild(gradient);
+
+            // ---- VIEWS BADGE (top‑right) ----
+            const viewsBadge = document.createElement('div');
+            viewsBadge.className = 'views-badge';
+            viewsBadge.style.cssText = `
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                z-index: 4;
+                font-size: 9px;
+                font-weight: 600;
+                color: #fff;
+                background: rgba(0,0,0,0.55);
+                backdrop-filter: blur(4px);
+                padding: 2px 10px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                letter-spacing: 0.2px;
+            `;
+            viewsBadge.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(reel.views || 0)}`;
+            div.appendChild(viewsBadge);
+
+            // ---- OVERLAY (author, title, description) ----
             const overlay = document.createElement('div');
             overlay.className = 'reels-overlay';
-            overlay.innerHTML =
-                `<div class="reels-author"><span class="avatar" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-align:center;line-height:24px;font-size:9px;font-weight:600;">${escapeHtml((reel.author_name || 'U')[0].toUpperCase())}</span><span>${escapeHtml(reel.author_name || 'Unknown')}</span></div><div class="reels-title">${escapeHtml(reel.title || 'Untitled Reel')}</div>${reel.description ? `<div class="reels-description">${escapeHtml(reel.description)}</div>` : ''}`;
+            overlay.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 14px;
+                background: transparent;
+                color: #fff;
+                z-index: 10;
+                pointer-events: none;
+            `;
+            overlay.innerHTML = `
+                <div class="reels-author" style="display:flex;align-items:center;gap:8px;font-size:12px;opacity:0.9;pointer-events:auto;">
+                    <span class="avatar" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-align:center;line-height:24px;font-size:9px;font-weight:600;">${escapeHtml((reel.author_name || 'U')[0].toUpperCase())}</span>
+                    <span>${escapeHtml(reel.author_name || 'Unknown')}</span>
+                </div>
+                <div class="reels-title" style="font-family:var(--font-display);font-size:15px;font-weight:600;margin-top:2px;">${escapeHtml(reel.title || 'Untitled Reel')}</div>
+                ${reel.description ? `<div class="reels-description" style="font-size:11px;opacity:0.85;max-width:85%;margin-top:2px;">${escapeHtml(reel.description)}</div>` : ''}
+            `;
             div.appendChild(overlay);
+
+            // ---- ACTION BUTTONS (right side) ----
             const actions = document.createElement('div');
             actions.className = 'reels-actions';
-            actions.innerHTML =
-                `<button class="reels-action-btn" onclick="handleReelLike('${reel.id}')"><div class="icon-circle ${reel.has_liked ? 'liked' : ''}"><i class="${reel.has_liked ? 'fas' : 'far'} fa-heart"></i></div><span class="count">${reel.likes_count || 0}</span></button><button class="reels-action-btn" onclick="openReelComments('${reel.id}')"><div class="icon-circle"><i class="far fa-comment"></i></div><span class="count">${reel.comments_count || 0}</span></button>`;
+            actions.style.cssText = `
+                position: absolute;
+                right: 10px;
+                bottom: 70px;
+                z-index: 20;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                pointer-events: auto;
+            `;
+            actions.innerHTML = `
+                <button class="reels-action-btn" onclick="handleReelLike('${reel.id}')" style="display:flex;flex-direction:column;align-items:center;color:#fff;cursor:pointer;background:none;border:none;padding:0;">
+                    <div class="icon-circle ${reel.has_liked ? 'liked' : ''}" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:16px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s;">
+                        <i class="${reel.has_liked ? 'fas' : 'far'} fa-heart"></i>
+                    </div>
+                    <span class="count" style="font-size:10px;margin-top:2px;font-family:var(--font-mono);">${reel.likes_count || 0}</span>
+                </button>
+                <button class="reels-action-btn" onclick="openReelComments('${reel.id}')" style="display:flex;flex-direction:column;align-items:center;color:#fff;cursor:pointer;background:none;border:none;padding:0;">
+                    <div class="icon-circle" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:16px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s;">
+                        <i class="far fa-comment"></i>
+                    </div>
+                    <span class="count" style="font-size:10px;margin-top:2px;font-family:var(--font-mono);">${reel.comments_count || 0}</span>
+                </button>
+            `;
             div.appendChild(actions);
+
             return div;
         }
 

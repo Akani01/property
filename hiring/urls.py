@@ -256,7 +256,7 @@ urlpatterns = [
     path('api/videos/<uuid:video_id>/share/', views.api_video_share, name='api_video_share'),
     path('api/videos/<uuid:video_id>/comments/', views.api_video_comments, name='api_video_comments'),
     path('api/videos/<uuid:video_id>/delete/', views.api_delete_video, name='api_delete_video'),
-    
+    path('api/videos/<uuid:video_id>/view/', views.api_video_view, name='api_video_view'),
     # Comment endpoints
     path('api/comments/<uuid:comment_id>/like/', views.api_comment_like, name='api_comment_like'),
     path('api/comments/<uuid:comment_id>/delete/', views.api_delete_comment, name='api_delete_comment'),
