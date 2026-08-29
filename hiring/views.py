@@ -258,7 +258,7 @@ def api_video_view(request, video_id):
             'success': False,
             'error': 'Failed to update view count'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
          
 
 # ===== PROPERTY TYPES API =====

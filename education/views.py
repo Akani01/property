@@ -11,6 +11,8 @@ from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Q
+from datetime import datetime
 from django.contrib.auth import get_user_model
 import pandas as pd
 import os
@@ -913,91 +915,6 @@ def apply_school(request, school_id=None):
     return render(request, 'education/apply_school.html', context)
 
 
-@login_required
-def my_applications(request):
-    """View all education applications for the current user"""
-    bursary_apps = BursaryApplication.objects.filter(applicant=request.user).select_related('bursary')
-    university_apps = UniversityApplication.objects.filter(applicant=request.user).select_related('university')
-    school_apps = SchoolApplication.objects.filter(applicant=request.user).select_related('school')
-    
-    all_applications = []
-    
-    for app in bursary_apps:
-        all_applications.append({
-            'id': app.id,
-            'type': 'bursary',
-            'type_display': 'Bursary',
-            'title': app.bursary.title if app.bursary else 'No Bursary',
-            'institution': app.bursary.provider if app.bursary else 'N/A',
-            'status': app.status,
-            'created_at': app.created_at,
-            'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(BursaryApplication.STATUS_CHOICES).get(app.status, app.status),
-            'application': app,
-            'url': reverse('education_bursary_application_detail', args=[app.id])
-        })
-    
-    for app in university_apps:
-        all_applications.append({
-            'id': app.id,
-            'type': 'university',
-            'type_display': 'University',
-            'title': app.university.name if app.university else 'No University',
-            'institution': app.university.name if app.university else 'N/A',
-            'status': app.status,
-            'created_at': app.created_at,
-            'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(UniversityApplication.STATUS_CHOICES).get(app.status, app.status),
-            'application': app,
-            'url': reverse('education_university_application_detail', args=[app.id])
-        })
-    
-    for app in school_apps:
-        all_applications.append({
-            'id': app.id,
-            'type': 'school',
-            'type_display': 'School',
-            'title': app.school.name if app.school else 'No School',
-            'institution': app.school.name if app.school else 'N/A',
-            'status': app.status,
-            'created_at': app.created_at,
-            'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(SchoolApplication.STATUS_CHOICES).get(app.status, app.status),
-            'application': app,
-            'url': reverse('education_school_application_detail', args=[app.id])
-        })
-    
-    all_applications.sort(key=lambda x: x['created_at'], reverse=True)
-    
-    paginator = Paginator(all_applications, 20)
-    page = request.GET.get('page', 1)
-    applications_page = paginator.get_page(page)
-    
-    status_counts = {}
-    for app in all_applications:
-        status_counts[app['status']] = status_counts.get(app['status'], 0) + 1
-    
-    context = {
-        'applications': applications_page,
-        'total_count': len(all_applications),
-        'status_counts': status_counts,
-        'status_choices': [
-            ('draft', 'Draft'),
-            ('submitted', 'Submitted'),
-            ('under_review', 'Under Review'),
-            ('shortlisted', 'Shortlisted'),
-            ('interview', 'Interview Scheduled'),
-            ('accepted', 'Accepted'),
-            ('rejected', 'Rejected'),
-            ('withdrawn', 'Withdrawn'),
-        ]
-    }
-    
-    return render(request, 'education/my_applications.html', context)
-
 
 @login_required
 def bursary_application_detail(request, pk):
@@ -1292,3 +1209,351 @@ def paper_list(request):
         'years': QuestionPaper.objects.values_list('year', flat=True).distinct().order_by('-year'),
     }
     return render(request, 'education/paper_list.html', context)
+
+
+
+@login_required
+def business_applications(request):
+    """
+    Business/Admin dashboard to view, search, and filter ALL applications.
+    """
+    # Permission check
+    if not (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin'):
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect('education_home')
+
+    # --- 1. Get filter parameters from request ---
+    search_query = request.GET.get('q', '').strip()
+    app_type_filter = request.GET.get('type', '')  # bursary, university, school
+    status_filter = request.GET.get('status', '')
+    field_filter = request.GET.get('field', '')    # Field of study (Bursary) or Program (University)
+    from_date = request.GET.get('from_date', '')
+    to_date = request.GET.get('to_date', '')
+
+    # --- 2. Base QuerySets (select related for performance) ---
+    bursary_qs = BursaryApplication.objects.select_related('bursary', 'applicant')
+    university_qs = UniversityApplication.objects.select_related('university', 'applicant')
+    school_qs = SchoolApplication.objects.select_related('school', 'applicant')
+
+    # --- 3. Apply Filters (using Q for advanced search) ---
+    if search_query:
+        # Search across applicant names, emails, motivation, institution names, and career-specific fields
+        bursary_qs = bursary_qs.filter(
+            Q(full_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(motivation__icontains=search_query) |
+            Q(current_institution__icontains=search_query) |
+            Q(bursary__title__icontains=search_query) |
+            Q(bursary__provider__icontains=search_query) |
+            Q(bursary__field_of_study__icontains=search_query)
+        )
+        university_qs = university_qs.filter(
+            Q(full_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(motivation__icontains=search_query) |
+            Q(program_of_interest__icontains=search_query) |
+            Q(university__name__icontains=search_query) |
+            Q(university__city__icontains=search_query)
+        )
+        school_qs = school_qs.filter(
+            Q(student_full_name__icontains=search_query) |
+            Q(student_email__icontains=search_query) |
+            Q(motivation__icontains=search_query) |
+            Q(previous_school__icontains=search_query) |
+            Q(school__name__icontains=search_query) |
+            Q(school__city__icontains=search_query)
+        )
+
+    # Filter by status
+    if status_filter:
+        bursary_qs = bursary_qs.filter(status=status_filter)
+        university_qs = university_qs.filter(status=status_filter)
+        school_qs = school_qs.filter(status=status_filter)
+
+    # Filter by specific career/field (Bursary field of study)
+    if field_filter:
+        bursary_qs = bursary_qs.filter(bursary__field_of_study__icontains=field_filter)
+        university_qs = university_qs.filter(program_of_interest__icontains=field_filter)
+        # For schools, we search the motivation or school name for that keyword (since they don't have a dedicated program field)
+        school_qs = school_qs.filter(
+            Q(motivation__icontains=field_filter) |
+            Q(school__name__icontains=field_filter)
+        )
+
+    # Filter by date range (submitted_at)
+    if from_date:
+        try:
+            from_dt = datetime.strptime(from_date, '%Y-%m-%d')
+            bursary_qs = bursary_qs.filter(submitted_at__gte=from_dt)
+            university_qs = university_qs.filter(submitted_at__gte=from_dt)
+            school_qs = school_qs.filter(submitted_at__gte=from_dt)
+        except ValueError:
+            pass
+    if to_date:
+        try:
+            to_dt = datetime.strptime(to_date, '%Y-%m-%d')
+            bursary_qs = bursary_qs.filter(submitted_at__lte=to_dt)
+            university_qs = university_qs.filter(submitted_at__lte=to_dt)
+            school_qs = school_qs.filter(submitted_at__lte=to_dt)
+        except ValueError:
+            pass
+
+    # Apply Type filter (if specific type is chosen)
+    if app_type_filter == 'bursary':
+        university_qs = UniversityApplication.objects.none()
+        school_qs = SchoolApplication.objects.none()
+    elif app_type_filter == 'university':
+        bursary_qs = BursaryApplication.objects.none()
+        school_qs = SchoolApplication.objects.none()
+    elif app_type_filter == 'school':
+        bursary_qs = BursaryApplication.objects.none()
+        university_qs = UniversityApplication.objects.none()
+
+    # --- 4. Convert to unified list of dicts ---
+    all_apps = []
+
+    for app in bursary_qs:
+        all_apps.append({
+            'id': app.id,
+            'type': 'bursary',
+            'type_display': 'Bursary',
+            'institution_name': app.bursary.title if app.bursary else 'N/A',
+            'applicant_name': app.full_name or app.applicant.get_full_name() or app.applicant.username,
+            'applicant_email': app.email or app.applicant.email,
+            'status': app.status,
+            'status_display': app.get_status_display(),
+            'submitted_at': app.submitted_at or app.created_at,
+            'motivation_snippet': app.motivation[:150] + '...' if app.motivation and len(app.motivation) > 150 else app.motivation,
+            'url': reverse('education_business_application_detail', kwargs={'app_type': 'bursary', 'pk': app.id})
+        })
+
+    for app in university_qs:
+        all_apps.append({
+            'id': app.id,
+            'type': 'university',
+            'type_display': 'University',
+            'institution_name': app.university.name if app.university else 'N/A',
+            'applicant_name': app.full_name or app.applicant.get_full_name() or app.applicant.username,
+            'applicant_email': app.email or app.applicant.email,
+            'status': app.status,
+            'status_display': app.get_status_display(),
+            'submitted_at': app.submitted_at or app.created_at,
+            'motivation_snippet': app.motivation[:150] + '...' if app.motivation and len(app.motivation) > 150 else app.motivation,
+            'url': reverse('education_business_application_detail', kwargs={'app_type': 'university', 'pk': app.id})
+        })
+
+    for app in school_qs:
+        all_apps.append({
+            'id': app.id,
+            'type': 'school',
+            'type_display': 'School',
+            'institution_name': app.school.name if app.school else 'N/A',
+            'applicant_name': app.student_full_name or app.applicant.get_full_name() or app.applicant.username,
+            'applicant_email': app.student_email or app.applicant.email,
+            'status': app.status,
+            'status_display': app.get_status_display(),
+            'submitted_at': app.submitted_at or app.created_at,
+            'motivation_snippet': app.motivation[:150] + '...' if app.motivation and len(app.motivation) > 150 else app.motivation,
+            'url': reverse('education_business_application_detail', kwargs={'app_type': 'school', 'pk': app.id})
+        })
+
+    # Sort by submitted_at (newest first)
+    all_apps.sort(key=lambda x: x['submitted_at'], reverse=True)
+
+    # Pagination
+    paginator = Paginator(all_apps, 20)
+    page = request.GET.get('page', 1)
+    apps_page = paginator.get_page(page)
+
+    # --- 5. Get distinct values for filter dropdown buttons ---
+    # Get unique field_of_study from Bursaries (for career matching buttons)
+    available_fields = Bursary.objects.filter(is_active=True).values_list('field_of_study', flat=True).distinct()
+    # Get unique programs from UniversityApplications
+    available_programs = UniversityApplication.objects.exclude(program_of_interest='').values_list('program_of_interest', flat=True).distinct()
+
+    context = {
+        'applications': apps_page,
+        'total_count': len(all_apps),
+        'search_query': search_query,
+        'selected_type': app_type_filter,
+        'selected_status': status_filter,
+        'selected_field': field_filter,
+        'from_date': from_date,
+        'to_date': to_date,
+
+        # Filter options for buttons/dropdowns
+        'status_choices': [
+            ('draft', 'Draft'),
+            ('submitted', 'Submitted'),
+            ('under_review', 'Under Review'),
+            ('shortlisted', 'Shortlisted'),
+            ('interview', 'Interview'),
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),
+            ('withdrawn', 'Withdrawn'),
+        ],
+        'app_type_choices': [
+            ('', 'All Types'),
+            ('bursary', 'Bursaries'),
+            ('university', 'Universities'),
+            ('school', 'Schools'),
+        ],
+        'available_fields': available_fields,  # For career matching buttons
+        'available_programs': available_programs,  # For university program buttons
+    }
+    return render(request, 'education/business_applications.html', context)
+
+
+@login_required
+def business_application_detail(request, app_type, pk):
+    """
+    Business/admin view for a single application:
+    - Display all details
+    - Update status
+    - Add/edit internal notes (visible to the applicant)
+    """
+    # Permission check
+    if not (request.user.is_superuser or getattr(request.user, 'user_type', '') == 'admin'):
+        messages.error(request, "You do not have permission to view this page.")
+        return redirect('education_home')
+
+    # Retrieve correct application based on type
+    if app_type == 'bursary':
+        app = get_object_or_404(BursaryApplication, id=pk)
+        status_choices = BursaryApplication.STATUS_CHOICES
+        type_display = 'Bursary Application'
+        institution_name = app.bursary.title if app.bursary else 'N/A'
+    elif app_type == 'university':
+        app = get_object_or_404(UniversityApplication, id=pk)
+        status_choices = UniversityApplication.STATUS_CHOICES
+        type_display = 'University Application'
+        institution_name = app.university.name if app.university else 'N/A'
+    elif app_type == 'school':
+        app = get_object_or_404(SchoolApplication, id=pk)
+        status_choices = SchoolApplication.STATUS_CHOICES
+        type_display = 'School Application'
+        institution_name = app.school.name if app.school else 'N/A'
+    else:
+        messages.error(request, "Invalid application type.")
+        return redirect('education_business_applications')
+
+    # Handle POST requests (status update or notes save)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'update_status':
+            new_status = request.POST.get('status')
+            if new_status in dict(status_choices):
+                app.status = new_status
+                app.save()
+                messages.success(request, f"Status updated to {app.get_status_display()}.")
+            else:
+                messages.error(request, "Invalid status selected.")
+            return redirect('education_business_application_detail', app_type=app_type, pk=pk)
+
+        elif action == 'save_notes':
+            notes = request.POST.get('admin_notes', '').strip()
+            app.admin_notes = notes
+            app.save()
+            messages.success(request, "Notes saved successfully.")
+            return redirect('education_business_application_detail', app_type=app_type, pk=pk)
+
+        # You can add more actions here (e.g., send email to applicant)
+
+    # Build context for the template
+    context = {
+        'application': app,
+        'app_type': app_type,
+        'type_display': type_display,
+        'institution_name': institution_name,
+        'status_choices': status_choices,
+        'back_url': reverse('education_business_applications'),
+        'applicant': app.applicant,
+    }
+    return render(request, 'education/business_application_detail.html', context)
+
+
+@login_required
+def my_applications(request):
+    """View all education applications for the current user"""
+    bursary_apps = BursaryApplication.objects.filter(applicant=request.user).select_related('bursary')
+    university_apps = UniversityApplication.objects.filter(applicant=request.user).select_related('university')
+    school_apps = SchoolApplication.objects.filter(applicant=request.user).select_related('school')
+    
+    all_applications = []
+    
+    for app in bursary_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'bursary',
+            'type_display': 'Bursary',
+            'title': app.bursary.title if app.bursary else 'No Bursary',
+            'institution': app.bursary.provider if app.bursary else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(BursaryApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_bursary_application_detail', args=[app.id])
+        })
+    
+    for app in university_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'university',
+            'type_display': 'University',
+            'title': app.university.name if app.university else 'No University',
+            'institution': app.university.name if app.university else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(UniversityApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_university_application_detail', args=[app.id])
+        })
+    
+    for app in school_apps:
+        all_applications.append({
+            'id': app.id,
+            'type': 'school',
+            'type_display': 'School',
+            'title': app.school.name if app.school else 'No School',
+            'institution': app.school.name if app.school else 'N/A',
+            'status': app.status,
+            'created_at': app.created_at,
+            'updated_at': app.updated_at,
+            'submitted_at': app.submitted_at,
+            'status_display': dict(SchoolApplication.STATUS_CHOICES).get(app.status, app.status),
+            'application': app,
+            'url': reverse('education_school_application_detail', args=[app.id])
+        })
+    
+    all_applications.sort(key=lambda x: x['created_at'], reverse=True)
+    
+    paginator = Paginator(all_applications, 20)
+    page = request.GET.get('page', 1)
+    applications_page = paginator.get_page(page)
+    
+    status_counts = {}
+    for app in all_applications:
+        status_counts[app['status']] = status_counts.get(app['status'], 0) + 1
+    
+    context = {
+        'applications': applications_page,
+        'total_count': len(all_applications),
+        'status_counts': status_counts,
+        'status_choices': [
+            ('draft', 'Draft'),
+            ('submitted', 'Submitted'),
+            ('under_review', 'Under Review'),
+            ('shortlisted', 'Shortlisted'),
+            ('interview', 'Interview Scheduled'),
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),
+            ('withdrawn', 'Withdrawn'),
+        ]
+    }
+    
+    return render(request, 'education/my_applications.html', context)

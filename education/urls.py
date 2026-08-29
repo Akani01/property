@@ -36,7 +36,10 @@ html_urlpatterns = [
     path('school/<int:pk>/', views.school_detail, name='education_school_detail'),
     path('paper/<int:pk>/', views.paper_detail, name='education_paper_detail'),
     path('news/<int:pk>/', views.news_detail, name='education_news_detail'),
-    
+    # Business dashboard
+    path('business/applications/', views.business_applications, name='education_business_applications'),
+    path('business/application/<str:app_type>/<int:pk>/', views.business_application_detail, name='education_business_application_detail'),
+
     # Application Routes
     path('apply/', views.apply_selection, name='education_apply_selection'),
     path('apply/bursary/', views.apply_bursary, name='education_apply_bursary'),

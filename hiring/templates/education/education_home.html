@@ -45,6 +45,7 @@
         button { cursor: pointer; border: none; background: none; }
         img { max-width: 100%; }
 
+        /* ===== HEADER ===== */
         .header-area {
             background: #ffffff;
             border-bottom: 1px solid var(--border);
@@ -66,7 +67,6 @@
             max-width: 1400px;
             margin: 0 auto;
         }
-
         @media (min-width: 768px) {
             .main-nav { padding: 0 32px; }
         }
@@ -76,13 +76,11 @@
             align-items: center;
             flex-shrink: 0;
         }
-
         .logo img {
             max-height: 36px;
             width: auto;
             object-fit: contain;
         }
-
         .logo-text {
             font-family: var(--font-display);
             font-size: 18px;
@@ -90,10 +88,7 @@
             color: var(--dark);
             margin-left: 8px;
         }
-
-        .logo-text span {
-            color: var(--primary);
-        }
+        .logo-text span { color: var(--primary); }
 
         .nav-icons {
             display: flex;
@@ -103,7 +98,6 @@
             margin: 0;
             padding: 0;
         }
-
         @media (min-width: 576px) {
             .nav-icons { gap: 8px; }
         }
@@ -121,7 +115,6 @@
             height: 36px;
             text-decoration: none;
         }
-
         @media (min-width: 576px) {
             .nav-icons a {
                 min-width: 40px;
@@ -130,7 +123,6 @@
                 padding: 6px 10px;
             }
         }
-
         .nav-icons a:hover {
             color: var(--primary);
             background: var(--primary-light);
@@ -151,21 +143,12 @@
             transition: var(--transition);
             flex-shrink: 0;
         }
-
         @media (min-width: 576px) {
-            .profile-avatar-small {
-                width: 36px;
-                height: 36px;
-                font-size: 14px;
-            }
+            .profile-avatar-small { width: 36px; height: 36px; font-size: 14px; }
         }
-
-        .profile-avatar-small:hover {
-            transform: scale(1.05);
-        }
+        .profile-avatar-small:hover { transform: scale(1.05); }
 
         .profile-dropdown { position: relative; }
-
         .profile-menu {
             position: absolute;
             top: 42px;
@@ -182,13 +165,11 @@
             z-index: 1000;
             border: 1px solid var(--border);
         }
-
         .profile-menu.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-
         .profile-menu a {
             display: flex;
             align-items: center;
@@ -199,17 +180,14 @@
             transition: var(--transition);
             text-decoration: none;
         }
-
         .profile-menu a:hover {
             background: var(--primary-light);
             color: var(--primary);
         }
-
         .profile-menu a i { width: 18px; color: var(--gray); font-size: 14px; }
         .profile-divider { height: 1px; background: var(--border); margin: 4px 12px; }
 
         .three-dot-menu { position: relative; }
-
         .three-dot-menu .dot-btn {
             font-size: 20px;
             color: #555;
@@ -224,15 +202,9 @@
             min-width: 36px;
             height: 36px;
         }
-
         @media (min-width: 576px) {
-            .three-dot-menu .dot-btn {
-                min-width: 40px;
-                height: 40px;
-                font-size: 22px;
-            }
+            .three-dot-menu .dot-btn { min-width: 40px; height: 40px; font-size: 22px; }
         }
-
         .three-dot-menu .dot-btn:hover {
             background: var(--primary-light);
             color: var(--primary);
@@ -254,13 +226,11 @@
             z-index: 1000;
             border: 1px solid var(--border);
         }
-
         .menu-content.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-
         .menu-content a {
             display: flex;
             align-items: center;
@@ -271,14 +241,13 @@
             transition: var(--transition);
             text-decoration: none;
         }
-
         .menu-content a:hover {
             background: var(--primary-light);
             color: var(--primary);
         }
-
         .menu-content a i { width: 18px; color: var(--gray); font-size: 14px; }
 
+        /* ===== DESKTOP SIDEBAR ===== */
         .desktop-sidebar {
             width: 220px;
             background: white;
@@ -291,17 +260,11 @@
             overflow-y: auto;
             z-index: 100;
         }
-
         @media (max-width: 991px) {
-            .desktop-sidebar {
-                display: none;
-            }
+            .desktop-sidebar { display: none; }
         }
 
-        .desktop-sidebar .sidebar-section {
-            margin-bottom: 16px;
-        }
-
+        .desktop-sidebar .sidebar-section { margin-bottom: 16px; }
         .desktop-sidebar .sidebar-title {
             font-family: var(--font-display);
             font-size: 11px;
@@ -312,7 +275,6 @@
             padding: 0 4px;
             margin-bottom: 6px;
         }
-
         .desktop-sidebar a {
             display: flex;
             align-items: center;
@@ -326,48 +288,29 @@
             transition: var(--transition);
             margin-bottom: 2px;
         }
-
         .desktop-sidebar a:hover {
             background: var(--primary-light);
             color: var(--primary);
         }
-
         .desktop-sidebar a.active {
             background: var(--primary);
             color: white;
         }
-
-        .desktop-sidebar a.active i {
-            color: white;
-        }
-
-        .desktop-sidebar a i {
-            width: 20px;
-            color: var(--gray);
-            font-size: 16px;
-        }
-
-        .desktop-sidebar a.active i {
-            color: white;
-        }
-
-        .desktop-sidebar hr {
-            margin: 8px 0;
-            border-color: var(--border);
-        }
+        .desktop-sidebar a.active i { color: white; }
+        .desktop-sidebar a i { width: 20px; color: var(--gray); font-size: 16px; }
+        .desktop-sidebar a.active i { color: white; }
+        .desktop-sidebar hr { margin: 8px 0; border-color: var(--border); }
 
         @media (min-width: 992px) {
-            body {
-                padding-left: 240px !important;
-            }
+            body { padding-left: 240px !important; }
         }
 
+        /* ===== MAIN CONTAINER ===== */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 16px;
         }
-
         @media (min-width: 768px) {
             .main-container { padding: 0 24px; }
         }
@@ -378,7 +321,6 @@
             gap: 8px;
             margin-bottom: 20px;
         }
-
         @media (min-width: 576px) {
             .page-header {
                 flex-direction: row;
@@ -396,16 +338,12 @@
             align-items: center;
             gap: 10px;
         }
-
         @media (min-width: 768px) {
             .page-header h1 { font-size: 26px; }
         }
+        .page-header h1 i { color: var(--primary); }
 
-        .page-header h1 i {
-            color: var(--primary);
-        }
-
-        .page-header .header-actions {
+        .header-actions {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
@@ -425,12 +363,9 @@
             gap: 6px;
             text-decoration: none;
         }
+        .btn-back:hover { background: var(--light-gray); }
 
-        .btn-back:hover {
-            background: var(--light-gray);
-        }
-
-        .btn-add {
+        .btn-primary-custom {
             padding: 8px 20px;
             border-radius: var(--radius-sm);
             background: var(--dark);
@@ -444,10 +379,10 @@
             gap: 6px;
             text-decoration: none;
         }
-
-        .btn-add:hover {
+        .btn-primary-custom:hover {
             background: #2d2d4a;
             color: white;
+            transform: translateY(-2px);
         }
 
         .btn-apply-primary {
@@ -464,7 +399,6 @@
             gap: 6px;
             text-decoration: none;
         }
-
         .btn-apply-primary:hover {
             background: var(--primary-dark);
             color: white;
@@ -486,24 +420,43 @@
             gap: 6px;
             text-decoration: none;
         }
-
         .btn-applications:hover {
             border-color: var(--primary);
             color: var(--primary);
             background: var(--primary-light);
         }
 
+        .btn-business-apps {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--secondary);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-business-apps:hover {
+            background: #3a5bd9;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ===== STATS BANNER ===== */
         .stats-banner {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 12px;
             margin-bottom: 20px;
         }
-
         @media (max-width: 768px) {
             .stats-banner { grid-template-columns: repeat(3, 1fr); }
         }
-
         @media (max-width: 480px) {
             .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 8px; }
         }
@@ -517,26 +470,21 @@
             transition: var(--transition);
             border: 1px solid var(--border);
         }
-
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
         }
-
         .stat-card .emoji { font-size: 22px; display: block; margin-bottom: 2px; }
-
         .stat-number {
             font-family: var(--font-display);
             font-size: 22px;
             font-weight: 700;
             color: var(--dark);
         }
-
         @media (max-width: 480px) {
             .stat-number { font-size: 18px; }
             .stat-card .emoji { font-size: 18px; }
         }
-
         .stat-label {
             font-size: 10px;
             color: var(--gray);
@@ -545,6 +493,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* ===== FILTER SECTION ===== */
         .filter-section {
             background: white;
             padding: 16px 18px;
@@ -553,7 +502,6 @@
             margin-bottom: 20px;
             border: 1px solid var(--border);
         }
-
         .filter-section .form-label {
             font-size: 11px;
             font-weight: 600;
@@ -562,7 +510,6 @@
             letter-spacing: 0.5px;
             margin-bottom: 2px;
         }
-
         .filter-section .form-control,
         .filter-section .form-select {
             border-radius: var(--radius-sm);
@@ -575,16 +522,12 @@
             width: 100%;
             appearance: auto;
         }
-
         .filter-section .form-control:focus,
         .filter-section .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(232, 69, 138, 0.08);
         }
-
-        .filter-section .form-select option {
-            padding: 4px 8px;
-        }
+        .filter-section .form-select option { padding: 4px 8px; }
 
         .btn-filter {
             padding: 6px 16px;
@@ -598,18 +541,17 @@
             min-height: 38px;
             transition: var(--transition);
         }
-
         .btn-filter:hover {
             background: #2d2d4a;
             color: white;
         }
 
+        /* ===== EDUCATION GRID ===== */
         .edu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
-
         @media (max-width: 576px) {
             .edu-grid {
                 grid-template-columns: 1fr;
@@ -621,7 +563,6 @@
             cursor: pointer;
             transition: var(--transition);
         }
-
         .edu-card-wrapper:hover {
             transform: translateY(-4px);
         }
@@ -636,7 +577,6 @@
             background: white;
             border: 1px solid var(--border);
         }
-
         .edu-card:hover {
             box-shadow: var(--shadow-hover);
         }
@@ -646,7 +586,6 @@
             object-fit: cover;
             background: var(--light-gray);
         }
-
         @media (max-width: 576px) {
             .edu-card .card-img-top { height: 140px; }
         }
@@ -666,13 +605,11 @@
             letter-spacing: 0.3px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-
         .edu-badge.bursary { background: #f7971e; color: #1a1a2e; }
         .edu-badge.university { background: #4a6cf7; }
         .edu-badge.school { background: #2ecc71; color: #1a1a2e; }
         .edu-badge.paper { background: #e74c3c; }
         .edu-badge.news { background: #1abc9c; color: #1a1a2e; }
-
         .edu-badge.featured {
             top: 44px;
             background: #ffd700;
@@ -680,7 +617,6 @@
         }
 
         .edu-card .card-body { padding: 16px; }
-
         .edu-card .card-title {
             font-family: var(--font-display);
             font-size: 15px;
@@ -692,7 +628,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
         .edu-card .card-text {
             font-size: 13px;
             color: var(--gray);
@@ -702,7 +637,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
         .edu-card .card-text i {
             width: 16px;
             color: var(--primary);
@@ -719,12 +653,10 @@
             color: var(--gray);
             margin: 2px 4px 2px 0;
         }
-
         .edu-tag.featured {
             background: #ffd700;
             color: #1a1a2e;
         }
-
         .edu-tag.closing-soon {
             background: #e74c3c;
             color: #fff;
@@ -753,12 +685,10 @@
             align-items: center;
             gap: 4px;
         }
-
         .view-details-badge i {
             font-size: 12px;
             transition: var(--transition);
         }
-
         .edu-card-wrapper:hover .view-details-badge i {
             transform: translateX(4px);
         }
@@ -776,7 +706,6 @@
             align-items: center;
             gap: 4px;
         }
-
         .btn-share-card:hover {
             background: var(--primary-light);
             border-color: var(--primary);
@@ -787,7 +716,6 @@
             position: relative;
             display: inline-block;
         }
-
         .share-dropdown-content {
             display: none;
             position: absolute;
@@ -802,14 +730,11 @@
             z-index: 200;
             animation: slideUp 0.2s ease;
         }
-
         .share-dropdown-content.show { display: block; }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .share-dropdown-content a {
             display: flex;
             align-items: center;
@@ -820,12 +745,10 @@
             text-decoration: none;
             transition: var(--transition);
         }
-
         .share-dropdown-content a:hover {
             background: var(--primary-light);
             color: var(--primary);
         }
-
         .share-dropdown-content a i {
             width: 18px;
             text-align: center;
@@ -840,24 +763,22 @@
             border-radius: var(--radius);
             border: 2px dashed var(--border);
         }
-
         .empty-state i {
             font-size: 48px;
             color: #ccc;
             display: block;
             margin-bottom: 12px;
         }
-
         .empty-state h3 {
             font-size: 18px;
             color: var(--gray);
         }
-
         .empty-state p {
             color: #999;
             font-size: 14px;
         }
 
+        /* ===== MOBILE BOTTOM NAV ===== */
         .mobile-bottom-nav {
             display: none;
             position: fixed;
@@ -872,7 +793,6 @@
             z-index: 999;
             padding-bottom: env(safe-area-inset-bottom);
         }
-
         @media (max-width: 991px) {
             .mobile-bottom-nav {
                 display: flex !important;
@@ -893,20 +813,18 @@
             flex: 1;
             text-align: center;
         }
-
         .mobile-bottom-nav a i {
             font-size: 17px;
             display: block;
         }
-
         .mobile-bottom-nav a.active {
             color: var(--primary);
         }
-
         .mobile-bottom-nav a:hover {
             color: var(--primary);
         }
 
+        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             top: 80px;
@@ -914,7 +832,6 @@
             z-index: 9999;
             max-width: calc(100vw - 32px);
         }
-
         @media (min-width: 576px) {
             .toast-container { max-width: 400px; }
         }
@@ -932,12 +849,10 @@
             margin-bottom: 8px;
             font-weight: 500;
         }
-
         .toast-item.success { background: #28a745; }
         .toast-item.error { background: #dc3545; }
         .toast-item.info { background: #17a2b8; }
         .toast-item.warning { background: #ffc107; color: var(--dark); }
-
         .toast-item .close-toast {
             margin-left: auto;
             background: none;
@@ -946,7 +861,6 @@
             font-size: 16px;
             cursor: pointer;
         }
-
         .toast-item .close-toast:hover { color: white; }
 
         @keyframes slideIn {
@@ -956,13 +870,12 @@
 
         @media (max-width: 575px) {
             .page-header h1 { font-size: 18px; }
-            .btn-add, .btn-apply-primary, .btn-applications { font-size: 11px; padding: 6px 14px; }
+            .btn-add, .btn-apply-primary, .btn-applications, .btn-business-apps { font-size: 11px; padding: 6px 14px; }
             .btn-back { font-size: 11px; padding: 6px 12px; }
             .filter-section .row > div { margin-bottom: 6px; }
             .edu-card .card-title { font-size: 13px; }
             .edu-card .card-text { font-size: 12px; }
         }
-
         @media (max-width: 360px) {
             .page-header h1 { font-size: 15px; }
             .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 6px; }
@@ -1041,7 +954,7 @@
         </div>
     </header>
 
-    <!-- ===== DESKTOP SIDEBAR - SIMPLIFIED (NO BROKEN LINKS) ===== -->
+    <!-- ===== DESKTOP SIDEBAR (FULLY UPDATED) ===== -->
     <div class="desktop-sidebar">
         <div class="sidebar-section">
             <div class="sidebar-title">Profile</div>
@@ -1053,9 +966,24 @@
 
         <div class="sidebar-section">
             <div class="sidebar-title">Education</div>
-            <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> My Education</a>
             <a href="#" class="active"><i class="fas fa-graduation-cap"></i> Education Hub</a>
-            <!-- ===== BROKEN LINKS REMOVED ===== -->
+            <a href="/profile/education/"><i class="fas fa-user-graduate"></i> My Education</a>
+
+            <!-- ===== NEW: Business Applications Link (only for admin/business) ===== -->
+            {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+            <a href="{% url 'education_business_applications' %}">
+                <i class="fas fa-users"></i> Business Applications
+            </a>
+            <a href="{% url 'education_business_applications' %}?type=bursary">
+                <i class="fas fa-hand-holding-heart"></i> Bursary Apps
+            </a>
+            <a href="{% url 'education_business_applications' %}?type=university">
+                <i class="fas fa-university"></i> University Apps
+            </a>
+            <a href="{% url 'education_business_applications' %}?type=school">
+                <i class="fas fa-school"></i> School Apps
+            </a>
+            {% endif %}
         </div>
 
         <hr>
@@ -1081,15 +1009,27 @@
                 <a href="/" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <!-- ===== WORKING URLs ===== -->
+
+                <!-- ===== APPLY NOW (for all users) ===== -->
                 <a href="/api/education/apply/" class="btn-apply-primary">
                     <i class="fas fa-pen"></i> Apply Now
                 </a>
+
+                <!-- ===== MY APPLICATIONS (for all users) ===== -->
                 <a href="/api/education/my-applications/" class="btn-applications">
                     <i class="fas fa-file-alt"></i> My Applications
                 </a>
-                {% if is_admin %}
-                <button class="btn-add" onclick="openModal('bursary')">
+
+                <!-- ===== NEW: BUSINESS APPLICATIONS (only for admin/business) ===== -->
+                {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                <a href="{% url 'education_business_applications' %}" class="btn-business-apps">
+                    <i class="fas fa-users"></i> Business Apps
+                </a>
+                {% endif %}
+
+                <!-- ===== ADD CONTENT (only for admin/business) ===== -->
+                {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                <button class="btn-primary-custom" onclick="openModal('bursary')">
                     <i class="fas fa-plus"></i> Add Content
                 </button>
                 {% endif %}
@@ -1171,10 +1111,10 @@
         <div class="edu-grid" id="gridAll">
             <!-- ===== BURSARIES ===== -->
             {% for bursary in bursaries %}
-            <div class="edu-card-wrapper" 
-                 data-type="bursary" 
-                 data-title="{{ bursary.title|lower }}" 
-                 data-field="{{ bursary.field_of_study }}" 
+            <div class="edu-card-wrapper"
+                 data-type="bursary"
+                 data-title="{{ bursary.title|lower }}"
+                 data-field="{{ bursary.field_of_study }}"
                  data-level="{{ bursary.level }}"
                  data-url="/api/education/bursary/{{ bursary.id }}/">
                 <div class="card edu-card">
@@ -1243,9 +1183,9 @@
 
             <!-- ===== UNIVERSITIES ===== -->
             {% for uni in universities %}
-            <div class="edu-card-wrapper" 
-                 data-type="university" 
-                 data-title="{{ uni.name|lower }}" 
+            <div class="edu-card-wrapper"
+                 data-type="university"
+                 data-title="{{ uni.name|lower }}"
                  data-field="{{ uni.province }}"
                  data-url="/api/education/university/{{ uni.id }}/">
                 <div class="card edu-card">
@@ -1282,9 +1222,9 @@
 
             <!-- ===== SCHOOLS ===== -->
             {% for school in schools %}
-            <div class="edu-card-wrapper" 
-                 data-type="school" 
-                 data-title="{{ school.name|lower }}" 
+            <div class="edu-card-wrapper"
+                 data-type="school"
+                 data-title="{{ school.name|lower }}"
                  data-field="{{ school.province }}"
                  data-url="/api/education/school/{{ school.id }}/">
                 <div class="card edu-card">
@@ -1322,9 +1262,9 @@
 
             <!-- ===== QUESTION PAPERS ===== -->
             {% for paper in papers %}
-            <div class="edu-card-wrapper" 
-                 data-type="paper" 
-                 data-title="{{ paper.title|lower }}" 
+            <div class="edu-card-wrapper"
+                 data-type="paper"
+                 data-title="{{ paper.title|lower }}"
                  data-field="{{ paper.subject.name|lower }}"
                  data-url="/api/education/paper/{{ paper.id }}/">
                 <div class="card edu-card">
@@ -1369,8 +1309,8 @@
 
             <!-- ===== NEWS ===== -->
             {% for item in news %}
-            <div class="edu-card-wrapper" 
-                 data-type="news" 
+            <div class="edu-card-wrapper"
+                 data-type="news"
                  data-title="{{ item.title|lower }}"
                  data-url="/api/education/news/{{ item.id }}/">
                 <div class="card edu-card">
@@ -1408,6 +1348,34 @@
             </div>
             {% endfor %}
         </div>
+
+        <!-- ===== BUSINESS APPLICATIONS QUICK ACCESS CARD (for admin/business) ===== -->
+        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+        <div style="margin-top:24px; background: linear-gradient(135deg, var(--secondary), #3a5bd9); border-radius: var(--radius); padding: 20px 24px; color: white; box-shadow: var(--shadow-hover);">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h5 style="font-family:var(--font-display); font-weight:600; margin:0;">
+                        <i class="fas fa-users me-2"></i> Business Dashboard
+                    </h5>
+                    <p style="margin:4px 0 0; opacity:0.85; font-size:14px;">
+                        Manage all education applications, review submissions, and update applicant statuses.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+                    <a href="{% url 'education_business_applications' %}" class="btn" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3); padding:8px 20px; border-radius:var(--radius-sm); font-weight:600; transition:var(--transition);">
+                        <i class="fas fa-list me-1"></i> All Applications
+                    </a>
+                    <a href="{% url 'education_business_applications' %}?status=submitted" class="btn" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 20px; border-radius:var(--radius-sm); font-weight:600; transition:var(--transition);">
+                        <i class="fas fa-clock me-1"></i> Pending Review
+                    </a>
+                    <a href="{% url 'education_business_applications' %}?status=shortlisted" class="btn" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 20px; border-radius:var(--radius-sm); font-weight:600; transition:var(--transition);">
+                        <i class="fas fa-star me-1"></i> Shortlisted
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 
     <!-- ===== MOBILE BOTTOM NAV ===== -->
@@ -1448,6 +1416,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // ===== PROFILE & MENU TOGGLES =====
         function toggleProfileDropdown() {
             document.getElementById("profileMenu").classList.toggle("show");
         }
@@ -1470,6 +1439,7 @@
             }
         });
 
+        // ===== CARD CLICK =====
         document.addEventListener("click", function(e) {
             const wrapper = e.target.closest(".edu-card-wrapper");
             if (wrapper) {
@@ -1483,6 +1453,7 @@
             }
         });
 
+        // ===== SHARE DROPDOWN =====
         function toggleShareDropdown(btn) {
             const dropdown = btn.parentElement.querySelector('.share-dropdown-content');
             document.querySelectorAll('.share-dropdown-content.show').forEach(d => {
@@ -1539,6 +1510,7 @@
             showToast('✅ Link copied to clipboard!', 'success');
         }
 
+        // ===== FILTER =====
         function filterContent() {
             const search = document.getElementById('eduSearch').value.toLowerCase();
             const gradeFilter = document.getElementById('eduGradeFilter').value;
@@ -1573,6 +1545,7 @@
             document.getElementById('statBursaries').textContent = visibleBursaries;
         }
 
+        // ===== TOAST =====
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -1592,6 +1565,18 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
+        // ===== AUTH FUNCTIONS =====
+        function showLogin() {
+            showToast('Please login to continue', 'info');
+            window.location.href = '/login/';
+        }
+
+        function showSignup() {
+            showToast('Create an account to get started', 'info');
+            window.location.href = '/signup/';
+        }
+
+        // ===== MODAL =====
         let modalType = '';
         let modalInstance = null;
 
@@ -1856,16 +1841,7 @@
             });
         }
 
-        function showLogin() {
-            showToast('Please login to continue', 'info');
-            window.location.href = '/login/';
-        }
-
-        function showSignup() {
-            showToast('Create an account to get started', 'info');
-            window.location.href = '/signup/';
-        }
-
+        // ===== DOM READY =====
         document.addEventListener('DOMContentLoaded', function() {
             filterContent();
 
@@ -1886,5 +1862,6 @@
             });
         });
     </script>
+
 </body>
 </html>
