@@ -632,7 +632,7 @@ def apply_bursary(request, bursary_id=None):
                 
         except Exception as e:
             messages.error(request, f'Error saving application: {str(e)}')
-            return redirect('education_apply_bursary', bursary_id=bursary.id)
+            return redirect('education_apply_bursary_with_id', bursary_id=bursary.id)
     
     draft_data = {}
     if existing_app and existing_app.status == 'draft':
@@ -1475,85 +1475,804 @@ def business_application_detail(request, app_type, pk):
 
 @login_required
 def my_applications(request):
-    """View all education applications for the current user"""
-    bursary_apps = BursaryApplication.objects.filter(applicant=request.user).select_related('bursary')
-    university_apps = UniversityApplication.objects.filter(applicant=request.user).select_related('university')
-    school_apps = SchoolApplication.objects.filter(applicant=request.user).select_related('school')
-    
+    """View all education applications for the current user."""
+
+    # ============================================================
+    # 1. GET ALL APPLICATIONS
+    # ============================================================
+
+    bursary_apps = (
+        BursaryApplication.objects
+        .filter(applicant=request.user)
+        .select_related('bursary')
+        .order_by('-created_at')
+    )
+
+    university_apps = (
+        UniversityApplication.objects
+        .filter(applicant=request.user)
+        .select_related('university')
+        .order_by('-created_at')
+    )
+
+    school_apps = (
+        SchoolApplication.objects
+        .filter(applicant=request.user)
+        .select_related('school')
+        .order_by('-created_at')
+    )
+
     all_applications = []
-    
+
+    # ============================================================
+    # 2. BURSARY APPLICATIONS
+    # ============================================================
+
     for app in bursary_apps:
+
+        bursary_title = (
+            app.bursary.title
+            if app.bursary
+            else "No Bursary"
+        )
+
+        bursary_provider = (
+            app.bursary.provider
+            if app.bursary
+            else "N/A"
+        )
+
         all_applications.append({
             'id': app.id,
             'type': 'bursary',
             'type_display': 'Bursary',
-            'title': app.bursary.title if app.bursary else 'No Bursary',
-            'institution': app.bursary.provider if app.bursary else 'N/A',
+
+            'title': bursary_title,
+            'institution': bursary_provider,
+
             'status': app.status,
+
             'created_at': app.created_at,
             'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(BursaryApplication.STATUS_CHOICES).get(app.status, app.status),
+            'submitted_at': getattr(app, 'submitted_at', None),
+
+            'status_display': dict(
+                BursaryApplication.STATUS_CHOICES
+            ).get(
+                app.status,
+                app.status
+            ),
+
+            # IMPORTANT:
+            # Pass the COMPLETE application object to the template.
             'application': app,
-            'url': reverse('education_bursary_application_detail', args=[app.id])
+
+            # Documents
+            'cv': getattr(app, 'cv', None),
+            'academic_transcript': getattr(
+                app,
+                'academic_transcript',
+                None
+            ),
+            'id_document': getattr(
+                app,
+                'id_document',
+                None
+            ),
+            'other_documents': getattr(
+                app,
+                'other_documents',
+                None
+            ),
+
+            # Applicant information
+            'full_name': getattr(app, 'full_name', ''),
+            'email': getattr(app, 'email', ''),
+            'phone': getattr(app, 'phone', ''),
+            'id_number': getattr(app, 'id_number', ''),
+            'date_of_birth': getattr(
+                app,
+                'date_of_birth',
+                None
+            ),
+
+            'current_institution': getattr(
+                app,
+                'current_institution',
+                ''
+            ),
+
+            'current_institution_type': getattr(
+                app,
+                'current_institution_type',
+                ''
+            ),
+
+            'academic_average': getattr(
+                app,
+                'academic_average',
+                ''
+            ),
+
+            'motivation': getattr(
+                app,
+                'motivation',
+                ''
+            ),
+
+            # Admin information
+            'admin_notes': getattr(
+                app,
+                'admin_notes',
+                ''
+            ),
+
+            # Detail page
+            'url': reverse(
+                'education_bursary_application_detail',
+                args=[app.id]
+            ),
         })
-    
+
+    # ============================================================
+    # 3. UNIVERSITY APPLICATIONS
+    # ============================================================
+
     for app in university_apps:
+
+        university_name = (
+            app.university.name
+            if app.university
+            else "No University"
+        )
+
         all_applications.append({
             'id': app.id,
             'type': 'university',
             'type_display': 'University',
-            'title': app.university.name if app.university else 'No University',
-            'institution': app.university.name if app.university else 'N/A',
+
+            'title': university_name,
+            'institution': university_name,
+
             'status': app.status,
+
             'created_at': app.created_at,
             'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(UniversityApplication.STATUS_CHOICES).get(app.status, app.status),
+            'submitted_at': getattr(
+                app,
+                'submitted_at',
+                None
+            ),
+
+            'status_display': dict(
+                UniversityApplication.STATUS_CHOICES
+            ).get(
+                app.status,
+                app.status
+            ),
+
             'application': app,
-            'url': reverse('education_university_application_detail', args=[app.id])
+
+            'url': reverse(
+                'education_university_application_detail',
+                args=[app.id]
+            ),
         })
-    
+
+    # ============================================================
+    # 4. SCHOOL APPLICATIONS
+    # ============================================================
+
     for app in school_apps:
+
+        school_name = (
+            app.school.name
+            if app.school
+            else "No School"
+        )
+
         all_applications.append({
             'id': app.id,
             'type': 'school',
             'type_display': 'School',
-            'title': app.school.name if app.school else 'No School',
-            'institution': app.school.name if app.school else 'N/A',
+
+            'title': school_name,
+            'institution': school_name,
+
             'status': app.status,
+
             'created_at': app.created_at,
             'updated_at': app.updated_at,
-            'submitted_at': app.submitted_at,
-            'status_display': dict(SchoolApplication.STATUS_CHOICES).get(app.status, app.status),
+            'submitted_at': getattr(
+                app,
+                'submitted_at',
+                None
+            ),
+
+            'status_display': dict(
+                SchoolApplication.STATUS_CHOICES
+            ).get(
+                app.status,
+                app.status
+            ),
+
             'application': app,
-            'url': reverse('education_school_application_detail', args=[app.id])
+
+            'url': reverse(
+                'education_school_application_detail',
+                args=[app.id]
+            ),
         })
-    
-    all_applications.sort(key=lambda x: x['created_at'], reverse=True)
-    
-    paginator = Paginator(all_applications, 20)
-    page = request.GET.get('page', 1)
+
+    # ============================================================
+    # 5. SORT EVERYTHING TOGETHER
+    # ============================================================
+
+    all_applications.sort(
+        key=lambda x: x['created_at'],
+        reverse=True
+    )
+
+    # ============================================================
+    # 6. PAGINATION
+    # ============================================================
+
+    paginator = Paginator(
+        all_applications,
+        20
+    )
+
+    page = request.GET.get(
+        'page',
+        1
+    )
+
     applications_page = paginator.get_page(page)
-    
+
+    # ============================================================
+    # 7. STATUS COUNTS
+    # ============================================================
+
     status_counts = {}
+
     for app in all_applications:
-        status_counts[app['status']] = status_counts.get(app['status'], 0) + 1
-    
+
+        status = app['status']
+
+        status_counts[status] = (
+            status_counts.get(status, 0) + 1
+        )
+
+    # ============================================================
+    # 8. STATUS CHOICES
+    # ============================================================
+
+    status_choices = [
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+        ('under_review', 'Under Review'),
+        ('shortlisted', 'Shortlisted'),
+        ('interview', 'Interview Scheduled'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+        ('withdrawn', 'Withdrawn'),
+    ]
+
+    # ============================================================
+    # 9. CONTEXT
+    # ============================================================
+
     context = {
         'applications': applications_page,
-        'total_count': len(all_applications),
+
+        'total_count': len(
+            all_applications
+        ),
+
         'status_counts': status_counts,
-        'status_choices': [
-            ('draft', 'Draft'),
-            ('submitted', 'Submitted'),
-            ('under_review', 'Under Review'),
-            ('shortlisted', 'Shortlisted'),
-            ('interview', 'Interview Scheduled'),
-            ('accepted', 'Accepted'),
-            ('rejected', 'Rejected'),
-            ('withdrawn', 'Withdrawn'),
-        ]
+
+        'status_choices': status_choices,
+
+        # Useful if your template wants to know
+        # how many of each type exist.
+        'bursary_count': len(bursary_apps),
+        'university_count': len(university_apps),
+        'school_count': len(school_apps),
+
+        # User
+        'current_user': request.user,
+
+        # If your template checks this.
+        'is_admin': (
+            request.user.is_staff
+            or request.user.is_superuser
+        ),
     }
+
+    return render(
+        request,
+        'education/my_applications.html',
+        context
+    )
+
     
-    return render(request, 'education/my_applications.html', context)
+
+@login_required
+def apply_bulk_bursary(request):
+    """
+    Apply to multiple bursaries using the user's latest application
+    as the source of prefilled information.
+    """
+
+    user = request.user
+
+    # ============================================================
+    # 1. GET LATEST APPLICATION DATA
+    # ============================================================
+
+    latest_app = (
+        BursaryApplication.objects
+        .filter(applicant=user)
+        .order_by('-updated_at', '-created_at')
+        .first()
+    )
+
+    draft_data = {
+        'full_name': '',
+        'email': '',
+        'phone': '',
+        'id_number': '',
+        'date_of_birth': '',
+        'current_institution': '',
+        'academic_average': '',
+        'motivation': '',
+        'current_institution_type': 'other',
+    }
+
+    if latest_app:
+        draft_data.update({
+            'full_name': latest_app.full_name or '',
+            'email': latest_app.email or '',
+            'phone': latest_app.phone or '',
+            'id_number': latest_app.id_number or '',
+            'date_of_birth': (
+                latest_app.date_of_birth.strftime('%Y-%m-%d')
+                if latest_app.date_of_birth
+                else ''
+            ),
+            'current_institution': latest_app.current_institution or '',
+            'academic_average': latest_app.academic_average or '',
+            'motivation': latest_app.motivation or '',
+            'current_institution_type': (
+                latest_app.current_institution_type or 'other'
+            ),
+        })
+
+    else:
+        # Fallback to user profile
+        draft_data['full_name'] = user.get_full_name() or ''
+        draft_data['email'] = user.email or ''
+        draft_data['phone'] = getattr(user, 'phone', '') or ''
+        draft_data['id_number'] = getattr(user, 'id_number', '') or ''
+
+        if getattr(user, 'date_of_birth', None):
+            try:
+                draft_data['date_of_birth'] = (
+                    user.date_of_birth.strftime('%Y-%m-%d')
+                )
+            except (AttributeError, ValueError, TypeError):
+                pass
+
+    # ============================================================
+    # 2. FIND BURSARIES ALREADY APPLIED FOR
+    # ============================================================
+
+    applied_ids = set(
+        BursaryApplication.objects
+        .filter(
+            applicant=user,
+            bursary__isnull=False
+        )
+        .values_list('bursary_id', flat=True)
+        .distinct()
+    )
+
+    # ============================================================
+    # 3. AVAILABLE BURSARIES
+    # ============================================================
+
+    today = timezone.now().date()
+
+    available_bursaries = (
+        Bursary.objects
+        .filter(
+            is_active=True,
+            closing_date__gte=today
+        )
+        .exclude(id__in=applied_ids)
+        .order_by('closing_date', '-created_at')
+    )
+
+    # ============================================================
+    # 4. DYNAMIC ACADEMIC YEARS
+    # ============================================================
+
+    from datetime import datetime
+
+    paper_years = list(
+        QuestionPaper.objects
+        .filter(year__isnull=False)
+        .values_list('year', flat=True)
+        .distinct()
+        .order_by('-year')
+    )
+
+    current_year = datetime.now().year
+
+    if paper_years:
+        min_year = min(paper_years)
+        max_year = max(paper_years)
+
+        if max_year < current_year:
+            max_year = current_year + 1
+
+        if min_year > current_year - 10:
+            min_year = current_year - 10
+
+        academic_years = range(min_year, max_year + 1)
+
+    else:
+        academic_years = range(
+            current_year - 10,
+            current_year + 2
+        )
+
+    # ============================================================
+    # 5. PROVINCES
+    # ============================================================
+
+    uni_provinces = (
+        University.objects
+        .filter(is_active=True)
+        .exclude(province='')
+        .values_list('province', flat=True)
+        .distinct()
+    )
+
+    school_provinces = (
+        School.objects
+        .filter(is_active=True)
+        .exclude(province='')
+        .values_list('province', flat=True)
+        .distinct()
+    )
+
+    provinces = sorted(
+        set(uni_provinces).union(set(school_provinces))
+    )
+
+    if not provinces:
+        provinces = [
+            'Gauteng',
+            'Western Cape',
+            'KwaZulu-Natal',
+            'Eastern Cape',
+            'Free State',
+            'Limpopo',
+            'Mpumalanga',
+            'North West',
+            'Northern Cape',
+        ]
+
+    # ============================================================
+    # 6. POST
+    # ============================================================
+
+    if request.method == 'POST':
+
+        # --------------------------------------------------------
+        # Selected bursaries
+        # --------------------------------------------------------
+
+        selected_ids = request.POST.getlist('selected_bursaries')
+
+        # Remove duplicates and empty values
+        selected_ids = list(
+            dict.fromkeys(
+                str(pk).strip()
+                for pk in selected_ids
+                if str(pk).strip()
+            )
+        )
+
+        if not selected_ids:
+            messages.error(
+                request,
+                'Please select at least one bursary.'
+            )
+
+            return render(
+                request,
+                'education/apply_bulk_bursary.html',
+                {
+                    'bursaries': available_bursaries,
+                    'draft_data': draft_data,
+                    'academic_years': academic_years,
+                    'provinces': provinces,
+                    'selected_ids': [],
+                }
+            )
+
+        # --------------------------------------------------------
+        # Validate selected bursaries AGAIN from database
+        # --------------------------------------------------------
+
+        bursaries = list(
+            Bursary.objects
+            .filter(
+                id__in=selected_ids,
+                is_active=True,
+                closing_date__gte=today,
+            )
+            .exclude(id__in=applied_ids)
+            .order_by('closing_date', '-created_at')
+        )
+
+        valid_ids = {str(b.id) for b in bursaries}
+        invalid_ids = [
+            pk for pk in selected_ids
+            if pk not in valid_ids
+        ]
+
+        if invalid_ids:
+            messages.error(
+                request,
+                'One or more selected bursaries are no longer available. '
+                'Please refresh the page and try again.'
+            )
+
+            return redirect('education_apply_bulk_bursary')
+
+        # --------------------------------------------------------
+        # Copy POST data
+        # --------------------------------------------------------
+
+        data = request.POST.copy()
+
+        # --------------------------------------------------------
+        # Optional smart application message
+        # --------------------------------------------------------
+
+        if data.get('message_input'):
+            parsed = parse_application_message(
+                data.get('message_input')
+            )
+
+            for key, value in parsed.items():
+                if value:
+                    data[key] = value
+
+        # --------------------------------------------------------
+        # Application data
+        # --------------------------------------------------------
+
+        app_data = {
+            'full_name': data.get('full_name', '').strip(),
+            'email': data.get('email', '').strip(),
+            'phone': data.get('phone', '').strip(),
+            'id_number': data.get('id_number', '').strip(),
+            'date_of_birth': data.get('date_of_birth', ''),
+            'current_institution': data.get(
+                'current_institution',
+                ''
+            ).strip(),
+            'academic_average': data.get(
+                'academic_average',
+                ''
+            ).strip(),
+            'motivation': data.get(
+                'motivation',
+                ''
+            ).strip(),
+            'current_institution_type': data.get(
+                'current_institution_type',
+                'other'
+            ),
+        }
+
+        # --------------------------------------------------------
+        # Required fields
+        # --------------------------------------------------------
+
+        required_fields = {
+            'full_name': 'full name',
+            'email': 'email',
+            'phone': 'phone',
+            'date_of_birth': 'date of birth',
+        }
+
+        missing_fields = []
+
+        for field, label in required_fields.items():
+            if not app_data.get(field):
+                missing_fields.append(label)
+
+        if missing_fields:
+
+            messages.error(
+                request,
+                'Please complete: ' +
+                ', '.join(missing_fields) +
+                '.'
+            )
+
+            return render(
+                request,
+                'education/apply_bulk_bursary.html',
+                {
+                    'bursaries': available_bursaries,
+                    'draft_data': app_data,
+                    'academic_years': academic_years,
+                    'provinces': provinces,
+                    'selected_ids': selected_ids,
+                }
+            )
+
+        # --------------------------------------------------------
+        # Files
+        # --------------------------------------------------------
+
+        files = {}
+
+        for field in [
+            'cv',
+            'academic_transcript',
+            'id_document',
+            'other_documents'
+        ]:
+            uploaded_file = request.FILES.get(field)
+
+            if uploaded_file:
+                files[field] = uploaded_file
+
+        # ========================================================
+        # 7. CREATE APPLICATIONS
+        # ========================================================
+
+        created_apps = []
+        errors = []
+
+        for bursary in bursaries:
+
+            try:
+
+                # Extra duplicate protection
+                already_exists = (
+                    BursaryApplication.objects
+                    .filter(
+                        applicant=user,
+                        bursary=bursary
+                    )
+                    .exists()
+                )
+
+                if already_exists:
+                    errors.append(
+                        f'{bursary.title}: already applied'
+                    )
+                    continue
+
+                # Create application
+                app = BursaryApplication.objects.create(
+                    applicant=user,
+                    bursary=bursary,
+                    **app_data
+                )
+
+                # Attach uploaded documents
+                for field, file_obj in files.items():
+
+                    if hasattr(app, field):
+                        setattr(
+                            app,
+                            field,
+                            file_obj
+                        )
+
+                app.save()
+
+                created_apps.append(app)
+
+            except Exception as e:
+
+                errors.append(
+                    f'{bursary.title}: {str(e)}'
+                )
+
+        # ========================================================
+        # 8. SUBMIT OR SAVE
+        # ========================================================
+
+        action = request.POST.get('action', 'save')
+
+        if created_apps:
+
+            if action == 'submit':
+
+                submitted_count = 0
+
+                for app in created_apps:
+
+                    try:
+                        if app.status == 'draft':
+                            app.submit()
+
+                        submitted_count += 1
+
+                    except Exception as e:
+                        errors.append(
+                            f'{app.bursary.title}: '
+                            f'could not submit ({str(e)})'
+                        )
+
+                if errors:
+
+                    messages.warning(
+                        request,
+                        f'{submitted_count} applications submitted, '
+                        f'but some applications had problems.'
+                    )
+
+                else:
+
+                    messages.success(
+                        request,
+                        f'🎉 Successfully submitted '
+                        f'{submitted_count} bursary applications!'
+                    )
+
+            else:
+
+                messages.success(
+                    request,
+                    f'✅ {len(created_apps)} bursary applications '
+                    f'saved as drafts.'
+                )
+
+            return redirect('education_my_applications')
+
+        # ========================================================
+        # 9. NOTHING CREATED
+        # ========================================================
+
+        if errors:
+            messages.error(
+                request,
+                'No applications were created: ' +
+                ' | '.join(errors)
+            )
+        else:
+            messages.error(
+                request,
+                'No applications were created.'
+            )
+
+        return redirect('education_apply_bulk_bursary')
+
+    # ============================================================
+    # GET
+    # ============================================================
+
+    context = {
+        'bursaries': available_bursaries,
+        'draft_data': draft_data,
+        'academic_years': academic_years,
+        'provinces': provinces,
+        'selected_ids': [],
+    }
+
+    return render(
+        request,
+        'education/apply_bulk_bursary.html',
+        context
+    )

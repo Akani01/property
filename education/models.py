@@ -299,8 +299,7 @@ class BursaryApplication(models.Model):
         ('college', 'College'),
         ('other', 'Other'),
     ])
-    academic_average = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    
+    academic_average = models.TextField(blank=True, null=True)
     # Motivation and documents
     motivation = models.TextField(blank=True)
     
@@ -388,8 +387,7 @@ class UniversityApplication(models.Model):
     # Academic details
     current_grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
     subjects = models.ManyToManyField(Subject, blank=True, related_name='university_applications')
-    academic_average = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    
+    academic_average = models.TextField(blank=True, null=True)
     # Program details
     program_of_interest = models.CharField(max_length=200, blank=True)
     program_code = models.CharField(max_length=50, blank=True)
