@@ -6088,16 +6088,49 @@
             }).join('');
         }
 
-        function likePost(id, btn) {
-            fetch(`/api/posts/${id}/like-dislike/`, {
+        function likePost(postId, btn) {
+            // Determine action based on current state
+            const isLiked = btn.classList.contains('liked');
+            const action = isLiked ? 'remove' : 'like';
+
+            // Find the likes count element inside the same post card
+            const postCard = btn.closest('.post-card');
+            const likesSpan = postCard ? postCard.querySelector('.post-stats span:first-child') : null;
+
+            fetch(`/api/posts/${postId}/like-dislike/`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ action: 'like' })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ action: action })
             })
-            .then(res => res.json())
-            .then(data => { if (data.success) { btn.classList.toggle('liked');
-                    loadFeedPosts(); } })
-            .catch(() => {});
+            .then(response => {
+                if (!response.ok) {
+                    // If not 2xx, throw to trigger catch
+                    return response.json().then(data => { throw new Error(data.message || 'Request failed'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Toggle the liked class on the button
+                    btn.classList.toggle('liked');
+                    // Update the likes count in the stats
+                    if (likesSpan) {
+                        likesSpan.textContent = `${data.likes_count} likes`;
+                    }
+                    // Optionally update dislikes count if shown elsewhere
+                    // ...
+                    showToast(data.message || 'Updated!', 'success');
+                } else {
+                    showToast(data.message || 'Action failed', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Like error:', error);
+                showToast('Network error. Please try again.', 'error');
+            });
         }
 
         function toggleComments(id) {

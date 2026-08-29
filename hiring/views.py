@@ -7924,91 +7924,6 @@ def api_home_feed(request):
         )
     
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def api_post_like_dislike(request, post_id):
-    """Like, dislike, or remove reaction from a post - Using your existing ManyToMany fields"""
-    try:
-        post = get_object_or_404(Post, id=post_id)
-        
-        # Check if user can view this post
-        if not can_user_view_post(post, request.user):
-            return error_response(
-                'You do not have permission to interact with this post',
-                status_code=status.HTTP_403_FORBIDDEN
-            )
-        
-        # Get action from request
-        action = request.data.get('action', '').lower()
-        
-        if action not in ['like', 'dislike', 'remove']:
-            return error_response('Invalid action. Use "like", "dislike", or "remove"')
-        
-        # Process the action
-        if action == 'like':
-            # Remove from dislikes if present
-            post.dislikes.remove(request.user)
-            # Add to likes
-            post.likes.add(request.user)
-            message = 'Post liked'
-            
-        elif action == 'dislike':
-            # Remove from likes if present
-            post.likes.remove(request.user)
-            # Add to dislikes
-            post.dislikes.add(request.user)
-            message = 'Post disliked'
-            
-        else:  # remove
-            # Remove from both
-            post.likes.remove(request.user)
-            post.dislikes.remove(request.user)
-            message = 'Reaction removed'
-        
-        # Refresh from database to get accurate counts
-        post.refresh_from_db()
-        
-        # Get counts
-        likes_count = post.likes.count()
-        dislikes_count = post.dislikes.count()
-        
-        # Create notification for like (not for dislike or remove)
-        if action == 'like' and post.author != request.user:
-            try:
-                # Create alert based on user type
-                if hasattr(post.author, 'applicantprofile'):
-                    Alert.objects.create(
-                        applicant=post.author.applicantprofile,
-                        title="New Like",
-                        message=f"{request.user.username} liked your post: '{post.title[:50]}...'"
-                    )
-                elif hasattr(post.author, 'business_profile'):
-                    BusinessAlert.objects.create(
-                        business=post.author.business_profile,
-                        title="New Like",
-                        message=f"{request.user.username} liked your post: '{post.title[:50]}...'",
-                        alert_type='like'
-                    )
-            except Exception as notify_error:
-                logger.warning(f"Notification error (non-critical): {notify_error}")
-        
-        return success_response(message, {
-            'likes_count': likes_count,
-            'dislikes_count': dislikes_count,
-            'user_has_liked': post.likes.filter(id=request.user.id).exists(),
-            'user_has_disliked': post.dislikes.filter(id=request.user.id).exists(),
-            'action_taken': action
-        })
-        
-    except Exception as e:
-        logger.error(f"Error in post like/dislike: {str(e)}", exc_info=True)
-        return error_response(
-            'Failed to process reaction',
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-
 
 def error_response(message, status_code=status.HTTP_400_BAD_REQUEST):
     """Helper function for error responses"""
@@ -8456,7 +8371,7 @@ def api_post_detail(request, post_id):
         post = get_object_or_404(Post, id=post_id)
         
         # Check if user can access this post
-        if not post.can_user_view(request.user):
+        if not can_user_view_post(post, request.user):
             return Response({
                 'success': False,
                 'error': 'You do not have permission to access this post'
@@ -8547,7 +8462,7 @@ def api_post_like_dislike(request, post_id):
     try:
         post = get_object_or_404(Post, id=post_id)
         
-        if not post.can_user_view(request.user):
+        if not can_user_view_post(post, request.user):
             return Response({
                 'success': False,
                 'error': 'You do not have permission to interact with this post'
@@ -8602,22 +8517,19 @@ def api_post_like_dislike(request, post_id):
             'error': 'Failed to process reaction'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])  # Only authenticated users can see the feed
 def api_feed_posts(request):
-    """Get feed of all public posts"""
+    """Get feed of all public posts with user's like status"""
     try:
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 20))
         
-        # Get all public posts and posts from people user follows
         posts = Post.objects.filter(
             is_published=True,
             visibility='public'
         ).order_by('-created_at')
         
-        # Apply pagination
         total_posts = posts.count()
         total_pages = (total_posts + page_size - 1) // page_size
         
@@ -8630,10 +8542,17 @@ def api_feed_posts(request):
             many=True, 
             context={'request': request}
         )
-        
+        posts_data = serializer.data
+
+        # ✅ Add user_has_liked for each post
+        if request.user.is_authenticated:
+            liked_post_ids = set(request.user.liked_posts.values_list('id', flat=True))
+            for post in posts_data:
+                post['user_has_liked'] = post['id'] in liked_post_ids
+
         return Response({
             'success': True,
-            'posts': serializer.data,
+            'posts': posts_data,
             'pagination': {
                 'current_page': page,
                 'total_pages': total_pages,
@@ -8650,7 +8569,6 @@ def api_feed_posts(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_post_share(request, post_id):
@@ -8658,7 +8576,7 @@ def api_post_share(request, post_id):
     try:
         post = get_object_or_404(Post, id=post_id)
         
-        if not post.can_user_view(request.user):
+        if not can_user_view_post(post, request.user):
             return Response({
                 'success': False,
                 'error': 'You do not have permission to share this post'
@@ -8687,7 +8605,7 @@ def api_post_rating(request, post_id):
     try:
         post = get_object_or_404(Post, id=post_id)
         
-        if not post.can_user_view(request.user):
+        if not can_user_view_post(post, request.user):
             return Response({
                 'success': False,
                 'error': 'You do not have permission to rate this post'

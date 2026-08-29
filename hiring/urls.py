@@ -189,7 +189,7 @@ urlpatterns = [
     path('api/feed/', views.api_home_feed, name='api_home_feed'),
     path('api/posts/', views.api_posts, name='api_posts'),
     path('api/posts/<uuid:post_id>/', views.api_post_detail, name='api_post_detail'),
-    path('api/posts/<uuid:post_id>/like-dislike/', views.api_post_like_dislike, name='api_post_like_dislike'),
+    path('api/posts/<int:post_id>/like-dislike/', views.api_post_like_dislike, name='api_post_like_dislike'),
     path('api/posts/<uuid:post_id>/share/', views.api_post_share, name='api_post_share'),
     path('api/posts/<uuid:post_id>/rate/', views.api_post_rating, name='api_post_rating'),
     # ADD THIS LINE ↓↓↓
