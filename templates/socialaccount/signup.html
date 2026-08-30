@@ -1,0 +1,41 @@
+{% extends "allauth/layouts/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <h2>{% trans "Almost done!" %}</h2>
+    <p>{% trans "You are about to sign up using your Google account." %}</p>
+    <p class="text-muted" style="font-size:0.9rem;">
+        {% trans "We just need a few more details to complete your OppoGlobe profile." %}
+    </p>
+
+    <form method="post" action="{% url 'socialaccount_signup' %}" class="mt-4">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="id_email" class="form-label">{% trans "Email" %}</label>
+            <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:'' }}" readonly disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_username" class="form-label">{% trans "Username" %} *</label>
+            <input type="text" name="username" id="id_username" class="form-control" value="{{ form.username.value|default:'' }}" placeholder="Choose a username" required>
+            {% if form.username.errors %}
+                <div class="text-danger small">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.password1 %}
+        <div class="mb-3">
+            <label for="id_password1" class="form-label">{% trans "Password" %}</label>
+            <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Set a password (optional)">
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary w-100">{% trans "Sign Up" %}</button>
+    </form>
+
+    <p class="mt-3 text-center" style="font-size:0.85rem;">
+        {% trans "Already have an account?" %} <a href="{% url 'account_login' %}">{% trans "Log in" %}</a>
+    </p>
+{% endblock %}

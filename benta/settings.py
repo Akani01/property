@@ -186,7 +186,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # Project apps
-    'social_auth',
     'hiring',
     'realestate',
     'core',
@@ -204,8 +203,6 @@ INSTALLED_APPS = [
     # PWA
     'pwa',
     'webpush',
-
-    # Storage
     'storages',
     'whitenoise',
 ]
@@ -229,36 +226,15 @@ SITE_ID = 1
 # GOOGLE OAUTH 2.0
 # ============================================================
 
-GOOGLE_CLIENT_ID = os.environ.get(
-    'GOOGLE_CLIENT_ID',
-    ''
-)
-
-GOOGLE_CLIENT_SECRET = os.environ.get(
-    'GOOGLE_CLIENT_SECRET',
-    '' 
-)
-
-
 SOCIALACCOUNT_PROVIDERS = {
-
     'google': {
-
-        'APP': {
-            'client_id': GOOGLE_CLIENT_ID,
-            'secret': GOOGLE_CLIENT_SECRET,
-            'key': '',
-        },
-
         'SCOPE': [
             'profile',
             'email',
         ],
-
         'AUTH_PARAMS': {
             'access_type': 'online',
         },
-
         'OAUTH_PKCE_ENABLED': True,
     }
 }
@@ -637,10 +613,9 @@ ACCOUNT_LOGOUT_ON_GET = True
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/'
 
-ACCOUNT_SIGNUP_REDIRECT_URL = '/profile/edit/'
-
+ACCOUNT_SIGNUP_REDIRECT_URL = '/profile/'
 
 # ============================================================
 # REST FRAMEWORK

@@ -12,7 +12,6 @@ urlpatterns = [
     path('', include('hiring.urls')),
     path('', include('realestate.urls')),
     path('api/', include('realestate.urls')),
-    path('api/auth/', include('social_auth.urls')),
     path('', include('core.urls')),
     
     # Education HTML pages - /education/
@@ -22,7 +21,7 @@ urlpatterns = [
     path('education/school/<int:pk>/', education_views.school_detail, name='education_school_detail'),
     path('education/paper/<int:pk>/', education_views.paper_detail, name='education_paper_detail'),
     path('education/news/<int:pk>/', education_views.news_detail, name='education_news_detail'),
-    
+    path('accounts/', include('allauth.urls')),
     # Education API - /api/education/
     path('api/education/', include('education.urls')),
     
