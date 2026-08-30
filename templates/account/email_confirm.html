@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block title %}Check Your Email | OppoGlobe{% endblock %}
+{% block title %}Confirm Email | OppoGlobe{% endblock %}
 
 {% block content %}
 
@@ -24,29 +24,27 @@
                 </div>
 
                 <h1 class="fw-bold mb-3">
-                    Check your email
+                    Confirm your email
                 </h1>
 
                 <p class="text-muted mb-4">
-                    If an account exists with that email address,
-                    we've sent instructions to reset your password.
+                    Please confirm that
+                    <strong>{{ email_address.email }}</strong>
+                    belongs to you.
                 </p>
 
-                <div class="alert alert-light border rounded-3 text-start">
+                <form method="post">
 
-                    <small class="text-muted">
-                        <strong>Didn't receive it?</strong><br>
-                        Check your spam or junk folder, then try again.
-                    </small>
+                    {% csrf_token %}
 
-                </div>
+                    <button
+                        type="submit"
+                        class="btn btn-danger w-100 py-3 rounded-3 fw-semibold"
+                    >
+                        Confirm Email
+                    </button>
 
-                <a
-                    href="{% url 'account_login' %}"
-                    class="btn btn-danger w-100 py-3 rounded-3 fw-semibold mt-3"
-                >
-                    Back to Sign In
-                </a>
+                </form>
 
             </div>
 

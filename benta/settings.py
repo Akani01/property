@@ -26,7 +26,6 @@ SECRET_KEY = config(
     default='change-this-secret-key-in-production'
 )
 
-# FINAL PRODUCTION DEPLOYMENT
 DEBUG = config(
     'DEBUG',
     default=False,
@@ -44,14 +43,8 @@ ALLOWED_HOSTS = [
 
     # Railway
     'property-production-61c8.up.railway.app',
-    '*.up.railway.app',
-    '*.railway.app',
 
-    # Railway internal
-    'property.railway.internal',
-    '*.railway.internal',
-
-    # Local development access
+    # Local
     '127.0.0.1',
     'localhost',
     '0.0.0.0',
@@ -72,9 +65,6 @@ CSRF_TRUSTED_ORIGINS = [
     # Local
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-
-    # Railway internal
-    'https://property.railway.internal',
 ]
 
 
@@ -86,6 +76,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://oppoglobe.co.za',
     'https://www.oppoglobe.co.za',
 
+    # Railway
     'https://property-production-61c8.up.railway.app',
 
     # Local
@@ -94,6 +85,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOW_CREDENTIALS = True
 
 
@@ -101,23 +93,27 @@ CORS_ALLOW_CREDENTIALS = True
 # SESSION SETTINGS
 # ============================================================
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = (
+    'django.contrib.sessions.backends.db'
+)
 
-SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_COOKIE_AGE = 1209600
 
 SESSION_COOKIE_HTTPONLY = True
 
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = not DEBUG
 
 
 # ============================================================
 # CSRF COOKIE
 # ============================================================
 
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = not DEBUG
+
 CSRF_COOKIE_HTTPONLY = False
+
 CSRF_COOKIE_SAMESITE = 'Lax'
 
 
@@ -167,7 +163,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # Development / utilities
+    # Utilities
     'django_extensions',
 
     # Forms
@@ -216,27 +212,93 @@ AUTH_USER_MODEL = 'hiring.CustomUser'
 
 
 # ============================================================
-# SITE
+# DJANGO SITES
 # ============================================================
 
 SITE_ID = 1
 
 
 # ============================================================
-# GOOGLE OAUTH 2.0
+# AUTHENTICATION BACKENDS
+# ============================================================
+
+AUTHENTICATION_BACKENDS = [
+
+    'django.contrib.auth.backends.ModelBackend',
+
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+# ============================================================
+# ALLAUTH - ACCOUNT
+# ============================================================
+
+ACCOUNT_LOGIN_METHODS = {
+    'email',
+    'username',
+}
+
+ACCOUNT_SIGNUP_FIELDS = [
+    'email*',
+    'username*',
+    'password1*',
+    'password2*',
+]
+
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+ACCOUNT_UNIQUE_EMAIL = True
+
+ACCOUNT_LOGOUT_ON_GET = False
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+ACCOUNT_LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_SIGNUP_REDIRECT_URL = '/'
+
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_ADAPTER = (
+    'hiring.adapters.OppoGlobeAccountAdapter'
+)
+
+
+# ============================================================
+# ALLAUTH - SOCIAL ACCOUNTS
+# ============================================================
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+
+# ============================================================
+# GOOGLE OAUTH
 # ============================================================
 
 SOCIALACCOUNT_PROVIDERS = {
+
     'google': {
+
         'SCOPE': [
             'profile',
             'email',
         ],
+
         'AUTH_PARAMS': {
             'access_type': 'online',
         },
+
         'OAUTH_PKCE_ENABLED': True,
-    }
+    },
 }
 
 
@@ -247,7 +309,8 @@ SOCIALACCOUNT_PROVIDERS = {
 PWA_APP_NAME = 'OppoGlobe'
 
 PWA_APP_DESCRIPTION = (
-    'Find your dream property and access convenient property services.'
+    'Find your dream property and access convenient '
+    'property services.'
 )
 
 PWA_APP_THEME_COLOR = '#c62828'
@@ -317,22 +380,29 @@ PWA_VAPID_EMAIL = os.environ.get(
 
 PWA_SETTINGS = {
 
-    'VAPID_PUBLIC_KEY': PWA_VAPID_PUBLIC_KEY,
+    'VAPID_PUBLIC_KEY':
+        PWA_VAPID_PUBLIC_KEY,
 
-    'VAPID_PRIVATE_KEY': PWA_VAPID_PRIVATE_KEY,
+    'VAPID_PRIVATE_KEY':
+        PWA_VAPID_PRIVATE_KEY,
 
-    'VAPID_EMAIL': PWA_VAPID_EMAIL,
+    'VAPID_EMAIL':
+        PWA_VAPID_EMAIL,
 }
 
 
 WEBPUSH_SETTINGS = {
 
-    'VAPID_PUBLIC_KEY': PWA_VAPID_PUBLIC_KEY,
+    'VAPID_PUBLIC_KEY':
+        PWA_VAPID_PUBLIC_KEY,
 
-    'VAPID_PRIVATE_KEY': PWA_VAPID_PRIVATE_KEY,
+    'VAPID_PRIVATE_KEY':
+        PWA_VAPID_PRIVATE_KEY,
 
     'VAPID_CLAIM': {
-        'sub': f'mailto:{PWA_VAPID_EMAIL}'
+
+        'sub':
+            f'mailto:{PWA_VAPID_EMAIL}'
     },
 }
 
@@ -465,7 +535,6 @@ DEEPSEEK_API_KEY = os.environ.get(
     ''
 )
 
-
 GOOGLE_MAPS_API_KEY = os.environ.get(
     'GOOGLE_MAPS_API_KEY',
     ''
@@ -578,46 +647,6 @@ USE_TZ = True
 
 
 # ============================================================
-# AUTHENTICATION BACKENDS
-# ============================================================
-
-AUTHENTICATION_BACKENDS = [
-
-    'django.contrib.auth.backends.ModelBackend',
-
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
-
-# ============================================================
-# ALLAUTH
-# ============================================================
-
-ACCOUNT_LOGIN_METHODS = {
-    'email',
-    'username',
-}
-
-ACCOUNT_SIGNUP_FIELDS = [
-    'email*',
-    'username*',
-    'password1*',
-    'password2*',
-]
-
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
-
-ACCOUNT_UNIQUE_EMAIL = True
-
-ACCOUNT_LOGOUT_ON_GET = True
-
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-
-LOGIN_REDIRECT_URL = '/'
-
-ACCOUNT_SIGNUP_REDIRECT_URL = '/profile/'
-
-# ============================================================
 # REST FRAMEWORK
 # ============================================================
 
@@ -682,15 +711,6 @@ FRONTEND_URL = config(
 
 # ============================================================
 # PRODUCTION EMAIL
-# ============================================================
-#
-# IMPORTANT:
-# DO NOT use the Django console email backend here.
-#
-# This is the final deployed application.
-# Password reset emails must actually be sent through Gmail SMTP.
-#
-# EMAIL_HOST_PASSWORD must be a Google App Password.
 # ============================================================
 
 EMAIL_BACKEND = (
@@ -950,7 +970,6 @@ def get_google_credentials():
         'service-account-key.json'
     )
 
-
     if os.path.exists(local_cred_path):
 
         try:
@@ -1024,7 +1043,6 @@ if GS_CREDENTIALS and GS_BUCKET_NAME:
         f'{GS_BUCKET_NAME}/'
     )
 
-
 else:
 
     STORAGES = {
@@ -1076,6 +1094,7 @@ class NoThrottle(BaseThrottle):
         request,
         view
     ):
+
         return True
 
 

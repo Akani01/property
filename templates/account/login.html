@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+
+{% block title %}
+Sign In | OppoGlobe
+{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-4">
+
+```
+<h1 class="fs-2 mb-2">
+    Welcome back
+</h1>
+
+<p class="text-muted mb-0">
+    Sign in to continue to OppoGlobe.
+</p>
+```
+
+</div>
+
+<!-- =========================================================
+     MESSAGES
+========================================================= -->
+
+{% if messages %}
+
+```
+{% for message in messages %}
+
+    <div class="alert alert-{{ message.tags }} oppo-alert">
+
+        {{ message }}
+
+    </div>
+
+{% endfor %}
+```
+
+{% endif %}
+
+<!-- =========================================================
+     FORM ERRORS
+========================================================= -->
+
+{% if form.non_field_errors %}
+
+```
+<div class="alert alert-danger oppo-alert">
+
+    {% for error in form.non_field_errors %}
+
+        {{ error }}
+
+    {% endfor %}
+
+</div>
+```
+
+{% endif %}
+
+<!-- =========================================================
+     LOGIN FORM
+========================================================= -->
+
+<form
+    method="post"
+    action="{% url 'account_login' %}"
+>
+
+```
+{% csrf_token %}
+
+
+<!-- EMAIL / USERNAME -->
+
+<div class="mb-3">
+
+    <label
+        for="{{ form.login.id_for_label }}"
+    >
+        Email or Username
+    </label>
+
+    {{ form.login }}
+
+    {% for error in form.login.errors %}
+
+        <div class="text-danger small mt-1">
+            {{ error }}
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- PASSWORD -->
+
+<div class="mb-3">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+        <label
+            for="{{ form.password.id_for_label }}"
+            class="mb-0"
+        >
+            Password
+        </label>
+
+        <a
+            href="{% url 'account_reset_password' %}"
+            class="small"
+        >
+            Forgot password?
+        </a>
+
+    </div>
+
+
+    <div class="mt-2">
+
+        {{ form.password }}
+
+    </div>
+
+
+    {% for error in form.password.errors %}
+
+        <div class="text-danger small mt-1">
+            {{ error }}
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- REMEMBER ME -->
+
+{% if form.remember %}
+
+    <div class="form-check mb-4">
+
+        {{ form.remember }}
+
+        <label
+            class="form-check-label"
+            for="{{ form.remember.id_for_label }}"
+        >
+            Remember me
+        </label>
+
+    </div>
+
+{% endif %}
+
+
+<!-- SIGN IN -->
+
+<button
+    type="submit"
+    class="oppo-primary-button"
+>
+    Sign In
+</button>
+```
+
+</form>
+
+<!-- =========================================================
+     DIVIDER
+========================================================= -->
+
+<div class="oppo-divider">
+
+```
+<span>
+    or
+</span>
+```
+
+</div>
+
+<!-- =========================================================
+     GOOGLE
+========================================================= -->
+
+<a
+href="{% provider_login_url 'google' process='login' %}"
+class="oppo-google-button"
+
+>
+
+```
+<span class="oppo-google-icon">
+    G
+</span>
+
+Continue with Google
+```
+
+</a>
+
+<!-- =========================================================
+     SIGN UP
+========================================================= -->
+
+<div class="text-center mt-4">
+
+```
+<span class="text-muted small">
+    Don't have an account?
+</span>
+
+<a
+    href="{% url 'account_signup' %}"
+    class="fw-semibold small ms-1"
+>
+    Sign Up
+</a>
+```
+
+</div>
+
+{% endblock %}

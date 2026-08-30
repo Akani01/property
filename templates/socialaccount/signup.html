@@ -1,41 +1,218 @@
-{% extends "allauth/layouts/base.html" %}
+{% extends "base.html" %}
 
 {% load i18n %}
+{% load account %}
+{% load socialaccount %}
+
+{% block title %}Complete Your Account | OppoGlobe{% endblock %}
 
 {% block content %}
-    <h2>{% trans "Almost done!" %}</h2>
-    <p>{% trans "You are about to sign up using your Google account." %}</p>
-    <p class="text-muted" style="font-size:0.9rem;">
-        {% trans "We just need a few more details to complete your OppoGlobe profile." %}
-    </p>
 
-    <form method="post" action="{% url 'socialaccount_signup' %}" class="mt-4">
-        {% csrf_token %}
+<div class="container py-5">
 
-        <div class="mb-3">
-            <label for="id_email" class="form-label">{% trans "Email" %}</label>
-            <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:'' }}" readonly disabled>
+<div class="row justify-content-center">
+
+    <div class="col-12 col-md-8 col-lg-5">
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body p-4 p-md-5">
+
+                <div class="text-center mb-4">
+
+                    <div
+                        class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle bg-light"
+                        style="width: 75px; height: 75px;"
+                    >
+                        <i class="bi bi-person-plus fs-2"></i>
+                    </div>
+
+                    <h1 class="fw-bold mb-2">
+                        Welcome to OppoGlobe
+                    </h1>
+
+                    <p class="text-muted">
+                        You're almost there. Let's finish setting
+                        up your account.
+                    </p>
+
+                </div>
+
+                {% if process == "connect" %}
+
+                    <div class="alert alert-light border rounded-3 mb-4">
+
+                        <div class="d-flex align-items-center">
+
+                            <i class="bi bi-google fs-4 me-3"></i>
+
+                            <div>
+                                <div class="fw-semibold">
+                                    Connecting Google Account
+                                </div>
+
+                                <small class="text-muted">
+                                    Your Google account will be
+                                    connected to OppoGlobe.
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="alert alert-light border rounded-3 mb-4">
+
+                        <div class="d-flex align-items-center">
+
+                            <i class="bi bi-google fs-4 me-3"></i>
+
+                            <div>
+                                <div class="fw-semibold">
+                                    Google Sign Up
+                                </div>
+
+                                <small class="text-muted">
+                                    You're creating your OppoGlobe
+                                    account using Google.
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger rounded-3">
+                        {{ form.non_field_errors }}
+                    </div>
+
+                {% endif %}
+
+                <form
+                    method="post"
+                    action="{% url 'socialaccount_signup' %}"
+                >
+
+                    {% csrf_token %}
+
+                    {% if form.email %}
+
+                        <div class="mb-3">
+
+                            <label
+                                for="{{ form.email.id_for_label }}"
+                                class="form-label fw-semibold"
+                            >
+                                Email Address
+                            </label>
+
+                            {{ form.email }}
+
+                            {% for error in form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                    {% if form.username %}
+
+                        <div class="mb-3">
+
+                            <label
+                                for="{{ form.username.id_for_label }}"
+                                class="form-label fw-semibold"
+                            >
+                                Username
+                            </label>
+
+                            {{ form.username }}
+
+                            {% for error in form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                    {% for field in form %}
+
+                        {% if field.name != "email" and field.name != "username" %}
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="{{ field.id_for_label }}"
+                                    class="form-label fw-semibold"
+                                >
+                                    {{ field.label }}
+                                </label>
+
+                                {{ field }}
+
+                                {% if field.help_text %}
+                                    <div class="form-text">
+                                        {{ field.help_text }}
+                                    </div>
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger w-100 py-3 rounded-3 fw-semibold mt-2"
+                    >
+                        <i class="bi bi-person-check me-2"></i>
+                        Create OppoGlobe Account
+                    </button>
+
+                </form>
+
+                <div class="text-center mt-4">
+
+                    <p class="text-muted small mb-2">
+                        Already have an OppoGlobe account?
+                    </p>
+
+                    <a
+                        href="{% url 'account_login' %}"
+                        class="fw-semibold text-decoration-none"
+                    >
+                        Sign In Instead
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="mb-3">
-            <label for="id_username" class="form-label">{% trans "Username" %} *</label>
-            <input type="text" name="username" id="id_username" class="form-control" value="{{ form.username.value|default:'' }}" placeholder="Choose a username" required>
-            {% if form.username.errors %}
-                <div class="text-danger small">{{ form.username.errors }}</div>
-            {% endif %}
-        </div>
+    </div>
 
-        {% if form.password1 %}
-        <div class="mb-3">
-            <label for="id_password1" class="form-label">{% trans "Password" %}</label>
-            <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Set a password (optional)">
-        </div>
-        {% endif %}
+</div>
 
-        <button type="submit" class="btn btn-primary w-100">{% trans "Sign Up" %}</button>
-    </form>
+</div>
 
-    <p class="mt-3 text-center" style="font-size:0.85rem;">
-        {% trans "Already have an account?" %} <a href="{% url 'account_login' %}">{% trans "Log in" %}</a>
-    </p>
 {% endblock %}
