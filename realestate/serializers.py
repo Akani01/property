@@ -5,6 +5,9 @@ from django.db.models import Count, Avg
 from django.core.cache import cache
 from .models import *
 from hiring.models import BusinessProfile, CustomUser, ApplicantProfile
+from decimal import Decimal
+# Import your cleaning function from models
+from .models import Property, clean_price_string  # ensure clean_price_string is defined at module level
 
 
 # ============================================
@@ -349,6 +352,33 @@ class PropertyDetailSerializer(PropertySerializer):
         ]
     
 
+
+# ============================================================
+# 1. CUSTOM DRF FIELD FOR FLEXIBLE PRICES
+# ============================================================
+class FlexiblePriceField(serializers.DecimalField):
+    """
+    A DecimalField that accepts human‑friendly price strings
+    (currency symbols, thousand separators, comma decimals, etc.)
+    and converts them to a clean Decimal.
+    """
+    def to_internal_value(self, data):
+        if data is None:
+            return None
+        if isinstance(data, str):
+            try:
+                data = clean_price_string(data)   # your existing cleaning function
+            except Exception:
+                raise serializers.ValidationError(
+                    f"'{data}' is not a valid price format."
+                )
+        # If data is already a number, pass through
+        return super().to_internal_value(data)
+
+
+# ============================================================
+# 2. PROPERTY CREATE SERIALIZER (FIXED)
+# ============================================================
 class PropertyCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating properties"""
     
@@ -356,6 +386,17 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         child=serializers.UUIDField(),
         required=False,
         write_only=True
+    )
+    
+    # ✅ Explicitly declare price fields with custom field
+    base_price = FlexiblePriceField(max_digits=12, decimal_places=2)
+    price_per_unit = FlexiblePriceField(
+        max_digits=12, decimal_places=2,
+        required=False, allow_null=True
+    )
+    price_per_sqm = FlexiblePriceField(
+        max_digits=12, decimal_places=2,
+        required=False, allow_null=True
     )
     
     class Meta:
@@ -387,6 +428,9 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         return property_obj
 
 
+# ============================================================
+# 3. PROPERTY UPDATE SERIALIZER (FIXED)
+# ============================================================
 class PropertyUpdateSerializer(serializers.ModelSerializer):
     """Serializer for updating properties"""
     
@@ -397,6 +441,17 @@ class PropertyUpdateSerializer(serializers.ModelSerializer):
     )
     main_image_url = serializers.SerializerMethodField()
     property_type_name = serializers.CharField(source='property_type.name', read_only=True)
+    
+    # ✅ Explicitly declare price fields with custom field
+    base_price = FlexiblePriceField(max_digits=12, decimal_places=2)
+    price_per_unit = FlexiblePriceField(
+        max_digits=12, decimal_places=2,
+        required=False, allow_null=True
+    )
+    price_per_sqm = FlexiblePriceField(
+        max_digits=12, decimal_places=2,
+        required=False, allow_null=True
+    )
     
     class Meta:
         model = Property

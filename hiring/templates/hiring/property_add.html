@@ -1190,15 +1190,23 @@
                 </div>
             </div>
 
-            <!-- Pricing -->
+            <!-- Pricing – ✅ FIXED: Base Price is now type="text" -->
             <div class="form-card">
                 <div class="card-header"><i class="fas fa-tag"></i> Pricing & Status</div>
                 <div class="card-body">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Base Price <span class="required">*</span></label>
-                            <input type="number" class="form-control" name="base_price" min="0" step="100" placeholder="e.g., 2500" required>
-                            <div class="help-text">Enter the price in your selected currency</div>
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="base_price" 
+                                   id="basePrice"
+                                   placeholder="e.g., R 1 000 000.50 or 1,250,000.75" 
+                                   required>
+                            <div class="help-text">
+                                <i class="fas fa-info-circle"></i> 
+                                You can enter prices with currency symbols (R, $, €), thousand separators (commas or spaces), and decimal commas (e.g., 1.000.000,50).
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Currency</label>
@@ -1363,7 +1371,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ===== TOGGLE DROPDOWN =====
+        // ============================================================
+        // TOGGLE DROPDOWN
+        // ============================================================
         function toggleDropdown(id) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -1379,13 +1389,18 @@
             }
         });
 
-        // ===== TOAST =====
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast-item ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 
+                         type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
             toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <i class="fas ${icon}"></i>
                 ${message}
                 <button class="close-toast" onclick="this.parentElement.remove()">&times;</button>
             `;
@@ -1393,7 +1408,9 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
-        // ===== GET CSRF TOKEN =====
+        // ============================================================
+        // GET CSRF TOKEN
+        // ============================================================
         function getCSRFToken() {
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
@@ -1403,9 +1420,9 @@
             return null;
         }
 
-        // ============================================
-        // GEOCODING - FIXED: Using the correct POST endpoint
-        // ============================================
+        // ============================================================
+        // GEOCODING – Uses your /api/geocode-address/ endpoint
+        // ============================================================
         function geocodeAddress() {
             const address = document.getElementById('streetAddress').value.trim();
             const city = document.getElementById('city').value.trim();
@@ -1436,7 +1453,6 @@
                 </div>
             `;
             
-            // ✅ FIXED: Using the correct POST endpoint that exists in your views
             fetch('/api/geocode-address/', {
                 method: 'POST',
                 headers: {
@@ -1455,13 +1471,11 @@
                 btn.disabled = false;
                 
                 if (data.success) {
-                    // Set coordinates
                     document.getElementById('latitude').value = data.lat;
                     document.getElementById('longitude').value = data.lng;
                     document.getElementById('formattedAddress').value = data.formatted_address || data.full_address || '';
                     document.getElementById('placeId').value = data.place_id || '';
                     
-                    // Update preview
                     preview.innerHTML = `
                         <div class="location-status" style="color:#2e7d32;">
                             <i class="fas fa-check-circle" style="color:#4caf50;font-size:32px;"></i>
@@ -1474,7 +1488,6 @@
                     `;
                     preview.classList.add('has-location');
                     
-                    // Show success message
                     const foundDiv = document.getElementById('locationFound');
                     foundDiv.classList.add('show');
                     document.getElementById('locationFoundText').textContent = 
@@ -1549,7 +1562,9 @@
             }
         });
 
-        // ===== ADD NEW TYPE MODAL =====
+        // ============================================================
+        // ADD NEW TYPE MODAL
+        // ============================================================
         function showAddTypeModal() {
             document.getElementById('addTypeModal').classList.add('show');
             document.getElementById('newTypeName').focus();
@@ -1620,7 +1635,9 @@
             if (e.key === 'Escape') closeAddTypeModal();
         });
 
-        // ===== FILE UPLOAD =====
+        // ============================================================
+        // FILE UPLOAD
+        // ============================================================
         const dropArea = document.getElementById('dropArea');
         const fileInput = document.getElementById('fileInput');
         const previewGrid = document.getElementById('imagePreviewGrid');
@@ -1720,7 +1737,9 @@
             fileInput.files = dataTransfer.files;
         }
 
-        // ===== FEATURE SEARCH =====
+        // ============================================================
+        // FEATURE SEARCH
+        // ============================================================
         document.getElementById('featureSearch').addEventListener('keyup', function() {
             const query = this.value.toLowerCase();
             const tags = document.querySelectorAll('#featuresContainer .feature-tag');
@@ -1730,7 +1749,9 @@
             });
         });
 
-        // ===== ADD FEATURE FROM PROPERTY ADD PAGE =====
+        // ============================================================
+        // ADD FEATURE MODAL
+        // ============================================================
         function showAddFeatureModal() {
             let modal = document.getElementById('featureAddModal');
             if (!modal) {
@@ -1861,7 +1882,9 @@
             });
         }
 
-        // ===== FORM SUBMISSION =====
+        // ============================================================
+        // FORM SUBMISSION
+        // ============================================================
         document.getElementById('propertyForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1908,7 +1931,9 @@
             });
         });
 
-        // ===== RESET FORM =====
+        // ============================================================
+        // RESET FORM
+        // ============================================================
         document.querySelector('[type="reset"]').addEventListener('click', function(e) {
             e.preventDefault();
             if (confirm('Clear all form data?')) {
@@ -1921,7 +1946,9 @@
             }
         });
 
-        // ===== CHECK IF LOCATION ALREADY EXISTS (for edit mode) =====
+        // ============================================================
+        // CHECK IF LOCATION ALREADY EXISTS (edit mode)
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             const lat = document.getElementById('latitude').value;
             const lng = document.getElementById('longitude').value;
