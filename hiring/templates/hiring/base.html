@@ -2,194 +2,840 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400,500,700,900" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <meta name="description" content="OppoGlobe — Homes, Jobs & Neighbourhood Life">
+    <meta name="author" content="OppoGlobe">
+    <title>{% block title %}OppoGlobe — Homes, Jobs & Neighbourhood Life{% endblock %}</title>
 
-    <title>JobPortal - Find Your Dream Job</title>
-   
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css">
-    <link rel="stylesheet" href="/static/css/templatemo-softy-pinko.css">
-    <!-- Custom CSS for dynamic features -->
+    <!-- PWA & static -->
+    {% load static %}
+    {% load pwa %}
+    {% progressive_web_app_meta %}
+
+    <!-- Bootstrap & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom notifications & extra CSS -->
+    <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <style>
-        .profile-dropdown {
-            position: relative;
+        /* ============================================================
+           DESIGN TOKENS (from OppoGlobe)
+           ============================================================ */
+        :root {
+            --ink:#16241F;
+            --ink-soft:#5B6660;
+            --ink-faint:#8B958F;
+            --paper:#F6F7F5;
+            --surface:#FFFFFF;
+            --line:#E4E7E2;
+            --line-soft:#EEF0ED;
+            --jade:#1F6F5C;
+            --jade-deep:#154F41;
+            --jade-wash:#E7F1EC;
+            --coral:#FF6B4A;
+            --coral-deep:#E24E2F;
+            --coral-wash:#FFEAE3;
+            --gold:#E8A93B;
+            --gold-wash:#FBF0DA;
+            --plum:#7A5AA3;
+            --plum-wash:#F1EBF9;
+            --sky:#2E8BC0;
+            --sky-wash:#E7F3FA;
+            --danger:#D64545;
+            --success:#2C9A5B;
+            --radius-xs:8px;
+            --radius-sm:12px;
+            --radius-md:16px;
+            --radius-lg:22px;
+            --radius-pill:999px;
+            --shadow-sm:0 1px 3px rgba(22,36,31,.06), 0 1px 2px rgba(22,36,31,.04);
+            --shadow-md:0 8px 24px rgba(22,36,31,.08);
+            --shadow-lg:0 20px 48px rgba(22,36,31,.14);
+            --font-display:'Fraunces', Georgia, serif;
+            --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono:'JetBrains Mono', 'SF Mono', monospace;
+            --ease:cubic-bezier(.34,1.2,.4,1);
+            --header-h:64px;
+            --bottom-nav-h:66px;
+            --safe-b:env(safe-area-inset-bottom, 0px);
         }
-        .profile-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 10px 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.3s;
-            z-index: 1000;
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+        body {
+            margin:0;
+            background:var(--paper);
+            color:var(--ink);
+            font-family:var(--font-body);
+            font-size:16px;
+            line-height:1.5;
+            padding-top:var(--header-h);
+            min-height:100vh;
         }
-        .profile-dropdown.active .profile-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        a { color:inherit; text-decoration:none; }
+        img { max-width:100%; display:block; }
+        button { font-family:inherit; }
+        :focus-visible { outline:2.5px solid var(--jade); outline-offset:2px; border-radius:6px; }
+        h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); margin:0; letter-spacing:-.01em; }
+        .hidden { display:none !important; }
+
+        /* ===== HEADER ===== */
+        .header-area {
+            position:fixed; inset:0 0 auto 0; height:var(--header-h);
+            background:var(--surface); border-bottom:1px solid var(--line);
+            z-index:1000; display:flex; align-items:center;
         }
-        .profile-menu a {
-            display: block;
-            padding: 8px 20px;
-            color: #2a2a2a;
-            text-decoration: none;
-            transition: background-color 0.3s;
+        .header-inner {
+            width:100%; max-width:1400px; margin:0 auto;
+            padding:0 clamp(12px,3vw,24px);
+            display:flex; align-items:center; justify-content:space-between; gap:10px;
         }
-        .profile-menu a:hover {
-            background-color: rgba(255, 88, 158, 0.1);
-            color: #ff589e;
+        .brand { display:flex; align-items:center; gap:9px; flex-shrink:0; }
+        .brand-mark {
+            width:34px; height:34px; border-radius:10px; flex-shrink:0;
+            background:linear-gradient(135deg, var(--jade), var(--jade-deep));
+            display:flex; align-items:center; justify-content:center;
+            color:#fff; font-family:var(--font-display); font-weight:700; font-size:17px;
         }
-        .profile-divider {
-            height: 1px;
-            background-color: #eee;
-            margin: 5px 0;
+        .brand-word { font-family:var(--font-display); font-weight:600; font-size:20px; color:var(--ink); white-space:nowrap; }
+
+        .nav-icons { display:flex; align-items:center; gap:4px; list-style:none; margin:0; padding:0; }
+        .icon-btn {
+            position:relative; width:40px; height:40px; border-radius:var(--radius-pill);
+            display:flex; align-items:center; justify-content:center;
+            color:var(--ink-soft); font-size:17px; transition:background .15s, color .15s;
+            border:none; background:transparent; cursor:pointer;
         }
+        .icon-btn:hover { background:var(--jade-wash); color:var(--jade-deep); }
+        .ping-badge {
+            position:absolute; top:2px; right:2px; min-width:16px; height:16px; padding:0 3px;
+            background:var(--coral); color:#fff; border-radius:99px; border:2px solid var(--surface);
+            font-size:9px; font-weight:700; display:none; align-items:center; justify-content:center; line-height:1;
+        }
+        .ping-badge.show { display:flex; }
+
+        .role-chip {
+            font-size:11px; font-weight:600; padding:4px 11px; border-radius:var(--radius-pill);
+            background:var(--jade-wash); color:var(--jade-deep); white-space:nowrap;
+        }
+        .role-chip.biz { background:var(--plum-wash); color:var(--plum); }
+
+        .avatar-btn {
+            width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; position:relative;
+            background:linear-gradient(135deg, var(--coral), var(--gold)); color:#fff; font-weight:700; font-size:14px;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .status-dot { position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background:var(--success); border:2px solid var(--surface); }
+
+        .dropdown-panel {
+            position:absolute; top:calc(100% + 10px); right:0; width:220px;
+            background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+            box-shadow:var(--shadow-lg); padding:6px; opacity:0; visibility:hidden; transform:translateY(6px) scale(.98);
+            transition:.16s var(--ease); z-index:1100;
+        }
+        .dropdown-panel.show { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+        .dropdown-panel a, .dropdown-panel button {
+            display:flex; align-items:center; gap:10px; width:100%; text-align:left; border:none; background:none;
+            padding:9px 10px; border-radius:var(--radius-sm); font-size:13.5px; color:var(--ink); cursor:pointer;
+        }
+        .dropdown-panel a:hover, .dropdown-panel button:hover { background:var(--paper); }
+        .dropdown-panel i { width:18px; color:var(--ink-faint); text-align:center; }
+        .dropdown-divider { height:1px; background:var(--line-soft); margin:5px 6px; }
+        .rel { position:relative; }
+
+        .auth-btn {
+            padding:9px 18px; border-radius:var(--radius-pill); font-weight:600; font-size:13.5px; border:none; cursor:pointer;
+            transition:transform .15s, background .15s;
+        }
+        .auth-btn:active { transform:scale(.97); }
+        .auth-btn-ghost { background:transparent; color:var(--jade-deep); border:1.5px solid var(--jade); }
+        .auth-btn-ghost:hover { background:var(--jade-wash); }
+        .auth-btn-solid { background:var(--ink); color:#fff; }
+        .auth-btn-solid:hover { background:var(--jade-deep); }
+
+        /* ===== LAYOUT ===== */
+        .shell {
+            max-width:1400px; margin:0 auto; padding:16px clamp(10px,2.5vw,20px) calc(var(--bottom-nav-h) + 24px);
+            display:grid; grid-template-columns:1fr; gap:16px;
+        }
+        @media (min-width:1000px) {
+            .shell { grid-template-columns:236px minmax(0,1fr); padding-bottom:24px; }
+        }
+        @media (min-width:1260px) {
+            .shell { grid-template-columns:236px minmax(0,1fr) 264px; }
+        }
+        .rail-left { min-width:0; }
+        .rail-right { min-width:0; display:none; }
+        @media (min-width:1260px) { .rail-right { display:block; } }
+        .main { min-width:0; max-width:720px; width:100%; margin:0 auto; }
+        @media (min-width:1260px) { .main { margin:0; } }
+
+        .card {
+            background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+            box-shadow:var(--shadow-sm);
+        }
+        .card-pad { padding:16px; }
+        .card-title {
+            font-family:var(--font-display); font-weight:600; font-size:15px; margin-bottom:12px;
+            display:flex; align-items:center; gap:8px; color:var(--ink);
+        }
+        .card-title i { color:var(--coral); font-size:14px; }
+        .stack { display:flex; flex-direction:column; gap:12px; }
+
+        .stat-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line-soft); font-size:13px; }
+        .stat-row:last-child { border-bottom:none; }
+        .stat-val { font-family:var(--font-mono); font-weight:700; }
+        .stat-val.jade { color:var(--jade); }
+        .stat-val.gold { color:var(--gold); }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        .bottom-nav {
+            position:fixed; left:10px; right:10px; bottom:calc(8px + var(--safe-b)); height:var(--bottom-nav-h); z-index:1300;
+            background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border:1px solid var(--line);
+            border-radius:22px; box-shadow:var(--shadow-lg); display:grid; grid-template-columns:repeat(5,1fr);
+            align-items:center; transition:transform .25s var(--ease), opacity .25s var(--ease);
+        }
+        .bottom-nav.hide { transform:translateY(140%); opacity:0; }
+        @media (min-width:1000px) { .bottom-nav { display:none; } }
+        .bn-item {
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--ink-faint); font-size:9.5px; height:100%; font-weight:600;
+        }
+        .bn-item i { font-size:18px; }
+        .bn-item.active { color:var(--jade-deep); }
+        .bn-hero { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; }
+        .bn-hero .circle { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 12px rgba(255,107,74,.4); }
+        .bn-hero .label { font-size:8.5px; font-weight:700; color:var(--ink); margin-top:1px; }
+
+        /* ===== TOAST ===== */
+        .toast-stack { position:fixed; top:calc(var(--header-h) + 8px); right:12px; z-index:2400; max-width:calc(100vw - 24px); display:flex; flex-direction:column; gap:6px; }
+        .toast-item { min-width:220px; max-width:340px; padding:11px 13px; border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); color:#fff; font-size:12.5px; display:flex; align-items:center; gap:9px; animation:slidein .2s var(--ease); }
+        @keyframes slidein { from { transform:translateX(30px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        .toast-item button { background:none; border:none; color:rgba(255,255,255,.8); margin-left:auto; cursor:pointer; }
+
+        /* ===== FOOTER ===== */
+        .site-footer {
+            background:var(--ink); color:#d8ded9; padding:40px 16px 20px; margin-top:20px; border-top:4px solid var(--coral);
+        }
+        .footer-wrap { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr; gap:26px; }
+        @media (min-width:768px) { .footer-wrap { grid-template-columns:2fr 1fr 1fr 2fr; } }
+        .footer-h { font-family:var(--font-display); font-weight:600; color:#fff; margin-bottom:10px; font-size:15px; }
+        .footer-p { color:#9aa89f; font-size:13px; line-height:1.6; }
+        .footer-links { list-style:none; padding:0; margin:0; }
+        .footer-links li { margin-bottom:7px; }
+        .footer-links a { color:#9aa89f; font-size:13px; }
+        .footer-links a:hover { color:var(--coral); }
+        .social-row { display:flex; gap:10px; margin-top:12px; }
+        .social-row a { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; color:#9aa89f; font-size:14px; }
+        .social-row a:hover { background:var(--coral); color:#fff; }
+        .nl-form { display:flex; margin-top:10px; }
+        .nl-form input { flex:1; padding:9px 14px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:#fff; border-radius:99px 0 0 99px; font-size:12.5px; }
+        .nl-form input::placeholder { color:#7c8a80; }
+        .nl-form button { padding:9px 18px; border-radius:0 99px 99px 0; border:none; background:var(--coral); color:#fff; font-weight:700; font-size:12.5px; cursor:pointer; }
+        .footer-bottom { max-width:1200px; margin:22px auto 0; padding-top:16px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:#7c8a80; font-size:12px; }
+        .footer-bottom a { color:#9aa89f; }
+        .footer-bottom a:hover { color:var(--coral); }
+
+        /* misc */
+        .form-check-input:checked { background-color:var(--jade); border-color:var(--jade); }
+        .btn-primary { background:var(--jade); border-color:var(--jade); }
+        .btn-primary:hover { background:var(--jade-deep); border-color:var(--jade-deep); }
+        .password-toggle { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--ink-faint); }
+
+        /* ===== AI CHAT ===== */
+        #aiToggle {
+            position:fixed; bottom:calc(var(--bottom-nav-h) + 22px + var(--safe-b)); right:16px; z-index:1250; width:52px; height:52px;
+            border-radius:50%; background:linear-gradient(135deg, var(--jade), var(--jade-deep)); color:#fff; border:none;
+            box-shadow:var(--shadow-lg); cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center;
+        }
+        @media (min-width:1000px) { #aiToggle { bottom:24px; } }
+        #aiPanel {
+            display:none; position:fixed; bottom:calc(var(--bottom-nav-h) + 82px + var(--safe-b)); right:16px; width:346px; max-width:92vw;
+            height:440px; max-height:62vh; background:var(--surface); border-radius:var(--radius-md); box-shadow:var(--shadow-lg);
+            z-index:1250; flex-direction:column; overflow:hidden;
+        }
+        @media (min-width:1000px) { #aiPanel { bottom:88px; } }
+        @media (max-width:999px) { #aiPanel { width:100%; max-width:100%; right:0; bottom:0; height:64vh; max-height:64vh; border-radius:var(--radius-md) var(--radius-md) 0 0; } }
+        .ai-head { background:linear-gradient(135deg, var(--jade), var(--jade-deep)); padding:12px 15px; display:flex; justify-content:space-between; align-items:center; color:#fff; }
+        .ai-head .who { display:flex; align-items:center; gap:8px; }
+        .ai-head .icon { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; }
+        .ai-head button { background:none; border:none; color:#fff; opacity:.75; font-size:14px; cursor:pointer; }
+        #aiMsgs { flex:1; overflow-y:auto; padding:12px; background:var(--paper); }
+        .bubble-ai { display:flex; gap:7px; margin-bottom:10px; }
+        .bubble-ai .ava { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg, var(--jade), var(--sky)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; flex-shrink:0; }
+        .bubble-ai .txt { background:var(--surface); padding:9px 13px; border-radius:12px 12px 12px 3px; max-width:82%; font-size:12.5px; box-shadow:var(--shadow-sm); }
+        .bubble-user { display:flex; justify-content:flex-end; margin-bottom:10px; }
+        .bubble-user .txt { background:var(--jade); color:#fff; padding:9px 13px; border-radius:12px 12px 3px 12px; max-width:82%; font-size:12.5px; }
+        #aiInputRow { padding:9px 12px; background:var(--surface); border-top:1px solid var(--line-soft); display:flex; gap:7px; }
+        #aiInputRow input { flex:1; padding:8px 14px; border:1px solid var(--line); border-radius:99px; font-size:12.5px; }
+        #aiInputRow button { width:36px; height:36px; border-radius:50%; border:none; background:var(--jade); color:#fff; cursor:pointer; }
+        #aiSuggest { padding:6px 12px 10px; background:var(--surface); display:flex; gap:5px; flex-wrap:wrap; }
+        #aiSuggest button { padding:4px 10px; border:1px solid var(--line); border-radius:99px; background:var(--paper); font-size:10px; cursor:pointer; color:var(--ink-soft); }
+
+        /* ===== PWA ===== */
+        .pwa-prompt {
+            position:fixed; bottom:calc(var(--bottom-nav-h) + 16px + var(--safe-b)); left:50%; transform:translateX(-50%);
+            background:var(--ink); color:#fff; padding:12px 18px; border-radius:99px; font-size:13px; font-weight:600;
+            z-index:1350; display:none; align-items:center; gap:10px; box-shadow:var(--shadow-lg); max-width:92vw;
+        }
+        .pwa-prompt.show { display:flex; }
+        .pwa-prompt .close-btn { background:rgba(255,255,255,.15); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:10px; cursor:pointer; flex-shrink:0; }
+
+        /* ===== BASE OVERRIDES ===== */
+        .main-content { padding:0; margin:0; width:100%; }
+        .container-fluid-custom { max-width:1400px; margin:0 auto; padding:0 16px; }
+        .mt-content { margin-top:8px; }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
-    
-<body>
-<!-- ***** Preloader Start ***** -->
-<div id="preloader">
-    <div class="jumper">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-</div>  
-<!-- ***** Preloader End ***** -->
+<body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
 
-<!-- ***** Header Area Start ***** -->
-<header class="header-area header-sticky">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="main-nav">
-                    <!-- ***** Logo Start ***** -->
-                    <a href="{% url 'home' %}" class="logo">
-                        <img src="/static/images/logo.png" alt="JobPortal"/>
-                    </a>
-                    <!-- ***** Logo End ***** -->
-                    <!-- ***** Menu Start ***** -->
-                    <ul class="nav">
-                        <li><a href="{% url 'home' %}" class="active">Home</a></li>
-                        <li><a href="#job-listings">Browse Jobs</a></li>
-                        {% if user.is_authenticated %}
-                            <li><a href="{% url 'dashboard_page' %}">Dashboard</a></li>
-                            <li class="profile-dropdown">
-                                <a href="#" class="profile-toggle">
-                                    <i class="fa fa-user"></i> {{ user.username }}
-                                    <i class="fa fa-chevron-down"></i>
-                                </a>
-                                <div class="profile-menu">
-                                    <a href="{% url 'profile_page' %}"><i class="fa fa-user me-2"></i>My Profile</a>
-                                    <a href="{% url 'applications_page' %}"><i class="fa fa-file-alt me-2"></i>My Applications</a>
-                                    <div class="profile-divider"></div>
-                                    <a href="/api/profile/skills/"><i class="fa fa-cogs me-2"></i>Skills</a>
-                                    <a href="/api/profile/employment/"><i class="fa fa-briefcase me-2"></i>Employment</a>
-                                    <a href="/api/profile/education/"><i class="fa fa-graduation-cap me-2"></i>Education</a>
-                                    <a href="/api/profile/documents/"><i class="fa fa-file-upload me-2"></i>Documents</a>
-                                    <div class="profile-divider"></div>
-                                    <a href="/logout/"><i class="fa fa-sign-out me-2"></i>Logout</a>
-                                </div>
-                            </li>
-                        {% else %}
-                            <li><a href="#" onclick="showLogin()">Login</a></li>
-                            <li><a href="#" onclick="showSignup()">Sign Up</a></li>
-                        {% endif %}
-                    </ul>
-                    <a class='menu-trigger'>
-                        <span>Menu</span>
-                    </a>
-                    <!-- ***** Menu End ***** -->
-                </nav>
+    <!-- ===== HEADER ===== -->
+    <header class="header-area">
+        <div class="header-inner">
+            <a href="/" class="brand">
+                <span class="brand-mark">O</span>
+                <span class="brand-word">OppoGlobe</span>
+            </a>
+
+            <ul class="nav-icons">
+                <li><a href="/" class="icon-btn"><i class="fas fa-house"></i></a></li>
+                {% if user.is_authenticated %}
+                    {% if user.user_type == 'admin' or user.is_superuser %}
+                        <li><span class="role-chip biz"><i class="fas fa-building me-1"></i>Business</span></li>
+                    {% else %}
+                        <li><span class="role-chip"><i class="fas fa-user me-1"></i>You</span></li>
+                    {% endif %}
+                    <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i><span class="ping-badge" id="messageBadge">0</span></a></li>
+                    <li><a href="/notifications/" class="icon-btn" id="notificationLink"><i class="fas fa-bell"></i><span class="ping-badge" id="notificationBadge">0</span></a></li>
+                    <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+                    <li class="rel">
+                        <button class="avatar-btn" onclick="toggleProfileMenu()">{{ user.username|first|upper }}<span class="status-dot"></span></button>
+                        <div class="dropdown-panel" id="profileMenu">
+                            {% if user.user_type == 'admin' or user.is_superuser %}
+                                <a href="/admin-portal/"><i class="fas fa-table-cells-large"></i> Dashboard</a>
+                                <a href="/properties/manage/"><i class="fas fa-house"></i> Properties</a>
+                                <a href="/properties/add/"><i class="fas fa-circle-plus"></i> Add Property</a>
+                                <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i> Bookings</a>
+                                <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
+                                <a href="/admin-portal/applications/"><i class="fas fa-file-lines"></i> Applications</a>
+                                <a href="/admin-portal/analytics/"><i class="fas fa-chart-column"></i> Analytics</a>
+                            {% else %}
+                                <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
+                                <a href="/applications/"><i class="fas fa-file-lines"></i> Applications</a>
+                                <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
+                                <a href="/preferences/"><i class="fas fa-gear"></i> Preferences</a>
+                                <a href="/properties/search/"><i class="fas fa-house"></i> Properties</a>
+                                <a href="/bookings/"><i class="fas fa-calendar-check"></i> My Bookings</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout/"><i class="fas fa-arrow-right-from-bracket"></i> Log out</a>
+                        </div>
+                    </li>
+                    <li class="rel">
+                        <button class="icon-btn" onclick="toggleMoreMenu(this)"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <div class="dropdown-panel">
+                            {% if user.user_type == 'admin' or user.is_superuser %}
+                                <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property analytics</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="/admin-portal/"><i class="fas fa-gauge"></i> Dashboard</a>
+                            {% else %}
+                                <a href="/profile/skills/"><i class="fas fa-gears"></i> Skills</a>
+                                <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+                                <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+                                <a href="/profile/documents/"><i class="fas fa-file-arrow-up"></i> Documents</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="/saved-jobs/"><i class="fas fa-bookmark"></i> Saved jobs</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% else %}
+                    <li><button class="auth-btn auth-btn-ghost" onclick="showLogin()">Sign in</button></li>
+                    <li><button class="auth-btn auth-btn-solid" onclick="showSignup()">Join free</button></li>
+                    <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+                {% endif %}
+            </ul>
+        </div>
+    </header>
+
+    <!-- ===== SHELL / LAYOUT ===== -->
+    <div class="shell" id="mainShell">
+        <!-- LEFT RAIL -->
+        <div class="rail-left">
+            <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Browse OppoGlobe</button>
+            <div class="rail-body" id="railBody">
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-bolt"></i>Get moving</div>
+                    <div class="stack" style="gap:6px;">
+                        <button class="quick-btn solid" onclick="showPostModal()"><i class="fas fa-circle-plus"></i>Share something</button>
+                        <button class="quick-btn" onclick="switchTab('properties')"><i class="fas fa-house"></i>Properties</button>
+                        <button class="quick-btn" onclick="switchTab('reels')"><i class="fas fa-video"></i>Reels</button>
+                        <button class="quick-btn" onclick="switchTab('maintenance')"><i class="fas fa-screwdriver-wrench"></i>Maintenance</button>
+                        <button class="quick-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i>Jobs</button>
+                        <button class="quick-btn" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i>Community feed</button>
+                        <button class="quick-btn" onclick="switchTab('education')"><i class="fas fa-graduation-cap"></i>Education</button>
+                        <a href="/properties/add/" class="quick-btn warm"><i class="fas fa-circle-plus"></i>List a property</a>
+                    </div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-chart-line"></i>Property pulse</div>
+                    <div class="stat-row"><span>Listed</span><span class="stat-val" id="totalProperties">0</span></div>
+                    <div class="stat-row"><span>Available now</span><span class="stat-val jade" id="availableProperties">0</span></div>
+                    <div class="stat-row"><span>Booked today</span><span class="stat-val gold" id="todayBookings">0</span></div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-fire"></i>Jobs on the rise</div>
+                    <div id="trendingJobs" class="text-muted small">Loading…</div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-users"></i>Top neighbours</div>
+                    <div id="topCreators" class="text-muted small">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT BLOCK -->
+        <div class="main">
+            {% block content %}
+                <!-- default content -->
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-home"></i>Welcome to OppoGlobe</div>
+                    <p>Your neighbourhood hub for homes, jobs, and community life.</p>
+                </div>
+            {% endblock %}
+        </div>
+
+        <!-- RIGHT RAIL -->
+        <div class="rail-right">
+            <div class="stack">
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-gauge-high"></i>Quick stats</div>
+                    <div class="stat-row"><span>Total properties</span><span class="stat-val" id="totalPropertiesCount">0</span></div>
+                    <div class="stat-row"><span>Active jobs</span><span class="stat-val" id="activeJobsCount">0</span></div>
+                    <div class="stat-row"><span>Applications</span><span class="stat-val" id="totalApplications">0</span></div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-clock-rotate-left"></i>Recent activity</div>
+                    <div id="recentActivity" class="text-muted small">Nothing yet — your activity will show here.</div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-map-location-dot"></i>Popular areas</div>
+                    <div id="popularLocations" class="text-muted small">Loading…</div>
+                </div>
             </div>
         </div>
     </div>
-</header>
-<!-- ***** Header Area End ***** -->
 
-{% block content %}{% endblock %}
-
-<!-- ***** Footer Start ***** -->
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <ul class="social">
-                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                    <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                    <li><a href="#"><i class="fa fa-rss"></i></a></li>
-                    <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                </ul>
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-wrap">
+            <div>
+                <h5 class="footer-h">OppoGlobe</h5>
+                <p class="footer-p">Homes to book or buy, jobs worth applying for, bursaries worth chasing, and neighbours who show up. All in one place.</p>
+                <div class="social-row">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div>
+                <h6 class="footer-h">Company</h6>
+                <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/blog/">Blog</a></li></ul>
+            </div>
+            <div>
+                <h6 class="footer-h">Support</h6>
+                <ul class="footer-links"><li><a href="/help/">Help centre</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/privacy/">Privacy policy</a></li><li><a href="/terms/">Terms of service</a></li></ul>
+            </div>
+            <div>
+                <h6 class="footer-h">Stay in the loop</h6>
+                <p class="footer-p" style="font-size:12.5px;">New listings, jobs and bursaries — straight to your inbox.</p>
+                <form class="nl-form" id="newsletterForm"><input type="email" placeholder="Your email" required><button type="submit">Subscribe</button></form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <p class="copyright">Copyright &copy; 2024 JobPortal - Find Your Dream Job</p>
-            </div>
+        <div class="footer-bottom">
+            <span>© 2026 OppoGlobe. All rights reserved.</span>
+            <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/cookies/">Cookies</a></div>
+        </div>
+    </footer>
+
+    <!-- ===== MOBILE BOTTOM NAV ===== -->
+    <nav class="bottom-nav" id="mobileBottomNav">
+        <a href="#" class="bn-item active" onclick="switchTab('properties')"><i class="fas fa-house"></i><span>Homes</span></a>
+        <a href="#" class="bn-item" onclick="switchTab('reels')"><i class="fas fa-video"></i><span>Reels</span></a>
+        <div class="bn-hero" onclick="switchTab('maintenance')"><div class="circle"><i class="fas fa-screwdriver-wrench"></i></div><span class="label">Maint.</span></div>
+        <a href="#" class="bn-item" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i><span>Feed</span></a>
+        <a href="#" class="bn-item" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
+    </nav>
+
+    <!-- ===== AI CHAT ===== -->
+    <div id="aiPanel">
+        <div class="ai-head">
+            <div class="who"><div class="icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:700; font-size:13px;">OppoGlobe Guide</div><div style="font-size:9.5px; opacity:.85;">● Online</div></div></div>
+            <div class="d-flex gap-2"><button onclick="toggleAIChat()"><i class="fas fa-minus"></i></button><button onclick="closeAIChat()"><i class="fas fa-times"></i></button></div>
+        </div>
+        <div id="aiMsgs">
+            <div class="bubble-ai"><div class="ava"><i class="fas fa-robot"></i></div><div class="txt">Hi! I'm your OppoGlobe guide. Ask me about properties, jobs, maintenance, or anything else on the platform.</div></div>
+            <div id="aiTyping" class="hidden"><div class="bubble-ai"><div class="ava"><i class="fas fa-robot"></i></div><div class="txt"><span class="spin" style="width:12px;height:12px;"></span></div></div></div>
+        </div>
+        <div id="aiInputRow"><input type="text" id="aiChatInput" placeholder="Ask me anything…" onkeydown="if(event.key==='Enter') sendAIMessage()"><button onclick="sendAIMessage()"><i class="fas fa-paper-plane"></i></button></div>
+        <div id="aiSuggest">
+            <button onclick="quickAIQuery('Show me available properties')">📋 Available properties</button>
+            <button onclick="quickAIQuery('Find jobs near me')">💼 Jobs near me</button>
+            <button onclick="quickAIQuery('What maintenance requests are pending?')">🔧 Maintenance</button>
+            <button onclick="quickAIQuery('Tell me about OppoGlobe')">ℹ️ About OppoGlobe</button>
         </div>
     </div>
-</footer>
+    <button id="aiToggle" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
 
-<!-- jQuery -->
-<script src="/static/js/jquery-2.1.0.min.js"></script>
-<script src="/static/js/popper.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-<script src="/static/js/scrollreveal.min.js"></script>
-<script src="/static/js/waypoints.min.js"></script>
-<script src="/static/js/jquery.counterup.min.js"></script>
-<script src="/static/js/imgfix.min.js"></script> 
-<script src="/static/js/custom.js"></script>
+    <!-- ===== TOASTS ===== -->
+    <div class="toast-stack" id="toastStack"></div>
 
-<!-- Profile Dropdown Script -->
-<script>
-    // Profile dropdown functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const profileDropdowns = document.querySelectorAll('.profile-dropdown');
-        
-        profileDropdowns.forEach(dropdown => {
-            const toggle = dropdown.querySelector('.profile-toggle');
-            
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                dropdown.classList.toggle('active');
-            });
+    <!-- ===== PWA ===== -->
+    <div class="pwa-prompt" id="pwaPrompt"><i class="fas fa-mobile-screen"></i><span>Install the OppoGlobe app</span><button class="close-btn" id="pwaCloseBtn"><i class="fas fa-times"></i></button></div>
+
+    <!-- ===== MODALS ===== -->
+    <!-- APPS MODAL -->
+    <div class="modal fade" id="appsModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display); font-size:15px;"><i class="fas fa-grip me-2"></i>Jump to</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('properties');closeAppsModal()"><i class="fas fa-house d-block mb-1" style="color:var(--jade); font-size:20px;"></i><span style="font-size:10px;">Property</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('reels');closeAppsModal()"><i class="fas fa-video d-block mb-1" style="color:var(--coral); font-size:20px;"></i><span style="font-size:10px;">Reels</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('maintenance');closeAppsModal()"><i class="fas fa-screwdriver-wrench d-block mb-1" style="color:var(--sky); font-size:20px;"></i><span style="font-size:10px;">Maint.</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('jobs');closeAppsModal()"><i class="fas fa-briefcase d-block mb-1" style="color:var(--gold); font-size:20px;"></i><span style="font-size:10px;">Jobs</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('feed');closeAppsModal()"><i class="fas fa-newspaper d-block mb-1" style="color:var(--plum); font-size:20px;"></i><span style="font-size:10px;">Feed</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('education');closeAppsModal()"><i class="fas fa-graduation-cap d-block mb-1" style="color:#9c7719; font-size:20px;"></i><span style="font-size:10px;">Education</span></a>
+                {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('management');closeAppsModal()"><i class="fas fa-gear d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Manage</span></a>
+                {% endif %}
+                <a href="/profile/" class="text-center p-2" style="border-radius:10px; background:var(--paper);"><i class="fas fa-user d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Profile</span></a>
+                <a href="/messaging/" class="text-center p-2" style="border-radius:10px; background:var(--paper);"><i class="fas fa-envelope d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Messages</span></a>
+            </div>
+        </div>
+    </div></div></div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal fade" id="loginModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display);">Welcome back</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <a href="/accounts/google/login/?process=login" class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center gap-2"><i class="fab fa-google"></i> Continue with Google</a>
+            <div class="text-center text-muted small my-2">or continue with email</div>
+            <form id="loginForm">
+                <div class="mb-2"><label class="form-label small">Username or email</label><input type="text" class="form-control" name="username" required></div>
+                <div class="mb-2"><label class="form-label small">Password</label><div class="position-relative"><input type="password" class="form-control" name="password" id="loginPassword" required><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                <div class="mb-2 text-end"><a href="/forgot-password/" style="color:var(--jade-deep); font-size:13px;"><i class="fas fa-key me-1"></i>Forgot password?</a></div>
+                <button type="submit" class="btn-jade w-100 py-2">Log in</button>
+            </form>
+            <div class="text-center mt-2 small text-muted">New here? <a href="#" onclick="showSignup();bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();" style="color:var(--jade-deep); font-weight:600;">Create an account</a></div>
+        </div>
+    </div></div></div>
+
+    <!-- SIGNUP MODAL -->
+    <div class="modal fade" id="signupModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display);">Join OppoGlobe</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <div class="mb-3 d-flex justify-content-center gap-3">
+                <div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="accountType" id="userType" value="user" checked><label class="form-check-label" for="userType">Individual</label></div>
+                <div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="accountType" id="businessType" value="business"><label class="form-check-label" for="businessType">Business</label></div>
+            </div>
+            <div id="userFields">
+                <a href="/accounts/google/login/?process=signup" class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center gap-2"><i class="fab fa-google"></i> Sign up with Google</a>
+                <div class="text-center text-muted small my-2">or sign up with email</div>
+                <form id="signupForm">
+                    <div class="mb-2"><label class="form-label small">Username *</label><input type="text" class="form-control" name="username" required></div>
+                    <div class="mb-2"><label class="form-label small">Email *</label><input type="email" class="form-control" name="email" required></div>
+                    <div class="mb-2"><label class="form-label small">Mobile phone *</label><input type="tel" class="form-control" name="mobile_phone" required></div>
+                    <div class="mb-2"><label class="form-label small">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                    <div class="mb-2"><label class="form-label small">Confirm password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                    <button type="submit" class="btn-jade w-100 py-2">Create account</button>
+                </form>
+            </div>
+            <div id="businessFields" style="display:none;">
+                <div class="text-center text-muted small my-2">Set up your business profile</div>
+                <form id="businessSignupFormIntegrated" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 style="font-size:13px; font-weight:700; margin-bottom:8px;">Company information</h6>
+                            <div class="mb-2"><label class="form-label small">Company logo</label><input type="file" name="company_logo" accept="image/*" class="form-control"><small class="text-muted" style="font-size:10px;">Optional</small></div>
+                            <div class="mb-2"><label class="form-label small">Company name *</label><input type="text" class="form-control" name="company_name" required></div>
+                            <div class="mb-2"><label class="form-label small">Industry</label><select name="industry" class="form-control" id="industrySelect"><option value="">Select industry</option></select></div>
+                            <div class="mb-2"><label class="form-label small">Company size</label><select name="company_size" class="form-control" id="companySizeSelect"><option value="">Select size</option></select></div>
+                            <div class="mb-2"><label class="form-label small">Website</label><input type="url" class="form-control" name="website" placeholder="https://"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 style="font-size:13px; font-weight:700; margin-bottom:8px;">Account information</h6>
+                            <div class="mb-2"><label class="form-label small">Username *</label><input type="text" class="form-control" name="username" required></div>
+                            <div class="mb-2"><label class="form-label small">Email *</label><input type="email" class="form-control" name="email" required></div>
+                            <div class="mb-2"><label class="form-label small">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPasswordIntegrated" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('businessPasswordIntegrated', this)"><i class="fas fa-eye"></i></button></div></div>
+                            <div class="mb-2"><label class="form-label small">Confirm password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPasswordIntegrated" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPasswordIntegrated', this)"><i class="fas fa-eye"></i></button></div></div>
+                            <div class="mb-2"><label class="form-label small">Contact phone</label><input type="tel" class="form-control" name="phone_number"></div>
+                        </div>
+                    </div>
+                    <div class="mb-2"><label class="form-label small">Company description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description"></textarea></div>
+                    <button type="submit" class="btn-jade w-100 py-2"><span id="businessSignupBtnTextIntegrated">Create business account</span></button>
+                </form>
+            </div>
+        </div>
+    </div></div></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* ============================================================
+           CORE UTILITIES (shared across pages)
+           ============================================================ */
+        const currentUserId = parseInt(document.body.dataset.userId || '0');
+        const currentUsername = document.body.dataset.username || '';
+        const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let c of cookies) { const [name, value] = c.trim().split('='); if (name === 'csrftoken') return decodeURIComponent(value); }
+            return null;
+        }
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+        function formatNumber(num) {
+            num = Number(num) || 0;
+            if (num >= 1000000) return (num/1000000).toFixed(1)+'M';
+            if (num >= 1000) return (num/1000).toFixed(1)+'K';
+            return num;
+        }
+        const TOAST_COLORS = { success:'#1F6F5C', error:'#D64545', info:'#2E8BC0', warning:'#E8A93B' };
+        const TOAST_ICONS = { success:'fa-circle-check', error:'fa-circle-exclamation', info:'fa-circle-info', warning:'fa-triangle-exclamation' };
+        function showToast(message, type='success') {
+            const stack = document.getElementById('toastStack');
+            if (!stack) return;
+            const el = document.createElement('div');
+            el.className = 'toast-item';
+            el.style.background = TOAST_COLORS[type] || TOAST_COLORS.info;
+            el.innerHTML = `<i class="fas ${TOAST_ICONS[type]||TOAST_ICONS.info}"></i><span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            stack.appendChild(el);
+            setTimeout(()=>el.remove(), 4500);
+        }
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+            else { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+        }
+        function requireLogin() { if (!isLoggedIn) { showToast('Please sign in first', 'warning'); showLogin(); return false; } return true; }
+
+        /* ============================================================
+           HEADER MENUS
+           ============================================================ */
+        function toggleProfileMenu() { document.getElementById('profileMenu')?.classList.toggle('show'); }
+        function toggleMoreMenu(btn) { btn.parentElement.querySelector('.dropdown-panel')?.classList.toggle('show'); }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.rel')) document.querySelectorAll('.dropdown-panel').forEach(el=>el.classList.remove('show'));
         });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.profile-dropdown')) {
-                document.querySelectorAll('.profile-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                });
+        /* ============================================================
+           LEFT RAIL
+           ============================================================ */
+        function toggleRail() {
+            document.getElementById('railBody').classList.toggle('open');
+        }
+
+        /* ============================================================
+           TABS (minimal for base)
+           ============================================================ */
+        function switchTab(tabName) {
+            // This is a stub; extend in child pages.
+            showToast('Switched to ' + tabName, 'info');
+            closeRail();
+        }
+
+        /* ============================================================
+           AI CHAT
+           ============================================================ */
+        let isChatOpen = false;
+        function toggleAIChat() {
+            const panel = document.getElementById('aiPanel');
+            if (!panel) return;
+            isChatOpen = !isChatOpen;
+            panel.style.display = isChatOpen ? 'flex' : 'none';
+            if (isChatOpen) document.getElementById('aiChatInput')?.focus();
+        }
+        function closeAIChat() { document.getElementById('aiPanel').style.display = 'none'; isChatOpen = false; }
+        function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            if (!input) return;
+            const message = input.value.trim();
+            if (!message) return;
+            addChatMessage('user', message);
+            input.value = '';
+            document.getElementById('aiTyping').classList.remove('hidden');
+            fetch('/api/ai/chat/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify({query:message})
+            }).then(r=>r.json()).then(data=>{
+                document.getElementById('aiTyping').classList.add('hidden');
+                addChatMessage('ai', data.success ? (data.response?.response || data.response || "I couldn't process that.") : "Sorry, I hit an error there.");
+            }).catch(()=>{
+                document.getElementById('aiTyping').classList.add('hidden');
+                addChatMessage('ai','Network error — please try again.');
+            });
+        }
+        function addChatMessage(type, content) {
+            const container = document.getElementById('aiMsgs');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = type === 'user' ? 'bubble-user' : 'bubble-ai';
+            div.innerHTML = type === 'ai' ? `<div class="ava"><i class="fas fa-robot"></i></div><div class="txt">${escapeHtml(content)}</div>` : `<div class="txt">${escapeHtml(content)}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        function quickAIQuery(query) {
+            const input = document.getElementById('aiChatInput');
+            if (input) input.value = query;
+            if (!isChatOpen) toggleAIChat();
+            setTimeout(sendAIMessage, 250);
+        }
+
+        /* ============================================================
+           APPS MODAL / AUTH
+           ============================================================ */
+        let appsModal = null;
+        function showAppsModal() { appsModal ||= new bootstrap.Modal(document.getElementById('appsModal')); appsModal.show(); }
+        function closeAppsModal() { appsModal?.hide(); }
+        function showLogin() { new bootstrap.Modal(document.getElementById('loginModal')).show(); }
+        function showSignup() { new bootstrap.Modal(document.getElementById('signupModal')).show(); }
+
+        // Login form
+        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spin" style="width:13px;height:13px;"></span> Logging in…';
+            btn.disabled = true;
+            fetch('/api/auth/login/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify(data)
+            }).then(r=>r.json()).then(res=>{
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (res.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+                    showToast('Welcome back!','success');
+                    setTimeout(()=>location.reload(), 900);
+                } else showToast('Login failed — check your details','error');
+            }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Login failed','error'); });
+        });
+
+        // Signup form
+        document.getElementById('signupForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            if (data.password !== data.password_confirm) return showToast('Passwords do not match','error');
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spin" style="width:13px;height:13px;"></span> Creating…';
+            btn.disabled = true;
+            fetch('/api/auth/signup/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify(data)
+            }).then(r=>r.json()).then(res=>{
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (res.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
+                    showToast('Account created — please log in','success');
+                    setTimeout(showLogin, 900);
+                } else showToast(res.error || 'Signup failed','error');
+            }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Signup failed','error'); });
+        });
+
+        // Toggle signup fields
+        document.getElementById('userType')?.addEventListener('change', toggleSignupFields);
+        document.getElementById('businessType')?.addEventListener('change', toggleSignupFields);
+        function toggleSignupFields() {
+            const isUser = document.getElementById('userType').checked;
+            document.getElementById('userFields').style.display = isUser ? 'block' : 'none';
+            document.getElementById('businessFields').style.display = isUser ? 'none' : 'block';
+        }
+
+        // Newsletter
+        document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = this.querySelector('input[type="email"]');
+            const email = input?.value?.trim();
+            if (!email) return showToast('Enter a valid email','warning');
+            fetch('/api/newsletter/subscribe/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify({email})
+            }).then(r=>r.json()).then(data=>{
+                if (data.success) { showToast('Subscribed! Check your inbox.','success'); input.value=''; }
+                else showToast(data.error||'Something went wrong','error');
+            }).catch(()=>showToast('Network error — please try again','error'));
+        });
+
+        /* ============================================================
+           PWA INSTALL
+           ============================================================ */
+        let deferredPrompt = null, pwaInstalled = window.matchMedia('(display-mode: standalone)').matches;
+        function showPwaPrompt() {
+            if (pwaInstalled || localStorage.getItem('pwa_dismissed')==='true') return;
+            document.getElementById('pwaPrompt')?.classList.add('show');
+        }
+        document.getElementById('pwaPrompt')?.addEventListener('click', async function(e) {
+            if (e.target.closest('.close-btn')) return;
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                this.classList.remove('show');
+                showToast(outcome==='accepted' ? 'Installing OppoGlobe…' : 'You can install later from the browser menu', outcome==='accepted'?'success':'info');
+            } else showToast('Open your browser menu → "Install app"', 'info');
+        });
+        document.getElementById('pwaCloseBtn')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            localStorage.setItem('pwa_dismissed','true');
+            document.getElementById('pwaPrompt').classList.remove('show');
+        });
+        window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt = e; showPwaPrompt(); });
+        window.addEventListener('appinstalled', ()=>{ pwaInstalled = true; document.getElementById('pwaPrompt')?.classList.remove('show'); showToast('Thanks for installing OppoGlobe!','success'); });
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load notification & message badges
+            if (isLoggedIn) {
+                fetch('/api/conversations/unread-count/').then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+                    const badge = document.getElementById('messageBadge');
+                    if (data?.success && data.unread_count > 0) {
+                        badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                        badge.classList.add('show');
+                    }
+                }).catch(()=>{});
+                fetch('/api/notifications/unread-count/').then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+                    const badge = document.getElementById('notificationBadge');
+                    if (data?.success && data.count > 0) {
+                        badge.textContent = data.count > 99 ? '99+' : data.count;
+                        badge.classList.add('show');
+                    }
+                }).catch(()=>{});
             }
         });
-    });
+    </script>
 
-    function showLogin() {
-        // You can implement modal login here
-        window.location.href = "/api/auth/login/";
-    }
-
-    function showSignup() {
-        // You can implement modal signup here
-        window.location.href = "/api/auth/signup/";
-    }
-</script>
-
-{% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

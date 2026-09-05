@@ -1,2605 +1,841 @@
 <!DOCTYPE html>
-{% load static %}
-{% load pwa %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>{% block title %}OppoGlobe – Find Your Dream Property{% endblock %}</title>
-    
-    {% block meta %}
-    <meta name="description" content="{% block meta_description %}Find your dream property, connect with owners, and access educational resources – all in one place.{% endblock %}" />
-    <meta name="keywords" content="{% block meta_keywords %}property, real estate, oppoglobe, homes, apartments, rentals, property for sale{% endblock %}" />
-    {% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <meta name="description" content="OppoGlobe — Homes, Jobs & Neighbourhood Life">
+    <meta name="author" content="OppoGlobe">
+    <title>{% block title %}OppoGlobe — Homes, Jobs & Neighbourhood Life{% endblock %}</title>
 
+    <!-- PWA & static -->
+    {% load static %}
+    {% load pwa %}
     {% progressive_web_app_meta %}
 
-    <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}" />
+    <!-- Bootstrap & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     
-    <!-- Google Sign-In -->
+    <!-- Custom notifications & extra CSS -->
+    <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    {% block extra_head %}{% endblock %}
 
     <style>
         /* ============================================================
-           ROOT VARIABLES & RESET
+           DESIGN TOKENS (from OppoGlobe)
            ============================================================ */
         :root {
-            --primary-color: #ff4d3d;
-            --primary-color-deep: #c62828;
-            --secondary-color: #ff2e88;
-            --gold-color: #ffb703;
-            --dark-color: #191919;
-            --light-color: #ffffff;
-            --ink: #1c1c22;
-            --muted: #6b6b76;
-            --glass: rgba(255, 255, 255, 0.92);
-            --glass-strong: #ffffff;
-            --glass-border: #eaeaea;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            --shadow-ember: 0 6px 24px rgba(255, 77, 61, 0.10);
-            --radius: 14px;
-            --radius-sm: 10px;
-            --radius-full: 50px;
-            --font-display: 'Space Grotesk', -apple-system, sans-serif;
-            --font-body: 'Inter', -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
-            --transition: all 0.2s ease;
-            --ad-primary: #82639e;
-            --ad-secondary: #785797;
+            --ink:#16241F;
+            --ink-soft:#5B6660;
+            --ink-faint:#8B958F;
+            --paper:#F6F7F5;
+            --surface:#FFFFFF;
+            --line:#E4E7E2;
+            --line-soft:#EEF0ED;
+            --jade:#1F6F5C;
+            --jade-deep:#154F41;
+            --jade-wash:#E7F1EC;
+            --coral:#FF6B4A;
+            --coral-deep:#E24E2F;
+            --coral-wash:#FFEAE3;
+            --gold:#E8A93B;
+            --gold-wash:#FBF0DA;
+            --plum:#7A5AA3;
+            --plum-wash:#F1EBF9;
+            --sky:#2E8BC0;
+            --sky-wash:#E7F3FA;
+            --danger:#D64545;
+            --success:#2C9A5B;
+            --radius-xs:8px;
+            --radius-sm:12px;
+            --radius-md:16px;
+            --radius-lg:22px;
+            --radius-pill:999px;
+            --shadow-sm:0 1px 3px rgba(22,36,31,.06), 0 1px 2px rgba(22,36,31,.04);
+            --shadow-md:0 8px 24px rgba(22,36,31,.08);
+            --shadow-lg:0 20px 48px rgba(22,36,31,.14);
+            --font-display:'Fraunces', Georgia, serif;
+            --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono:'JetBrains Mono', 'SF Mono', monospace;
+            --ease:cubic-bezier(.34,1.2,.4,1);
+            --header-h:64px;
+            --bottom-nav-h:66px;
+            --safe-b:env(safe-area-inset-bottom, 0px);
         }
 
-        * {
-            box-sizing: border-box;
-        }
-        html {
-            scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
-        }
-
+        * { box-sizing: border-box; }
+        html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
         body {
-            background: #f4f6f9;
-            padding-top: 70px;
-            padding-bottom: 70px;
-            font-family: var(--font-body);
-            color: var(--dark-color);
-            min-height: 100vh;
-            overflow-x: hidden;
-            font-size: 16px;
+            margin:0;
+            background:var(--paper);
+            color:var(--ink);
+            font-family:var(--font-body);
+            font-size:16px;
+            line-height:1.5;
+            padding-top:var(--header-h);
+            min-height:100vh;
         }
-        
-        a {
-            text-decoration: none;
-            color: var(--dark-color);
-        }
-        button,
-        input,
-        select,
-        textarea {
-            font-family: inherit;
-        }
-        :focus-visible {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-            border-radius: 6px;
-        }
+        a { color:inherit; text-decoration:none; }
+        img { max-width:100%; display:block; }
+        button { font-family:inherit; }
+        :focus-visible { outline:2.5px solid var(--jade); outline-offset:2px; border-radius:6px; }
+        h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); margin:0; letter-spacing:-.01em; }
+        .hidden { display:none !important; }
 
-        /* ============================================================
-           HEADER
-           ============================================================ */
+        /* ===== HEADER ===== */
         .header-area {
-            background: var(--glass-strong);
-            border-bottom: 1px solid var(--glass-border);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            height: 60px;
+            position:fixed; inset:0 0 auto 0; height:var(--header-h);
+            background:var(--surface); border-bottom:1px solid var(--line);
+            z-index:1000; display:flex; align-items:center;
         }
-        .main-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            height: 100%;
-            gap: 6px;
+        .header-inner {
+            width:100%; max-width:1400px; margin:0 auto;
+            padding:0 clamp(12px,3vw,24px);
+            display:flex; align-items:center; justify-content:space-between; gap:10px;
         }
-        .logo img {
-            max-height: 36px;
-            width: auto;
-            object-fit: contain;
+        .brand { display:flex; align-items:center; gap:9px; flex-shrink:0; }
+        .brand-mark {
+            width:34px; height:34px; border-radius:10px; flex-shrink:0;
+            background:linear-gradient(135deg, var(--jade), var(--jade-deep));
+            display:flex; align-items:center; justify-content:center;
+            color:#fff; font-family:var(--font-display); font-weight:700; font-size:17px;
         }
-        .nav-icons {
-            display: flex;
-            list-style: none;
-            gap: 8px;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-            flex-wrap: wrap;
-        }
-        .nav-icons a {
-            font-size: 17px;
-            color: #555;
-            transition: var(--transition);
-            padding: 4px 6px;
-            border-radius: var(--radius-sm);
-            position: relative;
-        }
-        .nav-icons a:hover {
-            color: var(--secondary-color);
-            background: rgba(0, 0, 0, 0.03);
-        }
+        .brand-word { font-family:var(--font-display); font-weight:600; font-size:20px; color:var(--ink); white-space:nowrap; }
 
-        .message-wrapper {
-            position: relative;
-            display: inline-block;
+        .nav-icons { display:flex; align-items:center; gap:4px; list-style:none; margin:0; padding:0; }
+        .icon-btn {
+            position:relative; width:40px; height:40px; border-radius:var(--radius-pill);
+            display:flex; align-items:center; justify-content:center;
+            color:var(--ink-soft); font-size:17px; transition:background .15s, color .15s;
+            border:none; background:transparent; cursor:pointer;
         }
-        .message-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--primary-color);
-            color: #fff;
-            border-radius: 50%;
-            padding: 1px 5px;
-            font-size: 8px;
-            font-weight: bold;
-            min-width: 16px;
-            text-align: center;
-            display: none;
-            border: 2px solid #fff;
-            line-height: 1.2;
-            pointer-events: none;
+        .icon-btn:hover { background:var(--jade-wash); color:var(--jade-deep); }
+        .ping-badge {
+            position:absolute; top:2px; right:2px; min-width:16px; height:16px; padding:0 3px;
+            background:var(--coral); color:#fff; border-radius:99px; border:2px solid var(--surface);
+            font-size:9px; font-weight:700; display:none; align-items:center; justify-content:center; line-height:1;
         }
-        .message-badge.show {
-            display: block;
-        }
-        .notification-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--primary-color);
-            color: #fff;
-            border-radius: 50%;
-            padding: 1px 5px;
-            font-size: 8px;
-            font-weight: bold;
-            min-width: 16px;
-            text-align: center;
-            display: none;
-            border: 2px solid #fff;
-        }
-        .notification-badge.show {
-            display: block;
-        }
+        .ping-badge.show { display:flex; }
 
-        .apps-sticker {
-            background: linear-gradient(135deg, rgba(255, 77, 61, 0.08), rgba(255, 46, 136, 0.08));
-            border: 1px solid rgba(255, 77, 61, 0.15);
-            border-radius: 8px;
-            padding: 3px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--primary-color-deep);
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+        .role-chip {
+            font-size:11px; font-weight:600; padding:4px 11px; border-radius:var(--radius-pill);
+            background:var(--jade-wash); color:var(--jade-deep); white-space:nowrap;
         }
-        .apps-sticker:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: #fff;
-            border-color: transparent;
-        }
+        .role-chip.biz { background:var(--plum-wash); color:var(--plum); }
 
-        .profile-avatar-small {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            position: relative;
-            font-size: 14px;
-            box-shadow: 0 3px 12px rgba(255, 46, 136, 0.3);
+        .avatar-btn {
+            width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; position:relative;
+            background:linear-gradient(135deg, var(--coral), var(--gold)); color:#fff; font-weight:700; font-size:14px;
+            display:flex; align-items:center; justify-content:center;
         }
-        .status-dot {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            background: #28a745;
-        }
-        .profile-menu {
-            position: absolute;
-            top: 40px;
-            right: 0;
-            width: 210px;
-            background: #ffffff;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-            padding: 6px 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(8px);
-            transition: var(--transition);
-            z-index: 1000;
-        }
-        .profile-menu.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .profile-menu a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            color: #444;
-            font-size: 13px;
-            transition: var(--transition);
-        }
-        .profile-menu a:hover {
-            background: rgba(255, 77, 61, 0.06);
-            color: var(--secondary-color);
-        }
-        .profile-divider {
-            height: 1px;
-            background: #eee;
-            margin: 4px 10px;
-        }
+        .status-dot { position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background:var(--success); border:2px solid var(--surface); }
 
-        .user-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            padding: 2px 10px;
-            border-radius: 16px;
-            font-size: 0.65rem;
-            font-weight: 600;
+        .dropdown-panel {
+            position:absolute; top:calc(100% + 10px); right:0; width:220px;
+            background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+            box-shadow:var(--shadow-lg); padding:6px; opacity:0; visibility:hidden; transform:translateY(6px) scale(.98);
+            transition:.16s var(--ease); z-index:1100;
         }
-        .user-badge.business {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        .dropdown-panel.show { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+        .dropdown-panel a, .dropdown-panel button {
+            display:flex; align-items:center; gap:10px; width:100%; text-align:left; border:none; background:none;
+            padding:9px 10px; border-radius:var(--radius-sm); font-size:13.5px; color:var(--ink); cursor:pointer;
         }
-
-        .three-dot-menu {
-            position: relative;
-            display: inline-block;
-        }
-        .three-dot-btn {
-            background: rgba(0, 0, 0, 0.04);
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            font-size: 20px;
-            color: #555;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .three-dot-btn:hover {
-            background: rgba(255, 88, 158, 0.12);
-            color: #ff589e;
-            transform: scale(1.05);
-        }
-        .three-dot-menu .menu-content {
-            position: absolute;
-            right: 0;
-            top: calc(100% + 10px);
-            min-width: 220px;
-            background: #ffffff;
-            padding: 8px 0;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px) scale(0.96);
-            transform-origin: top right;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-        .three-dot-menu .menu-content.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0) scale(1);
-        }
-        .three-dot-menu .menu-content a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 18px;
-            text-decoration: none;
-            color: #374151;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
-            border: none;
-            background: none;
-            width: 100%;
-        }
-        .three-dot-menu .menu-content a:hover {
-            background: rgba(255, 88, 158, 0.08);
-            color: #ff589e;
-        }
-        .three-dot-menu .menu-content a i {
-            width: 22px;
-            text-align: center;
-            font-size: 16px;
-            color: #9ca3af;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-        .three-dot-menu .menu-divider {
-            height: 1px;
-            background: rgba(0, 0, 0, 0.06);
-            margin: 6px 12px;
-        }
+        .dropdown-panel a:hover, .dropdown-panel button:hover { background:var(--paper); }
+        .dropdown-panel i { width:18px; color:var(--ink-faint); text-align:center; }
+        .dropdown-divider { height:1px; background:var(--line-soft); margin:5px 6px; }
+        .rel { position:relative; }
 
         .auth-btn {
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
+            padding:9px 18px; border-radius:var(--radius-pill); font-weight:600; font-size:13.5px; border:none; cursor:pointer;
+            transition:transform .15s, background .15s;
         }
-        .auth-btn-signin {
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color-deep);
-        }
-        .auth-btn-signin:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
-        .auth-btn-signup {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(255, 77, 61, 0.25);
-        }
-        .auth-btn-signup:hover {
-            transform: scale(1.03);
-        }
+        .auth-btn:active { transform:scale(.97); }
+        .auth-btn-ghost { background:transparent; color:var(--jade-deep); border:1.5px solid var(--jade); }
+        .auth-btn-ghost:hover { background:var(--jade-wash); }
+        .auth-btn-solid { background:var(--ink); color:#fff; }
+        .auth-btn-solid:hover { background:var(--jade-deep); }
 
-        /* ============================================================
-           FOOTER
-           ============================================================ */
+        /* ===== LAYOUT ===== */
+        .shell {
+            max-width:1400px; margin:0 auto; padding:16px clamp(10px,2.5vw,20px) calc(var(--bottom-nav-h) + 24px);
+            display:grid; grid-template-columns:1fr; gap:16px;
+        }
+        @media (min-width:1000px) {
+            .shell { grid-template-columns:236px minmax(0,1fr); padding-bottom:24px; }
+        }
+        @media (min-width:1260px) {
+            .shell { grid-template-columns:236px minmax(0,1fr) 264px; }
+        }
+        .rail-left { min-width:0; }
+        .rail-right { min-width:0; display:none; }
+        @media (min-width:1260px) { .rail-right { display:block; } }
+        .main { min-width:0; max-width:720px; width:100%; margin:0 auto; }
+        @media (min-width:1260px) { .main { margin:0; } }
+
+        .card {
+            background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+            box-shadow:var(--shadow-sm);
+        }
+        .card-pad { padding:16px; }
+        .card-title {
+            font-family:var(--font-display); font-weight:600; font-size:15px; margin-bottom:12px;
+            display:flex; align-items:center; gap:8px; color:var(--ink);
+        }
+        .card-title i { color:var(--coral); font-size:14px; }
+        .stack { display:flex; flex-direction:column; gap:12px; }
+
+        .stat-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line-soft); font-size:13px; }
+        .stat-row:last-child { border-bottom:none; }
+        .stat-val { font-family:var(--font-mono); font-weight:700; }
+        .stat-val.jade { color:var(--jade); }
+        .stat-val.gold { color:var(--gold); }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        .bottom-nav {
+            position:fixed; left:10px; right:10px; bottom:calc(8px + var(--safe-b)); height:var(--bottom-nav-h); z-index:1300;
+            background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border:1px solid var(--line);
+            border-radius:22px; box-shadow:var(--shadow-lg); display:grid; grid-template-columns:repeat(5,1fr);
+            align-items:center; transition:transform .25s var(--ease), opacity .25s var(--ease);
+        }
+        .bottom-nav.hide { transform:translateY(140%); opacity:0; }
+        @media (min-width:1000px) { .bottom-nav { display:none; } }
+        .bn-item {
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--ink-faint); font-size:9.5px; height:100%; font-weight:600;
+        }
+        .bn-item i { font-size:18px; }
+        .bn-item.active { color:var(--jade-deep); }
+        .bn-hero { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; }
+        .bn-hero .circle { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 12px rgba(255,107,74,.4); }
+        .bn-hero .label { font-size:8.5px; font-weight:700; color:var(--ink); margin-top:1px; }
+
+        /* ===== TOAST ===== */
+        .toast-stack { position:fixed; top:calc(var(--header-h) + 8px); right:12px; z-index:2400; max-width:calc(100vw - 24px); display:flex; flex-direction:column; gap:6px; }
+        .toast-item { min-width:220px; max-width:340px; padding:11px 13px; border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); color:#fff; font-size:12.5px; display:flex; align-items:center; gap:9px; animation:slidein .2s var(--ease); }
+        @keyframes slidein { from { transform:translateX(30px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        .toast-item button { background:none; border:none; color:rgba(255,255,255,.8); margin-left:auto; cursor:pointer; }
+
+        /* ===== FOOTER ===== */
         .site-footer {
-            background: #1c1c22;
-            color: #eaeaea;
-            padding: 40px 0 20px;
-            margin-top: 40px;
-            font-size: 14px;
-            border-top: 4px solid var(--primary-color);
-            clear: both;
-            position: relative;
-            z-index: 1;
+            background:var(--ink); color:#d8ded9; padding:40px 16px 20px; margin-top:20px; border-top:4px solid var(--coral);
         }
-        .site-footer .footer-heading {
-            color: #ffffff;
-            font-family: var(--font-display);
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            margin-bottom: 12px;
-        }
-        .site-footer .footer-text {
-            color: #b0b0b8;
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-        .site-footer .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .site-footer .footer-links li {
-            margin-bottom: 6px;
-        }
-        .site-footer .footer-links a {
-            color: #b0b0b8;
-            text-decoration: none;
-            transition: color 0.2s ease;
-            font-size: 0.85rem;
-        }
-        .site-footer .footer-links a:hover {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
-        .site-footer .social-links {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .site-footer .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            color: #b0b0b8;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .site-footer .social-links a:hover {
-            background: var(--primary-color);
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        .site-footer .footer-newsletter .input-group {
-            max-width: 100%;
-        }
-        .site-footer .footer-newsletter .form-control {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 0.85rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 30px 0 0 30px;
-        }
-        .site-footer .footer-newsletter .form-control::placeholder {
-            color: #888;
-        }
-        .site-footer .footer-newsletter .form-control:focus {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary-color);
-            box-shadow: none;
-        }
-        .site-footer .footer-newsletter .btn {
-            border-radius: 0 30px 30px 0;
-            padding: 0.5rem 1.2rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: var(--primary-color);
-            border: none;
-            color: #fff;
-            transition: background 0.2s;
-        }
-        .site-footer .footer-newsletter .btn:hover {
-            background: var(--primary-color-deep);
-        }
-        .site-footer hr {
-            border-color: rgba(255, 255, 255, 0.08);
-            margin: 20px 0 16px;
-        }
-        .site-footer .footer-bottom {
-            font-size: 0.8rem;
-            color: #888;
-        }
-        .site-footer .footer-bottom a {
-            color: #b0b0b8;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .site-footer .footer-bottom a:hover {
-            color: var(--primary-color);
-        }
-        .site-footer .footer-bottom .separator {
-            margin: 0 8px;
-            color: #555;
-        }
-        .site-footer .footer-legal {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
+        .footer-wrap { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr; gap:26px; }
+        @media (min-width:768px) { .footer-wrap { grid-template-columns:2fr 1fr 1fr 2fr; } }
+        .footer-h { font-family:var(--font-display); font-weight:600; color:#fff; margin-bottom:10px; font-size:15px; }
+        .footer-p { color:#9aa89f; font-size:13px; line-height:1.6; }
+        .footer-links { list-style:none; padding:0; margin:0; }
+        .footer-links li { margin-bottom:7px; }
+        .footer-links a { color:#9aa89f; font-size:13px; }
+        .footer-links a:hover { color:var(--coral); }
+        .social-row { display:flex; gap:10px; margin-top:12px; }
+        .social-row a { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; color:#9aa89f; font-size:14px; }
+        .social-row a:hover { background:var(--coral); color:#fff; }
+        .nl-form { display:flex; margin-top:10px; }
+        .nl-form input { flex:1; padding:9px 14px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:#fff; border-radius:99px 0 0 99px; font-size:12.5px; }
+        .nl-form input::placeholder { color:#7c8a80; }
+        .nl-form button { padding:9px 18px; border-radius:0 99px 99px 0; border:none; background:var(--coral); color:#fff; font-weight:700; font-size:12.5px; cursor:pointer; }
+        .footer-bottom { max-width:1200px; margin:22px auto 0; padding-top:16px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:#7c8a80; font-size:12px; }
+        .footer-bottom a { color:#9aa89f; }
+        .footer-bottom a:hover { color:var(--coral); }
 
-        /* ============================================================
-           MOBILE BOTTOM NAV
-           ============================================================ */
-        .mobile-bottom-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 72px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            justify-content: space-around;
-            align-items: center;
-            z-index: 9999;
-            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
-            padding-bottom: 8px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .mobile-bottom-nav.hidden {
-            transform: translateY(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-        .mobile-bottom-nav a {
-            text-align: center;
-            color: #777;
-            font-size: 8px;
-            text-decoration: none;
-            flex: 1;
-            padding: 2px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 36px;
-            transition: color 0.2s ease;
-            position: relative;
-        }
-        .mobile-bottom-nav a i {
-            font-size: 22px;
-            display: block;
-            margin-bottom: 2px;
-        }
-        .mobile-bottom-nav a span {
-            font-size: 8px;
-            font-weight: 500;
-        }
-        .mobile-bottom-nav a.active {
-            color: var(--primary-color-deep);
-        }
-        .mobile-bottom-nav a.active i {
-            color: var(--primary-color);
-        }
-        .mobile-bottom-nav a.active::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--primary-color);
-        }
+        /* misc */
+        .form-check-input:checked { background-color:var(--jade); border-color:var(--jade); }
+        .btn-primary { background:var(--jade); border-color:var(--jade); }
+        .btn-primary:hover { background:var(--jade-deep); border-color:var(--jade-deep); }
+        .password-toggle { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--ink-faint); }
 
-        /* ============================================================
-           MODALS
-           ============================================================ */
-        .modal-content {
-            border-radius: var(--radius);
-            border: none;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        /* ===== AI CHAT ===== */
+        #aiToggle {
+            position:fixed; bottom:calc(var(--bottom-nav-h) + 22px + var(--safe-b)); right:16px; z-index:1250; width:52px; height:52px;
+            border-radius:50%; background:linear-gradient(135deg, var(--jade), var(--jade-deep)); color:#fff; border:none;
+            box-shadow:var(--shadow-lg); cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center;
         }
-        .modal-header {
-            border-bottom: 1px solid var(--glass-border);
-            padding: 12px 16px;
+        @media (min-width:1000px) { #aiToggle { bottom:24px; } }
+        #aiPanel {
+            display:none; position:fixed; bottom:calc(var(--bottom-nav-h) + 82px + var(--safe-b)); right:16px; width:346px; max-width:92vw;
+            height:440px; max-height:62vh; background:var(--surface); border-radius:var(--radius-md); box-shadow:var(--shadow-lg);
+            z-index:1250; flex-direction:column; overflow:hidden;
         }
-        .modal-body {
-            padding: 16px;
-        }
+        @media (min-width:1000px) { #aiPanel { bottom:88px; } }
+        @media (max-width:999px) { #aiPanel { width:100%; max-width:100%; right:0; bottom:0; height:64vh; max-height:64vh; border-radius:var(--radius-md) var(--radius-md) 0 0; } }
+        .ai-head { background:linear-gradient(135deg, var(--jade), var(--jade-deep)); padding:12px 15px; display:flex; justify-content:space-between; align-items:center; color:#fff; }
+        .ai-head .who { display:flex; align-items:center; gap:8px; }
+        .ai-head .icon { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; }
+        .ai-head button { background:none; border:none; color:#fff; opacity:.75; font-size:14px; cursor:pointer; }
+        #aiMsgs { flex:1; overflow-y:auto; padding:12px; background:var(--paper); }
+        .bubble-ai { display:flex; gap:7px; margin-bottom:10px; }
+        .bubble-ai .ava { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg, var(--jade), var(--sky)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; flex-shrink:0; }
+        .bubble-ai .txt { background:var(--surface); padding:9px 13px; border-radius:12px 12px 12px 3px; max-width:82%; font-size:12.5px; box-shadow:var(--shadow-sm); }
+        .bubble-user { display:flex; justify-content:flex-end; margin-bottom:10px; }
+        .bubble-user .txt { background:var(--jade); color:#fff; padding:9px 13px; border-radius:12px 12px 3px 12px; max-width:82%; font-size:12.5px; }
+        #aiInputRow { padding:9px 12px; background:var(--surface); border-top:1px solid var(--line-soft); display:flex; gap:7px; }
+        #aiInputRow input { flex:1; padding:8px 14px; border:1px solid var(--line); border-radius:99px; font-size:12.5px; }
+        #aiInputRow button { width:36px; height:36px; border-radius:50%; border:none; background:var(--jade); color:#fff; cursor:pointer; }
+        #aiSuggest { padding:6px 12px 10px; background:var(--surface); display:flex; gap:5px; flex-wrap:wrap; }
+        #aiSuggest button { padding:4px 10px; border:1px solid var(--line); border-radius:99px; background:var(--paper); font-size:10px; cursor:pointer; color:var(--ink-soft); }
 
-        .auth-divider {
-            text-align: center;
-            font-size: 11px;
-            color: #999;
-            margin: 8px 0;
-            position: relative;
+        /* ===== PWA ===== */
+        .pwa-prompt {
+            position:fixed; bottom:calc(var(--bottom-nav-h) + 16px + var(--safe-b)); left:50%; transform:translateX(-50%);
+            background:var(--ink); color:#fff; padding:12px 18px; border-radius:99px; font-size:13px; font-weight:600;
+            z-index:1350; display:none; align-items:center; gap:10px; box-shadow:var(--shadow-lg); max-width:92vw;
         }
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 30%;
-            height: 1px;
-            background: #ddd;
-        }
-        .auth-divider::before {
-            left: 0;
-        }
-        .auth-divider::after {
-            right: 0;
-        }
+        .pwa-prompt.show { display:flex; }
+        .pwa-prompt .close-btn { background:rgba(255,255,255,.15); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:10px; cursor:pointer; flex-shrink:0; }
 
-        /* ============================================================
-           UTILITY CLASSES
-           ============================================================ */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 77, 61, 0.15);
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 72px;
-            right: 12px;
-            z-index: 9999;
-            max-width: calc(100vw - 24px);
-        }
-        .toast {
-            min-width: 200px;
-            max-width: 360px;
-            margin-bottom: 6px;
-            animation: slideIn 0.25s ease;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 8px;
-            padding: 6px;
-        }
-        .apps-grid a {
-            background: #f0f2f5;
-            border-radius: 8px;
-            padding: 10px 4px;
-            text-align: center;
-            color: #333;
-            text-decoration: none;
-            font-size: 10px;
-            transition: var(--transition);
-        }
-        .apps-grid a i {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 2px;
-            color: var(--primary-color);
-        }
-        .apps-grid a:hover {
-            background: linear-gradient(135deg, rgba(255, 77, 61, 0.08), rgba(255, 46, 136, 0.06));
-            transform: scale(1.04);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-deep));
-            border-color: var(--primary-color);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: var(--primary-color-deep);
-            border-color: var(--primary-color-deep);
-            color: #fff;
-        }
-
-        /* ============================================================
-           EDUCATION CARD STYLES
-           ============================================================ */
-        .education-section {
-            margin-bottom: 14px;
-        }
-        
-        .edu-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 4px 4px 10px 4px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x proximity;
-        }
-        .edu-scroll::-webkit-scrollbar {
-            display: none;
-        }
-        .edu-scroll .edu-mini-card {
-            flex: 0 0 auto;
-            width: 120px;
-            scroll-snap-align: start;
-            background: #ffffff;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-        }
-        .edu-scroll .edu-mini-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-        .edu-scroll .edu-mini-card .edu-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(135deg, #f8f0e7, #e8dcc8);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .edu-scroll .edu-mini-card .edu-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .edu-scroll .edu-mini-card .edu-thumb .thumb-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: rgba(0, 0, 0, 0.06);
-        }
-        .edu-scroll .edu-mini-card .edu-thumb .mini-badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 6px;
-            font-weight: 700;
-            text-transform: uppercase;
-            background: #ffb703;
-            color: #1a1a1a;
-            z-index: 2;
-        }
-        .edu-scroll .edu-mini-card .edu-info {
-            padding: 6px 8px 8px 8px;
-        }
-        .edu-scroll .edu-mini-card .edu-info .edu-title {
-            font-size: 10px;
-            font-weight: 600;
-            color: #191919;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .edu-scroll .edu-mini-card .edu-info .edu-sub {
-            font-size: 8px;
-            color: #666;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .edu-chip {
-            padding: 3px 10px;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
-            background: transparent;
-            color: #666;
-            font-size: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-        }
-        .edu-chip:hover {
-            border-color: #ccc;
-            color: #000;
-            background: rgba(0, 0, 0, 0.03);
-        }
-        .edu-chip.active {
-            background: #ffb703;
-            border-color: #ffb703;
-            color: #1a1a1a;
-        }
-
-        .edu-card {
-            background: #ffffff;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 14px;
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-        }
-        .edu-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-        }
-        .edu-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #f7971e, #ffb703);
-            opacity: 0.6;
-        }
-        .edu-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 2px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.55rem;
-            font-weight: 600;
-            background: #ffb703;
-            color: #1a1a1a;
-            z-index: 5;
-            pointer-events: none;
-            opacity: 0.8;
-        }
-        .edu-badge.bursary {
-            background: #11998e;
-            color: #fff;
-        }
-        .edu-badge.university {
-            background: #4facfe;
-            color: #fff;
-        }
-        .edu-badge.school {
-            background: #a18cd1;
-            color: #fff;
-        }
-        .edu-badge.paper {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .edu-content {
-            padding: 12px 14px 8px;
-        }
-        .edu-title {
-            font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 600;
-            color: #191919;
-            margin-bottom: 4px;
-        }
-        .edu-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        .edu-meta span {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .edu-meta i {
-            color: #f7971e;
-            font-size: 10px;
-        }
-        .edu-description {
-            font-size: 11px;
-            color: #555;
-            line-height: 1.4;
-            margin-top: 4px;
-        }
-        .edu-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 14px 10px;
-            border-top: 1px solid rgba(0,0,0,0.04);
-        }
-        .edu-tag {
-            font-size: 9px;
-            color: #f7971e;
-            background: rgba(247, 151, 30, 0.08);
-            padding: 1px 8px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-weight: 500;
-        }
-        .edu-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .btn-edu-primary {
-            padding: 4px 12px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #f7971e, #ffb703);
-            color: #1a1a1a;
-            font-weight: 600;
-            font-size: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .btn-edu-primary:hover {
-            transform: scale(1.05);
-        }
-        .btn-edu-secondary {
-            padding: 4px 10px;
-            border: 1px solid #ddd;
-            border-radius: 16px;
-            background: transparent;
-            color: #666;
-            font-size: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .btn-edu-secondary:hover {
-            border-color: #f7971e;
-            color: #f7971e;
-        }
-
-        .edu-paper-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        .edu-paper-item:hover {
-            background: #f0f1f3;
-        }
-        .edu-paper-item .paper-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: #ff6b6b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-        .edu-paper-item .paper-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .edu-paper-item .paper-info .paper-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-        .edu-paper-item .paper-info .paper-meta {
-            font-size: 9px;
-            color: #888;
-        }
-        .edu-paper-item .paper-dl {
-            padding: 2px 10px;
-            border-radius: 12px;
-            border: none;
-            background: #ff6b6b;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .edu-paper-item .paper-dl:hover {
-            transform: scale(1.05);
-        }
-
-        .edu-upload-mini {
-            background: rgba(247, 151, 30, 0.04);
-            border: 1px dashed rgba(247, 151, 30, 0.15);
-            border-radius: var(--radius-sm);
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .edu-upload-mini .upload-label {
-            font-size: 11px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .edu-upload-mini .upload-label i {
-            color: #f7971e;
-        }
-        .edu-upload-mini .upload-actions {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .edu-upload-mini .upload-actions button {
-            padding: 2px 10px;
-            border-radius: 12px;
-            border: none;
-            font-size: 9px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            background: #f7971e;
-            color: #1a1a1a;
-        }
-        .edu-upload-mini .upload-actions button:hover {
-            transform: scale(1.05);
-        }
-        .edu-upload-mini .upload-actions button.outline {
-            background: transparent;
-            border: 1px solid rgba(247, 151, 30, 0.3);
-            color: #f7971e;
-        }
-
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
-        @media (max-width: 992px) {
-            body {
-                padding-top: 56px;
-                padding-bottom: 56px;
-            }
-            .header-area {
-                height: 56px;
-            }
-            .nav-icons {
-                gap: 4px;
-            }
-            .mobile-bottom-nav {
-                display: flex !important;
-            }
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .profile-avatar-small {
-                width: 26px;
-                height: 26px;
-                font-size: 11px;
-            }
-            .apps-sticker {
-                padding: 2px 6px;
-                font-size: 10px;
-            }
-            .container {
-                padding: 0 10px;
-            }
-            .site-footer {
-                padding: 30px 0 16px;
-            }
-            .site-footer .footer-heading {
-                margin-top: 10px;
-            }
-            .site-footer .social-links {
-                justify-content: center;
-            }
-            .site-footer .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-                gap: 8px;
-            }
-            .site-footer .footer-legal {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .mobile-bottom-nav {
-                height: 64px;
-                padding-bottom: 4px;
-            }
-            .mobile-bottom-nav a {
-                font-size: 7px;
-                min-height: 30px;
-            }
-            .mobile-bottom-nav a i {
-                font-size: 18px;
-            }
-        }
-
-         /* ===== EDUCATION CARDS (BURSARIES, SCHOOLS, UNIVERSITIES) ===== */
-        .edu-card {
-            background: var(--glass);
-            backdrop-filter: blur(8px) saturate(130%);
-            -webkit-backdrop-filter: blur(8px) saturate(130%);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 16px;
-            overflow: hidden;
-            transform: translateZ(0);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            position: relative;
-        }
-        .edu-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(20, 8, 5, 0.12);
-        }
-        .edu-card .property-image-container {
-            position: relative;
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            background: linear-gradient(135deg, #f8f0e7, #e8dcc8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .edu-card .property-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .edu-card .property-image-container i {
-            font-size: 3rem;
-            color: rgba(0,0,0,0.08);
-        }
-        .edu-card .edu-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            z-index: 5;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .edu-badge.bursary {
-            background: #11998e;
-            color: #fff;
-        }
-        .edu-badge.university {
-            background: #4facfe;
-            color: #fff;
-        }
-        .edu-badge.school {
-            background: #a18cd1;
-            color: #fff;
-        }
-        .edu-badge.paper {
-            background: #ff6b6b;
-            color: #fff;
-        }
-        .edu-card .edu-content {
-            padding: 14px 16px 12px;
-        }
-        .edu-card .edu-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dark-color);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .edu-card .edu-title .edu-icon {
-            font-size: 1rem;
-            color: #f7971e;
-        }
-        .edu-card .edu-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 16px;
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 6px;
-        }
-        .edu-card .edu-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .edu-card .edu-meta i {
-            font-size: 0.75rem;
-            color: var(--primary-color);
-        }
-        .edu-card .edu-description {
-            font-size: 0.85rem;
-            color: #555;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .edu-card .edu-footer {
-            padding: 10px 16px;
-            background: rgba(0,0,0,0.02);
-            border-top: 1px solid rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .edu-card .edu-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: #f7971e;
-            background: rgba(247,151,30,0.08);
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-        .edu-card .edu-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .edu-card .btn-edu-secondary,
-        .edu-card .btn-edu-primary {
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: 0.15s;
-            min-height: 30px;
-        }
-        .edu-card .btn-edu-secondary {
-            background: transparent;
-            color: var(--secondary-color);
-            border: 1px solid var(--secondary-color);
-        }
-        .edu-card .btn-edu-secondary:hover {
-            background: var(--secondary-color);
-            color: #fff;
-        }
-        .edu-card .btn-edu-primary {
-            background: linear-gradient(135deg, #f7971e, #ffb703);
-            color: #1a1a1a;
-            box-shadow: 0 2px 8px rgba(247,151,30,0.2);
-        }
-        .edu-card .btn-edu-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(247,151,30,0.3);
-        }
-
-        /* ===== EDUCATION SCROLL (mini cards) ===== */
-        .edu-scroll .edu-mini-card {
-            background: var(--glass);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            transition: 0.15s;
-            box-shadow: var(--shadow);
-        }
-        .edu-scroll .edu-mini-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        }
-        .edu-scroll .edu-mini-card .edu-thumb {
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(135deg, #f8f0e7, #e8dcc8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .edu-scroll .edu-mini-card .edu-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .edu-scroll .edu-mini-card .edu-thumb .thumb-placeholder i {
-            font-size: 2rem;
-            color: rgba(0,0,0,0.06);
-        }
-        .edu-scroll .edu-mini-card .edu-thumb .mini-badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 0.6rem;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            padding: 2px 8px;
-            border-radius: 12px;
-            color: #fff;
-        }
-        .edu-scroll .edu-mini-card .edu-info {
-            padding: 6px 8px 8px;
-        }
-        .edu-scroll .edu-mini-card .edu-info .edu-title {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--dark-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .edu-scroll .edu-mini-card .edu-info .edu-sub {
-            font-size: 0.6rem;
-            color: #888;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* ===== RESPONSIVE TWEAKS ===== */
-        @media (max-width: 576px) {
-            .edu-card .edu-title {
-                font-size: 0.9rem;
-            }
-            .edu-card .edu-meta {
-                font-size: 0.7rem;
-                gap: 4px 10px;
-            }
-            .edu-card .edu-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .edu-card .edu-actions {
-                justify-content: flex-end;
-            }
-        }
+        /* ===== BASE OVERRIDES ===== */
+        .main-content { padding:0; margin:0; width:100%; }
+        .container-fluid-custom { max-width:1400px; margin:0 auto; padding:0 16px; }
+        .mt-content { margin-top:8px; }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
-
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
 
     <!-- ===== HEADER ===== -->
     <header class="header-area">
-        <div class="container">
-            <div class="row"><div class="col-12">
-                <nav class="main-nav">
-                    <a href="/" class="logo">
-                        <img src="{% static 'images/logo.png' %}" alt="OppoGlobe" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-weight:700;color:#191919;font-size:20px;font-family:Space Grotesk;\'>OppoGlobe</span>'">
-                    </a>
-                    <ul class="nav-icons">
-                        <li><a href="/"><i class="fas fa-home"></i></a></li>
-                        {% if user.is_authenticated %}
+        <div class="header-inner">
+            <a href="/" class="brand">
+                <span class="brand-mark">O</span>
+                <span class="brand-word">OppoGlobe</span>
+            </a>
+
+            <ul class="nav-icons">
+                <li><a href="/" class="icon-btn"><i class="fas fa-house"></i></a></li>
+                {% if user.is_authenticated %}
+                    {% if user.user_type == 'admin' or user.is_superuser %}
+                        <li><span class="role-chip biz"><i class="fas fa-building me-1"></i>Business</span></li>
+                    {% else %}
+                        <li><span class="role-chip"><i class="fas fa-user me-1"></i>You</span></li>
+                    {% endif %}
+                    <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i><span class="ping-badge" id="messageBadge">0</span></a></li>
+                    <li><a href="/notifications/" class="icon-btn" id="notificationLink"><i class="fas fa-bell"></i><span class="ping-badge" id="notificationBadge">0</span></a></li>
+                    <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+                    <li class="rel">
+                        <button class="avatar-btn" onclick="toggleProfileMenu()">{{ user.username|first|upper }}<span class="status-dot"></span></button>
+                        <div class="dropdown-panel" id="profileMenu">
                             {% if user.user_type == 'admin' or user.is_superuser %}
-                                <li><span class="user-badge business"><i class="fas fa-building me-1"></i>Business</span></li>
+                                <a href="/admin-portal/"><i class="fas fa-table-cells-large"></i> Dashboard</a>
+                                <a href="/properties/manage/"><i class="fas fa-house"></i> Properties</a>
+                                <a href="/properties/add/"><i class="fas fa-circle-plus"></i> Add Property</a>
+                                <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i> Bookings</a>
+                                <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
+                                <a href="/admin-portal/applications/"><i class="fas fa-file-lines"></i> Applications</a>
+                                <a href="/admin-portal/analytics/"><i class="fas fa-chart-column"></i> Analytics</a>
                             {% else %}
-                                <li><span class="user-badge"><i class="fas fa-user me-1"></i>User</span></li>
+                                <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
+                                <a href="/applications/"><i class="fas fa-file-lines"></i> Applications</a>
+                                <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
+                                <a href="/preferences/"><i class="fas fa-gear"></i> Preferences</a>
+                                <a href="/properties/search/"><i class="fas fa-house"></i> Properties</a>
+                                <a href="/bookings/"><i class="fas fa-calendar-check"></i> My Bookings</a>
                             {% endif %}
-                            <li class="message-wrapper">
-                                <a href="/messaging/"><i class="fas fa-comment-dots"></i>
-                                    <span class="message-badge" id="messageBadge">0</span>
-                                </a>
-                            </li>
-                            <li class="notification-wrapper">
-                                <a href="/notifications/" id="notificationLink"><i class="fas fa-bell"></i><span class="notification-badge" id="notificationBadge">0</span></a>
-                            </li>
-                            <li><a href="#" class="apps-sticker" onclick="showAppsModal()"><i class="fas fa-th"></i></a></li>
-                            <li class="profile-dropdown">
-                                <div class="profile-avatar-small" onclick="toggleProfileMenu()">
-                                    {{ user.username|first|upper }}
-                                    <span class="status-dot" id="userStatusDot"></span>
-                                </div>
-                                <div class="profile-menu" id="profileMenu">
-                                    {% if user.user_type == 'admin' or user.is_superuser %}
-                                        <a href="/admin-portal/"><i class="fas fa-th-large"></i> Dashboard</a>
-                                        <a href="/properties/manage/"><i class="fas fa-home"></i> Properties</a>
-                                        <a href="/properties/add/"><i class="fas fa-plus-circle"></i> Add Property</a>
-                                        <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i> Bookings</a>
-                                        <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
-                                        <a href="/admin-portal/applications/"><i class="fas fa-file-alt"></i> Applications</a>
-                                        <a href="/admin-portal/analytics/"><i class="fas fa-chart-bar"></i> Analytics</a>
-                                    {% else %}
-                                        <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
-                                        <a href="/applications/"><i class="fas fa-file-alt"></i> Applications</a>
-                                        <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
-                                        <a href="/preferences/"><i class="fas fa-cog"></i> Preferences</a>
-                                        <a href="/properties/search/"><i class="fas fa-home"></i> Properties</a>
-                                        <a href="/bookings/"><i class="fas fa-calendar-check"></i> My Bookings</a>
-                                    {% endif %}
-                                    <div class="profile-divider"></div>
-                                    <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="three-dot-menu">
-                                    <button class="three-dot-btn" onclick="toggleThreeDotMenu(this)" aria-label="More options">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <div class="menu-content">
-                                        {% if user.user_type == 'admin' or user.is_superuser %}
-                                            <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property Analytics</a>
-                                            <div class="menu-divider"></div>
-                                            <a href="/admin-portal/"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                                        {% else %}
-                                            <a href="/profile/skills/"><i class="fas fa-cogs"></i> Skills</a>
-                                            <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
-                                            <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
-                                            <a href="/profile/documents/"><i class="fas fa-file-upload"></i> Documents</a>
-                                            <div class="menu-divider"></div>
-                                            <a href="/saved-jobs/"><i class="fas fa-bookmark"></i> Saved Jobs</a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </li>
-                        {% else %}
-                            <li>
-                                <button class="auth-btn auth-btn-signin" onclick="showLogin()">
-                                    <i class="fas fa-sign-in-alt"></i> Sign In
-                                </button>
-                            </li>
-                            <li>
-                                <button class="auth-btn auth-btn-signup" onclick="showSignup()">
-                                    <i class="fas fa-user-plus"></i> Sign Up
-                                </button>
-                            </li>
-                            <li><a href="#" class="apps-sticker" onclick="showAppsModal()"><i class="fas fa-th"></i></a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div></div>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout/"><i class="fas fa-arrow-right-from-bracket"></i> Log out</a>
+                        </div>
+                    </li>
+                    <li class="rel">
+                        <button class="icon-btn" onclick="toggleMoreMenu(this)"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <div class="dropdown-panel">
+                            {% if user.user_type == 'admin' or user.is_superuser %}
+                                <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property analytics</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="/admin-portal/"><i class="fas fa-gauge"></i> Dashboard</a>
+                            {% else %}
+                                <a href="/profile/skills/"><i class="fas fa-gears"></i> Skills</a>
+                                <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+                                <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+                                <a href="/profile/documents/"><i class="fas fa-file-arrow-up"></i> Documents</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="/saved-jobs/"><i class="fas fa-bookmark"></i> Saved jobs</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% else %}
+                    <li><button class="auth-btn auth-btn-ghost" onclick="showLogin()">Sign in</button></li>
+                    <li><button class="auth-btn auth-btn-solid" onclick="showSignup()">Join free</button></li>
+                    <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+                {% endif %}
+            </ul>
         </div>
     </header>
 
-    <!-- ===== TOAST CONTAINER ===== -->
-    <div class="toast-container"></div>
+    <!-- ===== SHELL / LAYOUT ===== -->
+    <div class="shell" id="mainShell">
+        <!-- LEFT RAIL -->
+        <div class="rail-left">
+            <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Browse OppoGlobe</button>
+            <div class="rail-body" id="railBody">
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-bolt"></i>Get moving</div>
+                    <div class="stack" style="gap:6px;">
+                        <button class="quick-btn solid" onclick="showPostModal()"><i class="fas fa-circle-plus"></i>Share something</button>
+                        <button class="quick-btn" onclick="switchTab('properties')"><i class="fas fa-house"></i>Properties</button>
+                        <button class="quick-btn" onclick="switchTab('reels')"><i class="fas fa-video"></i>Reels</button>
+                        <button class="quick-btn" onclick="switchTab('maintenance')"><i class="fas fa-screwdriver-wrench"></i>Maintenance</button>
+                        <button class="quick-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i>Jobs</button>
+                        <button class="quick-btn" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i>Community feed</button>
+                        <button class="quick-btn" onclick="switchTab('education')"><i class="fas fa-graduation-cap"></i>Education</button>
+                        <a href="/properties/add/" class="quick-btn warm"><i class="fas fa-circle-plus"></i>List a property</a>
+                    </div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-chart-line"></i>Property pulse</div>
+                    <div class="stat-row"><span>Listed</span><span class="stat-val" id="totalProperties">0</span></div>
+                    <div class="stat-row"><span>Available now</span><span class="stat-val jade" id="availableProperties">0</span></div>
+                    <div class="stat-row"><span>Booked today</span><span class="stat-val gold" id="todayBookings">0</span></div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-fire"></i>Jobs on the rise</div>
+                    <div id="trendingJobs" class="text-muted small">Loading…</div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-users"></i>Top neighbours</div>
+                    <div id="topCreators" class="text-muted small">Loading…</div>
+                </div>
+            </div>
+        </div>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+        <!-- MAIN CONTENT BLOCK -->
+        <div class="main">
+            {% block content %}
+                <!-- default content -->
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-home"></i>Welcome to OppoGlobe</div>
+                    <p>Your neighbourhood hub for homes, jobs, and community life.</p>
+                </div>
+            {% endblock %}
+        </div>
+
+        <!-- RIGHT RAIL -->
+        <div class="rail-right">
+            <div class="stack">
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-gauge-high"></i>Quick stats</div>
+                    <div class="stat-row"><span>Total properties</span><span class="stat-val" id="totalPropertiesCount">0</span></div>
+                    <div class="stat-row"><span>Active jobs</span><span class="stat-val" id="activeJobsCount">0</span></div>
+                    <div class="stat-row"><span>Applications</span><span class="stat-val" id="totalApplications">0</span></div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-clock-rotate-left"></i>Recent activity</div>
+                    <div id="recentActivity" class="text-muted small">Nothing yet — your activity will show here.</div>
+                </div>
+                <div class="card card-pad">
+                    <div class="card-title"><i class="fas fa-map-location-dot"></i>Popular areas</div>
+                    <div id="popularLocations" class="text-muted small">Loading…</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== FOOTER ===== -->
     <footer class="site-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <h5 class="footer-heading">OppoGlobe</h5>
-                    <p class="footer-text">Find your dream property, connect with owners, and access educational resources – all in one place.</p>
-                    <div class="social-links">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-2 col-6 mb-3">
-                    <h6 class="footer-heading">Company</h6>
-                    <ul class="footer-links">
-                        <li><a href="{% url 'about' %}">About Us</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'careers' %}">Careers</a></li>
-                        <li><a href="{% url 'blog_list' %}">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 col-6 mb-3">
-                    <h6 class="footer-heading">Support</h6>
-                    <ul class="footer-links">
-                        <li><a href="{% url 'help' %}">Help Center</a></li>
-                        <li><a href="{% url 'faq' %}">FAQ</a></li>
-                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
-                        <li><a href="{% url 'terms' %}">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h6 class="footer-heading">Stay Updated</h6>
-                    <p class="footer-text small">Subscribe to our newsletter for the latest properties and offers.</p>
-                    <form class="footer-newsletter" id="newsletterForm">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Your email" required>
-                            <button class="btn btn-primary" type="submit">Subscribe</button>
-                        </div>
-                    </form>
+        <div class="footer-wrap">
+            <div>
+                <h5 class="footer-h">OppoGlobe</h5>
+                <p class="footer-p">Homes to book or buy, jobs worth applying for, bursaries worth chasing, and neighbours who show up. All in one place.</p>
+                <div class="social-row">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <hr>
-                <div class="d-flex flex-wrap justify-content-between align-items-center">
-                    <span>&copy; 2026 OppoGlobe. All rights reserved.</span>
-                    <div class="footer-legal">
-                        <a href="{% url 'privacy' %}">Privacy</a>
-                        <span class="separator">|</span>
-                        <a href="{% url 'terms' %}">Terms</a>
-                        <span class="separator">|</span>
-                        <a href="{% url 'cookies' %}">Cookies</a>
-                    </div>
-                </div>
+            <div>
+                <h6 class="footer-h">Company</h6>
+                <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/blog/">Blog</a></li></ul>
             </div>
+            <div>
+                <h6 class="footer-h">Support</h6>
+                <ul class="footer-links"><li><a href="/help/">Help centre</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/privacy/">Privacy policy</a></li><li><a href="/terms/">Terms of service</a></li></ul>
+            </div>
+            <div>
+                <h6 class="footer-h">Stay in the loop</h6>
+                <p class="footer-p" style="font-size:12.5px;">New listings, jobs and bursaries — straight to your inbox.</p>
+                <form class="nl-form" id="newsletterForm"><input type="email" placeholder="Your email" required><button type="submit">Subscribe</button></form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 OppoGlobe. All rights reserved.</span>
+            <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/cookies/">Cookies</a></div>
         </div>
     </footer>
 
     <!-- ===== MOBILE BOTTOM NAV ===== -->
-    <nav id="mobileBottomNav" class="mobile-bottom-nav">
-        <a href="/" class="active"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="/properties/"><i class="fas fa-building"></i><span>Properties</span></a>
-        <a href="/feed/"><i class="fas fa-newspaper"></i><span>Feed</span></a>
-        <a href="/jobs/"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
-        <a href="/profile/"><i class="fas fa-user"></i><span>Profile</span></a>
+    <nav class="bottom-nav" id="mobileBottomNav">
+        <a href="#" class="bn-item active" onclick="switchTab('properties')"><i class="fas fa-house"></i><span>Homes</span></a>
+        <a href="#" class="bn-item" onclick="switchTab('reels')"><i class="fas fa-video"></i><span>Reels</span></a>
+        <div class="bn-hero" onclick="switchTab('maintenance')"><div class="circle"><i class="fas fa-screwdriver-wrench"></i></div><span class="label">Maint.</span></div>
+        <a href="#" class="bn-item" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i><span>Feed</span></a>
+        <a href="#" class="bn-item" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
     </nav>
 
-    <!-- ===== LOGIN / SIGNUP MODALS ===== -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Welcome Back 👋</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <!-- ===== AI CHAT ===== -->
+    <div id="aiPanel">
+        <div class="ai-head">
+            <div class="who"><div class="icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:700; font-size:13px;">OppoGlobe Guide</div><div style="font-size:9.5px; opacity:.85;">● Online</div></div></div>
+            <div class="d-flex gap-2"><button onclick="toggleAIChat()"><i class="fas fa-minus"></i></button><button onclick="closeAIChat()"><i class="fas fa-times"></i></button></div>
+        </div>
+        <div id="aiMsgs">
+            <div class="bubble-ai"><div class="ava"><i class="fas fa-robot"></i></div><div class="txt">Hi! I'm your OppoGlobe guide. Ask me about properties, jobs, maintenance, or anything else on the platform.</div></div>
+            <div id="aiTyping" class="hidden"><div class="bubble-ai"><div class="ava"><i class="fas fa-robot"></i></div><div class="txt"><span class="spin" style="width:12px;height:12px;"></span></div></div></div>
+        </div>
+        <div id="aiInputRow"><input type="text" id="aiChatInput" placeholder="Ask me anything…" onkeydown="if(event.key==='Enter') sendAIMessage()"><button onclick="sendAIMessage()"><i class="fas fa-paper-plane"></i></button></div>
+        <div id="aiSuggest">
+            <button onclick="quickAIQuery('Show me available properties')">📋 Available properties</button>
+            <button onclick="quickAIQuery('Find jobs near me')">💼 Jobs near me</button>
+            <button onclick="quickAIQuery('What maintenance requests are pending?')">🔧 Maintenance</button>
+            <button onclick="quickAIQuery('Tell me about OppoGlobe')">ℹ️ About OppoGlobe</button>
+        </div>
+    </div>
+    <button id="aiToggle" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
+
+    <!-- ===== TOASTS ===== -->
+    <div class="toast-stack" id="toastStack"></div>
+
+    <!-- ===== PWA ===== -->
+    <div class="pwa-prompt" id="pwaPrompt"><i class="fas fa-mobile-screen"></i><span>Install the OppoGlobe app</span><button class="close-btn" id="pwaCloseBtn"><i class="fas fa-times"></i></button></div>
+
+    <!-- ===== MODALS ===== -->
+    <!-- APPS MODAL -->
+    <div class="modal fade" id="appsModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display); font-size:15px;"><i class="fas fa-grip me-2"></i>Jump to</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
-            <div id="googleLoginBtn" style="margin-bottom:12px;"></div>
-            <div class="auth-divider">or continue with email</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('properties');closeAppsModal()"><i class="fas fa-house d-block mb-1" style="color:var(--jade); font-size:20px;"></i><span style="font-size:10px;">Property</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('reels');closeAppsModal()"><i class="fas fa-video d-block mb-1" style="color:var(--coral); font-size:20px;"></i><span style="font-size:10px;">Reels</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('maintenance');closeAppsModal()"><i class="fas fa-screwdriver-wrench d-block mb-1" style="color:var(--sky); font-size:20px;"></i><span style="font-size:10px;">Maint.</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('jobs');closeAppsModal()"><i class="fas fa-briefcase d-block mb-1" style="color:var(--gold); font-size:20px;"></i><span style="font-size:10px;">Jobs</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('feed');closeAppsModal()"><i class="fas fa-newspaper d-block mb-1" style="color:var(--plum); font-size:20px;"></i><span style="font-size:10px;">Feed</span></a>
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('education');closeAppsModal()"><i class="fas fa-graduation-cap d-block mb-1" style="color:#9c7719; font-size:20px;"></i><span style="font-size:10px;">Education</span></a>
+                {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
+                <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('management');closeAppsModal()"><i class="fas fa-gear d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Manage</span></a>
+                {% endif %}
+                <a href="/profile/" class="text-center p-2" style="border-radius:10px; background:var(--paper);"><i class="fas fa-user d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Profile</span></a>
+                <a href="/messaging/" class="text-center p-2" style="border-radius:10px; background:var(--paper);"><i class="fas fa-envelope d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Messages</span></a>
+            </div>
+        </div>
+    </div></div></div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal fade" id="loginModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display);">Welcome back</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <a href="/accounts/google/login/?process=login" class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center gap-2"><i class="fab fa-google"></i> Continue with Google</a>
+            <div class="text-center text-muted small my-2">or continue with email</div>
             <form id="loginForm">
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Username or Email</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Password</label><div class="position-relative"><input type="password" class="form-control" name="password" id="loginPassword" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                <div class="mb-2 text-end"><a href="/forgot-password/" class="text-decoration-none" style="color:var(--primary-color);font-size:11px;"><i class="fas fa-key me-1"></i>Forgot Password?</a></div>
-                <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Login</button>
+                <div class="mb-2"><label class="form-label small">Username or email</label><input type="text" class="form-control" name="username" required></div>
+                <div class="mb-2"><label class="form-label small">Password</label><div class="position-relative"><input type="password" class="form-control" name="password" id="loginPassword" required><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                <div class="mb-2 text-end"><a href="/forgot-password/" style="color:var(--jade-deep); font-size:13px;"><i class="fas fa-key me-1"></i>Forgot password?</a></div>
+                <button type="submit" class="btn-jade w-100 py-2">Log in</button>
             </form>
-            <div class="text-center mt-2" style="font-size:11px;color:#999;">
-                Don't have an account? <a href="#" onclick="showSignup();$('#loginModal').modal('hide');" style="color:var(--primary-color);">Sign up</a>
-            </div>
-        </div></div></div>
-    </div>
+            <div class="text-center mt-2 small text-muted">New here? <a href="#" onclick="showSignup();bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();" style="color:var(--jade-deep); font-weight:600;">Create an account</a></div>
+        </div>
+    </div></div></div>
 
-    <div class="modal fade" id="signupModal" tabindex="-1">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="font-size:14px;">Create Account 🚀</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <!-- SIGNUP MODAL -->
+    <div class="modal fade" id="signupModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display);">Join OppoGlobe</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
-            <div id="googleSignupBtn" style="margin-bottom:12px;"></div>
-            <div class="auth-divider">or sign up with email</div>
-            <form id="signupForm">
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Mobile Phone *</label><input type="tel" class="form-control" name="mobile_phone" required style="font-size:12px;padding:4px 8px;"></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                <div class="mb-2"><label class="form-label" style="font-size:12px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                <button type="submit" class="btn btn-primary w-100" style="font-size:12px;padding:6px;">Create Account</button>
-            </form>
-            <div class="text-center mt-2" style="font-size:11px;color:#999;">
-                Already have an account? <a href="#" onclick="showLogin();$('#signupModal').modal('hide');" style="color:var(--primary-color);">Login</a>
+            <div class="mb-3 d-flex justify-content-center gap-3">
+                <div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="accountType" id="userType" value="user" checked><label class="form-check-label" for="userType">Individual</label></div>
+                <div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="accountType" id="businessType" value="business"><label class="form-check-label" for="businessType">Business</label></div>
             </div>
-        </div></div></div>
-    </div>
-
-    <div class="modal fade" id="businessSignupModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin: 10px auto; max-height: 95vh;">
-            <div class="modal-content" style="border-radius:16px;max-height:95vh;">
-                <div class="modal-header" style="flex-shrink:0;padding:12px 16px;">
-                    <h5 class="modal-title" style="font-size:14px;">🏢 Create Business Account</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" style="overflow-y:auto;padding:12px 16px;padding-bottom:20px;">
-                    <div id="googleBusinessSignupBtn" style="margin-bottom:12px;"></div>
-                    <div class="auth-divider">or sign up with email</div>
-                    <form id="businessSignupForm" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Company Information</h6>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Logo</label><input type="file" name="company_logo" accept="image/*" class="form-control" style="font-size:11px;padding:2px 6px;"><small class="text-muted" style="font-size:9px;">Optional</small></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Name *</label><input type="text" class="form-control" name="company_name" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Industry</label><select name="industry" class="form-control" id="industrySelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Industry</option></select></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Size</label><select name="company_size" class="form-control" id="companySizeSelect" style="font-size:12px;padding:4px 8px;"><option value="">Select Size</option></select></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Website</label><input type="url" class="form-control" name="website" placeholder="https://" style="font-size:12px;padding:4px 8px;"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 style="font-size:13px;font-weight:600;margin-bottom:8px;">Account Information</h6>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Username *</label><input type="text" class="form-control" name="username" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Email *</label><input type="email" class="form-control" name="email" required style="font-size:12px;padding:4px 8px;"></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Confirm Password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPassword" minlength="8" required style="font-size:12px;padding:4px 8px;"><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPassword', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#777;"><i class="fas fa-eye"></i></button></div></div>
-                                <div class="mb-2"><label class="form-label" style="font-size:11px;">Contact Phone</label><input type="tel" class="form-control" name="phone_number" style="font-size:12px;padding:4px 8px;"></div>
-                            </div>
+            <div id="userFields">
+                <a href="/accounts/google/login/?process=signup" class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center gap-2"><i class="fab fa-google"></i> Sign up with Google</a>
+                <div class="text-center text-muted small my-2">or sign up with email</div>
+                <form id="signupForm">
+                    <div class="mb-2"><label class="form-label small">Username *</label><input type="text" class="form-control" name="username" required></div>
+                    <div class="mb-2"><label class="form-label small">Email *</label><input type="email" class="form-control" name="email" required></div>
+                    <div class="mb-2"><label class="form-label small">Mobile phone *</label><input type="tel" class="form-control" name="mobile_phone" required></div>
+                    <div class="mb-2"><label class="form-label small">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="signupPassword" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                    <div class="mb-2"><label class="form-label small">Confirm password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="confirmPassword" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)"><i class="fas fa-eye"></i></button></div></div>
+                    <button type="submit" class="btn-jade w-100 py-2">Create account</button>
+                </form>
+            </div>
+            <div id="businessFields" style="display:none;">
+                <div class="text-center text-muted small my-2">Set up your business profile</div>
+                <form id="businessSignupFormIntegrated" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 style="font-size:13px; font-weight:700; margin-bottom:8px;">Company information</h6>
+                            <div class="mb-2"><label class="form-label small">Company logo</label><input type="file" name="company_logo" accept="image/*" class="form-control"><small class="text-muted" style="font-size:10px;">Optional</small></div>
+                            <div class="mb-2"><label class="form-label small">Company name *</label><input type="text" class="form-control" name="company_name" required></div>
+                            <div class="mb-2"><label class="form-label small">Industry</label><select name="industry" class="form-control" id="industrySelect"><option value="">Select industry</option></select></div>
+                            <div class="mb-2"><label class="form-label small">Company size</label><select name="company_size" class="form-control" id="companySizeSelect"><option value="">Select size</option></select></div>
+                            <div class="mb-2"><label class="form-label small">Website</label><input type="url" class="form-control" name="website" placeholder="https://"></div>
                         </div>
-                        <div class="mb-2"><label class="form-label" style="font-size:11px;">Company Description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description" style="font-size:12px;padding:4px 8px;"></textarea></div>
-                        <button type="submit" class="btn btn-primary w-100" id="businessSignupBtn" style="font-size:12px;padding:8px;min-height:42px;"><span id="businessSignupBtnText">Create Business Account</span></button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== APPS MODAL ===== -->
-    <div class="modal fade" id="appsModal" tabindex="-1">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" style="font-size:14px;"><i class="fas fa-th me-2"></i>Apps</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="apps-grid">
-                        <a href="/"><i class="fas fa-home"></i>Home</a>
-                        <a href="/properties/"><i class="fas fa-building"></i>Properties</a>
-                        <a href="/feed/"><i class="fas fa-newspaper"></i>Feed</a>
-                        <a href="/jobs/"><i class="fas fa-briefcase"></i>Jobs</a>
-                        <a href="/profile/"><i class="fas fa-user"></i>Profile</a>
-                        <a href="/notifications/"><i class="fas fa-bell"></i>Alerts</a>
-                        <a href="/messaging/"><i class="fas fa-envelope"></i>Messages</a>
-                        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-                            <a href="/admin-portal/"><i class="fas fa-cog"></i>Manage</a>
-                        {% endif %}
+                        <div class="col-md-6">
+                            <h6 style="font-size:13px; font-weight:700; margin-bottom:8px;">Account information</h6>
+                            <div class="mb-2"><label class="form-label small">Username *</label><input type="text" class="form-control" name="username" required></div>
+                            <div class="mb-2"><label class="form-label small">Email *</label><input type="email" class="form-control" name="email" required></div>
+                            <div class="mb-2"><label class="form-label small">Password *</label><div class="position-relative"><input type="password" class="form-control" name="password" id="businessPasswordIntegrated" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('businessPasswordIntegrated', this)"><i class="fas fa-eye"></i></button></div></div>
+                            <div class="mb-2"><label class="form-label small">Confirm password *</label><div class="position-relative"><input type="password" class="form-control" name="password_confirm" id="businessConfirmPasswordIntegrated" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('businessConfirmPasswordIntegrated', this)"><i class="fas fa-eye"></i></button></div></div>
+                            <div class="mb-2"><label class="form-label small">Contact phone</label><input type="tel" class="form-control" name="phone_number"></div>
+                        </div>
                     </div>
-                </div>
+                    <div class="mb-2"><label class="form-label small">Company description</label><textarea class="form-control" name="company_description" rows="2" placeholder="Brief description"></textarea></div>
+                    <button type="submit" class="btn-jade w-100 py-2"><span id="businessSignupBtnTextIntegrated">Create business account</span></button>
+                </form>
             </div>
         </div>
-    </div>
+    </div></div></div>
 
     <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ============================================================
-        // GOOGLE SIGN-IN / LOGIN
-        // ============================================================
-        const GOOGLE_CLIENT_ID = '402309405742-cffefeqgl5dj875c5q1t5pqpm87jl53u.apps.googleusercontent.com';
-
-        function handleGoogleLogin(response) {
-            showToast('🔄 Signing in with Google...', 'info');
-            fetch('/api/auth/google-login/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
-                    showToast('🎉 Welcome back!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.error || 'Google login failed', 'error');
-                }
-            })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
-        }
-
-        function handleGoogleSignup(response) {
-            showToast('🔄 Creating account with Google...', 'info');
-            fetch('/api/auth/google-signup/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
-                    showToast('🎉 Account created!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.error || 'Google signup failed', 'error');
-                }
-            })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
-        }
-
-        function handleGoogleBusinessSignup(response) {
-            showToast('🔄 Creating business account with Google...', 'info');
-            fetch('/api/auth/google-business-signup/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify({ credential: response.credential })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'))?.hide();
-                    showToast('🎉 Business account created!', 'success');
-                    setTimeout(() => window.location.href = data.redirect_to || '/admin-portal/', 2000);
-                } else {
-                    showToast(data.error || 'Google business signup failed', 'error');
-                }
-            })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
-        }
-
-        function initGoogleSignIn() {
-            if (typeof google === 'undefined') { setTimeout(initGoogleSignIn, 500); return; }
-            try {
-                google.accounts.id.initialize({
-                    client_id: GOOGLE_CLIENT_ID,
-                    callback: function(response) {
-                        const loginModal = document.getElementById('loginModal');
-                        const signupModal = document.getElementById('signupModal');
-                        const businessModal = document.getElementById('businessSignupModal');
-                        if (loginModal && loginModal.classList.contains('show')) handleGoogleLogin(response);
-                        else if (signupModal && signupModal.classList.contains('show')) handleGoogleSignup(response);
-                        else if (businessModal && businessModal.classList.contains('show')) handleGoogleBusinessSignup(response);
-                        else handleGoogleLogin(response);
-                    },
-                    cancel_on_tap_outside: false,
-                    auto_select: false,
-                });
-                const loginBtnContainer = document.getElementById('googleLoginBtn');
-                if (loginBtnContainer) google.accounts.id.renderButton(loginBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signin_with', size: 'large', width: '100%', logo_alignment: 'left' });
-                const signupBtnContainer = document.getElementById('googleSignupBtn');
-                if (signupBtnContainer) google.accounts.id.renderButton(signupBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signup_with', size: 'large', width: '100%', logo_alignment: 'left' });
-                const businessBtnContainer = document.getElementById('googleBusinessSignupBtn');
-                if (businessBtnContainer) google.accounts.id.renderButton(businessBtnContainer, { type: 'standard', shape: 'pill', theme: 'outline', text: 'signup_with', size: 'large', width: '100%', logo_alignment: 'left' });
-            } catch (error) { console.error('Error initializing Google Sign-In:', error); }
-        }
-
-        // ============================================================
-        // UTILITY FUNCTIONS
-        // ============================================================
+        /* ============================================================
+           CORE UTILITIES (shared across pages)
+           ============================================================ */
         const currentUserId = parseInt(document.body.dataset.userId || '0');
         const currentUsername = document.body.dataset.username || '';
+        const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
 
         function getCSRFToken() {
             const cookies = document.cookie.split(';');
-            for (let c of cookies) {
-                const [name, value] = c.trim().split('=');
-                if (name === 'csrftoken') return decodeURIComponent(value);
-            }
+            for (let c of cookies) { const [name, value] = c.trim().split('='); if (name === 'csrftoken') return decodeURIComponent(value); }
             return null;
         }
-
         function escapeHtml(str) {
             if (!str) return '';
             const div = document.createElement('div');
             div.textContent = String(str);
             return div.innerHTML;
         }
-
-        function showToast(message, type = 'success') {
-            const container = document.querySelector('.toast-container');
-            if (!container) return;
-            const colors = { success: '#28a745', error: '#dc3545', info: '#17a2b8', warning: '#ffc107' };
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
-            const toast = document.createElement('div');
-            toast.className = `toast show align-items-center text-white border-0`;
-            toast.style.background = colors[type] || colors.info;
-            toast.style.borderRadius = '6px';
-            toast.innerHTML = `<div class="d-flex"><div class="toast-body" style="font-size:12px;padding:6px 10px;"><i class="fas ${icons[type] || icons.info} me-2"></i>${escapeHtml(message)}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" style="font-size:8px;" onclick="this.parentElement.parentElement.remove()"></button></div>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
+        function formatNumber(num) {
+            num = Number(num) || 0;
+            if (num >= 1000000) return (num/1000000).toFixed(1)+'M';
+            if (num >= 1000) return (num/1000).toFixed(1)+'K';
+            return num;
         }
-
-        function togglePassword(inputId, button) {
+        const TOAST_COLORS = { success:'#1F6F5C', error:'#D64545', info:'#2E8BC0', warning:'#E8A93B' };
+        const TOAST_ICONS = { success:'fa-circle-check', error:'fa-circle-exclamation', info:'fa-circle-info', warning:'fa-triangle-exclamation' };
+        function showToast(message, type='success') {
+            const stack = document.getElementById('toastStack');
+            if (!stack) return;
+            const el = document.createElement('div');
+            el.className = 'toast-item';
+            el.style.background = TOAST_COLORS[type] || TOAST_COLORS.info;
+            el.innerHTML = `<i class="fas ${TOAST_ICONS[type]||TOAST_ICONS.info}"></i><span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            stack.appendChild(el);
+            setTimeout(()=>el.remove(), 4500);
+        }
+        function togglePassword(inputId, btn) {
             const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+            else { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
         }
+        function requireLogin() { if (!isLoggedIn) { showToast('Please sign in first', 'warning'); showLogin(); return false; } return true; }
 
-        function toggleProfileMenu() { document.getElementById('profileMenu').classList.toggle('show'); }
-
-        function toggleThreeDotMenu(btn) { btn.parentElement.querySelector('.menu-content').classList.toggle('show'); }
-        
+        /* ============================================================
+           HEADER MENUS
+           ============================================================ */
+        function toggleProfileMenu() { document.getElementById('profileMenu')?.classList.toggle('show'); }
+        function toggleMoreMenu(btn) { btn.parentElement.querySelector('.dropdown-panel')?.classList.toggle('show'); }
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.profile-dropdown') && !e.target.closest('.three-dot-menu')) {
-                document.querySelectorAll('.profile-menu, .menu-content').forEach(el => el.classList.remove('show'));
-            }
+            if (!e.target.closest('.rel')) document.querySelectorAll('.dropdown-panel').forEach(el=>el.classList.remove('show'));
         });
 
-        // ============================================================
-        // AUTH FUNCTIONS
-        // ============================================================
+        /* ============================================================
+           LEFT RAIL
+           ============================================================ */
+        function toggleRail() {
+            document.getElementById('railBody').classList.toggle('open');
+        }
+
+        /* ============================================================
+           TABS (minimal for base)
+           ============================================================ */
+        function switchTab(tabName) {
+            // This is a stub; extend in child pages.
+            showToast('Switched to ' + tabName, 'info');
+            closeRail();
+        }
+
+        /* ============================================================
+           AI CHAT
+           ============================================================ */
+        let isChatOpen = false;
+        function toggleAIChat() {
+            const panel = document.getElementById('aiPanel');
+            if (!panel) return;
+            isChatOpen = !isChatOpen;
+            panel.style.display = isChatOpen ? 'flex' : 'none';
+            if (isChatOpen) document.getElementById('aiChatInput')?.focus();
+        }
+        function closeAIChat() { document.getElementById('aiPanel').style.display = 'none'; isChatOpen = false; }
+        function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            if (!input) return;
+            const message = input.value.trim();
+            if (!message) return;
+            addChatMessage('user', message);
+            input.value = '';
+            document.getElementById('aiTyping').classList.remove('hidden');
+            fetch('/api/ai/chat/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify({query:message})
+            }).then(r=>r.json()).then(data=>{
+                document.getElementById('aiTyping').classList.add('hidden');
+                addChatMessage('ai', data.success ? (data.response?.response || data.response || "I couldn't process that.") : "Sorry, I hit an error there.");
+            }).catch(()=>{
+                document.getElementById('aiTyping').classList.add('hidden');
+                addChatMessage('ai','Network error — please try again.');
+            });
+        }
+        function addChatMessage(type, content) {
+            const container = document.getElementById('aiMsgs');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = type === 'user' ? 'bubble-user' : 'bubble-ai';
+            div.innerHTML = type === 'ai' ? `<div class="ava"><i class="fas fa-robot"></i></div><div class="txt">${escapeHtml(content)}</div>` : `<div class="txt">${escapeHtml(content)}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        function quickAIQuery(query) {
+            const input = document.getElementById('aiChatInput');
+            if (input) input.value = query;
+            if (!isChatOpen) toggleAIChat();
+            setTimeout(sendAIMessage, 250);
+        }
+
+        /* ============================================================
+           APPS MODAL / AUTH
+           ============================================================ */
+        let appsModal = null;
+        function showAppsModal() { appsModal ||= new bootstrap.Modal(document.getElementById('appsModal')); appsModal.show(); }
+        function closeAppsModal() { appsModal?.hide(); }
         function showLogin() { new bootstrap.Modal(document.getElementById('loginModal')).show(); }
         function showSignup() { new bootstrap.Modal(document.getElementById('signupModal')).show(); }
-        function showBusinessSignup() { 
-            loadBusinessFormData();
-            new bootstrap.Modal(document.getElementById('businessSignupModal')).show(); 
+
+        // Login form
+        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spin" style="width:13px;height:13px;"></span> Logging in…';
+            btn.disabled = true;
+            fetch('/api/auth/login/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify(data)
+            }).then(r=>r.json()).then(res=>{
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (res.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+                    showToast('Welcome back!','success');
+                    setTimeout(()=>location.reload(), 900);
+                } else showToast('Login failed — check your details','error');
+            }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Login failed','error'); });
+        });
+
+        // Signup form
+        document.getElementById('signupForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            if (data.password !== data.password_confirm) return showToast('Passwords do not match','error');
+            const btn = this.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span class="spin" style="width:13px;height:13px;"></span> Creating…';
+            btn.disabled = true;
+            fetch('/api/auth/signup/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify(data)
+            }).then(r=>r.json()).then(res=>{
+                btn.innerHTML = original;
+                btn.disabled = false;
+                if (res.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
+                    showToast('Account created — please log in','success');
+                    setTimeout(showLogin, 900);
+                } else showToast(res.error || 'Signup failed','error');
+            }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Signup failed','error'); });
+        });
+
+        // Toggle signup fields
+        document.getElementById('userType')?.addEventListener('change', toggleSignupFields);
+        document.getElementById('businessType')?.addEventListener('change', toggleSignupFields);
+        function toggleSignupFields() {
+            const isUser = document.getElementById('userType').checked;
+            document.getElementById('userFields').style.display = isUser ? 'block' : 'none';
+            document.getElementById('businessFields').style.display = isUser ? 'none' : 'block';
         }
 
-        function loadBusinessFormData() {
-            fetch('/api/industries/').then(res => res.json()).then(data => {
-                if (data.success) {
-                    const select = document.getElementById('industrySelect');
-                    if (select) { select.innerHTML = '<option value="">Select Industry</option>';
-                        data.industries.forEach(i => { const o = document.createElement('option');
-                            o.value = i.id;
-                            o.textContent = i.name;
-                            select.appendChild(o); }); }
-                }
-            }).catch(() => {});
-            fetch('/api/company-sizes/').then(res => res.json()).then(data => {
-                if (data.success) {
-                    const select = document.getElementById('companySizeSelect');
-                    if (select) { select.innerHTML = '<option value="">Select Size</option>';
-                        data.company_sizes.forEach(s => { const o = document.createElement('option');
-                            o.value = s.id;
-                            o.textContent = s.size_range;
-                            select.appendChild(o); }); }
-                }
-            }).catch(() => {});
-        }
-
-        // ============================================================
-        // APPS MODAL
-        // ============================================================
-        let appsModal = null;
-
-        function showAppsModal() { 
-            if (!appsModal) appsModal = new bootstrap.Modal(document.getElementById('appsModal'));
-            appsModal.show(); 
-        }
-
-        function closeAppsModal() { 
-            if (appsModal) appsModal.hide(); 
-        }
-
-        // ============================================================
-        // NEWSLETTER SUBSCRIPTION
-        // ============================================================
+        // Newsletter
         document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const input = this.querySelector('input[type="email"]');
-            if (!input || !input.value.trim()) {
-                showToast('Please enter a valid email.', 'warning');
-                return;
-            }
-            const email = input.value.trim();
+            const email = input?.value?.trim();
+            if (!email) return showToast('Enter a valid email','warning');
             fetch('/api/newsletter/subscribe/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
-                body: JSON.stringify({ email: email })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('📧 Subscribed! Check your email.', 'success');
-                    input.value = '';
-                } else {
-                    showToast(data.error || 'Something went wrong.', 'error');
-                }
-            })
-            .catch(() => showToast('Network error. Please try again.', 'error'));
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()},
+                body:JSON.stringify({email})
+            }).then(r=>r.json()).then(data=>{
+                if (data.success) { showToast('Subscribed! Check your inbox.','success'); input.value=''; }
+                else showToast(data.error||'Something went wrong','error');
+            }).catch(()=>showToast('Network error — please try again','error'));
         });
 
-        // ============================================================
-        // LOGIN FORM
-        // ============================================================
-        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            const btn = this.querySelector('button[type="submit"]');
-            if (!btn) return;
-            const original = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;"></span> Logging in...';
-            btn.disabled = true;
-            fetch('/api/auth/login/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(data => { 
-                btn.innerHTML = original;
-                btn.disabled = false; 
-                if (data.success) { 
-                    bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
-                    showToast('Login successful!', 'success');
-                    setTimeout(() => location.reload(), 1000); 
-                } else { 
-                    showToast('Login failed', 'error'); 
-                } 
-            })
-            .catch(() => { 
-                btn.innerHTML = original;
-                btn.disabled = false;
-                showToast('Login failed', 'error'); 
-            });
+        /* ============================================================
+           PWA INSTALL
+           ============================================================ */
+        let deferredPrompt = null, pwaInstalled = window.matchMedia('(display-mode: standalone)').matches;
+        function showPwaPrompt() {
+            if (pwaInstalled || localStorage.getItem('pwa_dismissed')==='true') return;
+            document.getElementById('pwaPrompt')?.classList.add('show');
+        }
+        document.getElementById('pwaPrompt')?.addEventListener('click', async function(e) {
+            if (e.target.closest('.close-btn')) return;
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                this.classList.remove('show');
+                showToast(outcome==='accepted' ? 'Installing OppoGlobe…' : 'You can install later from the browser menu', outcome==='accepted'?'success':'info');
+            } else showToast('Open your browser menu → "Install app"', 'info');
         });
-
-        // ============================================================
-        // SIGNUP FORM
-        // ============================================================
-        document.getElementById('signupForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            const btn = this.querySelector('button[type="submit"]');
-            if (!btn) return;
-            const original = btn.innerHTML;
-            if (data.password !== data.password_confirm) { showToast('Passwords do not match', 'error'); return; }
-            btn.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;"></span> Creating...';
-            btn.disabled = true;
-            fetch('/api/auth/signup/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(data => { 
-                btn.innerHTML = original;
-                btn.disabled = false; 
-                if (data.success) { 
-                    bootstrap.Modal.getInstance(document.getElementById('signupModal'))?.hide();
-                    showToast('Account created! Please login.', 'success');
-                    setTimeout(() => showLogin(), 1000); 
-                } else { 
-                    showToast(data.error || 'Signup failed', 'error'); 
-                } 
-            })
-            .catch(() => { 
-                btn.innerHTML = original;
-                btn.disabled = false;
-                showToast('Signup failed', 'error'); 
-            });
+        document.getElementById('pwaCloseBtn')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            localStorage.setItem('pwa_dismissed','true');
+            document.getElementById('pwaPrompt').classList.remove('show');
         });
+        window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt = e; showPwaPrompt(); });
+        window.addEventListener('appinstalled', ()=>{ pwaInstalled = true; document.getElementById('pwaPrompt')?.classList.remove('show'); showToast('Thanks for installing OppoGlobe!','success'); });
 
-        // ============================================================
-        // BUSINESS SIGNUP FORM
-        // ============================================================
-        document.getElementById('businessSignupForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const btn = document.getElementById('businessSignupBtn');
-            const textSpan = document.getElementById('businessSignupBtnText');
-            if (!btn || !textSpan) return;
-            const originalText = textSpan.textContent;
-            const password = document.getElementById('businessPassword')?.value || '';
-            const confirm = document.getElementById('businessConfirmPassword')?.value || '';
-            if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
-            textSpan.textContent = 'Creating account...';
-            btn.disabled = true;
-            fetch('/api/business-signup/', {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => { 
-                textSpan.textContent = originalText;
-                btn.disabled = false; 
-                if (data.success) { 
-                    bootstrap.Modal.getInstance(document.getElementById('businessSignupModal'))?.hide();
-                    showToast('Business account created!', 'success');
-                    setTimeout(() => window.location.href = data.redirect_to || '/admin-portal/', 2000); 
-                } else {
-                    showToast(data.error || 'Signup failed', 'error'); 
-                } 
-            })
-            .catch(() => { 
-                textSpan.textContent = originalText;
-                btn.disabled = false;
-                showToast('Network error', 'error'); 
-            });
-        });
-
-        // ============================================================
-        // NOTIFICATION COUNTS
-        // ============================================================
-        function loadMessageCount() {
-            const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
-            if (!isLoggedIn) { 
-                const badge = document.getElementById('messageBadge'); 
-                if (badge) { 
-                    badge.classList.remove('show');
-                    badge.textContent = '0'; 
-                } 
-                return; 
-            }
-            fetch('/api/conversations/unread-count/')
-                .then(res => { if (!res.ok) throw new Error('Failed to fetch message count'); return res.json(); })
-                .then(data => {
-                    const badge = document.getElementById('messageBadge');
-                    if (badge) {
-                        if (data && data.success && typeof data.unread_count === 'number' && data.unread_count > 0) { 
-                            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
-                            badge.classList.add('show'); 
-                        } else { 
-                            badge.classList.remove('show');
-                            badge.textContent = '0'; 
-                        }
-                    }
-                })
-                .catch(error => { 
-                    console.error('Error loading message count:', error); 
-                    const badge = document.getElementById('messageBadge'); 
-                    if (badge) { 
-                        badge.classList.remove('show');
-                        badge.textContent = '0'; 
-                    } 
-                });
-        }
-
-        function loadNotificationCount() {
-            const isLoggedIn = document.querySelector('[data-user-logged-in]')?.dataset.userLoggedIn === 'true';
-            if (!isLoggedIn) { 
-                const badge = document.getElementById('notificationBadge'); 
-                if (badge) { 
-                    badge.style.display = 'none';
-                    badge.textContent = '0'; 
-                } 
-                return; 
-            }
-            fetch('/api/notifications/unread-count/')
-                .then(res => { if (!res.ok) throw new Error('Failed to fetch notification count'); return res.json(); })
-                .then(data => {
-                    if (data && data.success && typeof data.count === 'number') {
-                        const badge = document.getElementById('notificationBadge');
-                        if (badge) {
-                            if (data.count > 0) { 
-                                badge.textContent = data.count > 99 ? '99+' : data.count;
-                                badge.style.display = 'block'; 
-                            } else { 
-                                badge.style.display = 'none';
-                                badge.textContent = '0'; 
-                            }
-                        }
-                    }
-                })
-                .catch(error => { console.error('Error loading notification count:', error); });
-        }
-
-        // ============================================================
-        // BOTTOM NAV SCROLL HIDE
-        // ============================================================
-        let lastScrollY = window.scrollY;
-        let isNavHidden = false;
-        const bottomNav = document.getElementById('mobileBottomNav');
-        
-        window.addEventListener('scroll', function() {
-            if (!bottomNav) return;
-            const currentScrollY = window.scrollY;
-            if (currentScrollY <= 0) { 
-                bottomNav.classList.remove('hidden');
-                isNavHidden = false; 
-            } else if (currentScrollY > lastScrollY + 10 && !isNavHidden) { 
-                bottomNav.classList.add('hidden');
-                isNavHidden = true; 
-            } else if (currentScrollY < lastScrollY - 10 && isNavHidden) { 
-                bottomNav.classList.remove('hidden');
-                isNavHidden = false; 
-            }
-            lastScrollY = currentScrollY;
-        }, { passive: true });
-
-        // ============================================================
-        // ============================================================
-        // ============================================================
-        // EDUCATION FUNCTIONS - FIXED VERSION
-        // ============================================================
-        // ============================================================
-        // ============================================================
-        let allEducationItems = [];
-        let educationFilter = 'all';
-        let eduUploadType = 'school';
-        let isBusinessUser = false;
-
-        function checkEduUserType() {
-            const userBadge = document.querySelector('.user-badge.business');
-            const userType = document.querySelector('.user-badge')?.textContent?.toLowerCase() || '';
-            isBusinessUser = (userType.includes('business') || userType.includes('admin'));
-            const uploadZone = document.getElementById('eduUploadZone');
-            if (uploadZone) uploadZone.classList.toggle('hidden', !isBusinessUser);
-        }
-
-        function loadEducationContent() {
-            const container = document.getElementById('educationContainer');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="loading-spinner"></div>
-                    <p class="mt-2" style="font-size:13px;color:#999;">Loading education content...</p>
-                </div>
-            `;
-            
-            // Fetch all education data
-            Promise.all([
-                fetch('/api/education/bursaries/').then(r => r.json()).catch(() => ({ success: false, results: [] })),
-                fetch('/api/education/universities/').then(r => r.json()).catch(() => ({ success: false, results: [] })),
-                fetch('/api/education/schools/').then(r => r.json()).catch(() => ({ success: false, results: [] })),
-                fetch('/api/education/question-papers/').then(r => r.json()).catch(() => ({ success: false, results: [] }))
-            ]).then(([bursariesData, universitiesData, schoolsData, papersData]) => {
-                
-                // Log the data to see what we're getting
-                console.log('Education Data Loaded:', {
-                    bursaries: bursariesData,
-                    universities: universitiesData,
-                    schools: schoolsData,
-                    papers: papersData
-                });
-                
-                const items = [];
-                
-                // ===== PROCESS BURSARIES =====
-                // Support both paginated (results) and non-paginated (bursaries) responses
-                let bursaries = bursariesData.bursaries || bursariesData.results || [];
-                if (Array.isArray(bursaries) && bursaries.length > 0) {
-                    bursaries.forEach(b => {
-                        items.push({
-                            type: 'bursary',
-                            id: b.id,
-                            title: b.title || 'Bursary',
-                            description: b.description || '',
-                            institution: b.provider || 'Unknown Provider',
-                            image: b.image || b.provider_logo || null,
-                            badge: '💰 Bursary',
-                            amount: b.amount ? `R${Number(b.amount).toLocaleString()}` : 'Varies',
-                            closing_date: b.closing_date || null,
-                            level: b.level || 'All Levels',
-                            field: b.field_of_study || 'Various',
-                            link: b.application_link || null,
-                            is_featured: b.is_featured || false,
-                            created_at: b.created_at || new Date().toISOString(),
-                            likes: b.likes_count || 0,
-                            comments: b.comments_count || 0
-                        });
-                    });
-                }
-                
-                // ===== PROCESS UNIVERSITIES =====
-                let universities = universitiesData.universities || universitiesData.results || [];
-                if (Array.isArray(universities) && universities.length > 0) {
-                    universities.forEach(u => {
-                        items.push({
-                            type: 'university',
-                            id: u.id,
-                            title: u.name || 'University',
-                            description: u.description || '',
-                            institution: u.city || u.province || '',
-                            image: u.logo || u.image || null,
-                            badge: '🏛️ University',
-                            province: u.province || '',
-                            city: u.city || '',
-                            website: u.website || '',
-                            is_featured: u.is_featured || false,
-                            created_at: u.created_at || new Date().toISOString(),
-                            likes: u.likes_count || 0,
-                            comments: u.comments_count || 0
-                        });
-                    });
-                }
-                
-                // ===== PROCESS SCHOOLS =====
-                let schools = schoolsData.schools || schoolsData.results || [];
-                if (Array.isArray(schools) && schools.length > 0) {
-                    schools.forEach(s => {
-                        items.push({
-                            type: 'school',
-                            id: s.id,
-                            title: s.name || 'School',
-                            description: s.address || '',
-                            institution: `${s.city || ''}, ${s.province || ''}`,
-                            image: s.logo || s.image || null,
-                            badge: '🏫 School',
-                            school_type: s.school_type || 'Secondary',
-                            emis: s.emis_number || '',
-                            province: s.province || '',
-                            city: s.city || '',
-                            is_featured: s.is_featured || false,
-                            created_at: s.created_at || new Date().toISOString(),
-                            likes: s.likes_count || 0,
-                            comments: s.comments_count || 0
-                        });
-                    });
-                }
-                
-                // ===== PROCESS QUESTION PAPERS =====
-                let papers = papersData.papers || papersData.results || [];
-                if (Array.isArray(papers) && papers.length > 0) {
-                    papers.forEach(p => {
-                        const gradeName = p.grade?.name || '';
-                        const subjectName = p.subject?.name || '';
-                        items.push({
-                            type: 'paper',
-                            id: p.id,
-                            title: p.title || 'Question Paper',
-                            description: `${gradeName} - ${subjectName}`,
-                            institution: p.year || '',
-                            image: null,
-                            badge: '📄 Paper',
-                            grade: gradeName,
-                            subject: subjectName,
-                            year: p.year || '',
-                            file_url: p.file || null,
-                            file_name: p.file_name || '',
-                            is_public: p.is_public || false,
-                            created_at: p.created_at || new Date().toISOString(),
-                            likes: p.likes_count || 0,
-                            comments: p.comments_count || 0
-                        });
-                    });
-                }
-                
-                // Store all items
-                allEducationItems = items;
-                
-                // Log the processed items
-                console.log('Processed Education Items:', {
-                    total: items.length,
-                    bursaries: items.filter(i => i.type === 'bursary').length,
-                    universities: items.filter(i => i.type === 'university').length,
-                    schools: items.filter(i => i.type === 'school').length,
-                    papers: items.filter(i => i.type === 'paper').length
-                });
-                
-                // Render mini scroll (for home page)
-                renderEduMiniScroll(items.slice(0, 8));
-                
-                // Render main education items
-                renderEducationItems(items, container);
-                checkEduUserType();
-                
-            }).catch((error) => {
-                console.error('Error loading education content:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                        <h4 style="font-size:15px;">Error Loading Education Content</h4>
-                        <p style="font-size:12px;color:#999;">Please refresh the page</p>
-                        <p style="font-size:11px;color:#999;margin-top:4px;">${error.message || 'Unknown error'}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function renderEduMiniScroll(items) {
-            const container = document.getElementById('eduMiniScroll');
-            if (!container) return;
-            
-            if (!items || items.length === 0) {
-                container.innerHTML = `
-                    <div style="width:100%;text-align:center;padding:10px 0;color:rgba(0,0,0,0.2);font-size:11px;">
-                        <i class="fas fa-graduation-cap" style="font-size:16px;display:block;margin-bottom:4px;"></i>
-                        No education content yet
-                    </div>
-                `;
-                return;
-            }
-            
-            const iconMap = {
-                'bursary': 'fa-hand-holding-heart',
-                'university': 'fa-university',
-                'school': 'fa-school',
-                'paper': 'fa-file-pdf'
-            };
-            const badgeMap = {
-                'bursary': '💰',
-                'university': '🏛️',
-                'school': '🏫',
-                'paper': '📄'
-            };
-            
-            container.innerHTML = items.map(item => {
-                const icon = iconMap[item.type] || 'fa-graduation-cap';
-                const badge = badgeMap[item.type] || '📚';
-                
-                return `
-                    <div class="edu-mini-card" onclick="switchTab('education')">
-                        <div class="edu-thumb">
-                            ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.thumb-placeholder').style.display='flex';">` : ''}
-                            <div class="thumb-placeholder" style="${item.image ? 'display:none;' : 'display:flex;'}">
-                                <i class="fas ${icon}"></i>
-                            </div>
-                            <span class="mini-badge">${badge}</span>
-                        </div>
-                        <div class="edu-info">
-                            <div class="edu-title">${escapeHtml(item.title.substring(0, 20))}</div>
-                            <div class="edu-sub">${escapeHtml((item.institution || '').substring(0, 25))}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderEducationItems(items, container) {
-            if (!container) container = document.getElementById('educationContainer');
-            if (!container) return;
-            
-            // Apply filters
-            let filtered = items;
-            
-            if (educationFilter !== 'all') {
-                filtered = items.filter(item => item.type === educationFilter);
-            }
-            
-            const searchTerm = document.getElementById('eduSearchInput')?.value?.toLowerCase() || '';
-            if (searchTerm) {
-                filtered = filtered.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm) || 
-                    (item.institution || '').toLowerCase().includes(searchTerm) || 
-                    (item.description || '').toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h4 style="font-size:15px;">No Education Content</h4>
-                        <p style="font-size:12px;color:#999;">${isBusinessUser ? 'Click the buttons above to add content' : 'Check back later for new content'}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Group by type
-            const grouped = {
-                bursary: filtered.filter(i => i.type === 'bursary'),
-                university: filtered.filter(i => i.type === 'university'),
-                school: filtered.filter(i => i.type === 'school'),
-                paper: filtered.filter(i => i.type === 'paper')
-            };
-            
-            const typeLabels = {
-                bursary: { icon: '💰', label: 'Bursaries' },
-                university: { icon: '🏛️', label: 'Universities' },
-                school: { icon: '🏫', label: 'Schools' },
-                paper: { icon: '📄', label: 'Question Papers' }
-            };
-            
-            let html = '';
-            
-            for (const [type, typeItems] of Object.entries(grouped)) {
-                if (typeItems.length === 0) continue;
-                
-                const label = typeLabels[type] || { icon: '📚', label: type };
-                
-                html += `
-                    <div style="margin-bottom:12px;">
-                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:0 4px;">
-                            <span style="font-size:13px;font-weight:600;color:#191919;">${label.icon} ${label.label}</span>
-                            <span style="font-size:9px;color:#999;background:rgba(0,0,0,0.04);padding:0 8px;border-radius:10px;">${typeItems.length}</span>
-                        </div>
-                `;
-                
-                if (type === 'paper') {
-                    // Papers in list view
-                    typeItems.forEach(p => {
-                        html += `
-                            <div class="edu-paper-item" data-edu-type="paper" data-edu-id="${p.id}">
-                                <div class="paper-icon"><i class="fas fa-file-pdf"></i></div>
-                                <div class="paper-info">
-                                    <div class="paper-title">${escapeHtml(p.title)}</div>
-                                    <div class="paper-meta">${escapeHtml(p.grade || '')} ${p.subject ? '· ' + escapeHtml(p.subject) : ''} ${p.year ? '· ' + p.year : ''}</div>
-                                </div>
-                                ${p.file_url ? `<button class="paper-dl" onclick="event.stopPropagation();downloadPaper('${p.id}')"><i class="fas fa-download"></i></button>` : ''}
-                            </div>
-                        `;
-                    });
-                } else {
-                    // Cards for bursaries, universities, schools
-                    typeItems.forEach(item => {
-                        const priceDisplay = item.amount || (item.type === 'university' ? 'Apply Now' : '');
-                        const dateDisplay = item.closing_date ? `Closes: ${new Date(item.closing_date).toLocaleDateString()}` : '';
-                        const iconMap = {
-                            'bursary': 'fa-hand-holding-heart',
-                            'university': 'fa-university',
-                            'school': 'fa-school'
-                        };
-                        const icon = iconMap[item.type] || 'fa-graduation-cap';
-                        
-                        html += `
-                            <div class="edu-card" data-edu-type="${item.type}" data-edu-id="${item.id}" onclick="viewEducationItem('${item.type}', '${item.id}')">
-                                <div class="property-image-container" style="aspect-ratio:16/9;background:linear-gradient(135deg,#f8f0e7,#e8dcc8);">
-                                    ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f8f0e7,#e8dcc8)';">` : 
-                                    `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.1);font-size:40px;"><i class="fas ${icon}"></i></div>`}
-                                    <span class="edu-badge ${item.type}">${item.badge}</span>
-                                </div>
-                                <div class="edu-content">
-                                    <div class="edu-title">
-                                        <span class="edu-icon"><i class="fas ${icon}" style="color:#f7971e;margin-right:6px;"></i></span>
-                                        ${escapeHtml(item.title)}
-                                    </div>
-                                    <div class="edu-meta">
-                                        <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(item.institution || 'Various')}</span>
-                                        ${dateDisplay ? `<span><i class="fas fa-calendar-alt"></i> ${dateDisplay}</span>` : ''}
-                                        ${priceDisplay ? `<span><i class="fas fa-tag"></i> ${escapeHtml(priceDisplay)}</span>` : ''}
-                                    </div>
-                                    <div class="edu-description">${escapeHtml((item.description || '').substring(0, 100))}${(item.description || '').length > 100 ? '...' : ''}</div>
-                                </div>
-                                <div class="edu-footer">
-                                    <span class="edu-tag"><i class="fas fa-heart"></i> ${item.likes || 0}</span>
-                                    <div class="edu-actions">
-                                        <button class="btn-edu-secondary" onclick="event.stopPropagation();shareEducationItem('${item.type}', '${item.id}', '${escapeHtml(item.title.replace(/'/g, "\\'"))}')">
-                                            <i class="fas fa-share-alt"></i> Share
-                                        </button>
-                                        <button class="btn-edu-primary" onclick="event.stopPropagation();viewEducationItem('${item.type}', '${item.id}')">
-                                            ${item.type === 'bursary' ? 'Apply' : 'View'} <i class="fas fa-arrow-right" style="font-size:8px;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                
-                html += `</div>`;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function filterEducation(filter, btn) {
-            educationFilter = filter;
-            document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            renderEducationItems(allEducationItems);
-        }
-
-        function searchEducation(query) {
-            renderEducationItems(allEducationItems);
-        }
-
-        function viewEducationItem(type, id) {
-            const typeMap = {
-                'bursary': 'bursary',
-                'university': 'university',
-                'school': 'school',
-                'paper': 'paper'
-            };
-            const urlType = typeMap[type] || type;
-            window.location.href = `/education/${urlType}/${id}/`;
-        }
-
-        function shareEducationItem(type, id, title) {
-            const url = `${window.location.origin}/education/${type}/${id}/`;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(`${title} - ${url}`)
-                    .then(() => showToast('Link copied!', 'success'))
-                    .catch(() => {});
-            } else {
-                showToast('Share: ' + url, 'info');
-            }
-        }
-
-        function downloadPaper(id) {
-            showToast('Downloading paper...', 'info');
-            window.location.href = `/api/education/question-papers/${id}/download/`;
-        }
-
-        // ============================================================
-        // SHOW EDU UPLOAD MODAL
-        // ============================================================
-        function showEduUpload(type) {
-            eduUploadType = type;
-            const modal = document.getElementById('eduUploadModal');
-            const title = document.getElementById('eduUploadTitle');
-            const fields = document.getElementById('eduUploadFields');
-            const typeLabels = { 
-                school: '🏫 Add School', 
-                bursary: '💰 Add Bursary', 
-                university: '🏛️ Add University',
-                paper: '📄 Upload Question Paper' 
-            };
-            title.textContent = typeLabels[type] || 'Add Education Content';
-            
-            let html = '';
-            if (type === 'school') {
-                html = `
-                    <div class="mb-2"><label class="form-label">School Name *</label><input type="text" name="name" class="form-control" required></div>
-                    <div class="mb-2"><label class="form-label">EMIS Number</label><input type="text" name="emis_number" class="form-control"></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">Province</label><input type="text" name="province" class="form-control"></div></div><div class="col-6"><div class="mb-2"><label class="form-label">City</label><input type="text" name="city" class="form-control"></div></div></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">District</label><input type="text" name="district" class="form-control"></div></div><div class="col-6"><div class="mb-2"><label class="form-label">School Type</label><select name="school_type" class="form-control"><option value="primary">Primary School</option><option value="secondary" selected>Secondary School</option><option value="combined">Combined School</option><option value="special">Special School</option><option value="early_childhood">Early Childhood</option><option value="other">Other</option></select></div></div></div>
-                    <div class="mb-2"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2"></textarea></div>
-                    <div class="mb-2"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
-                    <div class="mb-2"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
-                    <div class="mb-2"><label class="form-label">Website</label><input type="url" name="website" class="form-control" placeholder="https://"></div>
-                    <div class="mb-2"><label class="form-label">Principal Name</label><input type="text" name="principal_name" class="form-control"></div>
-                    <div class="mb-2"><label class="form-label">School Logo</label><input type="file" name="logo" accept="image/*" class="form-control"></div>
-                `;
-            } else if (type === 'bursary') {
-                html = `
-                    <div class="mb-2"><label class="form-label">Bursary Title *</label><input type="text" name="title" class="form-control" required></div>
-                    <div class="mb-2"><label class="form-label">Provider *</label><input type="text" name="provider" class="form-control" required></div>
-                    <div class="mb-2"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">Amount</label><input type="text" name="amount" class="form-control" placeholder="e.g. R50,000"></div></div><div class="col-6"><div class="mb-2"><label class="form-label">Closing Date</label><input type="date" name="closing_date" class="form-control"></div></div></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">Level</label><select name="level" class="form-control"><option value="all">All Levels</option><option value="high_school">High School</option><option value="undergraduate">Undergraduate</option><option value="postgraduate">Postgraduate</option></select></div></div><div class="col-6"><div class="mb-2"><label class="form-label">Field of Study</label><input type="text" name="field_of_study" class="form-control"></div></div></div>
-                    <div class="mb-2"><label class="form-label">Application Link</label><input type="url" name="application_link" class="form-control" placeholder="https://"></div>
-                    <div class="mb-2"><label class="form-label">Image</label><input type="file" name="image" accept="image/*" class="form-control"></div>
-                    <div class="mb-2"><label class="form-label">Provider Logo</label><input type="file" name="provider_logo" accept="image/*" class="form-control"></div>
-                `;
-            } else if (type === 'university') {
-                html = `
-                    <div class="mb-2"><label class="form-label">University Name *</label><input type="text" name="name" class="form-control" required></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">Province</label><input type="text" name="province" class="form-control"></div></div><div class="col-6"><div class="mb-2"><label class="form-label">City</label><input type="text" name="city" class="form-control"></div></div></div>
-                    <div class="mb-2"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
-                    <div class="mb-2"><label class="form-label">Website</label><input type="url" name="website" class="form-control" placeholder="https://"></div>
-                    <div class="mb-2"><label class="form-label">Logo</label><input type="file" name="logo" accept="image/*" class="form-control"></div>
-                `;
-            } else if (type === 'paper') {
-                html = `
-                    <div class="mb-2"><label class="form-label">Paper Title *</label><input type="text" name="title" class="form-control" required></div>
-                    <div class="row"><div class="col-6"><div class="mb-2"><label class="form-label">Grade *</label><select name="grade_id" class="form-control" required><option value="">Select Grade</option></select></div></div><div class="col-6"><div class="mb-2"><label class="form-label">Subject *</label><select name="subject_id" class="form-control" required><option value="">Select Subject</option></select></div></div></div>
-                    <div class="mb-2"><label class="form-label">Year *</label><input type="number" name="year" class="form-control" required min="2000" max="2026"></div>
-                    <div class="mb-2"><label class="form-label">PDF File *</label><input type="file" name="file" accept=".pdf" class="form-control" required></div>
-                    <div class="form-check"><input type="checkbox" name="is_public" class="form-check-input" checked><label class="form-check-label">Make Public</label></div>
-                `;
-            }
-            fields.innerHTML = html;
-            modal.classList.add('show');
-        }
-
-        function closeEduUploadModal() { 
-            document.getElementById('eduUploadModal').classList.remove('show'); 
-        }
-
-        function submitEduUpload() {
-            const form = document.getElementById('eduUploadForm');
-            const formData = new FormData(form);
-            const btn = document.querySelector('#eduUploadModal .btn-primary');
-            const original = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;"></span>';
-            btn.disabled = true;
-            
-            let endpoint = '';
-            switch (eduUploadType) {
-                case 'school': endpoint = '/api/education/schools/'; break;
-                case 'bursary': endpoint = '/api/education/bursaries/'; break;
-                case 'university': endpoint = '/api/education/universities/'; break;
-                case 'paper': endpoint = '/api/education/question-papers/'; break;
-                default: endpoint = '/api/education/schools/';
-            }
-            
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.innerHTML = original;
-                btn.disabled = false;
-                if (data.id || data.name || data.title) { 
-                    closeEduUploadModal();
-                    showToast('✅ Upload successful!', 'success');
-                    loadEducationContent(); 
-                } else {
-                    showToast('Upload failed: ' + (data.error || 'Unknown error'), 'error');
-                }
-            })
-            .catch(() => { 
-                btn.innerHTML = original;
-                btn.disabled = false;
-                showToast('Network error. Please try again.', 'error');
-            });
-        }
-
-        // ============================================================
-        // INIT
-        // ============================================================
+        /* ============================================================
+           INIT
+           ============================================================ */
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initGoogleSignIn, 1000);
-            loadNotificationCount();
-            loadMessageCount();
-            
-            // Load education content
-            setTimeout(loadEducationContent, 500);
-            
-            // Refresh counts periodically
-            setInterval(() => { loadNotificationCount(); loadMessageCount(); }, 60000);
-        });
-
-        // Re-initialize Google Sign-In when modals open
-        document.addEventListener('shown.bs.modal', function(event) {
-            if (['loginModal', 'signupModal', 'businessSignupModal'].includes(event.target.id)) {
-                setTimeout(initGoogleSignIn, 300);
+            // Load notification & message badges
+            if (isLoggedIn) {
+                fetch('/api/conversations/unread-count/').then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+                    const badge = document.getElementById('messageBadge');
+                    if (data?.success && data.unread_count > 0) {
+                        badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                        badge.classList.add('show');
+                    }
+                }).catch(()=>{});
+                fetch('/api/notifications/unread-count/').then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+                    const badge = document.getElementById('notificationBadge');
+                    if (data?.success && data.count > 0) {
+                        badge.textContent = data.count > 99 ? '99+' : data.count;
+                        badge.classList.add('show');
+                    }
+                }).catch(()=>{});
             }
         });
-        
-        window.onGoogleLibraryLoad = function() { initGoogleSignIn(); };
     </script>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>
