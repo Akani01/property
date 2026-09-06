@@ -358,15 +358,98 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .loc-head h3{font-size:clamp(16px,2.6vw,19px); font-weight:600; display:flex; align-items:center; gap:8px;}
 .loc-head h3 i{color:var(--jade); font-size:.85em;}
 .loc-head .count{font-size:12px; color:var(--ink-faint); font-weight:500;}
-.prop-row{display:flex; gap:14px; overflow-x:auto; padding:2px 2px 12px; scroll-snap-type:x proximity;}
+ .prop-row{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  padding:2px 2px 12px;
+  scroll-snap-type:x proximity;
+  align-items:stretch;
+  scrollbar-width:thin;
+}
+.prop-row::-webkit-scrollbar{height:5px;}
+.prop-row::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
 
 .prop-card{
-  flex:0 0 232px; width:232px; scroll-snap-align:start; background:var(--surface); border:1px solid var(--line);
-  border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow-sm); display:flex; flex-direction:column;
+  flex:0 0 232px;
+  width:232px;
+  min-width:0;
+  scroll-snap-align:start;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  display:flex;
+  flex-direction:column;
   transition:transform .18s var(--ease), box-shadow .18s var(--ease);
 }
 .prop-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-md);}
-@media (max-width:576px){.prop-card{flex:0 0 178px; width:178px;}}
+
+/* One property at an address gets a dedicated fluid layout. */
+.prop-row.single-property{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  overflow:visible;
+  scroll-snap-type:none;
+}
+.prop-row.single-property .prop-card{
+  width:min(100%,560px);
+  max-width:560px;
+  flex:1 1 auto;
+  min-width:0;
+  scroll-snap-align:none;
+}
+.prop-row.single-property .prop-img-wrap{aspect-ratio:16/9;}
+.prop-row.single-property .prop-body{
+  padding:14px 16px 15px;
+  gap:5px;
+}
+.prop-row.single-property .prop-title{
+  font-size:clamp(15px,2vw,18px);
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.25;
+}
+.prop-row.single-property .prop-loc{
+  font-size:12px;
+  flex-wrap:wrap;
+}
+.prop-row.single-property .prop-price{font-size:15px;}
+.prop-row.single-property .prop-meta{
+  gap:14px;
+  flex-wrap:wrap;
+}
+.prop-row.single-property .prop-actions{gap:7px;}
+.prop-row.single-property .pill-btn{
+  min-height:36px;
+  font-size:11px;
+}
+
+@media (max-width:576px){
+  .prop-row{gap:10px;}
+  .prop-card{
+    flex:0 0 82vw;
+    width:82vw;
+    max-width:330px;
+  }
+  .prop-row.single-property{
+    display:block;
+    overflow:visible;
+    padding-left:0;
+    padding-right:0;
+  }
+  .prop-row.single-property .prop-card{
+    width:100%;
+    max-width:none;
+  }
+  .prop-row.single-property .prop-img-wrap{aspect-ratio:16/10;}
+}
+@media (min-width:577px) and (max-width:999px){
+  .prop-row.single-property .prop-card{width:min(100%,520px);}
+}
+
 
 .prop-img-wrap{position:relative; width:100%; aspect-ratio:1/1; background:var(--jade-wash); cursor:pointer; overflow:hidden;}
 .prop-img-wrap img{width:100%; height:100%; object-fit:cover; transition:transform .4s;}
@@ -577,6 +660,33 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .edu-card-foot{padding:8px 15px 13px; display:flex; gap:8px; align-items:center;}
 .edu-go-btn{flex:1; padding:9px; border-radius:var(--radius-sm); background:var(--jade); color:#fff; border:none; font-weight:600; font-size:12px; cursor:pointer;}
 .edu-share-btn{width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--ink-faint); cursor:pointer;}
+/* Fluid education/school cards */
+.edu-group-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  width:100%;
+}
+.edu-group-grid > *{min-width:0;}
+
+@media (max-width:1100px){
+  .edu-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:640px){
+  .edu-group-grid{
+    grid-template-columns:minmax(0,1fr);
+    gap:12px;
+  }
+  .edu-card,.paper-card{min-width:0; width:100%;}
+  .edu-card-img{height:clamp(145px,45vw,210px);}
+  .edu-card-body{padding:12px 13px 8px;}
+  .edu-card-title{font-size:14px;}
+  .edu-card-desc{font-size:12px;}
+  .edu-card-foot{padding:8px 13px 12px;}
+}
+@media (min-width:641px) and (max-width:999px){
+  .edu-card-img{height:clamp(165px,24vw,210px);}
+}
 
 .paper-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:transform .18s;}
 .paper-card:hover{transform:translateY(-3px);}
@@ -721,6 +831,10 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 #eduUploadModal #eduUploadFields input[type="file"].form-control{padding:8px 10px; min-height:42px;}
 #eduUploadModal .modal-box-foot .btn-jade{min-width:110px; min-height:38px; justify-content:center;}
 @media (max-width:640px){
+  #eduUploadModal{
+    padding:8px;
+    align-items:center;
+  }
   #eduUploadModal .modal-box{
     width:calc(100vw - 20px);
     max-height:90vh;
@@ -740,6 +854,23 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   #eduUploadModal #eduUploadFields > .mb-2:has(input[type="url"]){grid-column:1;}
   #eduUploadModal #eduUploadFields > .row{grid-template-columns:1fr; gap:12px;}
   #eduUploadModal .modal-box-body{padding:15px;}
+}
+@media (max-width:420px){
+  #eduUploadModal{padding:6px;}
+  #eduUploadModal .modal-box{
+    width:100%;
+    height:min(94vh,760px);
+    max-height:94vh;
+    border-radius:16px;
+  }
+  #eduUploadModal .modal-box-head{padding:12px 14px;}
+  #eduUploadModal .modal-box-body{padding:12px;}
+  #eduUploadModal .modal-box-foot{
+    padding:10px 12px;
+    gap:6px;
+  }
+  #eduUploadModal .modal-box-foot .btn-jade{width:100%;}
+  #eduUploadModal #eduUploadFields{gap:10px;}
 }
 .x-close{background:none; border:none; font-size:20px; color:var(--ink-faint); cursor:pointer;}
 .post-textarea{width:100%; min-height:90px; border:none; resize:none; font-size:14.5px; outline:none; font-family:inherit;}
@@ -1766,7 +1897,7 @@ function renderPropertiesByLocation(properties, container){
   let html = '';
   Object.keys(grouped).sort().forEach(city=>{
     const props = grouped[city];
-    html += `<div class="loc-section"><div class="loc-head"><h3><i class="fas fa-location-dot"></i> ${escapeHtml(city)}</h3><span class="count">${props.length} ${props.length===1?'property':'properties'}</span></div><div class="prop-row">`;
+    html += `<div class="loc-section"><div class="loc-head"><h3><i class="fas fa-location-dot"></i> ${escapeHtml(city)}</h3><span class="count">${props.length} ${props.length===1?'property':'properties'}</span></div><div class="prop-row ${props.length===1?'single-property':''}">`;
     props.forEach(p=>html += createPropertyCardHTML(p));
     if (props.length >= 3) html += renderAdCard();
     html += `</div></div>`;
@@ -2475,7 +2606,7 @@ function renderEducationItems(items, container){
     if (!typeItems.length) return;
     const label = labels[type];
     html += `<div style="margin-bottom:24px;"><div class="edu-group-head"><span class="badge-icon">${label.icon}</span><span class="name">${label.name}</span><span class="count">${typeItems.length}</span></div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;">`;
+      <div class="edu-group-grid">`;
     typeItems.forEach(item=>{
       if (type === 'paper'){
         html += `<div class="paper-card" onclick="viewEducationItem('paper','${item.id}')">
