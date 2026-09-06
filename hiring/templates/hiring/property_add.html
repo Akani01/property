@@ -362,6 +362,71 @@
         @media (max-width: 768px) { .form-row-3 { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 576px) { .form-row-3 { grid-template-columns: 1fr; } }
 
+        /* ===== PURPOSE SELECTOR ===== */
+        .purpose-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .purpose-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .purpose-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .purpose-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .purpose-btn .badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            color: inherit;
+        }
+
+        .purpose-btn.active .badge {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .purpose-description {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: var(--light-gray);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* ===== DYNAMIC FIELDS ===== */
+        .dynamic-section {
+            transition: var(--transition);
+        }
+
+        .dynamic-section.hidden {
+            display: none !important;
+        }
+
         /* ===== FILE UPLOAD ===== */
         .file-upload-area {
             border: 2px dashed var(--border);
@@ -923,6 +988,8 @@
             .features-header { flex-direction: column; align-items: stretch; }
             .feature-search { min-width: auto; width: 100%; }
             .location-preview { height: 150px; }
+            .purpose-selector { flex-direction: column; }
+            .purpose-btn { width: 100%; justify-content: center; }
         }
 
         /* ===== UTILITIES ===== */
@@ -1034,6 +1101,23 @@
         <form id="propertyForm" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
 
+            <!-- ===== PURPOSE SELECTOR ===== -->
+            <div class="form-card">
+                <div class="card-header"><i class="fas fa-bullseye"></i> Property Purpose</div>
+                <div class="card-body">
+                    <div class="purpose-selector" id="purposeSelector">
+                        <div class="text-muted" style="padding:20px;text-align:center;width:100%;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading purposes...
+                        </div>
+                    </div>
+                    <div class="purpose-description" id="purposeDescription">
+                        Select a purpose above to see relevant fields.
+                    </div>
+                    <input type="hidden" name="property_purpose" id="selectedPurpose" value="">
+                    <input type="hidden" name="property_category" id="propertyCategory" value="">
+                </div>
+            </div>
+
             <!-- Basic Information -->
             <div class="form-card">
                 <div class="card-header"><i class="fas fa-info-circle"></i> Basic Information</div>
@@ -1076,10 +1160,56 @@
                             <div class="help-text">Select from list or click + to add a new type</div>
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control" name="status">
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if value == 'available' %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bedrooms</label>
+                            <input type="number" class="form-control" name="bedrooms" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bathrooms</label>
+                            <input type="number" class="form-control" name="bathrooms" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Garages</label>
+                            <input type="number" class="form-control" name="garages" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Base Price <span class="required">*</span></label>
+                            <input type="number" class="form-control" name="base_price" id="basePrice" placeholder="e.g., 1000000" step="0.01" required>
+                            <div class="help-text">Enter the base price for your property</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select class="form-control" name="price_currency">
+                                <option value="ZAR">ZAR - South African Rand</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- ===== LOCATION WITH AUTO-GEOCODE ===== -->
+            <!-- ===== LOCATION ===== -->
             <div class="form-card">
                 <div class="card-header"><i class="fas fa-map-marker-alt"></i> Location <span style="font-weight:400;font-size:13px;color:var(--gray);">(We'll find the coordinates automatically)</span></div>
                 <div class="card-body">
@@ -1149,7 +1279,6 @@
                             <span id="locationFoundText">Location found!</span>
                         </div>
 
-                        <!-- Hidden fields for coordinates -->
                         <input type="hidden" name="latitude" id="latitude" value="">
                         <input type="hidden" name="longitude" id="longitude" value="">
                         <input type="hidden" name="formatted_address" id="formattedAddress" value="">
@@ -1158,111 +1287,16 @@
                 </div>
             </div>
 
-            <!-- Property Details -->
-            <div class="form-card">
-                <div class="card-header"><i class="fas fa-home"></i> Property Details</div>
-                <div class="card-body">
-                    <div class="form-row-3">
-                        <div class="form-group">
-                            <label>Bedrooms</label>
-                            <input type="number" class="form-control" name="bedrooms" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Bathrooms</label>
-                            <input type="number" class="form-control" name="bathrooms" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Garages</label>
-                            <input type="number" class="form-control" name="garages" min="0" value="0">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Total Area (m²)</label>
-                            <input type="number" class="form-control" name="total_area" min="0" step="0.01" placeholder="e.g., 150">
-                        </div>
-                        <div class="form-group">
-                            <label>Parking Spaces</label>
-                            <input type="number" class="form-control" name="parking_spaces" min="0" value="0">
-                        </div>
+            <!-- ===== DYNAMIC FIELDS CONTAINER ===== -->
+            <div id="dynamicFieldsContainer">
+                <div class="form-card">
+                    <div class="card-body text-center text-muted">
+                        <i class="fas fa-info-circle"></i> Select a purpose above to see relevant fields.
                     </div>
                 </div>
             </div>
 
-            <!-- Pricing – ✅ FIXED: Base Price is now type="text" -->
-            <div class="form-card">
-                <div class="card-header"><i class="fas fa-tag"></i> Pricing & Status</div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Base Price <span class="required">*</span></label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   name="base_price" 
-                                   id="basePrice"
-                                   placeholder="e.g., R 1 000 000.50 or 1,250,000.75" 
-                                   required>
-                            <div class="help-text">
-                                <i class="fas fa-info-circle"></i> 
-                                You can enter prices with currency symbols (R, $, €), thousand separators (commas or spaces), and decimal commas (e.g., 1.000.000,50).
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Currency</label>
-                            <select class="form-control" name="price_currency">
-                                <option value="ZAR">ZAR - South African Rand</option>
-                                <option value="USD">USD - US Dollar</option>
-                                <option value="EUR">EUR - Euro</option>
-                                <option value="GBP">GBP - British Pound</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Booking Unit</label>
-                            <select class="form-control" name="booking_unit">
-                                <option value="day">Per Day</option>
-                                <option value="night">Per Night</option>
-                                <option value="week">Per Week</option>
-                                <option value="month">Per Month</option>
-                                <option value="hour">Per Hour</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Minimum Stay</label>
-                            <input type="number" class="form-control" name="minimum_stay" min="1" value="1">
-                            <div class="help-text">Minimum number of days/units for booking</div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select class="form-control" name="status">
-                                {% for value, label in status_choices %}
-                                <option value="{{ value }}" {% if value == 'available' %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Booking Mode</label>
-                            <select class="form-control" name="booking_mode">
-                                {% for value, label in booking_modes %}
-                                <option value="{{ value }}" {% if value == 'traditional' %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features -->
+            <!-- ===== FEATURES ===== -->
             <div class="form-card">
                 <div class="card-header"><i class="fas fa-star"></i> Features & Amenities</div>
                 <div class="card-body">
@@ -1292,7 +1326,7 @@
                 </div>
             </div>
 
-            <!-- Images -->
+            <!-- ===== IMAGES ===== -->
             <div class="form-card">
                 <div class="card-header"><i class="fas fa-images"></i> Images</div>
                 <div class="card-body">
@@ -1308,7 +1342,7 @@
                 </div>
             </div>
 
-            <!-- Form Actions -->
+            <!-- ===== FORM ACTIONS ===== -->
             <div class="form-actions">
                 <a href="/properties/manage/" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel
@@ -1325,7 +1359,8 @@
 
     </div>
 
-    <!-- ===== ADD NEW TYPE MODAL ===== -->
+    <!-- ===== MODALS ===== -->
+    <!-- Add Type Modal -->
     <div class="modal-overlay" id="addTypeModal">
         <div class="modal-box">
             <div class="modal-head">
@@ -1371,6 +1406,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // ============================================================
+        // CONFIGURATION – fetched from API
+        // ============================================================
+        let purposes = [];
+        let currentPurpose = '';
+        let fieldConfigs = {};
+
         // ============================================================
         // TOGGLE DROPDOWN
         // ============================================================
@@ -1421,7 +1463,266 @@
         }
 
         // ============================================================
-        // GEOCODING – Uses your /api/geocode-address/ endpoint
+        // LOAD PROPERTY PURPOSES
+        // ============================================================
+        function loadPurposes() {
+            console.log('🔄 Loading property purposes...');
+            
+            fetch('/api/property/purposes/')
+                .then(response => {
+                    console.log('📡 Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📦 Purposes data:', data);
+                    
+                    if (data.success) {
+                        purposes = data.purposes;
+                        console.log('✅ Purposes loaded:', purposes.length);
+                        renderPurposeButtons();
+                        
+                        if (purposes.length > 0) {
+                            selectPurpose(purposes[0].code);
+                        }
+                    } else {
+                        console.error('❌ Failed to load purposes:', data.error);
+                        showToast('Failed to load property purposes', 'error');
+                        document.getElementById('purposeSelector').innerHTML = `
+                            <div class="text-muted" style="padding:20px;text-align:center;width:100%;">
+                                <i class="fas fa-exclamation-circle"></i> Could not load purposes. Please refresh.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Network error loading purposes:', err);
+                    showToast('Network error loading purposes', 'error');
+                    document.getElementById('purposeSelector').innerHTML = `
+                        <div class="text-muted" style="padding:20px;text-align:center;width:100%;">
+                            <i class="fas fa-exclamation-triangle"></i> Error loading purposes. Check console.
+                        </div>
+                    `;
+                });
+        }
+
+        // ============================================================
+        // RENDER PURPOSE BUTTONS
+        // ============================================================
+        function renderPurposeButtons() {
+            const container = document.getElementById('purposeSelector');
+            if (!container) {
+                console.error('❌ purposeSelector element not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            purposes.forEach(p => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'purpose-btn';
+                btn.dataset.purpose = p.code;
+                btn.innerHTML = `
+                    <i class="${p.icon}"></i>
+                    ${p.label}
+                    <span class="badge" style="background:${p.badge_color};color:white;font-size:10px;padding:2px 10px;border-radius:12px;">
+                        ${p.code.replace('_', ' ')}
+                    </span>
+                `;
+                btn.onclick = () => selectPurpose(p.code);
+                container.appendChild(btn);
+            });
+            
+            console.log('✅ Purpose buttons rendered:', purposes.length);
+        }
+
+        // ============================================================
+        // SELECT PURPOSE
+        // ============================================================
+        function selectPurpose(purposeCode) {
+            console.log('🎯 Selecting purpose:', purposeCode);
+            currentPurpose = purposeCode;
+            document.getElementById('selectedPurpose').value = purposeCode;
+            
+            document.querySelectorAll('.purpose-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.purpose === purposeCode);
+            });
+
+            loadPurposeFields(purposeCode);
+        }
+
+        // ============================================================
+        // LOAD PURPOSE FIELDS
+        // ============================================================
+        function loadPurposeFields(purposeCode) {
+            console.log('📥 Loading fields for:', purposeCode);
+            
+            const url = `/api/property/purpose/${purposeCode}/fields/`;
+            console.log('🔗 Fetching:', url);
+            
+            fetch(url)
+                .then(response => {
+                    console.log('📡 Fields response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📦 Fields data:', data);
+                    
+                    if (data.success) {
+                        fieldConfigs[purposeCode] = data;
+                        renderDynamicFields(data);
+                        
+                        const desc = document.getElementById('purposeDescription');
+                        if (desc) {
+                            desc.textContent = data.config.description || 'Select a purpose above to see relevant fields.';
+                        }
+                        
+                        console.log('✅ Fields loaded successfully for:', purposeCode);
+                    } else {
+                        console.error('❌ Failed to load fields:', data.error);
+                        showToast('Failed to load fields for this purpose', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Network error loading fields:', err);
+                    showToast('Network error loading fields', 'error');
+                });
+        }
+
+        // ============================================================
+        // RENDER DYNAMIC FIELDS
+        // ============================================================
+        function renderDynamicFields(config) {
+            console.log('🎨 Rendering fields for:', config.purpose);
+            console.log('📋 Fields data:', config.fields);
+            
+            const container = document.getElementById('dynamicFieldsContainer');
+            if (!container) {
+                console.error('❌ dynamicFieldsContainer element not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+
+            if (!config || !config.fields || config.fields.length === 0) {
+                container.innerHTML = `
+                    <div class="form-card">
+                        <div class="card-body text-center text-muted">
+                            <i class="fas fa-info-circle"></i> No additional fields required for this purpose.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const sections = {};
+            config.fields.forEach(f => {
+                const section = f.section || 'General';
+                if (!sections[section]) sections[section] = [];
+                sections[section].push(f);
+            });
+            
+            console.log('📂 Sections:', Object.keys(sections));
+
+            for (const [sectionName, fields] of Object.entries(sections)) {
+                const card = document.createElement('div');
+                card.className = 'form-card dynamic-section';
+                card.dataset.section = sectionName;
+
+                const header = document.createElement('div');
+                header.className = 'card-header';
+                header.innerHTML = `<i class="fas fa-cog"></i> ${sectionName}`;
+                card.appendChild(header);
+
+                const body = document.createElement('div');
+                body.className = 'card-body';
+
+                let row = document.createElement('div');
+                row.className = 'form-row';
+                let colCount = 0;
+
+                fields.forEach((field, index) => {
+                    const col = document.createElement('div');
+                    col.className = 'form-group';
+                    col.innerHTML = createFieldHtml(field);
+                    row.appendChild(col);
+                    colCount++;
+
+                    if (colCount === 2 || index === fields.length - 1) {
+                        body.appendChild(row);
+                        row = document.createElement('div');
+                        row.className = 'form-row';
+                        colCount = 0;
+                    }
+                });
+
+                card.appendChild(body);
+                container.appendChild(card);
+            }
+            
+            console.log('✅ Dynamic fields rendered successfully!');
+        }
+
+        // ============================================================
+        // CREATE FIELD HTML
+        // ============================================================
+        function createFieldHtml(field) {
+            const name = field.name;
+            const label = field.label || name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const placeholder = field.placeholder || '';
+            const helpText = field.help_text || '';
+            const required = field.required ? 'required' : '';
+            const type = field.type || 'text';
+
+            let inputHtml = '';
+
+            if (type === 'textarea') {
+                inputHtml = `
+                    <textarea class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" ${required}></textarea>
+                `;
+            } else if (type === 'select') {
+                const options = field.options || [];
+                let optionsHtml = '<option value="">Select...</option>';
+                options.forEach(opt => {
+                    optionsHtml += `<option value="${opt}">${opt}</option>`;
+                });
+                inputHtml = `
+                    <select class="form-control" name="${name}" id="field_${name}" ${required}>
+                        ${optionsHtml}
+                    </select>
+                `;
+            } else if (type === 'boolean') {
+                inputHtml = `
+                    <div style="display:flex;align-items:center;gap:10px;padding-top:4px;">
+                        <input type="checkbox" name="${name}" id="field_${name}" value="on" style="width:18px;height:18px;accent-color:var(--primary);">
+                        <label for="field_${name}" style="font-weight:400;margin:0;cursor:pointer;">Yes</label>
+                    </div>
+                `;
+            } else if (type === 'number') {
+                inputHtml = `
+                    <input type="number" class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" step="any" ${required}>
+                `;
+            } else {
+                inputHtml = `
+                    <input type="text" class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" ${required}>
+                `;
+            }
+
+            return `
+                <label for="field_${name}">${label} ${required ? '<span class="required">*</span>' : ''}</label>
+                ${inputHtml}
+                ${helpText ? `<div class="help-text">${helpText}</div>` : ''}
+            `;
+        }
+
+        // ============================================================
+        // GEOCODING
         // ============================================================
         function geocodeAddress() {
             const address = document.getElementById('streetAddress').value.trim();
@@ -1636,108 +1937,6 @@
         });
 
         // ============================================================
-        // FILE UPLOAD
-        // ============================================================
-        const dropArea = document.getElementById('dropArea');
-        const fileInput = document.getElementById('fileInput');
-        const previewGrid = document.getElementById('imagePreviewGrid');
-        let uploadedFiles = [];
-
-        dropArea.addEventListener('click', () => fileInput.click());
-
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropArea.classList.add('dragover');
-        });
-
-        dropArea.addEventListener('dragleave', () => {
-            dropArea.classList.remove('dragover');
-        });
-
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                handleFiles(e.dataTransfer.files);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleFiles(e.target.files);
-            }
-        });
-
-        function handleFiles(files) {
-            const maxFiles = 10;
-            const remaining = maxFiles - uploadedFiles.length;
-            
-            if (remaining <= 0) {
-                showToast('Maximum 10 images allowed', 'error');
-                return;
-            }
-
-            const toAdd = Math.min(files.length, remaining);
-            for (let i = 0; i < toAdd; i++) {
-                const file = files[i];
-                if (!file.type.startsWith('image/')) continue;
-                if (file.size > 10 * 1024 * 1024) {
-                    showToast(`${file.name} is too large (max 10MB)`, 'error');
-                    continue;
-                }
-                uploadedFiles.push(file);
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const item = document.createElement('div');
-                    item.className = 'image-preview-item';
-                    const idx = uploadedFiles.length - 1;
-                    item.innerHTML = `
-                        <img src="${e.target.result}" alt="${file.name}">
-                        <button class="remove-btn" onclick="removeImage(${idx})">&times;</button>
-                    `;
-                    previewGrid.appendChild(item);
-                };
-                reader.readAsDataURL(file);
-            }
-
-            updateFileInput();
-            
-            if (uploadedFiles.length >= maxFiles) {
-                showToast('Maximum 10 images reached', 'info');
-            }
-        }
-
-        function removeImage(index) {
-            uploadedFiles.splice(index, 1);
-            updateFileInput();
-            renderPreviews();
-        }
-
-        function renderPreviews() {
-            previewGrid.innerHTML = '';
-            uploadedFiles.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const item = document.createElement('div');
-                    item.className = 'image-preview-item';
-                    item.innerHTML = `
-                        <img src="${e.target.result}" alt="${file.name}">
-                        <button class="remove-btn" onclick="removeImage(${index})">&times;</button>
-                    `;
-                    previewGrid.appendChild(item);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateFileInput() {
-            const dataTransfer = new DataTransfer();
-            uploadedFiles.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-
-        // ============================================================
         // FEATURE SEARCH
         // ============================================================
         document.getElementById('featureSearch').addEventListener('keyup', function() {
@@ -1883,6 +2082,108 @@
         }
 
         // ============================================================
+        // FILE UPLOAD
+        // ============================================================
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewGrid = document.getElementById('imagePreviewGrid');
+        let uploadedFiles = [];
+
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFiles(e.target.files);
+            }
+        });
+
+        function handleFiles(files) {
+            const maxFiles = 10;
+            const remaining = maxFiles - uploadedFiles.length;
+            
+            if (remaining <= 0) {
+                showToast('Maximum 10 images allowed', 'error');
+                return;
+            }
+
+            const toAdd = Math.min(files.length, remaining);
+            for (let i = 0; i < toAdd; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`${file.name} is too large (max 10MB)`, 'error');
+                    continue;
+                }
+                uploadedFiles.push(file);
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-preview-item';
+                    const idx = uploadedFiles.length - 1;
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <button class="remove-btn" onclick="removeImage(${idx})">&times;</button>
+                    `;
+                    previewGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            updateFileInput();
+            
+            if (uploadedFiles.length >= maxFiles) {
+                showToast('Maximum 10 images reached', 'info');
+            }
+        }
+
+        function removeImage(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileInput();
+            renderPreviews();
+        }
+
+        function renderPreviews() {
+            previewGrid.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-preview-item';
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <button class="remove-btn" onclick="removeImage(${index})">&times;</button>
+                    `;
+                    previewGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            uploadedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        // ============================================================
         // FORM SUBMISSION
         // ============================================================
         document.getElementById('propertyForm').addEventListener('submit', function(e) {
@@ -1899,6 +2200,10 @@
             uploadedFiles.forEach(file => {
                 formData.append('images', file);
             });
+
+            if (!formData.has('property_purpose')) {
+                formData.append('property_purpose', currentPurpose);
+            }
 
             fetch('/properties/add/', {
                 method: 'POST',
@@ -1943,13 +2248,19 @@
                 fileInput.value = '';
                 clearLocation();
                 showToast('Form reset', 'info');
+                if (purposes.length > 0) {
+                    selectPurpose(purposes[0].code);
+                }
             }
         });
 
         // ============================================================
-        // CHECK IF LOCATION ALREADY EXISTS (edit mode)
+        // INITIALIZE ON PAGE LOAD
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing property form...');
+            loadPurposes();
+
             const lat = document.getElementById('latitude').value;
             const lng = document.getElementById('longitude').value;
             if (lat && lng) {

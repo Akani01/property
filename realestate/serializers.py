@@ -1546,3 +1546,223 @@ class BatchInteractionSerializer(serializers.Serializer):
         if len(value) > 100:
             raise serializers.ValidationError("Maximum 100 properties per batch request")
         return value
+
+
+# ============================================================
+# ADD TO serializers.py - Dynamic Property Purpose Serializers
+# ============================================================
+
+class PropertyPurposeConfigSerializer(serializers.Serializer):
+    """Serializer for property purpose configuration"""
+    purpose = serializers.CharField()
+    title = serializers.CharField()
+    icon = serializers.CharField()
+    badge_color = serializers.CharField()
+    description = serializers.CharField()
+    sections = serializers.ListField(child=serializers.CharField())
+    default_status = serializers.CharField()
+    listing_types = serializers.ListField(child=serializers.CharField())
+    show_pricing_options = serializers.BooleanField()
+    show_booking_options = serializers.BooleanField()
+    show_lease_options = serializers.BooleanField()
+    show_sale_options = serializers.BooleanField()
+    requires_land_fields = serializers.BooleanField()
+    
+    fields = serializers.DictField(child=serializers.DictField(), required=False)
+    field_labels = serializers.DictField(child=serializers.CharField(), required=False)
+    field_placeholders = serializers.DictField(child=serializers.CharField(), required=False)
+    field_help_texts = serializers.DictField(child=serializers.CharField(), required=False)
+    hidden_fields = serializers.ListField(child=serializers.CharField(), required=False)
+
+
+class DynamicPropertySerializer(serializers.ModelSerializer):
+    """Base serializer with dynamic fields for property purposes"""
+    
+    property_purpose_display = serializers.SerializerMethodField()
+    property_category_display = serializers.SerializerMethodField()
+    stay_type_display = serializers.SerializerMethodField()
+    booking_unit_display = serializers.SerializerMethodField()
+    is_land_sale = serializers.SerializerMethodField()
+    is_student_accommodation = serializers.SerializerMethodField()
+    is_short_stay = serializers.SerializerMethodField()
+    is_long_stay = serializers.SerializerMethodField()
+    is_commercial = serializers.SerializerMethodField()
+    is_for_sale = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'property_reference', 'title', 'description',
+            'property_category', 'property_category_display',
+            'property_purpose', 'property_purpose_display',
+            'property_config_used',
+            'address', 'city', 'state', 'country', 'postal_code',
+            'latitude', 'longitude', 'formatted_address',
+            'total_area', 'land_area', 'floor_area',
+            'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
+            'base_price', 'price_per_unit', 'price_per_sqm', 'price_currency',
+            'pricing_structure', 'pricing_details',
+            # Dynamic fields - all optional
+            'stay_type', 'stay_type_display',
+            'minimum_stay', 'maximum_stay',
+            'booking_unit', 'booking_unit_display',
+            'booking_mode', 'is_bookable',
+            'available_from', 'available_until',
+            'deposit_amount', 'lease_duration_months', 'notice_period_days',
+            'utilities_included', 'maintenance_fee', 'rental_increase_percentage',
+            'bond_available', 'transfer_duty', 'registration_fees',
+            'levies', 'rates_taxes',
+            'land_size_hectares', 'land_size_acres', 'land_use',
+            'zoning', 'soil_type', 'topography',
+            'water_access', 'electricity_access', 'road_access',
+            'development_potential',
+            'student_accommodation_type', 'semester_duration_months',
+            'is_per_student_pricing', 'per_student_price',
+            'includes_meals', 'includes_internet', 'includes_study_area',
+            'proximity_to_campus', 'shuttle_service',
+            'security_guards', 'cctv_cameras',
+            'commercial_type', 'number_of_floors',
+            'parking_available', 'loading_bays', 'ceiling_height',
+            'commercial_zone', 'restaurant_equipment',
+            'kitchen_facilities', 'signage_available',
+            'condition', 'year_built', 'last_renovated',
+            'energy_rating', 'solar_panels', 'water_tank', 'inverters',
+            'pets_allowed', 'pet_deposit', 'furnishing_status',
+            'listing_type', 'transaction_type', 'status',
+            'is_online', 'agent_status',
+            'is_featured', 'is_premium', 'is_verified', 'is_active',
+            'views_count', 'likes_count', 'dislikes_count',
+            'average_rating', 'rating_count',
+            'main_image_url', 'additional_images', 'virtual_tour_url',
+            'features', 'custom_fields', 'dynamic_metadata',
+            'created_at', 'updated_at',
+            # Helper booleans
+            'is_land_sale', 'is_student_accommodation',
+            'is_short_stay', 'is_long_stay',
+            'is_commercial', 'is_for_sale',
+        ]
+    
+    def get_property_purpose_display(self, obj):
+        return obj.get_purpose_display() if hasattr(obj, 'get_purpose_display') else obj.property_purpose
+    
+    def get_property_category_display(self, obj):
+        return obj.get_category_display() if hasattr(obj, 'get_category_display') else obj.property_category
+    
+    def get_stay_type_display(self, obj):
+        return obj.stay_type_display if hasattr(obj, 'stay_type_display') else obj.stay_type
+    
+    def get_booking_unit_display(self, obj):
+        return obj.booking_unit_display if hasattr(obj, 'booking_unit_display') else obj.booking_unit
+    
+    def get_is_land_sale(self, obj):
+        return obj.is_land_sale if hasattr(obj, 'is_land_sale') else False
+    
+    def get_is_student_accommodation(self, obj):
+        return obj.is_student_accommodation if hasattr(obj, 'is_student_accommodation') else False
+    
+    def get_is_short_stay(self, obj):
+        return obj.is_short_stay if hasattr(obj, 'is_short_stay') else False
+    
+    def get_is_long_stay(self, obj):
+        return obj.is_long_stay if hasattr(obj, 'is_long_stay') else False
+    
+    def get_is_commercial(self, obj):
+        return obj.is_commercial if hasattr(obj, 'is_commercial') else False
+    
+    def get_is_for_sale(self, obj):
+        return obj.is_for_sale if hasattr(obj, 'is_for_sale') else False
+
+
+class PropertyCreateDynamicSerializer(DynamicPropertySerializer):
+    """Serializer for creating properties with dynamic fields"""
+    
+    features = serializers.ListField(
+        child=serializers.UUIDField(),
+        required=False,
+        write_only=True
+    )
+    
+    class Meta(DynamicPropertySerializer.Meta):
+        read_only_fields = ['id', 'property_reference', 'created_at', 'updated_at', 'views_count']
+    
+    def validate(self, data):
+        """Validate based on property purpose"""
+        purpose = data.get('property_purpose')
+        
+        # Validate land sale fields
+        if purpose == 'land_sale':
+            if not data.get('land_size_hectares') and not data.get('land_size_acres'):
+                raise serializers.ValidationError({
+                    'land_size': 'Land size is required for land sales'
+                })
+        
+        # Validate student accommodation fields
+        if purpose == 'student_accommodation':
+            if data.get('is_per_student_pricing') and not data.get('per_student_price'):
+                raise serializers.ValidationError({
+                    'per_student_price': 'Per student price is required when per-student pricing is enabled'
+                })
+        
+        # Validate stay fields for stay properties
+        if purpose in ['short_stay', 'vacation_rental']:
+            if not data.get('minimum_stay'):
+                data['minimum_stay'] = 1  # Default minimum stay
+        
+        return data
+    
+    def create(self, validated_data):
+        """Create property with dynamic fields"""
+        features = validated_data.pop('features', [])
+        
+        # Generate reference
+        import random
+        import string
+        year = timezone.now().year
+        random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        validated_data['property_reference'] = f"PROP-{year}-{random_chars}"
+        
+        property_obj = super().create(validated_data)
+        
+        if features:
+            property_obj.features.set(features)
+        
+        return property_obj
+
+
+class PropertyUpdateDynamicSerializer(DynamicPropertySerializer):
+    """Serializer for updating properties with dynamic fields"""
+    
+    features = serializers.ListField(
+        child=serializers.UUIDField(),
+        required=False,
+        write_only=True
+    )
+    
+    class Meta(DynamicPropertySerializer.Meta):
+        read_only_fields = ['id', 'property_reference', 'created_at', 'updated_at', 'views_count']
+    
+    def validate(self, data):
+        """Validate based on property purpose"""
+        purpose = data.get('property_purpose')
+        
+        # Validate land sale fields
+        if purpose == 'land_sale':
+            if not data.get('land_size_hectares') and not data.get('land_size_acres'):
+                raise serializers.ValidationError({
+                    'land_size': 'Land size is required for land sales'
+                })
+        
+        return data
+    
+    def update(self, instance, validated_data):
+        features = validated_data.pop('features', None)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        
+        if features is not None:
+            instance.features.set(features)
+        
+        return instance

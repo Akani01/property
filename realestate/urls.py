@@ -96,7 +96,12 @@ urlpatterns = [
     
     # API Routes
     path('api/agent-for-property/<uuid:property_id>/', views.get_agent_for_property, name='agent-for-property'),
-    
+# Dynamic Property Purpose Endpoints
+    path('api/property/purposes/', views.get_property_purposes, name='get_property_purposes'),
+    path('api/property/purpose/<str:purpose_code>/config/', views.get_property_purpose_config, name='get_property_purpose_config'),
+    path('api/property/purpose/<str:purpose_code>/fields/', views.get_property_purpose_fields, name='get_property_purpose_fields'),
+    path('api/property/create-dynamic/', views.create_dynamic_property, name='create_dynamic_property'),
+    path('api/property/update-dynamic/<uuid:property_id>/', views.update_dynamic_property, name='update_dynamic_property'),
     # Agent Lists
     path('api/featured-agents/', views.featured_agents, name='featured-agents'),
     path('api/top-agents/', views.top_agents, name='top-agents'),

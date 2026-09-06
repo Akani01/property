@@ -249,7 +249,12 @@ class FlexiblePriceField(models.DecimalField):
 # ============================================================
 # MAIN PROPERTY MODEL – FULLY FIXED ForeignKeys
 # ============================================================
+
+# ============================================================
+# COMPLETE PROPERTY MODEL - FULLY FIXED
+# ============================================================
 class Property(models.Model):
+    # ===== BASIC CHOICES =====
     LISTING_TYPES = (
         ('sale', 'For Sale'),
         ('rent', 'For Rent'),
@@ -258,6 +263,7 @@ class Property(models.Model):
         ('event', 'For Events'),
         ('auction', 'Auction'),
     )
+    
     TRANSACTION_TYPES = (
         ('sale', 'Sale'),
         ('rental', 'Rental'),
@@ -267,6 +273,7 @@ class Property(models.Model):
         ('auction', 'Auction'),
         ('timeshare', 'Timeshare'),
     )
+    
     STATUS_CHOICES = (
         ('available', 'Available'),
         ('booked', 'Booked'),
@@ -277,6 +284,7 @@ class Property(models.Model):
         ('sold', 'Sold'),
         ('rented', 'Rented'),
     )
+    
     BOOKING_MODES = (
         ('instant', 'Instant Booking'),
         ('scheduled', 'Scheduled Booking'),
@@ -284,17 +292,99 @@ class Property(models.Model):
         ('subscription', 'Subscription'),
         ('traditional', 'Traditional Booking'),
     )
+    
+    BOOKING_UNITS = (
+        ('hour', 'Per Hour'),
+        ('day', 'Per Day'),
+        ('week', 'Per Week'),
+        ('month', 'Per Month'),
+        ('year', 'Per Year'),
+        ('semester', 'Per Semester'),
+        ('once_off', 'Once Off'),
+    )
+    
+    PRICING_STRUCTURES = (
+        ('fixed', 'Fixed Price'),
+        ('tiered', 'Tiered Pricing'),
+        ('dynamic', 'Dynamic Pricing'),
+        ('negotiable', 'Negotiable'),
+        ('per_person', 'Per Person'),
+        ('per_night', 'Per Night'),
+        ('per_sqm', 'Per Square Meter'),
+    )
+    
+    # ===== NEW: PROPERTY CATEGORY & PURPOSE =====
+    PROPERTY_CATEGORIES = (
+        ('residential', 'Residential'),
+        ('commercial', 'Commercial'),
+        ('land', 'Land / Vacant'),
+        ('agricultural', 'Agricultural'),
+        ('industrial', 'Industrial'),
+        ('mixed_use', 'Mixed Use'),
+        ('student_housing', 'Student Housing'),
+        ('short_stay', 'Short Stay / Vacation'),
+        ('hospitality', 'Hospitality'),
+        ('other', 'Other'),
+    )
+    
+    PROPERTY_PURPOSES = (
+        ('sale', 'For Sale'),
+        ('rent', 'For Rent / Lease'),
+        ('short_stay', 'Short Stay (Daily/Weekly)'),
+        ('long_stay', 'Long Stay (Monthly/Semester/Yearly)'),
+        ('permanent', 'Permanent Stay'),
+        ('commercial_lease', 'Commercial Lease'),
+        ('land_sale', 'Land Sale'),
+        ('student_accommodation', 'Student Accommodation'),
+        ('vacation_rental', 'Vacation Rental'),
+    )
+    
+    STAY_TYPES = (
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('bi_weekly', 'Bi-Weekly'),
+        ('monthly', 'Monthly'),
+        ('semester', 'Semester (6 months)'),
+        ('yearly', 'Yearly'),
+        ('permanent', 'Permanent'),
+        ('flexible', 'Flexible / Negotiable'),
+        ('not_applicable', 'Not Applicable'),
+    )
+    
+    CONDITION_CHOICES = (
+        ('new', 'New Development'),
+        ('excellent', 'Excellent Condition'),
+        ('good', 'Good Condition'),
+        ('needs_renovation', 'Needs Renovation'),
+        ('fixer_upper', 'Fixer Upper'),
+        ('under_construction', 'Under Construction'),
+        ('land_only', 'Land Only'),
+    )
+    
+    FURNISHING_STATUS = (
+        ('furnished', 'Fully Furnished'),
+        ('semi_furnished', 'Semi-Furnished'),
+        ('unfurnished', 'Unfurnished'),
+        ('not_applicable', 'Not Applicable'),
+    )
 
+    # ===== BASIC IDENTIFICATION =====
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     property_reference = models.CharField(max_length=50, unique=True, editable=False)
     title = models.CharField(max_length=200)
     description = models.TextField()
 
-    property_type = models.ForeignKey(PropertyType, on_delete=models.PROTECT, related_name='properties')
+    # ===== CATEGORIZATION =====
+    property_category = models.CharField(max_length=20, choices=PROPERTY_CATEGORIES, blank=True, null=True)
+    property_purpose = models.CharField(max_length=30, choices=PROPERTY_PURPOSES, blank=True, null=True)
+    property_config_used = models.CharField(max_length=50, blank=True, null=True)
+    
+    property_type = models.ForeignKey(PropertyType, on_delete=models.PROTECT, related_name='properties', null=True, blank=True)
     custom_category_name = models.CharField(max_length=100, blank=True)
     custom_category_description = models.TextField(blank=True)
     features = models.ManyToManyField(PropertyFeature, related_name='properties', blank=True)
 
+    # ===== LOCATION =====
     address = models.TextField()
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100, blank=True)
@@ -310,6 +400,7 @@ class Property(models.Model):
     map_zoom_level = models.PositiveIntegerField(default=15)
     location_data = models.JSONField(default=dict, blank=True)
 
+    # ===== SIZE & DIMENSIONS =====
     total_area = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     land_area = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     floor_area = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
@@ -324,47 +415,98 @@ class Property(models.Model):
     parking_spaces = models.PositiveIntegerField(default=0)
     amenities = models.JSONField(default=list, blank=True)
 
-    # PRICE FIELDS – using FlexiblePriceField
+    # ===== PRICING =====
     base_price = FlexiblePriceField(max_digits=12, decimal_places=2, help_text="Base price for booking/rent/sale")
     price_per_unit = FlexiblePriceField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Price per room/unit")
     price_per_sqm = FlexiblePriceField(max_digits=12, decimal_places=2, null=True, blank=True)
     price_currency = models.CharField(max_length=3, default='ZAR')
-
-    BOOKING_UNITS = (
-        ('hour', 'Per Hour'),
-        ('day', 'Per Day'),
-        ('week', 'Per Week'),
-        ('month', 'Per Month'),
-        ('year', 'Per Year'),
-    )
-    booking_unit = models.CharField(max_length=10, choices=BOOKING_UNITS, default='day')
-
-    PRICING_STRUCTURES = (
-        ('fixed', 'Fixed Price'),
-        ('tiered', 'Tiered Pricing'),
-        ('dynamic', 'Dynamic Pricing'),
-        ('negotiable', 'Negotiable'),
-        ('per_person', 'Per Person'),
-        ('per_night', 'Per Night'),
-    )
+    
     pricing_structure = models.CharField(max_length=20, choices=PRICING_STRUCTURES, default='fixed')
     pricing_details = models.JSONField(default=dict, blank=True)
 
+    # ===== STAY & BOOKING CONFIGURATION (ALL OPTIONAL) =====
+    stay_type = models.CharField(max_length=20, choices=STAY_TYPES, blank=True, null=True)
+    minimum_stay = models.PositiveIntegerField(blank=True, null=True, help_text="Minimum stay in days (optional)")
+    maximum_stay = models.PositiveIntegerField(blank=True, null=True, help_text="Maximum stay in days (optional)")
+    booking_unit = models.CharField(max_length=20, choices=BOOKING_UNITS, blank=True, null=True)
+    booking_mode = models.CharField(max_length=20, choices=BOOKING_MODES, default='traditional')
+    is_bookable = models.BooleanField(default=True)
+    
+    available_from = models.DateField(null=True, blank=True)
+    available_until = models.DateField(null=True, blank=True)
+
+    # ===== RENTAL / LEASE FIELDS (ALL OPTIONAL) =====
+    deposit_amount = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    lease_duration_months = models.PositiveIntegerField(blank=True, null=True, help_text="Lease duration in months")
+    notice_period_days = models.PositiveIntegerField(blank=True, null=True)
+    utilities_included = models.BooleanField(default=False)
+    maintenance_fee = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    rental_increase_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    rental_increase_interval = models.CharField(max_length=20, blank=True, null=True)
+
+    # ===== SALE FIELDS (ALL OPTIONAL) =====
+    bond_available = models.BooleanField(default=False)
+    transfer_duty = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    registration_fees = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    levies = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, help_text="Monthly levies")
+    rates_taxes = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, help_text="Annual rates and taxes")
+
+    # ===== LAND FIELDS (ALL OPTIONAL) =====
+    land_size_hectares = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    land_size_acres = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    land_use = models.CharField(max_length=200, blank=True, null=True)
+    zoning = models.CharField(max_length=100, blank=True, null=True)
+    soil_type = models.CharField(max_length=100, blank=True, null=True)
+    topography = models.CharField(max_length=100, blank=True, null=True)
+    water_access = models.BooleanField(default=False)
+    electricity_access = models.BooleanField(default=False)
+    road_access = models.CharField(max_length=100, blank=True, null=True)
+    development_potential = models.TextField(blank=True, null=True)
+
+    # ===== STUDENT HOUSING FIELDS (ALL OPTIONAL) =====
+    student_accommodation_type = models.CharField(max_length=100, blank=True, null=True)
+    semester_duration_months = models.PositiveIntegerField(blank=True, null=True, default=6)
+    is_per_student_pricing = models.BooleanField(default=False)
+    per_student_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    includes_meals = models.BooleanField(default=False)
+    includes_internet = models.BooleanField(default=True)
+    includes_study_area = models.BooleanField(default=False)
+    proximity_to_campus = models.CharField(max_length=50, blank=True, null=True)
+    shuttle_service = models.BooleanField(default=False)
+    security_guards = models.BooleanField(default=False)
+    cctv_cameras = models.BooleanField(default=False)
+
+    # ===== COMMERCIAL FIELDS (ALL OPTIONAL) =====
+    commercial_type = models.CharField(max_length=100, blank=True, null=True)
+    number_of_floors = models.PositiveIntegerField(blank=True, null=True)
+    parking_available = models.PositiveIntegerField(blank=True, null=True)
+    loading_bays = models.PositiveIntegerField(blank=True, null=True)
+    ceiling_height = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    commercial_zone = models.CharField(max_length=100, blank=True, null=True)
+    restaurant_equipment = models.BooleanField(default=False)
+    kitchen_facilities = models.BooleanField(default=False)
+    signage_available = models.BooleanField(default=False)
+
+    # ===== GENERAL CONDITION =====
+    condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, blank=True, null=True)
+    year_built = models.PositiveIntegerField(blank=True, null=True)
+    last_renovated = models.PositiveIntegerField(blank=True, null=True)
+    energy_rating = models.CharField(max_length=10, blank=True, null=True)
+    solar_panels = models.BooleanField(default=False)
+    water_tank = models.BooleanField(default=False)
+    inverters = models.BooleanField(default=False)
+    pets_allowed = models.BooleanField(default=False)
+    pet_deposit = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    furnishing_status = models.CharField(max_length=20, choices=FURNISHING_STATUS, blank=True, null=True)
+
+    # ===== LISTING & STATUS =====
     listing_type = models.CharField(max_length=10, choices=LISTING_TYPES, default='booking')
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES, default='booking')
     listing_date = models.DateTimeField(auto_now_add=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
-
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
 
-    is_bookable = models.BooleanField(default=True)
-    booking_mode = models.CharField(max_length=20, choices=BOOKING_MODES, default='traditional')
-    available_from = models.DateField(null=True, blank=True)
-    available_until = models.DateField(null=True, blank=True)
-    minimum_stay = models.PositiveIntegerField(default=1)
-    maximum_stay = models.PositiveIntegerField(null=True, blank=True)
-
-    # ===== FIXED: Use direct class references (no strings) =====
+    # ===== OWNERSHIP =====
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
@@ -387,6 +529,7 @@ class Property(models.Model):
         blank=True
     )
 
+    # ===== ONLINE & AGENT STATUS =====
     is_online = models.BooleanField(default=False)
     last_heartbeat = models.DateTimeField(null=True, blank=True)
     current_occupancy = models.PositiveIntegerField(default=0)
@@ -409,6 +552,7 @@ class Property(models.Model):
         related_name='assigned_properties'
     )
 
+    # ===== IMAGES =====
     main_image = models.ImageField(
         upload_to='properties/main/%Y/%m/%d/',
         null=True, blank=True,
@@ -417,22 +561,28 @@ class Property(models.Model):
     virtual_tour_url = models.URLField(blank=True)
     additional_images = models.JSONField(default=list, blank=True)
 
+    # ===== FEATURES & PROMOTION =====
     is_featured = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
     views_count = models.PositiveIntegerField(default=0)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
+    # ===== DYNAMIC & CUSTOM FIELDS =====
     custom_fields = models.JSONField(default=dict, blank=True)
+    dynamic_metadata = models.JSONField(default=dict, blank=True, help_text="Store any additional dynamic fields")
 
+    # ===== INTERACTIONS =====
     likes_count = models.PositiveIntegerField(default=0)
     dislikes_count = models.PositiveIntegerField(default=0)
     average_rating = models.FloatField(default=0.0)
     rating_count = models.PositiveIntegerField(default=0)
 
+    # ===== TIMESTAMPS =====
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # ===== META =====
     class Meta:
         app_label = 'realestate'
         ordering = ['-created_at']
@@ -445,6 +595,8 @@ class Property(models.Model):
             models.Index(fields=['is_active']),
             models.Index(fields=['property_type']),
             models.Index(fields=['latitude', 'longitude']),
+            models.Index(fields=['property_purpose']),
+            models.Index(fields=['property_category']),
         ]
 
     def __str__(self):
@@ -505,8 +657,58 @@ class Property(models.Model):
     @property
     def is_available_for_instant_booking(self):
         return self.is_online and self.status == 'available' and self.agent_status == 'available'
-
-
+    
+    @property
+    def is_land_sale(self):
+        return self.property_purpose == 'land_sale'
+    
+    @property
+    def is_student_accommodation(self):
+        return self.property_purpose == 'student_accommodation'
+    
+    @property
+    def is_short_stay(self):
+        return self.property_purpose in ['short_stay', 'vacation_rental']
+    
+    @property
+    def is_long_stay(self):
+        return self.property_purpose in ['rent', 'long_stay', 'permanent']
+    
+    @property
+    def is_commercial(self):
+        return self.property_purpose == 'commercial_lease' or self.property_category == 'commercial'
+    
+    @property
+    def is_for_sale(self):
+        return self.listing_type == 'sale' or self.property_purpose == 'sale'
+    
+    @property
+    def stay_type_display(self):
+        return dict(self.STAY_TYPES).get(self.stay_type, 'Not specified')
+    
+    @property
+    def booking_unit_display(self):
+        return dict(self.BOOKING_UNITS).get(self.booking_unit, 'Not specified')
+    
+    def get_dynamic_field(self, field_name, default=None):
+        """Get a dynamic field value from custom_fields or dynamic_metadata"""
+        if field_name in self.custom_fields:
+            return self.custom_fields.get(field_name, default)
+        return self.dynamic_metadata.get(field_name, default)
+    
+    def set_dynamic_field(self, field_name, value):
+        """Set a dynamic field value"""
+        self.custom_fields[field_name] = value
+        self.save(update_fields=['custom_fields'])
+    
+    def get_purpose_display(self):
+        """Get human-readable purpose display"""
+        return dict(self.PROPERTY_PURPOSES).get(self.property_purpose, 'Not specified')
+    
+    def get_category_display(self):
+        """Get human-readable category display"""
+        return dict(self.PROPERTY_CATEGORIES).get(self.property_category, 'Not specified')
+        
 # ============================================================
 # REMAINING MODELS (unchanged, except ForeignKey fixes)
 # ============================================================
