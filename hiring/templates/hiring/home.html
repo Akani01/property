@@ -67,7 +67,7 @@
 }
 
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth; -webkit-text-size-adjust:100%;}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; overflow-x:hidden; width:100%;}
 body{
   margin:0;
   background:var(--paper);
@@ -77,6 +77,8 @@ body{
   line-height:1.5;
   padding-top:var(--header-h);
   min-height:100vh;
+  overflow-x:hidden;
+  width:100%;
 }
 a{color:inherit; text-decoration:none;}
 img{max-width:100%; display:block;}
@@ -91,28 +93,29 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .header-area{
   position:fixed; inset:0 0 auto 0; height:var(--header-h);
   background:var(--surface); border-bottom:1px solid var(--line);
-  z-index:1000; display:flex; align-items:center;
+  z-index:1000; display:flex; align-items:center; overflow:hidden;
 }
 .header-inner{
-  width:100%; max-width:1400px; margin:0 auto;
-  padding:0 clamp(12px,3vw,24px);
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  width:100%; max-width:1400px; margin:0 auto; min-width:0;
+  padding:0 clamp(10px,3vw,24px);
+  display:flex; align-items:center; justify-content:space-between; gap:clamp(4px,1.5vw,10px);
 }
-.brand{display:flex; align-items:center; gap:9px; flex-shrink:0;}
+.brand{display:flex; align-items:center; gap:9px; flex-shrink:0; min-width:0;}
 .brand-mark{
   width:34px; height:34px; border-radius:10px; flex-shrink:0;
   background:linear-gradient(135deg, var(--jade), var(--jade-deep));
   display:flex; align-items:center; justify-content:center;
   color:#fff; font-family:var(--font-display); font-weight:700; font-size:17px;
 }
-.brand-word{font-family:var(--font-display); font-weight:600; font-size:20px; color:var(--ink); white-space:nowrap;}
+.brand-word{font-family:var(--font-display); font-weight:600; font-size:clamp(15px,4vw,20px); color:var(--ink); white-space:nowrap;}
 
-.nav-icons{display:flex; align-items:center; gap:4px; list-style:none; margin:0; padding:0;}
+.nav-icons{display:flex; align-items:center; gap:clamp(1px,1vw,4px); list-style:none; margin:0; padding:0; flex-shrink:1; min-width:0;}
+.nav-icons > li{flex-shrink:0;}
 .icon-btn{
   position:relative; width:40px; height:40px; border-radius:var(--radius-pill);
   display:flex; align-items:center; justify-content:center;
   color:var(--ink-soft); font-size:17px; transition:background .15s, color .15s;
-  border:none; background:transparent; cursor:pointer;
+  border:none; background:transparent; cursor:pointer; flex-shrink:0;
 }
 .icon-btn:hover{background:var(--jade-wash); color:var(--jade-deep);}
 .ping-badge{
@@ -124,19 +127,19 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
 .role-chip{
   font-size:11px; font-weight:600; padding:4px 11px; border-radius:var(--radius-pill);
-  background:var(--jade-wash); color:var(--jade-deep); white-space:nowrap;
+  background:var(--jade-wash); color:var(--jade-deep); white-space:nowrap; flex-shrink:0;
 }
 .role-chip.biz{background:var(--plum-wash); color:var(--plum);}
 
 .avatar-btn{
   width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; position:relative;
   background:linear-gradient(135deg, var(--coral), var(--gold)); color:#fff; font-weight:700; font-size:14px;
-  display:flex; align-items:center; justify-content:center;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
 .status-dot{position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background:var(--success); border:2px solid var(--surface);}
 
 .dropdown-panel{
-  position:absolute; top:calc(100% + 10px); right:0; width:220px;
+  position:absolute; top:calc(100% + 10px); right:0; width:220px; max-width:calc(100vw - 20px);
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
   box-shadow:var(--shadow-lg); padding:6px; opacity:0; visibility:hidden; transform:translateY(6px) scale(.98);
   transition:.16s var(--ease); z-index:1100;
@@ -149,17 +152,36 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .dropdown-panel a:hover, .dropdown-panel button:hover{background:var(--paper);}
 .dropdown-panel i{width:18px; color:var(--ink-faint); text-align:center;}
 .dropdown-divider{height:1px; background:var(--line-soft); margin:5px 6px;}
-.rel{position:relative;}
+.rel{position:relative; flex-shrink:0;}
 
 .auth-btn{
   padding:9px 18px; border-radius:var(--radius-pill); font-weight:600; font-size:13.5px; border:none; cursor:pointer;
-  transition:transform .15s, background .15s;
+  transition:transform .15s, background .15s; white-space:nowrap; flex-shrink:0;
 }
 .auth-btn:active{transform:scale(.97);}
 .auth-btn-ghost{background:transparent; color:var(--jade-deep); border:1.5px solid var(--jade);}
 .auth-btn-ghost:hover{background:var(--jade-wash);}
 .auth-btn-solid{background:var(--ink); color:#fff;}
 .auth-btn-solid:hover{background:var(--jade-deep);}
+
+/* ---- Header: shrink gracefully on small screens instead of overflowing ---- */
+@media (max-width:560px){
+  .header-inner{padding:0 8px;}
+  .role-chip{display:none;}
+  .icon-btn{width:34px; height:34px; font-size:14.5px;}
+  .avatar-btn{width:30px; height:30px; font-size:12px;}
+  .auth-btn{padding:7px 12px; font-size:12px;}
+  .brand-word{font-size:15px;}
+}
+@media (max-width:420px){
+  .brand-word{display:none;}
+  .nav-icons{gap:0;}
+  .icon-btn{width:32px; height:32px; font-size:14px;}
+}
+@media (max-width:360px){
+  .apps-grip-btn{display:none;}
+  .auth-btn{padding:6px 10px; font-size:11.5px;}
+}
 
 /* ============================================================
    LAYOUT
@@ -349,19 +371,40 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .prop-flag.premium{background:var(--success);}
 .prop-flag.booked{background:var(--danger);}
 
-.share-wrap{position:relative; display:inline-block;}
 .icon-chip{
-  position:absolute; top:7px; left:7px; z-index:6; width:28px; height:28px; border-radius:50%; border:none;
-  background:rgba(22,36,31,.55); color:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(3px); transition:background .15s;
+  position:absolute; top:7px; left:7px; z-index:6; width:30px; height:30px; border-radius:50%; border:none;
+  background:rgba(22,36,31,.6); color:#fff; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(3px); transition:background .15s, transform .15s; box-shadow:0 2px 8px rgba(0,0,0,.2);
 }
-.icon-chip:hover{background:var(--coral);}
-.share-menu{position:absolute; top:38px; left:7px; z-index:7; display:none; min-width:150px;}
-.share-menu.show{display:block;}
-.share-menu-body{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); padding:4px; animation:pop .15s var(--ease);}
+.icon-chip:hover{background:var(--coral); transform:scale(1.06);}
 @keyframes pop{from{opacity:0; transform:translateY(-5px) scale(.95);} to{opacity:1; transform:translateY(0) scale(1);}}
-.share-menu a{display:flex; align-items:center; gap:8px; padding:7px 12px; font-size:12px; border-radius:8px; color:var(--ink);}
-.share-menu a:hover{background:var(--paper);}
+
+/* ---- Share sheet (global modal, avoids clipping inside horizontally-scrolling rows) ---- */
+.share-option{
+  display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; border:1px solid var(--line);
+  border-radius:var(--radius-sm); background:var(--surface); font-size:13.5px; font-weight:600; color:var(--ink);
+  cursor:pointer; margin-bottom:8px; transition:background .15s, border-color .15s;
+}
+.share-option:hover{background:var(--paper); border-color:var(--ink-faint);}
+.share-option .ic{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; flex-shrink:0;}
+.share-option.to-user{background:var(--jade-wash); border-color:var(--jade); color:var(--jade-deep);}
+.share-option.to-user:hover{background:var(--jade); color:#fff;}
+.share-option.to-user:hover .ic{background:#fff !important; color:var(--jade) !important;}
+.share-option.to-user .sub{font-size:11px; font-weight:400; color:var(--ink-faint); display:block; margin-top:1px;}
+.share-option.to-user:hover .sub{color:rgba(255,255,255,.85);}
+.share-target-name{font-size:12.5px; color:var(--ink-faint); margin-bottom:12px;}
+
+/* ---- Owner / message chip: make it obvious two neighbours can message each other ---- */
+.prop-owner{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--ink-soft); padding-top:6px; margin-top:2px; border-top:1px solid var(--line-soft); flex-wrap:wrap;}
+.prop-owner .ava{width:17px; height:17px; border-radius:50%; background:linear-gradient(135deg, var(--plum), var(--sky)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:7.5px; font-weight:700; flex-shrink:0; cursor:pointer;}
+.owner-msg-chip{
+  display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 2px; border-radius:99px; cursor:pointer;
+  background:var(--jade-wash); transition:background .15s, box-shadow .15s; max-width:100%;
+}
+.owner-msg-chip:hover{background:var(--jade); box-shadow:0 2px 8px rgba(31,111,92,.3);}
+.owner-msg-chip:hover .oname, .owner-msg-chip:hover i{color:#fff;}
+.owner-msg-chip .oname{font-weight:600; color:var(--ink); max-width:78px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.owner-msg-chip i{color:var(--jade-deep); font-size:9px; flex-shrink:0;}
 
 .prop-overlay-btns{position:absolute; bottom:7px; left:7px; right:7px; display:flex; gap:4px; justify-content:flex-end; z-index:5; flex-wrap:wrap;}
 .ov-pill{
@@ -382,9 +425,6 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .prop-meta{display:flex; gap:10px; font-size:11px; color:var(--ink-soft); margin:2px 0;}
 .prop-meta span{display:flex; align-items:center; gap:3px;}
 .prop-meta i{color:var(--jade); font-size:10px;}
-.prop-owner{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--ink-soft); padding-top:6px; margin-top:2px; border-top:1px solid var(--line-soft); flex-wrap:wrap;}
-.prop-owner .ava{width:17px; height:17px; border-radius:50%; background:linear-gradient(135deg, var(--plum), var(--sky)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:7.5px; font-weight:700; flex-shrink:0; cursor:pointer;}
-.prop-owner .oname{font-weight:600; color:var(--ink); cursor:pointer; max-width:80px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .owner-tag{font-size:6.5px; padding:1px 6px; border-radius:8px; font-weight:700; color:#fff; background:var(--jade);}
 .owner-tag.admin{background:var(--gold); color:#3c2c05;}
 .prop-owner .otime{margin-left:auto; font-size:9px; color:var(--ink-faint);}
@@ -751,7 +791,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
         {% endif %}
         <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i><span class="ping-badge" id="messageBadge">0</span></a></li>
         <li><a href="/notifications/" class="icon-btn" id="notificationLink"><i class="fas fa-bell"></i><span class="ping-badge" id="notificationBadge">0</span></a></li>
-        <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
         <li class="rel">
           <button class="avatar-btn" onclick="toggleProfileMenu()">{{ user.username|first|upper }}<span class="status-dot"></span></button>
           <div class="dropdown-panel" id="profileMenu">
@@ -795,7 +835,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
       {% else %}
         <li><button class="auth-btn auth-btn-ghost" onclick="showLogin()">Sign in</button></li>
         <li><button class="auth-btn auth-btn-solid" onclick="showSignup()">Join free</button></li>
-        <li><button class="icon-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
       {% endif %}
     </ul>
   </div>
@@ -924,7 +964,16 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
     </div>
 
     <!-- ===== TABS ===== -->
-    <div id="propertiesTab" class="tab-content active" style="margin-top:14px;"><div id="propertiesContainer"></div></div>
+    <div id="propertiesTab" class="tab-content active" style="margin-top:14px;">
+      <div class="card hint-banner hidden" id="propertyHint" style="padding:11px 14px; margin-bottom:12px; background:var(--jade-wash); border-color:var(--jade);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <i class="fas fa-comment-dots" style="color:var(--jade-deep); font-size:16px; flex-shrink:0;"></i>
+          <div style="flex:1; font-size:12.5px; color:var(--ink);"><strong>Tip:</strong> tap the green name chip on any listing to message the owner directly — and use the share icon to send a listing to a friend.</div>
+          <button onclick="dismissPropertyHint()" style="background:none; border:none; color:var(--ink-faint); font-size:14px; cursor:pointer; flex-shrink:0;"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div id="propertiesContainer"></div>
+    </div>
 
     <div id="reelsTab" class="tab-content" style="margin-top:14px;">
       <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap" style="gap:8px;">
@@ -1101,6 +1150,25 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
         <button class="btn btn-sm btn-light flex-fill" onclick="closeRatingModal()">Cancel</button>
         <button class="btn-jade" style="flex:2;" onclick="submitRating()">Submit rating</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SHARE SHEET ===== -->
+<div class="modal-veil" id="shareModal">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-box-head"><h5><i class="fas fa-share-nodes" style="color:var(--coral); margin-right:8px;"></i>Share</h5><button class="x-close" onclick="closeShareSheet()">&times;</button></div>
+    <div class="modal-box-body">
+      <div class="share-target-name" id="shareTargetName"></div>
+      <button class="share-option to-user" onclick="shareToOppoGlobeUser()">
+        <span class="ic" style="background:var(--jade);"><i class="fas fa-paper-plane"></i></span>
+        <span><span>Send to a person on OppoGlobe</span><span class="sub">Message it straight to a neighbour's inbox</span></span>
+      </button>
+      <button class="share-option" onclick="shareVia('whatsapp')"><span class="ic" style="background:#25D366;"><i class="fab fa-whatsapp"></i></span> WhatsApp</button>
+      <button class="share-option" onclick="shareVia('facebook')"><span class="ic" style="background:#1877F2;"><i class="fab fa-facebook-f"></i></span> Facebook</button>
+      <button class="share-option" onclick="shareVia('twitter')"><span class="ic" style="background:#111;"><i class="fab fa-twitter"></i></span> Twitter / X</button>
+      <button class="share-option" onclick="shareVia('linkedin')"><span class="ic" style="background:#0A66C2;"><i class="fab fa-linkedin-in"></i></span> LinkedIn</button>
+      <button class="share-option" onclick="shareVia('copy')" style="margin-bottom:0;"><span class="ic" style="background:var(--ink-faint);"><i class="fas fa-link"></i></span> Copy link</button>
     </div>
   </div>
 </div>
@@ -1328,7 +1396,6 @@ function toggleProfileMenu(){ document.getElementById('profileMenu')?.classList.
 function toggleMoreMenu(btn){ btn.parentElement.querySelector('.dropdown-panel')?.classList.toggle('show'); }
 document.addEventListener('click', function(e){
   if (!e.target.closest('.rel')) document.querySelectorAll('.dropdown-panel').forEach(el=>el.classList.remove('show'));
-  if (!e.target.closest('.share-wrap')) document.querySelectorAll('.share-menu').forEach(el=>el.classList.remove('show'));
 });
 
 /* ============================================================
@@ -1664,16 +1731,7 @@ function createPropertyCardHTML(p){
       ${p.is_featured?'<span class="prop-flag featured">Featured</span>':''}
       ${p.is_premium?'<span class="prop-flag premium">Premium</span>':''}
       ${p.status==='booked'?'<span class="prop-flag booked">Booked</span>':''}
-      <div class="share-wrap">
-        <button class="icon-chip" onclick="event.stopPropagation();toggleShareDropdown(this)" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
-        <div class="share-menu" id="share-dropdown-${id}"><div class="share-menu-body">
-          <a href="#" onclick="event.stopPropagation();shareContent('property','${id}','${title}','whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
-          <a href="#" onclick="event.stopPropagation();shareContent('property','${id}','${title}','facebook')"><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook</a>
-          <a href="#" onclick="event.stopPropagation();shareContent('property','${id}','${title}','twitter')"><i class="fab fa-twitter"></i> Twitter</a>
-          <a href="#" onclick="event.stopPropagation();shareContent('property','${id}','${title}','linkedin')"><i class="fab fa-linkedin" style="color:#0A66C2;"></i> LinkedIn</a>
-          <a href="#" onclick="event.stopPropagation();shareContent('property','${id}','${title}','copy')"><i class="fas fa-link"></i> Copy link</a>
-        </div></div>
-      </div>
+      <button class="icon-chip" onclick="event.stopPropagation();openShareSheet('property','${id}','${title}')" aria-label="Share this property" title="Share this property"><i class="fas fa-share-nodes"></i></button>
       <div class="prop-overlay-btns">
         <button class="ov-pill ${userLiked?'liked':''}" onclick="event.stopPropagation();togglePropertyInteraction('${id}','like')" id="like-btn-${id}"><i class="${userLiked?'fas':'far'} fa-heart"></i> <span id="like-count-${id}">${p.likes_count||0}</span></button>
         <button class="ov-pill ${userDisliked?'liked':''}" onclick="event.stopPropagation();togglePropertyInteraction('${id}','dislike')" id="dislike-btn-${id}"><i class="${userDisliked?'fas':'far'} fa-thumbs-down"></i> <span id="dislike-count-${id}">${p.dislikes_count||0}</span></button>
@@ -1687,8 +1745,11 @@ function createPropertyCardHTML(p){
       <div class="prop-price-row"><span class="prop-price">${escapeHtml(priceDisplay)}</span><span class="prop-rating"><span class="stars">${renderStars(rating)}</span> ${rating.toFixed(1)} <span style="color:var(--ink-faint);">(${ratingCount})</span></span></div>
       <div class="prop-meta"><span><i class="fas fa-bed"></i> ${p.bedrooms||0}</span><span><i class="fas fa-bath"></i> ${p.bathrooms||0}</span><span><i class="fas fa-car"></i> ${p.garages||0}</span></div>
       <div class="prop-owner">
-        <div class="ava" onclick="visitProfile('${ownerId}')">${ownerInitial}</div>
-        <span class="oname" onclick="messagePropertyOwner('${id}','${title}')">${escapeHtml(ownerName)}</span>
+        <div class="ava" onclick="event.stopPropagation();visitProfile('${ownerId}')" title="View ${escapeHtml(ownerName)}'s profile">${ownerInitial}</div>
+        <div class="owner-msg-chip" onclick="event.stopPropagation();messagePropertyOwner('${id}','${title}')" title="Send ${escapeHtml(ownerName)} a message">
+          <span class="oname">${escapeHtml(ownerName)}</span>
+          <i class="fas fa-comment-dots"></i>
+        </div>
         ${badgeLabel?`<span class="owner-tag ${ownerBadge}">${badgeLabel}</span>`:''}
         <span class="otime">${p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</span>
       </div>
@@ -1700,13 +1761,20 @@ function createPropertyCardHTML(p){
     </div>
   </div>`;
 }
-function toggleShareDropdown(btn){
-  const wrapper = btn.closest('.share-wrap'); if (!wrapper) return;
-  const dropdown = wrapper.querySelector('.share-menu'); if (!dropdown) return;
-  document.querySelectorAll('.share-menu').forEach(el=>{ if (el!==dropdown) el.classList.remove('show'); });
-  dropdown.classList.toggle('show');
+
+/* ---- Share sheet: one global modal used by every property card (avoids clipping inside
+   horizontally-scrolling rows) and adds a direct way to share to another OppoGlobe user ---- */
+let currentShare = null;
+function openShareSheet(type, id, title){
+  currentShare = { type, id, title };
+  const nameEl = document.getElementById('shareTargetName');
+  if (nameEl) nameEl.textContent = title;
+  document.getElementById('shareModal').classList.add('show');
 }
-function shareContent(type, id, title, platform){
+function closeShareSheet(){ document.getElementById('shareModal').classList.remove('show'); }
+function shareVia(platform){
+  if (!currentShare) return;
+  const { type, id, title } = currentShare;
   const url = `${window.location.origin}/${type}/${id}/`;
   let shareUrl = '';
   if (platform==='whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(title+' - '+url)}`;
@@ -1716,11 +1784,20 @@ function shareContent(type, id, title, platform){
   else if (platform==='copy'){
     const text = `${title} - ${url}`;
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success'));
-    document.querySelector(`#share-dropdown-${id}`)?.classList.remove('show');
+    else showToast(text, 'info');
+    closeShareSheet();
     return;
   }
   if (shareUrl) window.open(shareUrl, '_blank');
-  document.querySelector(`#share-dropdown-${id}`)?.classList.remove('show');
+  closeShareSheet();
+}
+function shareToOppoGlobeUser(){
+  if (!currentShare) return;
+  if (!requireLogin()) return;
+  const { type, id, title } = currentShare;
+  closeShareSheet();
+  showToast('Pick a person to send this to','info');
+  window.location.href = `/messaging/?share_type=${encodeURIComponent(type)}&share_id=${encodeURIComponent(id)}&share_title=${encodeURIComponent(title)}`;
 }
 function loadPropertyTypes(){
   const types = [...new Set(allProperties.map(p=>p.property_type).filter(Boolean))];
@@ -2577,7 +2654,9 @@ document.getElementById('newsletterForm')?.addEventListener('submit', function(e
 /* ============================================================
    INIT
    ============================================================ */
+function dismissPropertyHint(){ localStorage.setItem('property_hint_dismissed','true'); document.getElementById('propertyHint')?.classList.add('hidden'); }
 document.addEventListener('DOMContentLoaded', function(){
+  if (localStorage.getItem('property_hint_dismissed') !== 'true') document.getElementById('propertyHint')?.classList.remove('hidden');
   loadProperties();
   loadNotificationCount();
   loadMessageCount();
@@ -2588,9 +2667,10 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('postModal')?.addEventListener('click', function(e){ if (e.target === this) hidePostModal(); });
   document.getElementById('eduUploadModal')?.addEventListener('click', function(e){ if (e.target === this) closeEduUploadModal(); });
   document.getElementById('ratingModal')?.addEventListener('click', function(e){ if (e.target === this) closeRatingModal(); });
+  document.getElementById('shareModal')?.addEventListener('click', function(e){ if (e.target === this) closeShareSheet(); });
   document.getElementById('reelsCommentPopup')?.addEventListener('click', function(e){ if (e.target === this) closeReelsComments(); });
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape'){ closeReelsComments(); hidePostModal(); closeAIChat(); closeRatingModal(); closeSeeAll(); closeEduUploadModal(); }
+    if (e.key === 'Escape'){ closeReelsComments(); hidePostModal(); closeAIChat(); closeRatingModal(); closeSeeAll(); closeEduUploadModal(); closeShareSheet(); }
   });
 });
 </script>
