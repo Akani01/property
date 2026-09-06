@@ -914,6 +914,32 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .rate-stars button.active{color:var(--gold); transform:scale(1.08);}
 
 /* ============================================================
+   WELCOME TOUR (cartoon mascot onboarding)
+   ============================================================ */
+#welcomeModal .modal-box{max-width:420px; text-align:center;}
+#welcomeModal .modal-box-head{border-bottom:none; padding-bottom:0;}
+#welcomeModal .modal-box-body{padding:6px 26px 4px;}
+.welcome-illustration{position:relative; width:148px; height:148px; margin:4px auto 2px;}
+.welcome-illustration svg{width:100%; height:100%; display:block;}
+.welcome-badge{
+  position:absolute; bottom:-4px; right:-8px; width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.2); border:3px solid var(--surface);
+}
+.welcome-slide{display:none;}
+.welcome-slide.active{display:block; animation:welcomeIn .35s var(--ease);}
+@keyframes welcomeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+.welcome-slide h4{font-size:18.5px; font-weight:700; margin-top:8px;}
+.welcome-slide p{font-size:13px; color:var(--ink-soft); line-height:1.6; margin-top:7px; padding:0 4px;}
+.welcome-dots{display:flex; justify-content:center; align-items:center; gap:6px; margin:16px 0 2px;}
+.welcome-dots span{width:7px; height:7px; border-radius:50%; background:var(--line); transition:background .2s, width .2s; cursor:pointer;}
+.welcome-dots span.active{background:var(--jade); width:20px; border-radius:4px;}
+.welcome-skip{background:none; border:none; color:var(--ink-faint); font-size:12.5px; font-weight:600; cursor:pointer; padding:6px;}
+.welcome-skip:hover{color:var(--ink);}
+#welcomeBackBtn{background:none; border:none; color:var(--ink-soft); font-weight:600; font-size:13px; cursor:pointer; padding:8px 6px;}
+#welcomeBackBtn:hover{color:var(--ink);}
+
+/* ============================================================
    AI CHAT
    ============================================================ */
 #aiToggle{
@@ -1396,6 +1422,73 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   </div>
 </div>
 
+<!-- ===== WELCOME TOUR ===== -->
+<div class="modal-veil" id="welcomeModal">
+  <div class="modal-box">
+    <div class="modal-box-head" style="justify-content:flex-end;"><button class="welcome-skip" onclick="closeWelcome(true)">Skip</button></div>
+    <div class="modal-box-body">
+
+      <!-- Slide 1: Welcome -->
+      <div class="welcome-slide active">
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><path d="M156 96 Q176 88 178 68" stroke="#E8A93B" stroke-width="6" fill="none" stroke-linecap="round"/></svg>
+          <div class="welcome-badge" style="background:#1F6F5C;">👋</div>
+        </div>
+        <h4>Welcome to OppoGlobe!</h4>
+        <p>Your neighbourhood's home for houses, jobs and the people next door. Got 30 seconds for a quick look around?</p>
+      </div>
+
+      <!-- Slide 2: Properties -->
+      <div class="welcome-slide">
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="76" cy="111" r="4" fill="#16241F"/><circle cx="124" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 130 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
+          <div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div>
+        </div>
+        <h4>Find your next place</h4>
+        <p>Browse listings grouped by area. Tap the heart to like, the star to rate, and the share icon to send a place to a friend.</p>
+      </div>
+
+      <!-- Slide 3: Messaging -->
+      <div class="welcome-slide">
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
+          <div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div>
+        </div>
+        <h4>Talk to your neighbours</h4>
+        <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed.</p>
+      </div>
+
+      <!-- Slide 4: Maintenance -->
+      <div class="welcome-slide">
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
+          <div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div>
+        </div>
+        <h4>Get things fixed</h4>
+        <p>Type what needs fixing in the Maintenance tab — tag how urgent it is, add a photo, and you're done.</p>
+      </div>
+
+      <!-- Slide 5: Jobs & Education -->
+      <div class="welcome-slide">
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
+          <div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div>
+        </div>
+        <h4>Jobs & bursaries too</h4>
+        <p>Explore local jobs, bursaries and schools, right alongside your neighbourhood feed. That's the tour — enjoy!</p>
+      </div>
+
+      <div class="welcome-dots">
+        <span class="active" onclick="welcomeGoTo(0)"></span><span onclick="welcomeGoTo(1)"></span><span onclick="welcomeGoTo(2)"></span><span onclick="welcomeGoTo(3)"></span><span onclick="welcomeGoTo(4)"></span>
+      </div>
+    </div>
+    <div class="modal-box-foot" style="justify-content:space-between;">
+      <button id="welcomeBackBtn" style="visibility:hidden;" onclick="welcomeBack()"><i class="fas fa-arrow-left me-1"></i>Back</button>
+      <button class="btn-jade" id="welcomeNextBtn" onclick="welcomeNext()">Next</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== REELS COMMENTS ===== -->
 <div class="modal-veil" id="reelsCommentPopup" style="z-index:2100;">
   <div class="modal-box" style="max-width:420px; height:60vh; max-height:520px;">
@@ -1419,6 +1512,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('jobs');closeAppsModal()"><i class="fas fa-briefcase d-block mb-1" style="color:var(--gold); font-size:20px;"></i><span style="font-size:10px;">Jobs</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('feed');closeAppsModal()"><i class="fas fa-newspaper d-block mb-1" style="color:var(--plum); font-size:20px;"></i><span style="font-size:10px;">Feed</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('education');closeAppsModal()"><i class="fas fa-graduation-cap d-block mb-1" style="color:#9c7719; font-size:20px;"></i><span style="font-size:10px;">Education</span></a>
+      <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="replayWelcome()"><i class="fas fa-wand-magic-sparkles d-block mb-1" style="color:#FF6B4A; font-size:20px;"></i><span style="font-size:10px;">Tour</span></a>
       {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('management');closeAppsModal()"><i class="fas fa-gear d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Manage</span></a>
       {% endif %}
@@ -2879,6 +2973,56 @@ function quickAIQuery(query){
 let appsModal = null;
 function showAppsModal(){ appsModal ||= new bootstrap.Modal(document.getElementById('appsModal')); appsModal.show(); }
 function closeAppsModal(){ appsModal?.hide(); }
+
+/* ============================================================
+   WELCOME TOUR (cartoon onboarding)
+   ============================================================ */
+let welcomeStep = 0;
+const WELCOME_TOTAL = document.querySelectorAll('#welcomeModal .welcome-slide').length || 5;
+function updateWelcomeSlide(){
+  document.querySelectorAll('#welcomeModal .welcome-slide').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
+  document.querySelectorAll('#welcomeModal .welcome-dots span').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
+  const backBtn = document.getElementById('welcomeBackBtn');
+  if (backBtn) backBtn.style.visibility = welcomeStep===0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('welcomeNextBtn');
+  if (nextBtn) nextBtn.innerHTML = welcomeStep === WELCOME_TOTAL-1 ? "Let's go 🎉" : 'Next';
+}
+function showWelcome(reset=true){
+  if (reset) welcomeStep = 0;
+  updateWelcomeSlide();
+  document.getElementById('welcomeModal')?.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeWelcome(markSeen=true){
+  document.getElementById('welcomeModal')?.classList.remove('show');
+  document.body.style.overflow = '';
+  if (markSeen) localStorage.setItem('oppoglobe_welcome_seen','true');
+}
+function welcomeNext(){
+  if (welcomeStep >= WELCOME_TOTAL-1){ closeWelcome(true); return; }
+  welcomeStep++; updateWelcomeSlide();
+}
+function welcomeBack(){ if (welcomeStep>0){ welcomeStep--; updateWelcomeSlide(); } }
+function welcomeGoTo(index){
+  if (index < 0 || index > WELCOME_TOTAL-1) return;
+  welcomeStep = index; updateWelcomeSlide();
+}
+function replayWelcome(){ closeAppsModal(); showWelcome(true); }
+
+/* Auto-launch the cartoon welcome tour for first-time visitors.
+   This was the missing piece — the modal and all its slide/step
+   functions worked fine, but nothing ever called showWelcome()
+   unless the user manually opened the apps grid and tapped "Tour". */
+function maybeAutoShowWelcomeTour(){
+  try{
+    if (localStorage.getItem('oppoglobe_welcome_seen') !== 'true'){
+      showWelcome(true);
+    }
+  }catch(e){
+    // localStorage may be unavailable (privacy mode) — fail silently, don't block the page.
+  }
+}
+
 function showLogin(){ new bootstrap.Modal(document.getElementById('loginModal')).show(); }
 function showSignup(){ new bootstrap.Modal(document.getElementById('signupModal')).show(); }
 
@@ -2966,6 +3110,10 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape'){ closeReelsComments(); hidePostModal(); closeAIChat(); closeRatingModal(); closeSeeAll(); closeEduUploadModal(); closeShareSheet(); }
   });
+
+  // Give the page a beat to settle (avatar/header render, etc.) before
+  // popping the cartoon welcome tour in front of a first-time visitor.
+  setTimeout(maybeAutoShowWelcomeTour, 900);
 });
 </script>
 </body>
