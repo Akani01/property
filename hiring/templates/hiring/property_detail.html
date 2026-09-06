@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>OppoGlobe - {{ property.title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -450,137 +450,234 @@
             background: #e8eaed;
         }
 
-        /* ===== PROPERTY GALLERY ===== */
+/* ===== PROPERTY GALLERY — RESPONSIVE, NO-STRETCH ===== */
         .property-gallery {
+            position: relative;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-
-        @media (min-width: 576px) {
-            .property-gallery {
-                gap: 10px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .property-gallery {
-                grid-template-columns: 2fr 1fr;
-                gap: 12px;
-                margin-bottom: 24px;
-            }
+            grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+            width: 100%;
+            min-width: 0;
         }
 
         .property-gallery .main-image {
-            height: 200px;
-            background: var(--light-gray);
-            overflow: hidden;
-            cursor: pointer;
             position: relative;
+            min-width: 0;
+            width: 100%;
+            height: clamp(280px, 42vw, 520px);
+            min-height: 280px;
+            background: #eef1f5;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: zoom-in;
+            isolation: isolate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .property-gallery .main-image:hover::after {
+
+        /* A soft backdrop makes portrait/landscape photos look intentional
+           while the real image always keeps its original aspect ratio. */
+        .property-gallery .main-image::before {
+            content: "";
+            position: absolute;
+            inset: -12px;
+            background: var(--gallery-backdrop, #eef1f5);
+            filter: blur(22px);
+            transform: scale(1.06);
+            opacity: .55;
+            z-index: -1;
+        }
+
+        .property-gallery .main-image::after {
             content: '\f065';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
-            inset: 0;
+            right: 14px;
+            bottom: 14px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.35);
-            color: white;
-            font-size: 32px;
+            background: rgba(0,0,0,.55);
+            color: #fff;
+            font-size: 15px;
+            opacity: 0;
+            transform: scale(.9);
             transition: var(--transition);
+            pointer-events: none;
+            z-index: 3;
         }
 
-        @media (min-width: 576px) {
-            .property-gallery .main-image {
-                height: 250px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .property-gallery .main-image {
-                height: 350px;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .property-gallery .main-image {
-                height: 400px;
-            }
+        .property-gallery .main-image:hover::after,
+        .property-gallery .main-image:focus-visible::after {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .property-gallery .main-image img {
+            display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* IMPORTANT: never distort the source image */
+            object-position: center;
+            user-select: none;
+            -webkit-user-drag: none;
+            transition: opacity .2s ease, transform .35s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .property-gallery .main-image img.is-changing {
+            opacity: .25;
+        }
+
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,.58);
+            color: #fff;
+            z-index: 4;
+            opacity: 0;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(0,0,0,.18);
+        }
+
+        .main-image:hover .gallery-arrow,
+        .main-image:focus-within .gallery-arrow {
+            opacity: 1;
+        }
+
+        .gallery-arrow:hover {
+            background: rgba(0,0,0,.78);
+            transform: translateY(-50%) scale(1.06);
+        }
+
+        .gallery-arrow.prev { left: 14px; }
+        .gallery-arrow.next { right: 14px; }
+
+        .gallery-count {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            z-index: 4;
+            padding: 6px 11px;
+            border-radius: 999px;
+            background: rgba(0,0,0,.58);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            pointer-events: none;
+        }
+
+        .gallery-open-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 4;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.88);
+            color: var(--dark);
+            box-shadow: 0 4px 16px rgba(0,0,0,.16);
+            transition: var(--transition);
+        }
+
+        .gallery-open-btn:hover {
+            background: #fff;
+            color: var(--primary);
+            transform: scale(1.06);
         }
 
         .property-gallery .thumb-grid {
+            min-width: 0;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        @media (min-width: 576px) {
-            .property-gallery .thumb-grid {
-                gap: 10px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .property-gallery .thumb-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: minmax(0, 1fr);
+            gap: 12px;
         }
 
         .property-gallery .thumb-grid .thumb {
-            height: 80px;
-            background: var(--light-gray);
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            background: #eef1f5;
+            border: 2px solid transparent;
+            border-radius: var(--radius-sm);
             overflow: hidden;
             cursor: pointer;
             transition: var(--transition);
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .property-gallery .thumb-grid .thumb:hover::after {
-            content: '\f065';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
+
+        .property-gallery .thumb-grid .thumb img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform .3s ease, opacity .2s ease;
+        }
+
+        .property-gallery .thumb-grid .thumb:hover img {
+            transform: scale(1.04);
+        }
+
+        .property-gallery .thumb-grid .thumb:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .property-gallery .thumb-grid .thumb.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(26,115,232,.15);
+        }
+
+        .property-gallery .thumb-grid .thumb.more::after {
+            content: attr(data-more);
             position: absolute;
             inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            font-size: 20px;
+            background: rgba(0,0,0,.52);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
         }
 
-        @media (min-width: 576px) {
-            .property-gallery .thumb-grid .thumb {
-                height: 100px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .property-gallery .thumb-grid .thumb {
-                height: 169px;
-            }
-        }
-
-        .property-gallery .thumb-grid .thumb:hover {
-            opacity: 0.85;
-        }
-
-        .property-gallery .thumb-grid .thumb img {
+        .gallery-empty {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            color: #9aa0a6;
         }
 
         /* ===== LIGHTBOX / FULLSCREEN VIEWER ===== */
@@ -588,132 +685,209 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(0, 0, 0, 0.92);
+            background: rgba(7,10,16,.96);
             display: none;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity 0.3s ease;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            padding: 16px;
+            transition: opacity .2s ease;
+            padding: 12px;
+            touch-action: none;
         }
+
         .lightbox-overlay.active {
             display: flex;
             opacity: 1;
         }
-        .lightbox-overlay .lightbox-close {
-            position: fixed;
-            top: 16px;
-            right: 20px;
-            color: white;
-            font-size: 28px;
-            background: rgba(255, 255, 255, 0.15);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            border: none;
-            z-index: 10000;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-        .lightbox-overlay .lightbox-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
+
+        .lightbox-overlay .lightbox-close,
         .lightbox-overlay .lightbox-nav {
             position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 32px;
-            background: rgba(255, 255, 255, 0.12);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #fff;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.12);
+            box-shadow: 0 8px 28px rgba(0,0,0,.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10002;
             transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            z-index: 10000;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
         }
+
+        .lightbox-overlay .lightbox-close {
+            top: max(14px, env(safe-area-inset-top));
+            right: max(14px, env(safe-area-inset-right));
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            font-size: 20px;
+        }
+
+        .lightbox-overlay .lightbox-nav {
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+        }
+
+        .lightbox-overlay .lightbox-nav.prev { left: max(12px, env(safe-area-inset-left)); }
+        .lightbox-overlay .lightbox-nav.next { right: max(12px, env(safe-area-inset-right)); }
+
+        .lightbox-overlay .lightbox-close:hover,
         .lightbox-overlay .lightbox-nav:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,.24);
+            transform: scale(1.06);
         }
-        .lightbox-overlay .lightbox-nav.prev {
-            left: 16px;
+
+        .lightbox-overlay .lightbox-nav:hover {
+            transform: translateY(-50%) scale(1.06);
         }
-        .lightbox-overlay .lightbox-nav.next {
-            right: 16px;
-        }
-        .lightbox-overlay .lightbox-counter {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 6px 18px;
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 10000;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
+
         .lightbox-overlay .lightbox-image-wrap {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            max-width: 100vw;
-            max-height: 100vh;
-            padding: 60px 20px 80px;
+            padding: 58px 64px 74px;
+            overflow: hidden;
         }
+
         .lightbox-overlay .lightbox-image-wrap img {
+            display: block;
             max-width: 100%;
             max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            box-shadow: 0 14px 55px rgba(0,0,0,.55);
             user-select: none;
             -webkit-user-drag: none;
+            transform-origin: center center;
+            transition: transform .18s ease, opacity .15s ease;
+            cursor: zoom-in;
         }
-        @media (min-width: 768px) {
+
+        .lightbox-overlay.zoomed .lightbox-image-wrap img {
+            max-width: none;
+            max-height: none;
+            cursor: zoom-out;
+        }
+
+        .lightbox-overlay .lightbox-counter {
+            position: fixed;
+            left: 50%;
+            bottom: max(14px, env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            color: rgba(255,255,255,.9);
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(0,0,0,.55);
+            padding: 7px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.1);
+            z-index: 10002;
+            pointer-events: none;
+        }
+
+        .lightbox-hint {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,.62);
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 10001;
+        }
+
+        @media (max-width: 767px) {
+            .property-gallery {
+                display: block;
+                margin-bottom: 18px;
+            }
+
+            .property-gallery .main-image {
+                height: clamp(250px, 68vw, 430px);
+                min-height: 250px;
+                border-radius: var(--radius);
+            }
+
+            .gallery-arrow {
+                opacity: 1;
+                width: 40px;
+                height: 40px;
+            }
+
+            .gallery-open-btn {
+                width: 38px;
+                height: 38px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .gallery-count {
+                left: 10px;
+                bottom: 10px;
+            }
+
+            .property-gallery .thumb-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 8px;
+                padding: 8px 2px 2px;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: thin;
+            }
+
+            .property-gallery .thumb-grid .thumb {
+                flex: 0 0 92px;
+                width: 92px;
+                height: 68px;
+                min-height: 68px;
+                scroll-snap-align: start;
+            }
+
+            .lightbox-overlay .lightbox-image-wrap {
+                padding: 60px 12px 70px;
+            }
+
             .lightbox-overlay .lightbox-nav {
-                width: 56px;
-                height: 56px;
-                font-size: 36px;
+                width: 42px;
+                height: 42px;
+                font-size: 16px;
             }
-            .lightbox-overlay .lightbox-nav.prev {
-                left: 24px;
+
+            .lightbox-overlay .lightbox-nav.prev { left: 8px; }
+            .lightbox-overlay .lightbox-nav.next { right: 8px; }
+
+            .lightbox-hint {
+                display: none;
             }
-            .lightbox-overlay .lightbox-nav.next {
-                right: 24px;
+        }
+
+        @media (max-width: 380px) {
+            .property-gallery .main-image {
+                height: 235px;
+                min-height: 235px;
             }
-            .lightbox-overlay .lightbox-close {
-                top: 24px;
-                right: 28px;
-                font-size: 32px;
-                width: 52px;
-                height: 52px;
+
+            .property-gallery .thumb-grid .thumb {
+                flex-basis: 78px;
+                width: 78px;
+                height: 58px;
+                min-height: 58px;
             }
-            .lightbox-overlay .lightbox-counter {
-                bottom: 32px;
-                font-size: 15px;
-                padding: 8px 24px;
+        }
+
+        @media (min-width: 1400px) {
+            .property-gallery .main-image {
+                height: min(520px, 38vw);
             }
         }
 
@@ -1783,38 +1957,75 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             </a>
         </div>
 
-        <!-- Gallery -->
-        <div class="property-gallery" id="propertyGallery">
-            <div class="main-image" data-index="0">
+        <!-- ===== INTERACTIVE PROPERTY GALLERY ===== -->
+        <section class="property-gallery"
+                 id="propertyGallery"
+                 aria-label="Property photo gallery">
+
+            <div class="main-image"
+                 id="galleryMain"
+                 tabindex="0"
+                 role="button"
+                 aria-label="Open property photos">
+
                 {% if main_image %}
-                <img src="{{ main_image }}" alt="{{ property.title }}" id="galleryMainImg">
+                <img src="{{ main_image }}"
+                     alt="{{ property.title }}"
+                     id="galleryMainImg"
+                     decoding="async"
+                     fetchpriority="high">
                 {% else %}
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--light-gray);color:#ccc;">
+                <div class="gallery-empty">
                     <i class="fas fa-home" style="font-size:48px;"></i>
+                    <span>No property image available</span>
                 </div>
                 {% endif %}
+
+                <button type="button"
+                        class="gallery-arrow prev"
+                        id="galleryPrev"
+                        aria-label="Previous property photo">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <button type="button"
+                        class="gallery-arrow next"
+                        id="galleryNext"
+                        aria-label="Next property photo">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <button type="button"
+                        class="gallery-open-btn"
+                        id="galleryOpen"
+                        aria-label="Open photos fullscreen"
+                        title="View fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+
+                <span class="gallery-count" id="galleryCount" aria-live="polite">1 / 1</span>
             </div>
-            <div class="thumb-grid" id="thumbGrid">
-                {% for image in property_images|slice:"1:5" %}
-                <div class="thumb" data-index="{{ forloop.counter }}">
-                    <img src="{{ image }}" alt="Property image {{ forloop.counter }}">
-                </div>
+
+            <div class="thumb-grid" id="thumbGrid" aria-label="Property photo thumbnails">
+                {% for image in property_images %}
+                <button type="button"
+                        class="thumb{% if forloop.first %} active{% endif %}"
+                        data-index="{{ forloop.counter0 }}"
+                        aria-label="View property photo {{ forloop.counter }}">
+                    <img src="{{ image }}"
+                         alt="Property photo {{ forloop.counter }}"
+                         loading="lazy"
+                         decoding="async">
+                </button>
                 {% empty %}
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="1">
-                    <i class="fas fa-image" style="font-size:24px;"></i>
-                </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="2">
-                    <i class="fas fa-image" style="font-size:24px;"></i>
-                </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="3">
-                    <i class="fas fa-image" style="font-size:24px;"></i>
-                </div>
-                <div class="thumb" style="background:var(--light-gray);display:flex;align-items:center;justify-content:center;color:#ccc;" data-index="4">
-                    <i class="fas fa-image" style="font-size:24px;"></i>
+                <div class="thumb"
+                     aria-hidden="true"
+                     style="color:#9aa0a6;">
+                    <i class="fas fa-image"></i>
                 </div>
                 {% endfor %}
             </div>
-        </div>
+        </section>
 
         <!-- Info Grid -->
         <div class="info-grid">
@@ -2303,20 +2514,31 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
 
     </div>
 
-    <!-- ===== LIGHTBOX / FULLSCREEN VIEWER ===== -->
-    <div class="lightbox-overlay" id="lightboxOverlay" role="dialog" aria-modal="true" aria-label="Image viewer">
-        <button class="lightbox-close" id="lightboxClose" aria-label="Close fullscreen view">
+    <!-- ===== FULLSCREEN PHOTO VIEWER ===== -->
+    <div class="lightbox-overlay"
+         id="lightboxOverlay"
+         role="dialog"
+         aria-modal="true"
+         aria-label="Property photo viewer"
+         aria-hidden="true">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close photo viewer">
             <i class="fas fa-times"></i>
         </button>
-        <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous image">
+
+        <div class="lightbox-hint">Click/tap photo to zoom · Swipe or use arrows to navigate</div>
+
+        <button type="button" class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous photo">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="lightbox-nav next" id="lightboxNext" aria-label="Next image">
+
+        <button type="button" class="lightbox-nav next" id="lightboxNext" aria-label="Next photo">
             <i class="fas fa-chevron-right"></i>
         </button>
+
         <div class="lightbox-image-wrap" id="lightboxImageWrap">
-            <img id="lightboxImg" src="" alt="Property image fullscreen">
+            <img id="lightboxImg" src="" alt="Property photo fullscreen">
         </div>
+
         <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
     </div>
 
@@ -2462,44 +2684,15 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
         }
 
         // ============================================================
-        // LIGHTBOX / FULLSCREEN IMAGE VIEWER
+        // INTERACTIVE PROPERTY GALLERY + FULLSCREEN VIEWER
         // ============================================================
         (function() {
-            // Gather all image URLs from the gallery
-            const imageUrls = [];
+            const gallery = document.getElementById('propertyGallery');
+            const main = document.getElementById('galleryMain');
             const mainImg = document.getElementById('galleryMainImg');
-            if (mainImg) {
-                imageUrls.push(mainImg.src);
-            } else {
-                // fallback: use the main container's background or placeholder
-                const mainContainer = document.querySelector('.property-gallery .main-image');
-                if (mainContainer) {
-                    const bg = mainContainer.style.backgroundImage;
-                    if (bg && bg.includes('url(')) {
-                        const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
-                        if (match) imageUrls.push(match[1]);
-                    }
-                }
-                // if still empty, push a placeholder
-                if (imageUrls.length === 0) {
-                    imageUrls.push('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect fill="%23f1f3f4" width="800" height="600"/%3E%3Ctext x="400" y="300" font-family="sans-serif" font-size="24" fill="%23999" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E');
-                }
-            }
+            const thumbGrid = document.getElementById('thumbGrid');
+            const thumbs = Array.from(document.querySelectorAll('#thumbGrid .thumb[data-index]'));
 
-            // Thumbnails
-            const thumbs = document.querySelectorAll('#thumbGrid .thumb img');
-            thumbs.forEach(img => {
-                if (img.src && !imageUrls.includes(img.src)) {
-                    imageUrls.push(img.src);
-                }
-            });
-
-            // If we still have fewer than 2, duplicate the main image to have at least 2
-            while (imageUrls.length < 2) {
-                imageUrls.push(imageUrls[0] || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect fill="%23f1f3f4" width="800" height="600"/%3E%3Ctext x="400" y="300" font-family="sans-serif" font-size="24" fill="%23999" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E');
-            }
-
-            let currentIndex = 0;
             const overlay = document.getElementById('lightboxOverlay');
             const lightboxImg = document.getElementById('lightboxImg');
             const counter = document.getElementById('lightboxCounter');
@@ -2507,102 +2700,289 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             const prevBtn = document.getElementById('lightboxPrev');
             const nextBtn = document.getElementById('lightboxNext');
 
-            function openLightbox(index) {
-                if (!imageUrls.length || index < 0 || index >= imageUrls.length) return;
-                currentIndex = index;
+            const galleryPrev = document.getElementById('galleryPrev');
+            const galleryNext = document.getElementById('galleryNext');
+            const galleryOpen = document.getElementById('galleryOpen');
+            const galleryCount = document.getElementById('galleryCount');
+
+            // Build a unique list from the Django data already rendered by the template.
+            const imageUrls = [];
+            if (mainImg && mainImg.src) imageUrls.push(mainImg.src);
+
+            thumbs.forEach(thumb => {
+                const img = thumb.querySelector('img');
+                if (img && img.src && !imageUrls.includes(img.src)) {
+                    imageUrls.push(img.src);
+                }
+            });
+
+            let currentIndex = 0;
+            let previousFocusedElement = null;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchMoved = false;
+            let zoomed = false;
+
+            function safeIndex(index) {
+                if (!imageUrls.length) return 0;
+                return (index + imageUrls.length) % imageUrls.length;
+            }
+
+            function setBackdrop(url) {
+                if (!main) return;
+                main.style.setProperty('--gallery-backdrop', `url("${url}") center / cover no-repeat`);
+            }
+
+            function scrollThumbIntoView(index) {
+                const thumb = thumbs.find(t => Number(t.dataset.index) === index);
+                if (thumb) {
+                    thumb.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }
+            }
+
+            function updateGallery(index, animate = true) {
+                if (!imageUrls.length || !mainImg) return;
+
+                currentIndex = safeIndex(index);
+                const url = imageUrls[currentIndex];
+
+                if (animate) mainImg.classList.add('is-changing');
+
+                const reveal = () => {
+                    mainImg.src = url;
+                    mainImg.onload = () => {
+                        mainImg.classList.remove('is-changing');
+                        setBackdrop(url);
+                    };
+                };
+
+                // Give the fade a moment before swapping the source.
+                if (animate) {
+                    setTimeout(reveal, 90);
+                } else {
+                    reveal();
+                }
+
+                mainImg.alt = `Property photo ${currentIndex + 1}`;
+                if (galleryCount) {
+                    galleryCount.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
+                }
+
+                thumbs.forEach(thumb => {
+                    const active = Number(thumb.dataset.index) === currentIndex;
+                    thumb.classList.toggle('active', active);
+                    thumb.setAttribute('aria-current', active ? 'true' : 'false');
+                });
+
+                scrollThumbIntoView(currentIndex);
+            }
+
+            function resetZoom() {
+                zoomed = false;
+                overlay.classList.remove('zoomed');
+                lightboxImg.style.transform = '';
+            }
+
+            function openLightbox(index = currentIndex) {
+                if (!imageUrls.length || !overlay || !lightboxImg) return;
+
+                currentIndex = safeIndex(index);
+                previousFocusedElement = document.activeElement;
+                resetZoom();
+
                 lightboxImg.src = imageUrls[currentIndex];
+                lightboxImg.alt = `Property photo ${currentIndex + 1}`;
                 counter.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
+
                 overlay.classList.add('active');
+                overlay.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
+                closeBtn?.focus();
             }
 
             function closeLightbox() {
-                overlay.classList.remove('active');
+                if (!overlay) return;
+
+                overlay.classList.remove('active', 'zoomed');
+                overlay.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
+                resetZoom();
+
+                if (previousFocusedElement && typeof previousFocusedElement.focus === 'function') {
+                    previousFocusedElement.focus();
+                }
             }
 
-            function goToPrev() {
-                const newIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
-                openLightbox(newIndex);
+            function showLightboxImage(index) {
+                currentIndex = safeIndex(index);
+                lightboxImg.style.opacity = '.35';
+
+                const nextSrc = imageUrls[currentIndex];
+                const preload = new Image();
+
+                preload.onload = () => {
+                    lightboxImg.src = nextSrc;
+                    lightboxImg.alt = `Property photo ${currentIndex + 1}`;
+                    counter.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
+                    lightboxImg.style.opacity = '1';
+                    resetZoom();
+                    updateGallery(currentIndex, false);
+                };
+
+                preload.onerror = () => {
+                    lightboxImg.style.opacity = '1';
+                };
+
+                preload.src = nextSrc;
             }
 
-            function goToNext() {
-                const newIndex = (currentIndex + 1) % imageUrls.length;
-                openLightbox(newIndex);
+            function previousImage() {
+                if (imageUrls.length > 1) showLightboxImage(currentIndex - 1);
             }
 
-            // Click events on gallery images
-            const mainImageContainer = document.querySelector('.property-gallery .main-image');
-            if (mainImageContainer) {
-                mainImageContainer.addEventListener('click', function(e) {
-                    // Don't open if it's a placeholder without image
-                    const img = this.querySelector('img');
-                    if (!img || !img.src || img.src.includes('placeholder')) {
-                        // still open with available images
-                    }
-                    openLightbox(0);
-                });
+            function nextImage() {
+                if (imageUrls.length > 1) showLightboxImage(currentIndex + 1);
             }
 
-            document.querySelectorAll('#thumbGrid .thumb').forEach((thumb, idx) => {
-                thumb.addEventListener('click', function() {
-                    // find the actual image index: if this thumb has a data-index, use it, else use the loop index + 1
-                    const dataIndex = parseInt(this.dataset.index);
-                    let idxToUse = dataIndex ? dataIndex : idx + 1;
-                    // ensure it's within bounds
-                    if (idxToUse >= imageUrls.length) idxToUse = imageUrls.length - 1;
-                    openLightbox(idxToUse);
+            function toggleZoom() {
+                if (!lightboxImg || !overlay) return;
+
+                zoomed = !zoomed;
+                overlay.classList.toggle('zoomed', zoomed);
+                lightboxImg.style.transform = zoomed ? 'scale(1.35)' : '';
+            }
+
+            // Main gallery interactions.
+            galleryPrev?.addEventListener('click', e => {
+                e.stopPropagation();
+                updateGallery(currentIndex - 1);
+            });
+
+            galleryNext?.addEventListener('click', e => {
+                e.stopPropagation();
+                updateGallery(currentIndex + 1);
+            });
+
+            galleryOpen?.addEventListener('click', e => {
+                e.stopPropagation();
+                openLightbox(currentIndex);
+            });
+
+            main?.addEventListener('click', e => {
+                if (e.target.closest('button')) return;
+                openLightbox(currentIndex);
+            });
+
+            main?.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openLightbox(currentIndex);
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    updateGallery(currentIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    updateGallery(currentIndex + 1);
+                }
+            });
+
+            thumbs.forEach(thumb => {
+                thumb.addEventListener('click', () => {
+                    updateGallery(Number(thumb.dataset.index));
                 });
             });
 
-            // Close button
-            closeBtn.addEventListener('click', closeLightbox);
-
-            // Prev / Next
-            prevBtn.addEventListener('click', goToPrev);
-            nextBtn.addEventListener('click', goToNext);
-
-            // Keyboard
-            document.addEventListener('keydown', function(e) {
-                if (!overlay.classList.contains('active')) return;
-                if (e.key === 'Escape') closeLightbox();
-                if (e.key === 'ArrowLeft') goToPrev();
-                if (e.key === 'ArrowRight') goToNext();
+            // Fullscreen viewer controls.
+            closeBtn?.addEventListener('click', closeLightbox);
+            prevBtn?.addEventListener('click', e => {
+                e.stopPropagation();
+                previousImage();
+            });
+            nextBtn?.addEventListener('click', e => {
+                e.stopPropagation();
+                nextImage();
             });
 
-            // Click outside image to close
-            overlay.addEventListener('click', function(e) {
+            lightboxImg?.addEventListener('click', e => {
+                e.stopPropagation();
+                toggleZoom();
+            });
+
+            overlay?.addEventListener('click', e => {
                 if (e.target === overlay || e.target === document.getElementById('lightboxImageWrap')) {
                     closeLightbox();
                 }
             });
 
-            // Touch swipe support
-            let touchStartX = 0;
-            let touchEndX = 0;
-            overlay.addEventListener('touchstart', function(e) {
-                touchStartX = e.changedTouches[0].screenX;
+            // Keyboard navigation.
+            document.addEventListener('keydown', e => {
+                if (!overlay?.classList.contains('active')) return;
+
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    previousImage();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    nextImage();
+                } else if (e.key === ' ' || e.key === 'Enter') {
+                    if (document.activeElement === lightboxImg) {
+                        e.preventDefault();
+                        toggleZoom();
+                    }
+                }
+            });
+
+            // Touch swipe navigation — works on phones and tablets.
+            overlay?.addEventListener('touchstart', e => {
+                if (!e.changedTouches.length) return;
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+                touchMoved = false;
             }, { passive: true });
-            overlay.addEventListener('touchend', function(e) {
-                touchEndX = e.changedTouches[0].screenX;
-                const diff = touchStartX - touchEndX;
-                if (Math.abs(diff) > 40) {
-                    if (diff > 0) goToNext();
-                    else goToPrev();
+
+            overlay?.addEventListener('touchmove', e => {
+                if (!e.changedTouches.length) return;
+
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+
+                if (Math.abs(dx) > 12 || Math.abs(dy) > 12) {
+                    touchMoved = true;
                 }
             }, { passive: true });
 
-            // Expose openLightbox globally so other scripts can use it
+            overlay?.addEventListener('touchend', e => {
+                if (!e.changedTouches.length) return;
+
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+
+                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+                    if (dx < 0) nextImage();
+                    else previousImage();
+                }
+
+                touchMoved = false;
+            }, { passive: true });
+
+            // Keep the current image ready and avoid an empty viewer.
+            if (imageUrls.length) {
+                updateGallery(0, false);
+            } else if (galleryCount) {
+                galleryCount.textContent = '0 / 0';
+            }
+
             window.openLightbox = openLightbox;
             window.closeLightbox = closeLightbox;
 
-            // Set owner ID from context for messaging
-            const ownerIdFromContext = "{{ property.owner.id|default:'0' }}";
-            if (ownerIdFromContext && ownerIdFromContext !== '0') {
-                document.body.dataset.ownerId = ownerIdFromContext;
-            }
-
-            console.log('✅ Lightbox initialized with', imageUrls.length, 'images');
+            console.log('Gallery initialized:', imageUrls.length, 'unique image(s)');
         })();
     </script>
 </body>
