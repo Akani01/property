@@ -369,7 +369,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
     <!-- Stats -->
     <div class="stats-banner">
-      <div class="stat-card"><span class="emoji">💰</span><div class="stat-number" id="statBursaries">{{ bursaries|length }}</div><div class="stat-label">Bursaries</div></div>
+      <div class="stat-card"><span class="emoji">🏛️</span><div class="stat-number" id="statBursaries">{{ bursaries|length }}</div><div class="stat-label">Bursaries</div></div>
       <div class="stat-card"><span class="emoji">🏛️</span><div class="stat-number">{{ universities|length }}</div><div class="stat-label">Universities</div></div>
       <div class="stat-card"><span class="emoji">🏫</span><div class="stat-number">{{ schools|length }}</div><div class="stat-label">Schools</div></div>
       <div class="stat-card"><span class="emoji">📄</span><div class="stat-number">{{ papers|length }}</div><div class="stat-label">Papers</div></div>
@@ -411,7 +411,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           {% if bursary.provider_logo %}
           <div class="edu-img-wrap">
             <img src="{{ bursary.provider_logo.url }}" alt="{{ bursary.title }}" loading="lazy">
-            <span class="edu-badge bursary">💰 Bursary</span>
+            <span class="edu-badge bursary">🏛️ Bursary</span>
             {% if bursary.is_featured %}<span class="edu-badge featured">⭐ Featured</span>{% endif %}
             {% if bursary.days_until_closing and bursary.days_until_closing < 14 %}<span class="edu-badge closing">🔥 Closing soon</span>{% endif %}
           </div>
@@ -734,7 +734,7 @@ function filterContent(){
 let modalType = '';
 function openContentModal(type){
   modalType = type;
-  const titles = { bursary:'💰 Add bursary', university:'🏛️ Add university', school:'🏫 Add school', paper:'📄 Upload question paper', news:'📰 Add news' };
+  const titles = { bursary:'🏛️ Add bursary', university:'🏛️ Add university', school:'🏫 Add school', paper:'📄 Upload question paper', news:'📰 Add news' };
   document.getElementById('modalTitle').innerHTML = `<i class="fas fa-circle-plus"></i>${titles[type] || 'Add content'}`;
   const body = document.getElementById('modalBody');
   let html = '';
