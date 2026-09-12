@@ -1249,7 +1249,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
       <div class="card filter-bar">
         <div class="filter-grid" style="gap:6px;">
           <button class="edu-chip active" data-filter="all" onclick="filterEducation('all', this)">All</button>
-          <button class="edu-chip" data-filter="bursary" onclick="filterEducation('bursary', this)">🏛️ Bursaries</button>
+          <button class="edu-chip" data-filter="bursary" onclick="filterEducation('bursary', this)">🎓 Bursaries</button>
           <button class="edu-chip" data-filter="university" onclick="filterEducation('university', this)">🏛️ Universities</button>
           <button class="edu-chip" data-filter="school" onclick="filterEducation('school', this)">🏫 Schools</button>
           <button class="edu-chip" data-filter="paper" onclick="filterEducation('paper', this)">📄 Papers</button>
@@ -2702,7 +2702,7 @@ function loadEducationContent(){
     fetch('/api/education/question-papers/').then(r=>r.json()).catch(()=>({success:false, papers:[]}))
   ]).then(([bursariesData, universitiesData, schoolsData, papersData])=>{
     const items = [];
-    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'🏛️', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0 }));
+    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'🎓', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0 }));
     (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'🏛️', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0 }));
     (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'🏫', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0 }));
     (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'📄', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0 }));
@@ -2734,7 +2734,7 @@ function renderEducationItems(items, container){
   if (q) filtered = filtered.filter(i=>i.title.toLowerCase().includes(q) || (i.institution||'').toLowerCase().includes(q) || (i.description||'').toLowerCase().includes(q));
   if (!filtered.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-graduation-cap"></i><h4>Nothing here yet</h4><p>${isBusinessUser?'Use the buttons above to add content.':'Check back soon for new listings.'}</p></div>`; return; }
   const groups = { bursary:filtered.filter(i=>i.type==='bursary'), university:filtered.filter(i=>i.type==='university'), school:filtered.filter(i=>i.type==='school'), paper:filtered.filter(i=>i.type==='paper') };
-  const labels = { bursary:{icon:'🏛️', name:'Bursaries', color:'var(--jade)'}, university:{icon:'🏛️', name:'Universities', color:'var(--sky)'}, school:{icon:'🏫', name:'Schools', color:'var(--plum)'}, paper:{icon:'📄', name:'Question papers', color:'var(--coral)'} };
+  const labels = { bursary:{icon:'🎓', name:'Bursaries', color:'var(--jade)'}, university:{icon:'🏛️', name:'Universities', color:'var(--sky)'}, school:{icon:'🏫', name:'Schools', color:'var(--plum)'}, paper:{icon:'📄', name:'Question papers', color:'var(--coral)'} };
   let html = '';
   Object.entries(groups).forEach(([type, typeItems])=>{
     if (!typeItems.length) return;
@@ -2770,7 +2770,6 @@ function renderEducationItems(items, container){
             <div class="edu-card-meta">
               ${item.closing_date?`<span><i class="far fa-calendar"></i> Closes ${new Date(item.closing_date).toLocaleDateString()}</span>`:''}
               ${item.amount?`<span><i class="fas fa-tag"></i> ${escapeHtml(item.amount)}</span>`:''}
-              <span>❤️ ${item.likes||0}</span>
             </div>
           </div>
           <div class="edu-card-foot">

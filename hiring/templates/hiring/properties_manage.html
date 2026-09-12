@@ -951,16 +951,6 @@
                     </div>
                 </div>
 
-                <div class="dropdown-container">
-                    <button class="btn-icon" onclick="toggleDropdown('moreMenu')">
-                        <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <div class="dropdown-menu-custom" id="moreMenu">
-                        <a href="/properties/analytics/" class="dropdown-item"><i class="fas fa-chart-line"></i> Analytics</a>
-                        <a href="/properties/reports/" class="dropdown-item"><i class="fas fa-file-pdf"></i> Reports</a>
-                        <a href="/admin-portal/settings/" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
-                    </div>
-                </div>
             {% endif %}
         </div>
     </header>
@@ -1096,9 +1086,6 @@
                 <div class="card-actions">
                     <a href="{% url 'property_edit' property.id %}" class="btn btn-primary btn-sm">
                         <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <a href="{% url 'property_detail' property.id %}" class="btn btn-outline btn-sm">
-                        <i class="fas fa-eye"></i> View
                     </a>
                     <a href="{% url 'property_rooms_manage' property.id %}" class="btn btn-info btn-sm">
                         <i class="fas fa-door-open"></i> Rooms
