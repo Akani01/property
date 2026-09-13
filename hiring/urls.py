@@ -268,21 +268,18 @@ urlpatterns = [
     path('api/push/subscribe/', views.save_push_subscription, name='save_push_subscription'),
     path('api/push/test/', views.send_test_notification, name='send_test_notification'),
     # PWA Routes
-    path('manifest/', views.pwa_manifest, name='pwa_manifest'),
     path('sw.js', views.pwa_sw, name='pwa_sw'),
     path('offline/', views.offline_page, name='offline_page'),
     
     # WebPush
     
     # PWA Routes with caching
-    path('manifest.json', cache_page(86400)(views.pwa_manifest), name='pwa_manifest'),
     path('sw.js', cache_page(86400)(views.pwa_sw), name='pwa_sw'),
     path('offline/', views.offline_page, name='offline_page'),
     
     # WebPush
     path('webpush/', include('webpush.urls')),
       # PWA Routes - using views directly instead of static files
-    path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
     path('sw.js', views.pwa_sw, name='pwa_sw'),
     # PWA Routes - using views directly instead of static files
     # API Endpoints

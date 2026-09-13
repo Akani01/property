@@ -10273,33 +10273,89 @@ def api_delete_video(request, video_id):
             'error': 'Failed to delete video'
         }, status=500)
 
+
+@cache_control(max_age=3600, public=True)
 def pwa_manifest(request):
-    """Serve PWA manifest"""
-    import os, json
-    from django.conf import settings
-    from django.http import JsonResponse
+    """Serve PWA manifest — embedded, no filesystem dependency."""
+    manifest = {
+        "id": "/?source=pwa",
+        "name": "OppoGlobe - Find Your Dream Property",
+        "short_name": "OppoGlobe",
+        "description": "Property rental, sales, and job platform",
+        "start_url": "/?source=pwa",
+        "scope": "/",
+        "display": "standalone",
+        "display_override": ["window-controls-overlay", "standalone"],
+        "orientation": "portrait",
+        "background_color": "#ffffff",
+        "theme_color": "#c62828",
+        "lang": "en",
+        "dir": "ltr",
+        "categories": ["real estate", "jobs", "property"],
+        "prefer_related_applications": False,
+        "icons": [
+            {"src": "/static/hiring/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-72-maskable.png",  "sizes": "72x72",   "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-96-maskable.png",  "sizes": "96x96",   "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-128-maskable.png", "sizes": "128x128", "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-144-maskable.png", "sizes": "144x144", "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-152-maskable.png", "sizes": "152x152", "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-384-maskable.png", "sizes": "384x384", "type": "image/png", "purpose": "maskable"},
+            {"src": "/static/hiring/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "/static/hiring/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+        "screenshots": [
+            {
+                "src": "/static/hiring/screenshots/desktop.png",
+                "sizes": "1280x720",
+                "type": "image/png",
+                "platform": "wide",
+                "label": "Browse properties on desktop"
+            },
+            {
+                "src": "/static/hiring/screenshots/mobile.png",
+                "sizes": "750x1334",
+                "type": "image/png",
+                "platform": "narrow",
+                "label": "Search rentals and jobs on mobile"
+            }
+        ],
+        "shortcuts": [
+            {
+                "name": "Properties",
+                "short_name": "Properties",
+                "description": "View available properties",
+                "url": "/?tab=properties",
+                "icons": [{"src": "/static/hiring/icons/shortcut-properties.png", "sizes": "96x96", "type": "image/png"}]
+            },
+            {
+                "name": "Jobs",
+                "short_name": "Jobs",
+                "description": "Browse job listings",
+                "url": "/?tab=jobs",
+                "icons": [{"src": "/static/hiring/icons/shortcut-jobs.png", "sizes": "96x96", "type": "image/png"}]
+            },
+            {
+                "name": "Maintenance",
+                "short_name": "Maintenance",
+                "description": "Submit maintenance requests",
+                "url": "/?tab=maintenance",
+                "icons": [{"src": "/static/hiring/icons/shortcut-maintenance.png", "sizes": "96x96", "type": "image/png"}]
+            }
+        ]
+    }
+    response = JsonResponse(manifest, content_type='application/manifest+json')
+    response['Cache-Control'] = 'public, max-age=3600'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
-    possible_paths = [
-        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'manifest.json'),
-        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'manifest.json'),
-        os.path.join(settings.STATIC_ROOT, 'hiring', 'js', 'manifest.json'),
-        os.path.join(settings.STATIC_ROOT, 'hiring', 'manifest.json'),
-    ]
-
-    for path in possible_paths:
-        print(f"Checking: {path}")
-        if os.path.exists(path):
-            print(f"✅ FOUND at: {path}")
-            with open(path, 'r', encoding='utf-8') as f:
-                manifest_data = json.load(f)
-            return JsonResponse(
-                manifest_data,
-                content_type='application/manifest+json',
-                json_dumps_params={'indent': 2}
-            )
-
-    print("❌ Manifest not found in any location")
-    return JsonResponse({'error': 'Manifest not found'}, status=404)
     
 def pwa_sw(request):
     """Serve service worker"""
@@ -10623,43 +10679,6 @@ def send_test_notification(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
-
-@cache_control(max_age=86400, public=True)
-def pwa_manifest(request):
-    """Serve PWA manifest with caching to avoid rate limiting"""
-    # Try to find manifest in multiple locations
-    paths = [
-        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'manifest.json'),
-        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'manifest.json'),
-        os.path.join(settings.STATIC_ROOT, 'hiring', 'manifest.json'),
-    ]
-    
-    for path in paths:
-        if os.path.exists(path):
-            with open(path, 'r') as f:
-                data = json.load(f)
-            response = JsonResponse(data, content_type='application/json')
-            response['Cache-Control'] = 'public, max-age=86400'
-            response['Access-Control-Allow-Origin'] = '*'
-            return response
-    
-    # Fallback - return inline manifest
-    fallback_manifest = {
-        "name": "OppoGlobe - Find Your Dream Property",
-        "short_name": "OppoGlobe",
-        "start_url": "/",
-        "display": "standalone",
-        "background_color": "#ffffff",
-        "theme_color": "#c62828",
-        "icons": [
-            {"src": "/static/hiring/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
-            {"src": "/static/hiring/icons/icon-512.png", "sizes": "512x512", "type": "image/png"}
-        ]
-    }
-    response = JsonResponse(fallback_manifest, content_type='application/json')
-    response['Cache-Control'] = 'public, max-age=86400'
-    return response
 
 @cache_control(max_age=86400, public=True)
 def pwa_sw(request):
