@@ -1,3 +1,60 @@
+"""
+Django management command: generate_icons
+
+Regenerates the ENTIRE PWA icon set (all manifest.json sizes, in both
+"any" and "maskable" purpose, plus favicon.ico and apple-touch-icon.png)
+from a single master logo file.
+
+INSTALL
+-------
+Put this file at:
+    <your_app>/management/commands/generate_icons.py
+
+(Django needs an __init__.py in both `management/` and
+`management/commands/` folders — create empty ones if they don't exist.)
+
+USAGE
+-----
+    python manage.py generate_icons /path/to/master_logo.png
+
+Optional flags:
+    --output   folder to write icons into
+               (default: static/hiring/icons)
+    --color    hex background color used as padding on maskable icons
+               (default: #0d823c — sampled from your OppoGlobe green)
+
+WHAT IT DOES
+------------
+For every size in [72, 96, 128, 144, 152, 192, 384, 512]:
+  - icon-<size>.png            -> full-bleed resize of your master logo
+  - icon-<size>-maskable.png   -> your logo shrunk to 80% and padded with
+                                   brand-color background, so Android/OS
+                                   masking (circle, squircle, etc.) never
+                                   crops off the "G" mark or wordmark
+
+Also writes:
+  - favicon.ico            (16/32/48 multi-size)
+  - apple-touch-icon.png   (180x180, iOS home screen)
+
+This matches exactly the filenames already referenced in your
+manifest.json, so no manifest changes are needed — just drop these
+files where STATICFILES_DIRS / your manifest paths expect them
+(e.g. /static/hiring/icons/).
+
+NOTE ON MASTER LOGO
+--------------------
+For best results, use a master file that is:
+  - square (1:1)
+  - full-bleed (the brand-color background fills the entire square,
+    no transparent or white corners) — Android/iOS apply their own
+    rounding/masking, so a pre-rounded PNG produces visible artifacts
+    at small sizes.
+  - at least 512x512, ideally 1024x1024
+
+If your current logo file has transparent or white corners (common
+when exporting from a rounded app-icon mockup), crop/flatten it onto
+a solid or gradient background first.
+"""
 
 import os
 from django.core.management.base import BaseCommand, CommandError
