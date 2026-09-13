@@ -10275,24 +10275,32 @@ def api_delete_video(request, video_id):
 
 def pwa_manifest(request):
     """Serve PWA manifest"""
-    # Try multiple possible paths
+    import os, json
+    from django.conf import settings
+    from django.http import JsonResponse
+
     possible_paths = [
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'manifest.json'),
         os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'manifest.json'),
-        os.path.join('hiring', 'static', 'hiring', 'manifest.json'),
+        os.path.join(settings.STATIC_ROOT, 'hiring', 'js', 'manifest.json'),
         os.path.join(settings.STATIC_ROOT, 'hiring', 'manifest.json'),
     ]
-    
+
     for path in possible_paths:
-        print(f"Checking: {path}")  # Check console to see where it's looking
+        print(f"Checking: {path}")
         if os.path.exists(path):
             print(f"✅ FOUND at: {path}")
-            with open(path, 'r') as f:
+            with open(path, 'r', encoding='utf-8') as f:
                 manifest_data = json.load(f)
-            return JsonResponse(manifest_data, content_type='application/json')
-    
+            return JsonResponse(
+                manifest_data,
+                content_type='application/manifest+json',
+                json_dumps_params={'indent': 2}
+            )
+
     print("❌ Manifest not found in any location")
     return JsonResponse({'error': 'Manifest not found'}, status=404)
-
+    
 def pwa_sw(request):
     """Serve service worker"""
     sw_path = os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'sw.js')

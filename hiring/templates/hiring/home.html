@@ -16,6 +16,23 @@
 <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}" />
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+# app data
+<!-- 1. Manifest link -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- 2. Viewport for mobile scaling -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- 3. Theme color for status bar -->
+<meta name="theme-color" content="#c62828">
+
+<!-- 4. iOS home screen icon -->
+<link rel="apple-touch-icon" href="/static/hiring/icons/icon-192.png">
+
+<!-- 5. iOS standalone mode -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="OppoGlobe">
 
 <style>
 /* ============================================================
@@ -784,6 +801,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .jb.apply{background:transparent; color:var(--jade-deep); border:1.5px solid var(--jade);}
 .jb.apply:hover{background:var(--jade); color:#fff;}
 .jb.applied{background:var(--success); color:#fff;}
+.jb.message{background:transparent; color:var(--sky); border:1.5px solid var(--sky);}
+.jb.message:hover{background:var(--sky); color:#fff;}
 
 /* ============================================================
    EMPTY / LOADING STATES
@@ -1018,6 +1037,15 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .btn-primary{background:var(--jade); border-color:var(--jade);}
 .btn-primary:hover{background:var(--jade-deep); border-color:var(--jade-deep);}
 .password-toggle{position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--ink-faint);}
+
+/* ---- Generic "message the poster" chip used on maintenance/job/education cards ---- */
+.msg-owner-chip{
+  display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:99px; cursor:pointer;
+  background:var(--jade-wash); color:var(--jade-deep); font-size:10.5px; font-weight:700; border:none;
+  transition:background .15s, box-shadow .15s;
+}
+.msg-owner-chip:hover{background:var(--jade); color:#fff; box-shadow:0 2px 8px rgba(31,111,92,.3);}
+.msg-owner-chip i{font-size:10px;}
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -1455,7 +1483,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           <div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div>
         </div>
         <h4>Talk to your neighbours</h4>
-        <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed.</p>
+        <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed. You can also message whoever posted a maintenance request, job, bursary or university listing.</p>
       </div>
 
       <!-- Slide 4: Maintenance -->
@@ -2055,6 +2083,66 @@ function resolveOwner(p){
   ownerInitial = (ownerName.charAt(0) || 'U').toUpperCase();
   return { ownerId, ownerName, ownerInitial, isOwner, ownerBadge };
 }
+
+/* ============================================================
+   GENERIC "MESSAGE THE POSTER" — works across maintenance,
+   jobs, and education listings, following the same pattern
+   as resolveOwner()/messagePropertyOwner() above but with a
+   wider set of possible field names since different endpoints
+   may name the "who created this" field differently.
+
+   NOTE: if your maintenance/jobs/education API responses use
+   a field name that isn't in ownerKeyCandidates below, just
+   add it to the array — check your Network tab response JSON
+   for the real key your backend serializer uses.
+   ============================================================ */
+function resolveGenericOwner(obj){
+  if (!obj) return { ownerId:0, ownerName:'Unknown', isOwner:false };
+  const ownerKeyCandidates = ['owner','posted_by','created_by','author','user','uploaded_by','reported_by','employer','provider_user'];
+  let ownerId = 0, ownerName = '';
+  for (const key of ownerKeyCandidates){
+    const val = obj[key];
+    if (val === undefined || val === null) continue;
+    if (typeof val === 'object'){ ownerId = val.id || val.user_id || 0; ownerName = val.username || val.name || ''; break; }
+    if (typeof val === 'number'){ ownerId = val; break; }
+  }
+  if (!ownerName){
+    ownerName = obj.owner_name || obj.author_name || obj.posted_by_name || obj.created_by_name
+      || obj.reported_by_name || obj.uploaded_by_name || obj.company_name || obj.provider || 'Unknown';
+  }
+  const isOwner = !!ownerId && ownerId === currentUserId;
+  if (isOwner) ownerName = currentUsername || 'You';
+  return { ownerId, ownerName, isOwner };
+}
+
+function messageAbout(ownerId, isOwner, subjectTitle, ownYourselfMsg){
+  if (!requireLogin()) return;
+  if (isOwner) return showToast(ownYourselfMsg || "That's yours",'info');
+  if (!ownerId) return showToast('Contact info not available for this listing','warning');
+  window.location.href = `/messaging/?user_id=${ownerId}&property=${encodeURIComponent(subjectTitle||'')}`;
+}
+
+function messageMaintenanceOwner(requestId){
+  const req = allMaintenanceRequests.find(r=>String(r.id)===String(requestId));
+  if (!req) return showToast('Request not found','error');
+  const { ownerId, isOwner } = resolveGenericOwner(req);
+  messageAbout(ownerId, isOwner, req.title || 'Maintenance request', "That's your own request");
+}
+
+function messageJobPoster(jobId){
+  const job = allJobs.find(j=>String(j.id)===String(jobId));
+  if (!job) return showToast('Job not found','error');
+  const { ownerId, isOwner } = resolveGenericOwner(job);
+  messageAbout(ownerId, isOwner, job.title || 'Job listing', "That's your own job post");
+}
+
+function messageEducationOwner(type, id){
+  const item = allEducationItems.find(i=>i.type===type && String(i.id)===String(id));
+  if (!item) return showToast('Listing not found','error');
+  const { ownerId, isOwner } = resolveGenericOwner(item);
+  messageAbout(ownerId, isOwner, item.title || 'Education listing', "That's yours");
+}
+
 function renderStars(rating){
   const full = Math.floor(rating), half = rating % 1 >= 0.5;
   return '★'.repeat(full) + (half?'½':'') + '☆'.repeat(Math.max(0,5-full-(half?1:0)));
@@ -2432,6 +2520,7 @@ function renderMaintenanceFeed(requests){
           </div>
           <span style="font-size:10.5px; color:var(--ink-faint);"><i class="far fa-clock me-1"></i>${timeAgo(r.created_at)} ${r.location?`· <i class="fas fa-location-dot me-1"></i>${escapeHtml(r.location)}`:''}</span>
         </div>
+        <button class="icon-btn" style="width:32px;height:32px;font-size:13px;color:var(--jade-deep);" onclick="messageMaintenanceOwner('${r.id}')" title="Message whoever reported this"><i class="fas fa-comment-dots"></i></button>
         <div class="dropdown ms-auto"><button class="btn btn-sm" data-bs-toggle="dropdown" style="background:none; border:none;"><i class="fas fa-ellipsis-vertical"></i></button>
           <ul class="dropdown-menu dropdown-menu-end" style="font-size:12.5px;">
             <li><a class="dropdown-item" href="#" onclick="editMaintenanceRequest('${r.id}')"><i class="fas fa-pen me-2"></i>Edit</a></li>
@@ -2536,7 +2625,7 @@ function renderJobs(jobs){
     <div class="job-head"><div class="job-logo"><i class="fas fa-building"></i></div><div><div class="job-title">${escapeHtml(j.title||'Untitled')}</div><div class="job-company">${escapeHtml(j.company_name||'Unknown')}</div></div></div>
     <div class="job-meta"><span class="job-meta-item"><i class="fas fa-location-dot"></i>${escapeHtml(j.location||'N/A')}</span><span class="job-meta-item"><i class="far fa-clock"></i>${escapeHtml(j.employment_type||'Full-time')}</span><span class="job-meta-item"><i class="fas fa-money-bill-wave"></i>${escapeHtml(j.salary||'Competitive')}</span></div>
     <p class="job-desc">${escapeHtml((j.position_summary||'No description').substring(0,140))}…</p>
-    <div class="job-foot"><button class="jb view" onclick="viewJob('${j.id}')">View</button><button class="jb apply" onclick="applyForJob('${j.id}', this)">Apply</button></div>
+    <div class="job-foot"><button class="jb view" onclick="viewJob('${j.id}')">View</button><button class="jb message" onclick="messageJobPoster('${j.id}')"><i class="fas fa-comment-dots"></i> Message</button><button class="jb apply" onclick="applyForJob('${j.id}', this)">Apply</button></div>
   </div>`).join('');
 }
 function renderTrendingJobs(jobs){
@@ -2702,10 +2791,14 @@ function loadEducationContent(){
     fetch('/api/education/question-papers/').then(r=>r.json()).catch(()=>({success:false, papers:[]}))
   ]).then(([bursariesData, universitiesData, schoolsData, papersData])=>{
     const items = [];
-    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'🎓', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0 }));
-    (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'🏛️', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0 }));
-    (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'🏫', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0 }));
-    (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'📄', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0 }));
+    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'🎓', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0,
+      owner:b.owner || b.posted_by || b.created_by || b.uploaded_by || null, owner_name:b.owner_name || b.posted_by_name || b.provider || null }));
+    (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'🏛️', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0,
+      owner:u.owner || u.posted_by || u.created_by || u.uploaded_by || null, owner_name:u.owner_name || u.posted_by_name || null }));
+    (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'🏫', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0,
+      owner:s.owner || s.posted_by || s.created_by || s.uploaded_by || null, owner_name:s.owner_name || s.posted_by_name || null }));
+    (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'📄', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0,
+      owner:p.owner || p.posted_by || p.created_by || p.uploaded_by || null, owner_name:p.owner_name || p.posted_by_name || null }));
     allEducationItems = items;
     renderEduMiniScroll(items.slice(0,8));
     renderEducationItems(items, container);
@@ -2774,6 +2867,7 @@ function renderEducationItems(items, container){
           </div>
           <div class="edu-card-foot">
             <button class="edu-go-btn" onclick="event.stopPropagation();viewEducationItem('${item.type}','${item.id}')">${item.type==='bursary'?'Apply now':'View details'}</button>
+            <button class="edu-share-btn" onclick="event.stopPropagation();messageEducationOwner('${item.type}','${item.id}')" title="Message the poster"><i class="fas fa-comment-dots"></i></button>
             <button class="edu-share-btn" onclick="event.stopPropagation();shareEducationItem('${item.type}','${item.id}','${escapeHtml(item.title).replace(/'/g,"\\'")}')"><i class="fas fa-share-nodes"></i></button>
           </div>
         </div>`;

@@ -6,7 +6,7 @@
     <meta name="description" content="OppoGlobe — Homes, Jobs & Neighbourhood Life">
     <meta name="author" content="OppoGlobe">
     <title>{% block title %}OppoGlobe — Homes, Jobs & Neighbourhood Life{% endblock %}</title>
-
+   
     <!-- PWA & static -->
     {% load static %}
     {% load pwa %}
@@ -17,7 +17,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-    
+    <!-- 1. Manifest link -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- 2. Viewport for mobile scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <!-- 3. Theme color for status bar -->
+    <meta name="theme-color" content="#c62828">
+
+    <!-- 4. iOS home screen icon -->
+    <link rel="apple-touch-icon" href="/static/hiring/icons/icon-192.png">
+
+    <!-- 5. iOS standalone mode -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="OppoGlobe">
+
     <!-- Custom notifications & extra CSS -->
     <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
