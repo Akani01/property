@@ -6,13 +6,23 @@ from django.conf.urls.static import static
 from django.http import HttpResponseRedirect
 from education import views as education_views
 from hiring import views as hiring_views
+from django.http import FileResponse, Http404
+from django.conf import settings
+import os
+
+
+def assetlinks(request):
+    path = os.path.join(settings.BASE_DIR, "assetlinks.json")
+    if not os.path.exists(path):
+        raise Http404("assetlinks.json not found")
+    return FileResponse(open(path, "rb"), content_type="application/json")
 
 urlpatterns = [
     # ============================================================
     # CUSTOM PWA MANIFEST — registered FIRST so it wins
     # ============================================================
     path('manifest.json', hiring_views.pwa_manifest, name='custom_pwa_manifest'),
-
+    path(".well-known/assetlinks.json", assetlinks),
     path('admin/', admin.site.urls),
     path('', include('hiring.urls')),
     path('', include('pwa.urls')),

@@ -2051,30 +2051,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                         <span class="label">Listing Type</span>
                         <span class="value">{{ property.get_listing_type_display|default:"Not specified" }}</span>
                     </div>
-                    <div class="info-row">
-                        <span class="label">Status</span>
-                        <span class="value">
-                            <span class="badge-status {{ property.status }}">
-                                {{ property.get_status_display }}
-                            </span>
-                        </span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">Bedrooms</span>
-                        <span class="value">{{ property.bedrooms|default:"0" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">Bathrooms</span>
-                        <span class="value">{{ property.bathrooms|default:"0" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">Garages</span>
-                        <span class="value">{{ property.garages|default:"0" }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">Total Area</span>
-                        <span class="value">{{ property.total_area|default:"N/A" }} m²</span>
-                    </div>
+                   
                     <div class="info-row">
                         <span class="label">Minimum Stay</span>
                         <span class="value">{{ property.minimum_stay|default:"1" }} {{ property.get_booking_unit_display|default:"night" }}(s)</span>
@@ -2095,7 +2072,42 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                         </span>
                         {% endfor %}
                         {% else %}
-                        <span class="text-muted" style="font-size:14px;">No features listed</span>
+                        <div class="info-row">
+                            <span class="label">Status</span>
+                            <span class="value">
+                                <span class="badge-status {{ property.status }}">
+                                    {{ property.get_status_display }}
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Bedrooms</span>
+                            <span class="value">
+                                {{ property.bedrooms|default:"0" }}
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Bathrooms</span>
+                            <span class="value">
+                                {{ property.bathrooms|default:"0" }}
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Garages</span>
+                            <span class="value">
+                                {{ property.garages|default:"0" }}
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="label">Total Area</span>
+                            <span class="value">
+                                {{ property.total_area|default:"N/A" }} m²
+                            </span>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
