@@ -127,7 +127,7 @@ urlpatterns = [
     path('agent/create/', views.agent_profile_create, name='agent_profile_create'),
     path('agent/edit/<int:agent_id>/', views.agent_profile_edit, name='agent_profile_edit'),
     path('agent/<int:agent_id>/', views.agent_profile_view, name='agent_profile_view'),
-
+    path('property-map/', views.property_map, name='property_map'),
     # ============================================================
     # PROPERTY DETAIL PAGE - USE 'pk' to match the view
     # ============================================================

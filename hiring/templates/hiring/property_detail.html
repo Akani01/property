@@ -1864,6 +1864,273 @@
                 top: 0;
             }
         }
+
+
+        /* ===== 2026 PROPERTY DETAIL POLISH ===== */
+        .main-layout {
+            max-width: 1360px;
+            padding-left: clamp(12px, 2vw, 28px);
+            padding-right: clamp(12px, 2vw, 28px);
+        }
+
+        /* Critical gallery fix: gallery height is now bounded regardless of photo count. */
+        .property-gallery {
+            grid-template-columns: minmax(0, 1fr) 300px;
+            align-items: stretch;
+            height: clamp(390px, 46vw, 560px);
+            max-height: 560px;
+            min-height: 390px;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .property-gallery .main-image {
+            height: 100%;
+            min-height: 0;
+            border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(32,33,36,.10);
+        }
+
+        .property-gallery .main-image img {
+            object-fit: cover;
+        }
+
+        .property-gallery .thumb-grid {
+            height: 100%;
+            min-height: 0;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: 132px;
+            align-content: start;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 3px;
+            scrollbar-width: thin;
+            overscroll-behavior: contain;
+        }
+
+        .property-gallery .thumb-grid::-webkit-scrollbar { width: 6px; }
+        .property-gallery .thumb-grid::-webkit-scrollbar-thumb { background: #cfd3d8; border-radius: 999px; }
+        .property-gallery .thumb-grid .thumb { height: 132px; min-height: 132px; }
+
+        .info-grid {
+            align-items: start;
+            grid-template-columns: minmax(0, 1.65fr) minmax(310px, .75fr);
+            gap: 24px;
+        }
+
+        .info-card,
+        .sidebar-card {
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(32,33,36,.05);
+        }
+
+        .info-card .card-title,
+        .sidebar-card .card-title {
+            font-weight: 700;
+            letter-spacing: -.01em;
+        }
+
+        /* Cleaner action card */
+        .sidebar-card .action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+        .sidebar-card .action-btns .btn:first-child { grid-column: 1 / -1; }
+        .sidebar-card .action-btns .btn-danger {
+            background: #fff1f0;
+            color: #c5221f;
+            border: 1px solid #ffd4d1;
+        }
+        .sidebar-card .action-btns .btn-danger:hover {
+            background: #c5221f;
+            color: #fff;
+        }
+
+        /* Agent card redesign */
+        .agent-card {
+            overflow: hidden;
+            padding: 0;
+        }
+        .agent-card > .card-title {
+            margin: 0;
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #fbfdff 0%, #fff 100%);
+        }
+        .agent-card > .d-flex {
+            margin: 0 !important;
+            padding: 18px 20px 12px;
+            align-items: center !important;
+        }
+        .agent-card > .d-flex > div:first-child {
+            width: 58px !important;
+            height: 58px !important;
+            border-radius: 16px !important;
+            font-size: 22px !important;
+            box-shadow: 0 6px 18px rgba(102,126,234,.24);
+        }
+        .agent-card > .d-flex > div:last-child { min-width: 0; }
+        .agent-card > .d-flex > div:last-child > div:first-child {
+            font-size: 16px !important;
+            font-weight: 750 !important;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+        .agent-card > div[style*="margin-bottom:10px"] { margin: 0 20px 10px !important; }
+        .agent-card > div[style*="max-height:60px"] {
+            margin: 0 20px 14px !important;
+            max-height: none !important;
+            padding: 11px 12px !important;
+            border-radius: 10px !important;
+        }
+        .agent-card > .mb-3 { margin: 0 20px 14px !important; }
+        .agent-card .contact-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 20px 18px;
+        }
+        .agent-card .contact-methods .social-btn.message {
+            grid-column: 1 / -1;
+            min-height: 48px;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a73e8, #6c63ff);
+        }
+        .agent-card .contact-methods .social-btn {
+            min-height: 42px;
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 12px;
+            box-shadow: none;
+        }
+        .agent-card .social-links-mini {
+            gap: 7px;
+            padding: 0 20px 16px;
+            margin-top: 0;
+        }
+        .agent-card .social-links-mini .social-btn {
+            width: 36px;
+            height: 36px;
+            min-height: 36px;
+            padding: 0;
+            border-radius: 50%;
+        }
+        .agent-card > div[style*="text-align:center"] {
+            padding: 14px 20px 18px !important;
+            margin: 0 !important;
+        }
+
+        /* Map: full interactive Google Maps surface + property overlay. */
+        .location-map-container {
+            height: 360px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+        }
+        .detail-property-map {
+            width: 100%;
+            height: 100%;
+        }
+        .map-property-overlay {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 14px;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: 42px minmax(0,1fr) 38px;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(218,220,224,.9);
+            border-radius: 13px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.14);
+        }
+        .map-property-overlay-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .map-property-overlay-copy { min-width: 0; }
+        .map-property-overlay-copy strong,
+        .map-property-overlay-copy span {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .map-property-overlay-copy strong { font-size: 13px; }
+        .map-property-overlay-copy span { font-size: 11px; color: var(--gray); margin-top: 1px; }
+        .map-property-overlay-link {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: #fff;
+        }
+        .map-property-overlay-link:hover { color:#fff; background:var(--primary-dark); }
+        .map-actions { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
+        .map-actions .btn-map { width:100%; min-height:42px; }
+
+        @media (max-width: 1100px) {
+            .property-gallery { grid-template-columns: minmax(0,1fr) 250px; }
+            .property-gallery .thumb-grid { grid-template-columns: 1fr; grid-auto-rows: 105px; }
+            .property-gallery .thumb-grid .thumb { height:105px; min-height:105px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .sidebar-card { position:relative !important; top:auto !important; }
+        }
+
+        @media (max-width: 767px) {
+            .main-layout { padding-left: 10px; padding-right:10px; }
+            .property-gallery {
+                display:block;
+                height:auto;
+                min-height:0;
+                max-height:none;
+                margin-bottom:16px;
+            }
+            .property-gallery .main-image {
+                height: min(68vw, 430px);
+                min-height: 250px;
+                border-radius:14px;
+            }
+            .property-gallery .thumb-grid {
+                display:flex;
+                height:auto;
+                overflow-x:auto;
+                overflow-y:hidden;
+                padding:8px 2px 3px;
+            }
+            .property-gallery .thumb-grid .thumb {
+                flex:0 0 96px;
+                width:96px;
+                height:70px;
+                min-height:70px;
+            }
+            .sidebar-card .action-btns { grid-template-columns:1fr; }
+            .sidebar-card .action-btns .btn:first-child { grid-column:auto; }
+            .agent-card .contact-methods { grid-template-columns:1fr 1fr; }
+            .map-actions { grid-template-columns:1fr; }
+            .location-map-container { height: 300px; }
+        }
+
+        @media (max-width: 480px) {
+            .agent-card .contact-methods { grid-template-columns:1fr; }
+            .agent-card .contact-methods .social-btn.message { grid-column:auto; }
+            .map-property-overlay { left:8px; right:8px; bottom:8px; }
+        }
     </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}"
@@ -1895,7 +2162,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             <i class="fas fa-chart-bar"></i>
             <span class="tooltip-text">Analytics</span>
         </a>
-        <a href="#" class="nav-link" title="Map View">
+        <a href="/property-map/?property={{ property.id }}" class="nav-link" title="Map View">
             <i class="fas fa-map"></i>
             <span class="tooltip-text">Map View</span>
         </a>
@@ -2152,8 +2419,17 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                     <!-- Map -->
                     <div class="location-map-container">
                         {% if property.latitude and property.longitude %}
-                        <iframe src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_MAPS_API_KEY }}&q={{ property.latitude }},{{ property.longitude }}&zoom=15" allowfullscreen loading="lazy">
-                        </iframe>
+                        <div id="detailPropertyMap" class="detail-property-map" aria-label="Map showing {{ property.title|escape }}"></div>
+                        <div class="map-property-overlay">
+                            <div class="map-property-overlay-icon"><i class="fas fa-home"></i></div>
+                            <div class="map-property-overlay-copy">
+                                <strong>{{ property.title }}</strong>
+                                <span>{{ property.address|default:property.city }}</span>
+                            </div>
+                            <a href="/property-map/?property={{ property.id }}" class="map-property-overlay-link" title="Open full property map">
+                                <i class="fas fa-up-right-from-square"></i>
+                            </a>
+                        </div>
                         {% elif property.address %}
                         <div class="map-placeholder">
                             <i class="fas fa-map-pin" style="color:var(--primary);"></i>
@@ -2188,7 +2464,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                             <i class="fas fa-external-link-alt"></i> View on Maps
                         </a>
                         {% endif %}
-                        <a href="/property-map/" class="btn-map btn-map-secondary">
+                        <a href="/property-map/?property={{ property.id }}" class="btn-map btn-map-secondary">
                             <i class="fas fa-map"></i> Open Map View
                         </a>
                     </div>
@@ -2247,7 +2523,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                 <!-- ============================================================
                      AGENT / OWNER CARD
                      ============================================================ -->
-                <div class="sidebar-card">
+                <div class="sidebar-card agent-card">
                     <div class="card-title"><i class="fas fa-user-tie"></i> Agent / Owner</div>
 
                     <!-- Agent Info -->
@@ -2997,5 +3273,52 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             console.log('Gallery initialized:', imageUrls.length, 'unique image(s)');
         })();
     </script>
+
+    {% if property.latitude and property.longitude %}
+    <script>
+        function initDetailPropertyMap() {
+            const el = document.getElementById('detailPropertyMap');
+            if (!el || !window.google || !google.maps) return;
+
+            const propertyPosition = {
+                lat: Number('{{ property.latitude|escapejs }}'),
+                lng: Number('{{ property.longitude|escapejs }}')
+            };
+
+            if (!Number.isFinite(propertyPosition.lat) || !Number.isFinite(propertyPosition.lng)) return;
+
+            const detailMap = new google.maps.Map(el, {
+                center: propertyPosition,
+                zoom: 16,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                streetViewControl: true,
+                gestureHandling: 'cooperative',
+                clickableIcons: false,
+                styles: [{ featureType: 'poi.business', stylers: [{ visibility: 'off' }] }]
+            });
+
+            const marker = new google.maps.Marker({
+                map: detailMap,
+                position: propertyPosition,
+                title: '{{ property.title|escapejs }}',
+                animation: google.maps.Animation.DROP
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family:Segoe UI,system-ui,sans-serif;max-width:240px;padding:4px 2px;">
+                        <div style="font-weight:700;font-size:14px;margin-bottom:4px;">{{ property.title|escapejs }}</div>
+                        <div style="font-size:11px;color:#5f6368;margin-bottom:8px;">{{ property.address|default:property.city|escapejs }}</div>
+                        <div style="font-weight:700;color:#1a73e8;font-size:13px;">{{ property.price_currency|default:"ZAR" }} {{ property.base_price|floatformat:0 }}</div>
+                    </div>`
+            });
+
+            marker.addListener('click', () => infoWindow.open({ map: detailMap, anchor: marker }));
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initDetailPropertyMap" async defer></script>
+    {% endif %}
+
 </body>
 </html>

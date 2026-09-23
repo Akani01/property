@@ -78,7 +78,7 @@
 
   --ease:cubic-bezier(.34,1.2,.4,1);
   --header-h:64px;
-  --bottom-nav-h:66px;
+  --bottom-nav-h:74px;
   --safe-b:env(safe-area-inset-bottom, 0px);
 }
 
@@ -661,14 +661,52 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .edu-upload-strip button{padding:5px 14px; border-radius:99px; border:none; font-size:10.5px; font-weight:700; cursor:pointer; background:var(--gold); color:#3c2c05;}
 .edu-upload-strip button.outline{background:transparent; border:1px solid var(--gold); color:#7a5c14;}
 
-.edu-chip{padding:4px 12px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font-size:11.5px; cursor:pointer; font-weight:600;}
-.edu-chip:hover{border-color:var(--jade);}
-.edu-chip.active{background:var(--jade); border-color:var(--jade); color:#fff;}
+/* Education discovery navigator — consistent icon language, no emoji clutter */
+.edu-discovery{
+  position:relative; overflow:hidden; padding:14px; border:1px solid var(--line);
+  border-radius:var(--radius-md); background:linear-gradient(145deg,#fff 0%,#fbfcfa 100%);
+  box-shadow:var(--shadow-sm);
+}
+.edu-discovery::after{content:'';position:absolute;width:180px;height:180px;right:-95px;top:-110px;border-radius:50%;background:radial-gradient(circle,rgba(31,111,92,.12),transparent 68%);pointer-events:none;}
+.edu-discovery-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px;position:relative;z-index:1;}
+.edu-discovery-copy{min-width:0;}
+.edu-discovery-eyebrow{display:flex;align-items:center;gap:7px;color:var(--jade-deep);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.11em;margin-bottom:3px;}
+.edu-discovery-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink);}
+.edu-discovery-sub{font-size:11.5px;color:var(--ink-faint);margin-top:2px;}
+.edu-search-wrap{position:relative;flex:0 1 220px;min-width:160px;}
+.edu-search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-faint);pointer-events:none;}
+.edu-search-wrap input{width:100%;min-height:38px;padding:9px 12px 9px 33px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:12px;color:var(--ink);outline:none;}
+.edu-search-wrap input:focus{background:#fff;border-color:var(--jade);box-shadow:0 0 0 3px rgba(31,111,92,.08);}
+.edu-filter-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;position:relative;z-index:1;}
+.edu-chip{
+  min-width:0;min-height:52px;padding:8px 8px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);font-size:10.5px;cursor:pointer;font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;
+  transition:transform .16s var(--ease),border-color .16s,background .16s,color .16s,box-shadow .16s;
+}
+.edu-chip .edu-chip-icon{width:25px;height:25px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--paper);font-size:11px;color:var(--jade-deep);transition:inherit;}
+.edu-chip:hover{border-color:#cbd8d1;transform:translateY(-1px);box-shadow:0 5px 14px rgba(22,36,31,.06);}
+.edu-chip.active{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(22,36,31,.14);}
+.edu-chip.active .edu-chip-icon{background:rgba(255,255,255,.13);color:#fff;}
+.edu-chip[data-filter="bursary"] .edu-chip-icon{color:var(--jade-deep);background:var(--jade-wash);}
+.edu-chip[data-filter="university"] .edu-chip-icon{color:var(--sky);background:var(--sky-wash);}
+.edu-chip[data-filter="school"] .edu-chip-icon{color:var(--plum);background:var(--plum-wash);}
+.edu-chip[data-filter="paper"] .edu-chip-icon{color:var(--coral-deep);background:var(--coral-wash);}
+.edu-chip.active .edu-chip-icon{color:#fff;background:rgba(255,255,255,.13);}
 
-.edu-group-head{display:flex; align-items:center; gap:8px; margin-bottom:14px; padding:0 2px;}
-.edu-group-head .badge-icon{font-size:19px;}
+.edu-group-head{display:flex; align-items:center; gap:9px; margin-bottom:14px; padding:0 2px;}
+.edu-group-head .badge-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--jade-wash);color:var(--jade-deep);border:1px solid rgba(31,111,92,.12);}
 .edu-group-head .name{font-size:15px; font-weight:700; font-family:var(--font-display);}
 .edu-group-head .count{font-size:10px; color:var(--ink-faint); background:var(--paper); padding:2px 11px; border-radius:99px; font-weight:600;}
+
+@media (max-width:640px){
+  .edu-discovery{padding:12px;}
+  .edu-discovery-top{display:block;margin-bottom:10px;}
+  .edu-search-wrap{margin-top:10px;max-width:none;min-width:0;}
+  .edu-filter-row{grid-template-columns:repeat(5,minmax(68px,1fr));overflow-x:auto;padding-bottom:3px;scrollbar-width:none;}
+  .edu-filter-row::-webkit-scrollbar{display:none;}
+  .edu-chip{min-width:68px;min-height:50px;}
+}
 
 .edu-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:transform .18s var(--ease), box-shadow .18s var(--ease);}
 .edu-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-md);}
@@ -815,33 +853,281 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .loading-line{text-align:center; padding:16px 0; color:var(--ink-faint); font-size:12.5px;}
 
 /* ============================================================
-   MOBILE BOTTOM NAV
+   MOBILE BOTTOM NAV — OppoGlobe floating native-style dock
    ============================================================ */
 .bottom-nav{
-  position:fixed; left:10px; right:10px; bottom:calc(8px + var(--safe-b)); height:var(--bottom-nav-h); z-index:1300;
-  background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border:1px solid var(--line);
-  border-radius:22px; box-shadow:var(--shadow-lg); display:grid; grid-template-columns:repeat(5,1fr);
-  align-items:center; transition:transform .25s var(--ease), opacity .25s var(--ease);
+  position:fixed;
+  left:50%;
+  bottom:calc(9px + var(--safe-b));
+  width:min(520px,calc(100vw - 16px));
+  height:62px;
+  padding:5px 7px 5px 9px;
+  transform:translateX(-50%);
+  z-index:3300;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr)) 62px;
+  align-items:center;
+  gap:0;
+  border:1px solid rgba(255,255,255,.52);
+  border-radius:21px;
+  background:rgba(246,247,245,.57);
+  box-shadow:
+    0 10px 32px rgba(22,36,31,.10),
+    0 2px 8px rgba(22,36,31,.04),
+    inset 0 1px 0 rgba(255,255,255,.62);
+  backdrop-filter:blur(24px) saturate(150%);
+  -webkit-backdrop-filter:blur(24px) saturate(150%);
+  isolation:isolate;
+  overflow:visible;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s ease,background .2s ease;
 }
-.bottom-nav.hide{transform:translateY(140%); opacity:0;}
+.bottom-nav::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.23),rgba(255,255,255,.035) 48%,rgba(255,255,255,0));
+}
+.bottom-nav::after{
+  content:'';
+  position:absolute;
+  left:14px;
+  right:74px;
+  top:0;
+  height:1px;
+  border-radius:99px;
+  background:linear-gradient(90deg,transparent,rgba(31,111,92,.22),transparent);
+  pointer-events:none;
+}
+.bottom-nav.hide{transform:translate(-50%,150%);opacity:0;pointer-events:none;}
 @media (min-width:1000px){.bottom-nav{display:none;}}
-.bn-item{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--ink-faint); font-size:9.5px; height:100%; font-weight:600;}
-.bn-item i{font-size:18px;}
-.bn-item.active{color:var(--jade-deep);}
-.bn-hero{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer;}
-.bn-hero .circle{width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 12px rgba(255,107,74,.4);}
-.bn-hero .label{font-size:8.5px; font-weight:700; color:var(--ink); margin-top:1px;}
+
+.bn-tab{
+  appearance:none;
+  -webkit-appearance:none;
+  border:0;
+  background:transparent;
+  min-width:0;
+  height:52px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  color:rgba(91,102,96,.90);
+  cursor:pointer;
+  font:inherit;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  overflow:visible;
+}
+.bn-tab .bn-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:2;
+  font-size:20px;
+  line-height:1;
+  color:inherit;
+  transition:transform .22s cubic-bezier(.2,.9,.3,1.35),color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+
+/* Label only appears briefly after navigation. */
+.bn-tab .bn-label{
+  position:absolute;
+  left:50%;
+  top:-31px;
+  z-index:20;
+  width:max-content;
+  max-width:92px;
+  padding:5px 9px;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:999px;
+  background:rgba(22,36,31,.84);
+  color:#fff;
+  box-shadow:0 7px 20px rgba(22,36,31,.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-size:9.5px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translate(-50%,6px) scale(.94);
+  transition:opacity .16s ease,transform .18s var(--ease),visibility .16s;
+}
+.bn-tab .bn-label::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:-4px;
+  width:7px;
+  height:7px;
+  background:rgba(22,36,31,.84);
+  transform:translateX(-50%) rotate(45deg);
+}
+.bn-tab.show-label .bn-label{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0) scale(1);
+}
+
+.bn-tab::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:2px;
+  width:14px;
+  height:2.5px;
+  border-radius:99px;
+  background:var(--jade);
+  opacity:0;
+  transform:translate(-50%,5px) scaleX(.45);
+  transition:opacity .18s ease,transform .22s var(--ease);
+}
+.bn-tab.active{color:var(--jade-deep);}
+.bn-tab.active .bn-icon{
+  transform:translateY(-3px) scale(1.08);
+  background:rgba(31,111,92,.075);
+  box-shadow:inset 0 0 0 1px rgba(31,111,92,.05);
+}
+.bn-tab.active::after{opacity:1;transform:translate(-50%,0) scaleX(1);}
+.bn-tab:active .bn-icon{transform:scale(.90);}
+
+/* Raised utility action on the far right. */
+.bn-tab.bn-hero{
+  width:56px;
+  height:56px;
+  justify-self:end;
+  align-self:start;
+  margin-top:-18px;
+  border-radius:50%;
+  background:linear-gradient(145deg,var(--jade),var(--jade-deep));
+  color:#fff;
+  box-shadow:
+    0 10px 24px rgba(21,79,65,.25),
+    0 0 0 5px rgba(246,247,245,.68),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  transition:transform .2s cubic-bezier(.2,.9,.3,1.35),box-shadow .2s ease,background .2s ease;
+}
+.bn-tab.bn-hero .bn-icon{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  font-size:20px;
+  color:#fff;
+  background:transparent!important;
+  transform:none;
+}
+.bn-tab.bn-hero .bn-label{top:-33px;}
+.bn-tab.bn-hero::before{
+  content:'';
+  position:absolute;
+  top:-9px;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-bottom:9px solid var(--jade-deep);
+  opacity:.88;
+  filter:drop-shadow(0 2px 3px rgba(21,79,65,.13));
+}
+.bn-tab.bn-hero::after{display:none;}
+.bn-tab.bn-hero.active{
+  background:linear-gradient(145deg,var(--coral),var(--coral-deep));
+  box-shadow:0 11px 27px rgba(226,78,47,.27),0 0 0 5px rgba(246,247,245,.70),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.bn-tab.bn-hero.active::before{border-bottom-color:var(--coral-deep);}
+.bn-tab.bn-hero.active .bn-icon{transform:rotate(-6deg) scale(1.04);}
+.bn-tab.bn-hero:active{transform:scale(.91);}
+
+@media (hover:hover){
+  .bn-tab:not(.bn-hero):hover{color:var(--jade-deep);}
+  .bn-tab:not(.bn-hero):hover .bn-icon{transform:translateY(-2px);background:rgba(31,111,92,.055);}
+  .bn-tab.bn-hero:hover{transform:translateY(-3px) scale(1.03);}
+}
+
+@media (max-width:430px){
+  :root{--bottom-nav-h:72px;}
+  .bottom-nav{
+    width:calc(100vw - 12px);
+    bottom:calc(6px + var(--safe-b));
+    height:59px;
+    padding:4px 5px 4px 7px;
+    grid-template-columns:repeat(5,minmax(0,1fr)) 56px;
+    border-radius:19px;
+    background:rgba(246,247,245,.54);
+  }
+  .bn-tab{height:49px;}
+  .bn-tab .bn-icon{width:38px;height:38px;font-size:18px;border-radius:12px;}
+  .bn-tab .bn-label{top:-29px;font-size:9px;padding:5px 8px;}
+  .bn-tab.bn-hero{width:52px;height:52px;margin-top:-16px;}
+  .bn-tab.bn-hero .bn-icon{width:52px;height:52px;font-size:19px;}
+}
+@media (max-width:350px){
+  .bottom-nav{width:calc(100vw - 8px);grid-template-columns:repeat(5,minmax(0,1fr)) 50px;padding-left:3px;padding-right:3px;}
+  .bn-tab .bn-icon{width:34px;height:36px;font-size:17px;}
+  .bn-tab.bn-hero{width:48px;height:48px;margin-top:-14px;}
+  .bn-tab.bn-hero .bn-icon{width:48px;height:48px;font-size:17px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .bottom-nav,.bn-tab,.bn-tab .bn-icon,.bn-tab::after,.bn-tab.bn-hero,.bn-tab .bn-label{transition:none!important;}
+}
 
 /* ============================================================
    MODALS
    ============================================================ */
-.modal-veil{position:fixed; inset:0; background:rgba(22,36,31,.45); display:none; align-items:center; justify-content:center; z-index:2000; padding:16px; backdrop-filter:blur(3px);}
+.modal-veil{
+  position:fixed; inset:0; background:rgba(13,24,20,.58); display:none; align-items:center; justify-content:center;
+  z-index:5000; padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); overflow:auto; overscroll-behavior:contain;
+}
 .modal-veil.show{display:flex;}
-.modal-box{background:var(--surface); border-radius:var(--radius-md); width:100%; max-width:460px; max-height:90vh; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); overflow:hidden;}
-.modal-box-head{padding:14px 18px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;}
-.modal-box-head h5{font-size:16px; font-weight:600; margin:0;}
-.modal-box-body{flex:1; min-height:0; overflow-y:auto; padding:18px;}
-.modal-box-foot{padding:12px 18px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; flex-shrink:0; background:var(--surface);}
+.modal-box{
+  background:var(--surface); border:1px solid rgba(255,255,255,.75); border-radius:20px; width:100%; max-width:460px;
+  max-height:calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display:flex; flex-direction:column;
+  box-shadow:0 28px 80px rgba(10,24,18,.28),0 2px 8px rgba(10,24,18,.08); overflow:hidden; margin:auto;
+}
+.modal-box-head{
+  position:sticky; top:0; z-index:12; min-height:62px; padding:12px 14px 12px 18px; border-bottom:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:center; gap:12px; flex-shrink:0; background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.modal-box-head h5{font-size:16px; font-weight:700; margin:0; line-height:1.25; min-width:0; overflow-wrap:anywhere; color:var(--ink);}
+.modal-box-body{flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; padding:18px; -webkit-overflow-scrolling:touch;}
+.modal-box-foot{position:sticky;bottom:0;z-index:11;padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;flex-shrink:0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);}
+
+/* Always-visible, finger-friendly modal close control */
+.x-close{
+  width:38px;height:38px;min-width:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);
+  display:inline-flex;align-items:center;justify-content:center;padding:0;font-size:0;color:var(--ink);cursor:pointer;flex-shrink:0;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.x-close::before{content:'\00d7';font-size:25px;line-height:1;font-family:Arial,sans-serif;font-weight:400;margin-top:-2px;}
+.x-close:hover{background:var(--coral-wash);border-color:#ffc7b9;color:var(--coral-deep);transform:rotate(4deg);}
+.x-close:active{transform:scale(.94);}
+
+@media (max-width:640px){
+  .modal-veil{align-items:flex-end;padding:8px 8px max(8px,env(safe-area-inset-bottom));}
+  .modal-box{max-height:calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:20px 20px 14px 14px;}
+  .modal-box-head{min-height:58px;padding:10px 10px 10px 15px;}
+  .modal-box-head h5{font-size:15px;}
+  .modal-box-body{padding:15px;}
+  .modal-box-foot{padding:10px 12px;}
+  .x-close{width:40px;height:40px;min-width:40px;}
+}
 
 /* ---- Education forms: clean, aligned, scroll-safe layout ---- */
 #eduUploadModal .modal-box{max-width:680px; width:min(680px,calc(100vw - 24px)); max-height:min(88vh,760px);}
@@ -923,7 +1209,6 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   #eduUploadModal .modal-box-foot .btn-jade{width:100%;}
   #eduUploadModal #eduUploadFields{gap:10px;}
 }
-.x-close{background:none; border:none; font-size:20px; color:var(--ink-faint); cursor:pointer;}
 .post-textarea{width:100%; min-height:90px; border:none; resize:none; font-size:14.5px; outline:none; font-family:inherit;}
 .post-property-select{width:100%; padding:8px 12px; border:1px solid var(--line); border-radius:var(--radius-xs); margin-bottom:10px; font-size:13px; background:var(--paper);}
 
@@ -931,31 +1216,173 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .rate-stars button{background:none; border:none; font-size:32px; cursor:pointer; color:var(--line); transition:.15s;}
 .rate-stars button.active{color:var(--gold); transform:scale(1.08);}
 
-/* ============================================================
-   WELCOME TOUR (cartoon mascot onboarding)
-   ============================================================ */
-#welcomeModal .modal-box{max-width:420px; text-align:center;}
-#welcomeModal .modal-box-head{border-bottom:none; padding-bottom:0;}
-#welcomeModal .modal-box-body{padding:6px 26px 4px;}
-.welcome-illustration{position:relative; width:148px; height:148px; margin:4px auto 2px;}
-.welcome-illustration svg{width:100%; height:100%; display:block;}
-.welcome-badge{
-  position:absolute; bottom:-4px; right:-8px; width:42px; height:42px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff;
-  box-shadow:0 4px 14px rgba(0,0,0,.2); border:3px solid var(--surface);
+
+/* Bootstrap modal parity with OppoGlobe custom popups */
+.modal.fade{z-index:5200;}
+.modal-backdrop{z-index:5150;}
+.modal-content{border:1px solid var(--line)!important;box-shadow:0 28px 80px rgba(10,24,18,.26);overflow:hidden;}
+.modal-header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);min-height:60px;}
+.modal-header .modal-title{font-weight:700;color:var(--ink);}
+.modal-header .btn-close{width:34px;height:34px;border-radius:50%;background-color:var(--paper);opacity:.72;background-size:11px;border:1px solid var(--line);}
+.modal-dialog-scrollable .modal-body{overscroll-behavior:contain;}
+@media (max-width:576px){.modal-dialog{margin:8px;min-height:calc(100% - 16px);display:flex;align-items:flex-end}.modal-content{max-height:calc(100dvh - 16px);border-radius:20px 20px 12px 12px!important}.modal-header{padding:10px 12px 10px 15px}.modal-header .btn-close{width:36px;height:36px;margin:0;}}
+
+/* Login must stay centered on phones — never inherit bottom-sheet alignment. */
+#loginModal{padding-left:10px!important;padding-right:10px!important;}
+#loginModal .modal-dialog{
+  min-height:calc(100dvh - 20px);
+  display:flex;
+  align-items:center!important;
+  justify-content:center;
+  margin:10px auto!important;
+  width:min(460px,calc(100vw - 20px));
 }
-.welcome-slide{display:none;}
-.welcome-slide.active{display:block; animation:welcomeIn .35s var(--ease);}
-@keyframes welcomeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
-.welcome-slide h4{font-size:18.5px; font-weight:700; margin-top:8px;}
-.welcome-slide p{font-size:13px; color:var(--ink-soft); line-height:1.6; margin-top:7px; padding:0 4px;}
-.welcome-dots{display:flex; justify-content:center; align-items:center; gap:6px; margin:16px 0 2px;}
-.welcome-dots span{width:7px; height:7px; border-radius:50%; background:var(--line); transition:background .2s, width .2s; cursor:pointer;}
-.welcome-dots span.active{background:var(--jade); width:20px; border-radius:4px;}
-.welcome-skip{background:none; border:none; color:var(--ink-faint); font-size:12.5px; font-weight:600; cursor:pointer; padding:6px;}
-.welcome-skip:hover{color:var(--ink);}
-#welcomeBackBtn{background:none; border:none; color:var(--ink-soft); font-weight:600; font-size:13px; cursor:pointer; padding:8px 6px;}
+#loginModal .modal-content{
+  width:100%;
+  max-height:calc(100dvh - 20px);
+  margin:auto;
+  border-radius:22px!important;
+  overflow:hidden;
+}
+#loginModal .modal-body{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+@media (max-width:420px){
+  #loginModal{padding:8px!important;}
+  #loginModal .modal-dialog{
+    width:100%;
+    min-height:calc(100dvh - 16px);
+    margin:8px auto!important;
+    align-items:center!important;
+  }
+  #loginModal .modal-content{
+    max-height:calc(100dvh - 16px);
+    border-radius:18px!important;
+  }
+  #loginModal .modal-header{padding:11px 13px 10px 15px;}
+  #loginModal .modal-body{padding:14px;}
+}
+@media (max-height:560px){
+  #loginModal .modal-dialog{min-height:calc(100dvh - 10px);margin:5px auto!important;}
+  #loginModal .modal-content{max-height:calc(100dvh - 10px);}
+  #loginModal .modal-header{min-height:52px;padding-top:8px;padding-bottom:8px;}
+  #loginModal .modal-body{padding-top:10px;padding-bottom:10px;}
+}
+
+
+/* ============================================================
+   WELCOME TOUR — always centered + small-screen safe
+   ============================================================ */
+#welcomeModal.modal-veil{
+  align-items:center!important;
+  justify-content:center!important;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  overflow:auto;
+}
+#welcomeModal .modal-box{
+  width:min(420px,calc(100vw - 24px));
+  max-width:420px;
+  max-height:min(680px,calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+  margin:auto!important;
+  text-align:center;
+  border-radius:24px!important;
+  overflow:hidden;
+  transform:none!important;
+}
+#welcomeModal .modal-box-head{
+  position:relative;
+  min-height:44px;
+  padding:8px 12px 0;
+  border-bottom:none;
+  background:var(--surface);
+  justify-content:flex-end!important;
+}
+#welcomeModal .modal-box-body{
+  padding:0 26px 8px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+#welcomeModal .modal-box-foot{
+  position:relative;
+  padding:12px 18px 16px;
+  background:var(--surface);
+  border-top:1px solid var(--line-soft);
+  flex-wrap:nowrap;
+}
+.welcome-illustration{
+  position:relative;
+  width:clamp(112px,34vw,148px);
+  height:clamp(112px,34vw,148px);
+  margin:0 auto 2px;
+  flex-shrink:0;
+}
+.welcome-illustration svg{width:100%;height:100%;display:block;}
+.welcome-badge{
+  position:absolute;
+  bottom:-3px;
+  right:-6px;
+  width:clamp(34px,10vw,42px);
+  height:clamp(34px,10vw,42px);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(14px,4vw,17px);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.16);
+  border:3px solid var(--surface);
+}
+.welcome-slide{display:none;min-height:0;}
+.welcome-slide.active{display:block;animation:welcomeIn .32s var(--ease);}
+@keyframes welcomeIn{from{opacity:0;transform:translateY(8px) scale(.985);}to{opacity:1;transform:translateY(0) scale(1);}}
+.welcome-slide h4{font-size:clamp(17px,4.8vw,19px);font-weight:700;margin:8px 0 0;line-height:1.2;}
+.welcome-slide p{font-size:clamp(12px,3.4vw,13px);color:var(--ink-soft);line-height:1.55;margin:7px auto 0;padding:0 2px;max-width:340px;}
+.welcome-dots{display:flex;justify-content:center;align-items:center;gap:6px;margin:14px 0 2px;}
+.welcome-dots span{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .2s,width .2s;cursor:pointer;}
+.welcome-dots span.active{background:var(--jade);width:20px;border-radius:4px;}
+.welcome-skip{background:none;border:none;color:var(--ink-faint);font-size:12px;font-weight:700;cursor:pointer;padding:7px 8px;border-radius:99px;}
+.welcome-skip:hover{color:var(--ink);background:var(--paper);}
+#welcomeBackBtn{background:none;border:none;color:var(--ink-soft);font-weight:700;font-size:13px;cursor:pointer;padding:8px 6px;}
 #welcomeBackBtn:hover{color:var(--ink);}
+#welcomeNextBtn{min-width:104px;min-height:40px;}
+
+@media (max-width:420px){
+  #welcomeModal.modal-veil{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))!important;
+  }
+  #welcomeModal .modal-box{
+    width:calc(100vw - 20px)!important;
+    height:auto!important;
+    max-height:calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+    border-radius:20px!important;
+  }
+  #welcomeModal .modal-box-head{min-height:40px;padding:6px 8px 0;}
+  #welcomeModal .modal-box-body{padding:0 18px 6px;}
+  #welcomeModal .modal-box-foot{padding:10px 14px 13px;}
+  .welcome-dots{margin-top:11px;}
+}
+
+/* Short phones / landscape: shrink artwork first, then scroll copy if needed. */
+@media (max-height:650px){
+  #welcomeModal .modal-box{max-height:calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;}
+  #welcomeModal .modal-box-head{min-height:34px;padding-top:3px;}
+  #welcomeModal .modal-box-body{padding-top:0;}
+  .welcome-illustration{width:96px;height:96px;}
+  .welcome-badge{width:32px;height:32px;font-size:13px;}
+  .welcome-slide h4{font-size:16px;margin-top:5px;}
+  .welcome-slide p{font-size:11.5px;line-height:1.45;margin-top:5px;}
+  .welcome-dots{margin:9px 0 0;}
+  #welcomeModal .modal-box-foot{padding-top:8px;padding-bottom:10px;}
+}
+@media (max-height:520px){
+  .welcome-illustration{width:78px;height:78px;}
+  .welcome-slide p{line-height:1.35;}
+}
 
 /* ============================================================
    AI CHAT
@@ -1045,6 +1472,255 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 }
 .msg-owner-chip:hover{background:var(--jade); color:#fff; box-shadow:0 2px 8px rgba(31,111,92,.3);}
 .msg-owner-chip i{font-size:10px;}
+
+
+/* ============================================================
+   FUTURISTIC RESPONSIVE NAVBAR — 2026 REFRESH
+   ============================================================ */
+:root{ --header-h:82px; }
+
+.header-area{
+  height:var(--header-h);
+  inset:0 0 auto 0;
+  padding:10px clamp(10px,2.4vw,24px) 8px;
+  background:linear-gradient(180deg,rgba(246,247,245,.94) 0%,rgba(246,247,245,.76) 70%,rgba(246,247,245,0) 100%);
+  border-bottom:0;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  pointer-events:none;
+}
+.header-inner{
+  height:60px;
+  max-width:1400px;
+  padding:0 10px 0 12px;
+  border:1px solid rgba(255,255,255,.78);
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.72));
+  box-shadow:
+    0 16px 40px rgba(22,36,31,.10),
+    0 2px 8px rgba(22,36,31,.06),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  pointer-events:auto;
+  isolation:isolate;
+}
+.header-inner::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(115deg,rgba(31,111,92,.28),rgba(255,255,255,.7) 42%,rgba(255,107,74,.2));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:-1;
+}
+
+.brand{
+  gap:10px;
+  padding:5px 8px 5px 4px;
+  border-radius:16px;
+  transition:background .2s ease,transform .2s var(--ease);
+}
+.brand:hover{background:rgba(31,111,92,.06); transform:translateY(-1px);}
+.brand-mark{
+  position:relative;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 30% 20%,rgba(255,255,255,.42),transparent 38%),
+    linear-gradient(145deg,#25836c,var(--jade-deep));
+  box-shadow:0 8px 18px rgba(31,111,92,.24),inset 0 1px 0 rgba(255,255,255,.28);
+  font-size:19px;
+  overflow:visible;
+}
+.brand-mark::before{
+  content:'';
+  position:absolute;
+  inset:-4px;
+  border:1px solid rgba(31,111,92,.16);
+  border-radius:17px;
+}
+.brand-mark::after{
+  content:'';
+  position:absolute;
+  width:7px;
+  height:7px;
+  right:-4px;
+  top:-4px;
+  border-radius:50%;
+  background:var(--coral);
+  border:2px solid #fff;
+  box-shadow:0 0 0 4px rgba(255,107,74,.10);
+}
+.brand-word{
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:-.025em;
+  background:linear-gradient(90deg,var(--ink),var(--jade-deep));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.nav-icons{
+  gap:6px;
+  padding:5px;
+  border:1px solid rgba(228,231,226,.9);
+  border-radius:18px;
+  background:rgba(246,247,245,.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+}
+.nav-icons > li{display:flex;align-items:center;}
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  color:var(--ink-soft);
+  font-size:16px;
+  border:1px solid transparent;
+  background:transparent;
+  transition:transform .18s var(--ease),background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.icon-btn:hover{
+  transform:translateY(-2px);
+  color:var(--jade-deep);
+  background:rgba(255,255,255,.94);
+  border-color:rgba(31,111,92,.14);
+  box-shadow:0 8px 16px rgba(22,36,31,.08);
+}
+.icon-btn:active{transform:translateY(0) scale(.96);}
+.nav-icons > li:first-child .icon-btn{
+  background:linear-gradient(135deg,var(--jade),var(--jade-deep));
+  color:#fff;
+  box-shadow:0 7px 16px rgba(31,111,92,.24);
+}
+.nav-icons > li:first-child .icon-btn:hover{color:#fff;border-color:transparent;}
+
+.ping-badge{
+  top:-3px;
+  right:-3px;
+  min-width:18px;
+  height:18px;
+  padding:0 4px;
+  border:2px solid rgba(255,255,255,.96);
+  background:linear-gradient(135deg,var(--coral),var(--coral-deep));
+  box-shadow:0 4px 10px rgba(226,78,47,.28);
+  font-size:9px;
+}
+
+.role-chip{
+  height:32px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0 11px;
+  border:1px solid rgba(31,111,92,.14);
+  background:rgba(231,241,236,.86);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+  font-size:10.5px;
+  letter-spacing:.02em;
+}
+.role-chip.biz{border-color:rgba(122,90,163,.16);background:rgba(241,235,249,.9);}
+
+.avatar-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.9);
+  background:
+    radial-gradient(circle at 30% 20%,rgba(255,255,255,.3),transparent 35%),
+    linear-gradient(135deg,var(--coral),var(--gold));
+  box-shadow:0 7px 16px rgba(232,169,59,.20),inset 0 1px 0 rgba(255,255,255,.3);
+  font-size:14px;
+  transition:transform .18s var(--ease),box-shadow .18s ease;
+}
+.avatar-btn:hover{transform:translateY(-2px) rotate(-2deg);box-shadow:0 10px 20px rgba(232,169,59,.26);}
+.status-dot{width:11px;height:11px;bottom:-1px;right:-1px;border:2px solid #fff;box-shadow:0 0 0 3px rgba(44,154,91,.10);}
+
+.auth-btn{
+  min-height:42px;
+  padding:0 17px;
+  border-radius:14px;
+  font-size:12.5px;
+}
+.auth-btn-ghost{background:rgba(255,255,255,.72);border:1px solid rgba(31,111,92,.22);}
+.auth-btn-solid{
+  background:linear-gradient(135deg,var(--ink),var(--jade-deep));
+  box-shadow:0 7px 16px rgba(21,79,65,.18);
+}
+
+.dropdown-panel{
+  top:calc(100% + 13px);
+  width:240px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.82);
+  border-radius:18px;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  box-shadow:0 22px 50px rgba(22,36,31,.16),inset 0 1px 0 rgba(255,255,255,.95);
+}
+.dropdown-panel a,.dropdown-panel button{
+  min-height:40px;
+  padding:9px 11px;
+  border-radius:11px;
+  transition:background .15s ease,transform .15s ease,color .15s ease;
+}
+.dropdown-panel a:hover,.dropdown-panel button:hover{background:var(--jade-wash);color:var(--jade-deep);transform:translateX(2px);}
+.dropdown-panel i{color:var(--jade);}
+
+/* Tablet: keep the capsule, remove non-essential identity text first. */
+@media (max-width:900px){
+  :root{--header-h:78px;}
+  .header-area{padding:8px 10px 7px;}
+  .header-inner{height:58px;border-radius:20px;padding:0 8px 0 10px;}
+  .role-chip{display:none;}
+  .nav-icons{gap:4px;padding:4px;}
+  .icon-btn,.avatar-btn{width:40px;height:40px;border-radius:13px;}
+  .brand-mark{width:40px;height:40px;border-radius:13px;}
+  .brand-word{font-size:18px;}
+}
+
+/* Phones: simplify instead of squeezing. */
+@media (max-width:620px){
+  :root{--header-h:72px;}
+  .header-area{padding:7px 7px 6px;}
+  .header-inner{height:54px;border-radius:18px;padding:0 6px 0 8px;gap:4px;}
+  .brand{gap:7px;padding-right:4px;}
+  .brand-mark{width:38px;height:38px;border-radius:12px;font-size:17px;}
+  .brand-mark::before{inset:-3px;border-radius:15px;}
+  .brand-word{font-size:16px;}
+  .nav-icons{gap:2px;padding:3px;border-radius:15px;}
+  .icon-btn,.avatar-btn{width:36px;height:36px;border-radius:11px;font-size:14px;}
+  .ping-badge{top:-4px;right:-4px;min-width:17px;height:17px;font-size:8px;}
+  .auth-btn{min-height:36px;padding:0 11px;border-radius:11px;font-size:11.5px;}
+  .dropdown-panel{position:fixed;top:68px;right:8px;width:min(250px,calc(100vw - 16px));max-width:none;}
+}
+
+@media (max-width:470px){
+  .brand-word{display:none;}
+  .brand{padding:3px;}
+  .nav-icons > li:first-child{display:none;}
+  .apps-grip-btn{display:flex;}
+  .nav-icons{margin-left:auto;}
+}
+
+@media (max-width:370px){
+  .header-inner{padding-left:6px;}
+  .brand-mark{width:36px;height:36px;}
+  .icon-btn,.avatar-btn{width:34px;height:34px;}
+  .apps-grip-btn{display:none;}
+  .auth-btn{padding:0 9px;font-size:10.5px;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .brand,.icon-btn,.avatar-btn,.dropdown-panel a,.dropdown-panel button{transition:none !important;}
+}
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -1058,18 +1734,18 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
     </a>
 
     <ul class="nav-icons">
-      <li><a href="/" class="icon-btn"><i class="fas fa-house"></i></a></li>
+      <li><a href="/" class="icon-btn" aria-label="Home" title="Home"><i class="fas fa-house"></i></a></li>
       {% if user.is_authenticated %}
         {% if user.user_type == 'admin' or user.is_superuser %}
           <li><span class="role-chip biz"><i class="fas fa-building me-1"></i>Business</span></li>
         {% else %}
           <li><span class="role-chip"><i class="fas fa-user me-1"></i>You</span></li>
         {% endif %}
-        <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i><span class="ping-badge" id="messageBadge">0</span></a></li>
-        <li><a href="{% url 'alerts_page' %}" class="icon-btn" id="notificationLink" aria-label="Alerts"><i class="fas fa-bell"></i><span class="ping-badge" id="notificationBadge">0</span></a></li>
-        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+        <li><a href="/messaging/" class="icon-btn" aria-label="Messages" title="Messages"><i class="fas fa-comment-dots"></i><span class="ping-badge" id="messageBadge">0</span></a></li>
+        <li><a href="{% url 'alerts_page' %}" class="icon-btn" id="notificationLink" aria-label="Alerts" title="Alerts"><i class="fas fa-bell"></i><span class="ping-badge" id="notificationBadge">0</span></a></li>
+        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()" aria-label="Open apps" title="Apps"><i class="fas fa-grip"></i></button></li>
         <li class="rel">
-          <button class="avatar-btn" onclick="toggleProfileMenu()">{{ user.username|first|upper }}<span class="status-dot"></span></button>
+          <button class="avatar-btn" onclick="toggleProfileMenu()" aria-label="Open profile menu" title="Profile">{{ user.username|first|upper }}<span class="status-dot"></span></button>
           <div class="dropdown-panel" id="profileMenu">
             {% if user.user_type == 'admin' or user.is_superuser %}
               <a href="/admin-portal/"><i class="fas fa-table-cells-large"></i> Dashboard</a>
@@ -1092,7 +1768,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           </div>
         </li>
         <li class="rel">
-          <button class="icon-btn" onclick="toggleMoreMenu(this)"><i class="fas fa-ellipsis-vertical"></i></button>
+          <button class="icon-btn" onclick="toggleMoreMenu(this)" aria-label="More options" title="More"><i class="fas fa-ellipsis-vertical"></i></button>
           <div class="dropdown-panel">
             {% if user.user_type == 'admin' or user.is_superuser %}
               <a href="/properties/analytics/"><i class="fas fa-chart-line"></i> Property analytics</a>
@@ -1111,7 +1787,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
       {% else %}
         <li><button class="auth-btn auth-btn-ghost" onclick="showLogin()">Sign in</button></li>
         <li><button class="auth-btn auth-btn-solid" onclick="showSignup()">Join free</button></li>
-        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()"><i class="fas fa-grip"></i></button></li>
+        <li><button class="icon-btn apps-grip-btn" onclick="showAppsModal()" aria-label="Open apps" title="Apps"><i class="fas fa-grip"></i></button></li>
       {% endif %}
     </ul>
   </div>
@@ -1134,7 +1810,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           <button class="quick-btn" onclick="switchTab('maintenance')"><i class="fas fa-screwdriver-wrench"></i>Maintenance</button>
           <button class="quick-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i>Jobs</button>
           <button class="quick-btn" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i>Community feed</button>
-          <button class="quick-btn" onclick="switchTab('education')"><i class="fas fa-graduation-cap"></i>Education</button>
+          <button class="quick-btn" onclick="switchTab('education')"><i class="fas fa-book-open-reader"></i>Education</button>
           <a href="/properties/add/" class="quick-btn warm"><i class="fas fa-circle-plus"></i>List a property</a>
         </div>
       </div>
@@ -1178,7 +1854,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
     <!-- Education strip -->
     <div class="section-head" style="margin-top:6px;">
-      <h2><i class="fas fa-graduation-cap"></i>Education & bursaries</h2>
+      <h2><i class="fas fa-book-open-reader"></i>Education & bursaries</h2>
       <span class="section-link" onclick="switchTab('education')">View all →</span>
     </div>
     <div class="hscroll" id="eduMiniScroll">
@@ -1186,7 +1862,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
     </div>
 
     <!-- See all modal -->
-    <div class="modal-veil" id="seeAllModal" style="align-items:flex-start; padding-top:60px;">
+    <div class="modal-veil" id="seeAllModal">
       <div class="modal-box" style="max-width:920px; max-height:85vh;">
         <div class="modal-box-head">
           <h5><i class="fas fa-fire" style="color:var(--coral); margin-right:8px;"></i>Everything happening now</h5>
@@ -1265,7 +1941,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
     <div id="educationTab" class="tab-content" style="margin-top:14px;">
       <div id="eduUploadZone" class="edu-upload-strip hidden">
-        <span class="label"><i class="fas fa-graduation-cap"></i><span id="eduBusinessLabel">Manage education content</span></span>
+        <span class="label"><i class="fas fa-book-open-reader"></i><span id="eduBusinessLabel">Manage education content</span></span>
         <div class="actions">
           <button onclick="showEduUpload('school')"><i class="fas fa-school"></i> School</button>
           <button onclick="showEduUpload('bursary')"><i class="fas fa-hand-holding-heart"></i> Bursary</button>
@@ -1273,15 +1949,24 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           <button class="outline" onclick="showEduUpload('university')"><i class="fas fa-university"></i> University</button>
         </div>
       </div>
-      <div class="card filter-bar">
-        <div class="filter-grid" style="gap:6px;">
-          <button class="edu-chip active" data-filter="all" onclick="filterEducation('all', this)">All</button>
-          <button class="edu-chip" data-filter="bursary" onclick="filterEducation('bursary', this)">🎓 Bursaries</button>
-          <button class="edu-chip" data-filter="university" onclick="filterEducation('university', this)">🏛️ Universities</button>
-          <button class="edu-chip" data-filter="school" onclick="filterEducation('school', this)">🏫 Schools</button>
-          <button class="edu-chip" data-filter="paper" onclick="filterEducation('paper', this)">📄 Papers</button>
-          <div style="flex:1;"></div>
-          <input type="text" id="eduSearchInput" style="max-width:200px;" placeholder="🔍 Search…" onkeyup="searchEducation(this.value)">
+      <div class="edu-discovery">
+        <div class="edu-discovery-top">
+          <div class="edu-discovery-copy">
+            <div class="edu-discovery-eyebrow"><i class="fas fa-compass"></i> Opportunity navigator</div>
+            <div class="edu-discovery-title">Find your next study opportunity</div>
+            <div class="edu-discovery-sub">Bursaries, institutions, schools and study resources in one place.</div>
+          </div>
+          <div class="edu-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" id="eduSearchInput" placeholder="Search opportunities" aria-label="Search education opportunities" oninput="searchEducation(this.value)">
+          </div>
+        </div>
+        <div class="edu-filter-row" role="tablist" aria-label="Education categories">
+          <button class="edu-chip active" data-filter="all" onclick="filterEducation('all', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-layer-group"></i></span><span>All</span></button>
+          <button class="edu-chip" data-filter="bursary" onclick="filterEducation('bursary', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-hand-holding-dollar"></i></span><span>Bursaries</span></button>
+          <button class="edu-chip" data-filter="university" onclick="filterEducation('university', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-building-columns"></i></span><span>Universities</span></button>
+          <button class="edu-chip" data-filter="school" onclick="filterEducation('school', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-school"></i></span><span>Schools</span></button>
+          <button class="edu-chip" data-filter="paper" onclick="filterEducation('paper', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-file-lines"></i></span><span>Papers</span></button>
         </div>
       </div>
       <div id="educationContainer" style="margin-top:14px;">
@@ -1410,9 +2095,9 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 <!-- ===== RATING MODAL ===== -->
 <div class="modal-veil" id="ratingModal">
   <div class="modal-box" style="max-width:380px;">
+    <div class="modal-box-head"><h5><i class="fas fa-star" style="color:var(--gold); margin-right:7px;"></i>Rate this property</h5><button class="x-close" onclick="closeRatingModal()" aria-label="Close rating"></button></div>
     <div class="modal-box-body" style="text-align:center;">
-      <h4 style="font-size:17px;">Rate this property</h4>
-      <p style="font-size:12.5px; color:var(--ink-faint);">How was your experience?</p>
+      <p style="font-size:12.5px; color:var(--ink-faint); margin-top:0;">How was your experience?</p>
       <div class="rate-stars" id="ratingStars">
         <button data-rating="1" onclick="selectRating(1)">⭐</button>
         <button data-rating="2" onclick="selectRating(2)">⭐</button>
@@ -1538,7 +2223,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('maintenance');closeAppsModal()"><i class="fas fa-screwdriver-wrench d-block mb-1" style="color:var(--sky); font-size:20px;"></i><span style="font-size:10px;">Maint.</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('jobs');closeAppsModal()"><i class="fas fa-briefcase d-block mb-1" style="color:var(--gold); font-size:20px;"></i><span style="font-size:10px;">Jobs</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('feed');closeAppsModal()"><i class="fas fa-newspaper d-block mb-1" style="color:var(--plum); font-size:20px;"></i><span style="font-size:10px;">Feed</span></a>
-      <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('education');closeAppsModal()"><i class="fas fa-graduation-cap d-block mb-1" style="color:#9c7719; font-size:20px;"></i><span style="font-size:10px;">Education</span></a>
+      <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('education');closeAppsModal()"><i class="fas fa-book-open-reader d-block mb-1" style="color:#9c7719; font-size:20px;"></i><span style="font-size:10px;">Education</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="replayWelcome()"><i class="fas fa-wand-magic-sparkles d-block mb-1" style="color:#FF6B4A; font-size:20px;"></i><span style="font-size:10px;">Tour</span></a>
       {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('management');closeAppsModal()"><i class="fas fa-gear d-block mb-1" style="font-size:20px;"></i><span style="font-size:10px;">Manage</span></a>
@@ -1550,7 +2235,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 </div></div></div>
 
 <!-- ===== LOGIN MODAL ===== -->
-<div class="modal fade" id="loginModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+<div class="modal fade" id="loginModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content" style="border-radius:16px;">
   <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display);">Welcome back</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
   <div class="modal-body">
     <a href="/accounts/google/login/?process=login" class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center gap-2"><i class="fab fa-google"></i> Continue with Google</a>
@@ -1636,13 +2321,26 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 <div class="toast-stack" id="toastStack"></div>
 <div class="pwa-prompt" id="pwaPrompt"><i class="fas fa-mobile-screen"></i><span>Install the OppoGlobe app</span><button class="close-btn" id="pwaCloseBtn"><i class="fas fa-times"></i></button></div>
 
-<!-- ===== MOBILE BOTTOM NAV ===== -->
-<nav class="bottom-nav" id="mobileBottomNav">
-  <a href="#" class="bn-item active" onclick="switchTab('properties')"><i class="fas fa-house"></i><span>Homes</span></a>
-  <a href="#" class="bn-item" onclick="switchTab('reels')"><i class="fas fa-video"></i><span>Reels</span></a>
-  <div class="bn-hero" onclick="switchTab('maintenance')"><div class="circle"><i class="fas fa-screwdriver-wrench"></i></div><span class="label">Maint.</span></div>
-  <a href="#" class="bn-item" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i><span>Feed</span></a>
-  <a href="#" class="bn-item" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
+<!-- ===== MOBILE BOTTOM NAV — minimal OppoGlobe floating dock ===== -->
+<nav class="bottom-nav" id="mobileBottomNav" aria-label="Primary mobile navigation">
+  <button type="button" class="bn-tab active" data-tab="properties" onclick="switchTab('properties')" aria-label="Homes" title="Homes">
+    <span class="bn-icon"><i class="fas fa-house"></i></span><span class="bn-label">Homes</span>
+  </button>
+  <button type="button" class="bn-tab" data-tab="reels" onclick="switchTab('reels')" aria-label="Reels" title="Reels">
+    <span class="bn-icon"><i class="fas fa-clapperboard"></i></span><span class="bn-label">Reels</span>
+  </button>
+  <button type="button" class="bn-tab" data-tab="feed" onclick="switchTab('feed')" aria-label="Community" title="Community">
+    <span class="bn-icon"><i class="fas fa-user-group"></i></span><span class="bn-label">Community</span>
+  </button>
+  <button type="button" class="bn-tab" data-tab="jobs" onclick="switchTab('jobs')" aria-label="Jobs" title="Jobs">
+    <span class="bn-icon"><i class="fas fa-briefcase"></i></span><span class="bn-label">Jobs</span>
+  </button>
+  <button type="button" class="bn-tab" data-tab="education" onclick="switchTab('education')" aria-label="Education and bursaries" title="Education">
+    <span class="bn-icon"><i class="fas fa-book-open"></i></span><span class="bn-label">Education</span>
+  </button>
+  <button type="button" class="bn-tab bn-hero" data-tab="maintenance" onclick="switchTab('maintenance')" aria-label="Fix it — maintenance" title="Fix it">
+    <span class="bn-icon"><i class="fas fa-screwdriver-wrench"></i></span><span class="bn-label">Fix it</span>
+  </button>
 </nav>
 
 <!-- ===== FOOTER ===== -->
@@ -1791,8 +2489,19 @@ function scrollToTab(tabName){
 }
 function switchTab(tabName){
   currentTab = tabName;
-  document.querySelectorAll('.bn-item').forEach(a=>a.classList.remove('active'));
-  document.querySelectorAll(`.bn-item[onclick*="${tabName}"]`).forEach(a=>a.classList.add('active'));
+  const mobileTabs = document.querySelectorAll('#mobileBottomNav .bn-tab');
+  mobileTabs.forEach(btn=>{
+    const active = btn.dataset.tab === tabName;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-current', active ? 'page' : 'false');
+    btn.classList.remove('show-label');
+    if (btn._labelTimer) clearTimeout(btn._labelTimer);
+  });
+  const activeMobileTab = document.querySelector(`#mobileBottomNav .bn-tab[data-tab="${tabName}"]`);
+  if (activeMobileTab){
+    activeMobileTab.classList.add('show-label');
+    activeMobileTab._labelTimer = setTimeout(()=>activeMobileTab.classList.remove('show-label'), 1250);
+  }
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(tabName+'Tab')?.classList.add('active');
 
@@ -2790,13 +3499,13 @@ function loadEducationContent(){
     fetch('/api/education/question-papers/').then(r=>r.json()).catch(()=>({success:false, papers:[]}))
   ]).then(([bursariesData, universitiesData, schoolsData, papersData])=>{
     const items = [];
-    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'🎓', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0,
+    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'fa-hand-holding-dollar', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0,
       owner:b.owner || b.posted_by || b.created_by || b.uploaded_by || null, owner_name:b.owner_name || b.posted_by_name || b.provider || null }));
-    (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'🏛️', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0,
+    (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'fa-building-columns', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0,
       owner:u.owner || u.posted_by || u.created_by || u.uploaded_by || null, owner_name:u.owner_name || u.posted_by_name || null }));
-    (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'🏫', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0,
+    (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'fa-school', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0,
       owner:s.owner || s.posted_by || s.created_by || s.uploaded_by || null, owner_name:s.owner_name || s.posted_by_name || null }));
-    (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'📄', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0,
+    (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'fa-file-lines', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0,
       owner:p.owner || p.posted_by || p.created_by || p.uploaded_by || null, owner_name:p.owner_name || p.posted_by_name || null }));
     allEducationItems = items;
     renderEduMiniScroll(items.slice(0,8));
@@ -2806,14 +3515,14 @@ function loadEducationContent(){
 }
 function renderEduMiniScroll(items){
   const container = document.getElementById('eduMiniScroll'); if (!container) return;
-  if (!items?.length){ container.innerHTML = `<div class="empty-state" style="width:100%;"><i class="fas fa-graduation-cap"></i><h4>No education content yet</h4></div>`; return; }
+  if (!items?.length){ container.innerHTML = `<div class="empty-state" style="width:100%;"><i class="fas fa-book-open-reader"></i><h4>No education content yet</h4></div>`; return; }
   container.innerHTML = items.map(item=>{
     const hasImage = item.image && String(item.image).length > 10;
     return `<div class="mini-card edu-mini" onclick="switchTab('education')">
       <div class="mini-thumb ${hasImage?'':'no-image'}">
         ${hasImage ? `<img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.parentElement.classList.add('no-image');this.remove(); this.parentElement.querySelector('.mini-no-image')?.classList.remove('hidden');">` : ''}
-        <div class="mini-no-image ${hasImage?'hidden':''}"><span class="mini-no-image-icon">${item.badge}</span></div>
-        <span class="mini-badge">${item.badge}</span>
+        <div class="mini-no-image ${hasImage?'hidden':''}"><span class="mini-no-image-icon"><i class="fas ${item.badge}"></i></span></div>
+        <span class="mini-badge"><i class="fas ${item.badge}"></i></span>
       </div>
       <div class="mini-info"><div class="mini-title">${escapeHtml(item.title.substring(0,20))}</div><div class="mini-sub">${escapeHtml((item.institution||'').substring(0,25))}</div></div>
     </div>`;
@@ -2824,14 +3533,19 @@ function renderEducationItems(items, container){
   let filtered = educationFilter === 'all' ? items : items.filter(i=>i.type===educationFilter);
   const q = document.getElementById('eduSearchInput')?.value?.toLowerCase() || '';
   if (q) filtered = filtered.filter(i=>i.title.toLowerCase().includes(q) || (i.institution||'').toLowerCase().includes(q) || (i.description||'').toLowerCase().includes(q));
-  if (!filtered.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-graduation-cap"></i><h4>Nothing here yet</h4><p>${isBusinessUser?'Use the buttons above to add content.':'Check back soon for new listings.'}</p></div>`; return; }
+  if (!filtered.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-compass"></i><h4>Nothing here yet</h4><p>${isBusinessUser?'Use the buttons above to add content.':'Check back soon for new listings.'}</p></div>`; return; }
   const groups = { bursary:filtered.filter(i=>i.type==='bursary'), university:filtered.filter(i=>i.type==='university'), school:filtered.filter(i=>i.type==='school'), paper:filtered.filter(i=>i.type==='paper') };
-  const labels = { bursary:{icon:'🎓', name:'Bursaries', color:'var(--jade)'}, university:{icon:'🏛️', name:'Universities', color:'var(--sky)'}, school:{icon:'🏫', name:'Schools', color:'var(--plum)'}, paper:{icon:'📄', name:'Question papers', color:'var(--coral)'} };
+  const labels = {
+    bursary:{icon:'fa-hand-holding-dollar', name:'Bursaries', color:'var(--jade)'},
+    university:{icon:'fa-building-columns', name:'Universities', color:'var(--sky)'},
+    school:{icon:'fa-school', name:'Schools', color:'var(--plum)'},
+    paper:{icon:'fa-file-lines', name:'Question papers', color:'var(--coral)'}
+  };
   let html = '';
   Object.entries(groups).forEach(([type, typeItems])=>{
     if (!typeItems.length) return;
     const label = labels[type];
-    html += `<div style="margin-bottom:24px;"><div class="edu-group-head"><span class="badge-icon">${label.icon}</span><span class="name">${label.name}</span><span class="count">${typeItems.length}</span></div>
+    html += `<div style="margin-bottom:24px;"><div class="edu-group-head"><span class="badge-icon" style="color:${label.color};"><i class="fas ${label.icon}"></i></span><span class="name">${label.name}</span><span class="count">${typeItems.length}</span></div>
       <div class="edu-group-grid">`;
     typeItems.forEach(item=>{
       if (type === 'paper'){
@@ -2843,13 +3557,13 @@ function renderEducationItems(items, container){
       } else {
         const hasImage = item.image && item.image.length > 10;
         const desc = (item.description||'').length > 130 ? item.description.substring(0,130)+'…' : (item.description||'');
-        const itemIcon = item.type==='bursary'?'fa-hand-holding-heart':item.type==='university'?'fa-university':'fa-school';
-        const itemTypeLabel = item.type==='bursary'?'Opportunity':item.type==='university'?'Institution':'School';
+        const itemIcon = item.type==='bursary'?'fa-hand-holding-dollar':item.type==='university'?'fa-building-columns':'fa-school';
+        const itemTypeLabel = item.type==='bursary'?'Funding opportunity':item.type==='university'?'University':'School';
         const safeDesc = desc || `Explore ${itemTypeLabel.toLowerCase()} information, details and opportunities available on OppoGlobe.`;
         html += `<div class="edu-card ${hasImage?'':'no-image-card'}" onclick="viewEducationItem('${item.type}','${item.id}')">
           ${hasImage ? `<div class="edu-card-img">
             <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='none'; this.parentElement.classList.add('edu-image-failed'); this.parentElement.insertAdjacentHTML('beforebegin', '<div class=\'edu-no-image-panel\'><div class=\'edu-no-image-top\'><span class=\'edu-no-image-icon\'><i class=\'fas ${itemIcon}\'></i></span><span class=\'edu-no-image-type\'>${itemTypeLabel}</span></div><div class=\'edu-no-image-copy\'><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(safeDesc)}</p><span class=\'edu-no-image-prompt\'><i class=\'fas fa-arrow-up-right-from-square\'></i> Explore details</span></div></div>'); this.parentElement.remove();">
-            <span class="edu-badge-flag" style="background:${label.color};">${label.icon}</span>
+            <span class="edu-badge-flag" style="background:${label.color};"><i class="fas ${label.icon}"></i> ${label.name}</span>
             ${item.is_featured?'<span class="edu-feat-flag"><i class="fas fa-star"></i> Featured</span>':''}
           </div>` : `<div class="edu-no-image-panel">
             <div class="edu-no-image-top"><span class="edu-no-image-icon"><i class="fas ${itemIcon}"></i></span><span class="edu-no-image-type">${itemTypeLabel}</span></div>
@@ -2876,7 +3590,12 @@ function renderEducationItems(items, container){
   });
   container.innerHTML = html;
 }
-function filterEducation(filter, btn){ educationFilter = filter; document.querySelectorAll('#educationTab .edu-chip').forEach(c=>c.classList.remove('active')); btn?.classList.add('active'); renderEducationItems(allEducationItems); }
+function filterEducation(filter, btn){
+  educationFilter = filter;
+  document.querySelectorAll('#educationTab .edu-chip').forEach(c=>{ c.classList.remove('active'); c.setAttribute('aria-selected','false'); });
+  if (btn){ btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
+  renderEducationItems(allEducationItems);
+}
 function searchEducation(){ renderEducationItems(allEducationItems); }
 function viewEducationItem(type, id){ window.location.href = `/education/${type}/${id}/`; }
 function shareEducationItem(type, id, title){

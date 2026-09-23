@@ -527,6 +527,30 @@
             border-left: 4px solid var(--primary);
         }
 
+        /* ===== AGENT-FRIENDLY LAND DETAILS ===== */
+        .land-size-composer {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 150px;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .land-quick-note {
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            background: #fff8e8;
+            border: 1px solid #f2d89a;
+            color: #6b5200;
+            font-size: 12.5px;
+            margin-top: 8px;
+        }
+
+        .land-quick-note i { margin-right: 6px; color: #d99000; }
+
+        @media (max-width: 576px) {
+            .land-size-composer { grid-template-columns: 1fr; }
+        }
+
         /* ===== DYNAMIC FIELDS ===== */
         .dynamic-section {
             transition: var(--transition);
@@ -1811,7 +1835,47 @@
 
             container.innerHTML = '';
 
-            if (!config || !config.fields || config.fields.length === 0) {
+            if (!config || !Array.isArray(config.fields)) {
+                container.innerHTML = `
+                    <div class="form-card">
+                        <div class="card-body text-center text-muted">
+                            <i class="fas fa-info-circle"></i> No additional fields required for this purpose.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // ------------------------------------------------------------
+            // LAND FOR SALE: show a cleaner, agent-friendly section.
+            // We intentionally hide technical/planning fields that most
+            // listing agents do not need while creating a normal advert.
+            // ------------------------------------------------------------
+            const isLandSale = currentPurpose === 'land_sale';
+
+            const hiddenLandFields = new Set([
+                'land_size_hectares',
+                'land_size_acres',
+                'zoning',
+                'soil_type',
+                'topography',
+                'water_access',
+                'electricity_access',
+                'road_access',
+                'development_potential'
+            ]);
+
+            if (isLandSale) {
+                container.appendChild(createAgentLandCard(config));
+            }
+
+            const visibleFields = config.fields.filter(field => {
+                if (!field || !field.name) return false;
+                if (isLandSale && hiddenLandFields.has(field.name)) return false;
+                return true;
+            });
+
+            if (visibleFields.length === 0 && !isLandSale) {
                 container.innerHTML = `
                     <div class="form-card">
                         <div class="card-body text-center text-muted">
@@ -1823,10 +1887,21 @@
             }
 
             const sections = {};
-            config.fields.forEach(f => {
-                const section = f.section || 'General';
+            visibleFields.forEach(field => {
+                let section = field.section || 'General';
+
+                // Give section headings human-friendly names.
+                const sectionKey = String(section).toLowerCase();
+                if (sectionKey === 'sale') section = 'Sale Details';
+                else if (sectionKey === 'lease') section = 'Lease Details';
+                else if (sectionKey === 'rental') section = 'Rental Details';
+                else if (sectionKey === 'booking') section = 'Booking Details';
+                else if (sectionKey === 'student') section = 'Student Accommodation';
+                else if (sectionKey === 'commercial') section = 'Commercial Details';
+                else if (sectionKey === 'land') section = 'Land Details';
+
                 if (!sections[section]) sections[section] = [];
-                sections[section].push(f);
+                sections[section].push(field);
             });
 
             for (const [sectionName, fields] of Object.entries(sections)) {
@@ -1836,7 +1911,10 @@
 
                 const header = document.createElement('div');
                 header.className = 'card-header';
-                header.innerHTML = `<span class="card-header-icon"><i class="fas fa-cog"></i></span> ${escapeHtml(sectionName)}`;
+                header.innerHTML = `
+                    <span class="card-header-icon"><i class="fas fa-sliders-h"></i></span>
+                    ${escapeHtml(sectionName)}
+                `;
                 card.appendChild(header);
 
                 const body = document.createElement('div');
@@ -1866,6 +1944,105 @@
             }
         }
 
+        function createAgentLandCard(config) {
+            const card = document.createElement('div');
+            card.className = 'form-card dynamic-section';
+            card.dataset.section = 'land';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-header-icon"><i class="fas fa-vector-square"></i></span>
+                    Land Details
+                    <span class="card-header-hint">Keep it simple — buyers mainly need the size and land type</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Land Size <span class="required">*</span></label>
+                        <div class="land-size-composer">
+                            <div>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="landSizeValue"
+                                    min="0"
+                                    step="any"
+                                    placeholder="e.g., 850"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <select class="form-control" id="landSizeUnit">
+                                    <option value="sqm" selected>m²</option>
+                                    <option value="hectare">hectares</option>
+                                    <option value="acre">acres</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="help-text">Use m² for stands and plots, hectares for larger land, or acres where applicable.</div>
+
+                        <input type="hidden" name="land_size_hectares" id="landSizeHectares">
+                        <input type="hidden" name="land_size_acres" id="landSizeAcres">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Land Type</label>
+                        <select class="form-control" name="land_use" id="field_land_use">
+                            <option value="">Select land type...</option>
+                            <option value="Residential Stand">Residential Stand</option>
+                            <option value="Vacant Plot">Vacant Plot</option>
+                            <option value="Development Land">Development Land</option>
+                            <option value="Agricultural Land">Agricultural Land</option>
+                            <option value="Farm">Farm</option>
+                            <option value="Commercial Land">Commercial Land</option>
+                            <option value="Industrial Land">Industrial Land</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="help-text">Choose the description that best matches how the property is being marketed.</div>
+                    </div>
+
+                    <div class="land-quick-note">
+                        <i class="fas fa-lightbulb"></i>
+                        Technical details such as zoning, soil type, topography, road access and services can be mentioned in the description or added as features only when they matter to the listing.
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function syncLandSizeValues() {
+            if (currentPurpose !== 'land_sale') return;
+
+            const valueEl = document.getElementById('landSizeValue');
+            const unitEl = document.getElementById('landSizeUnit');
+            const hectaresEl = document.getElementById('landSizeHectares');
+            const acresEl = document.getElementById('landSizeAcres');
+
+            if (!valueEl || !unitEl || !hectaresEl || !acresEl) return;
+
+            const value = parseFloat(valueEl.value);
+            if (!Number.isFinite(value) || value <= 0) {
+                hectaresEl.value = '';
+                acresEl.value = '';
+                return;
+            }
+
+            let hectares = 0;
+
+            if (unitEl.value === 'sqm') {
+                hectares = value / 10000;
+            } else if (unitEl.value === 'acre') {
+                hectares = value * 0.40468564224;
+            } else {
+                hectares = value;
+            }
+
+            const acres = hectares * 2.47105381467;
+
+            hectaresEl.value = hectares.toFixed(6);
+            acresEl.value = acres.toFixed(6);
+        }
+
         // ============================================================
         // CREATE FIELD HTML
         // ============================================================
@@ -1880,23 +2057,26 @@
             let inputHtml = '';
 
             if (type === 'textarea') {
-                inputHtml = `<textarea class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" ${required}></textarea>`;
+                inputHtml = `<textarea class="form-control" name="${name}" id="field_${name}" placeholder="${escapeHtml(placeholder)}" ${required}></textarea>`;
             } else if (type === 'select') {
                 const options = field.options || [];
                 let optionsHtml = '<option value="">Select...</option>';
-                options.forEach(opt => { optionsHtml += `<option value="${opt}">${opt}</option>`; });
+                options.forEach(opt => {
+                    const clean = String(opt).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                    optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(clean)}</option>`;
+                });
                 inputHtml = `<select class="form-control" name="${name}" id="field_${name}" ${required}>${optionsHtml}</select>`;
             } else if (type === 'boolean') {
                 inputHtml = `
-                    <div style="display:flex;align-items:center;gap:10px;padding-top:4px;">
-                        <input type="checkbox" name="${name}" id="field_${name}" value="on" style="width:18px;height:18px;accent-color:var(--primary);">
-                        <label for="field_${name}" style="font-weight:400;margin:0;cursor:pointer;">Yes</label>
-                    </div>
+                    <label class="toggle-item" for="field_${name}" style="display:inline-flex;">
+                        <input type="checkbox" name="${name}" id="field_${name}" value="on">
+                        <span>Yes</span>
+                    </label>
                 `;
             } else if (type === 'number') {
-                inputHtml = `<input type="number" class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" step="any" ${required}>`;
+                inputHtml = `<input type="number" class="form-control" name="${name}" id="field_${name}" placeholder="${escapeHtml(placeholder)}" step="any" ${required}>`;
             } else {
-                inputHtml = `<input type="text" class="form-control" name="${name}" id="field_${name}" placeholder="${placeholder}" ${required}>`;
+                inputHtml = `<input type="text" class="form-control" name="${name}" id="field_${name}" placeholder="${escapeHtml(placeholder)}" ${required}>`;
             }
 
             return `
@@ -2311,6 +2491,8 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
             btn.classList.add('btn-loading');
             btn.disabled = true;
+
+            syncLandSizeValues();
 
             const formData = new FormData(this);
             uploadedFiles.forEach(file => formData.append('images', file));

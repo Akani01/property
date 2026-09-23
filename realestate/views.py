@@ -10,15 +10,18 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils.property_config import get_property_config, get_all_purposes, should_show_field
 from django.utils import timezone
 from django.conf import settings
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import re
 import json
 import requests
+import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
+
+logger = logging.getLogger(__name__)
 
 # ===== IMPORTS FROM HIRING APP =====
 from hiring.models import (
@@ -3949,32 +3952,30 @@ def get_property_purpose_config(request, purpose_code):
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_property_purpose_fields(request, purpose_code):
     """Get all fields for a specific property purpose with their configurations"""
     try:
         from .utils.property_config import get_property_config
-        
+
         config = get_property_config(purpose_code)
-        
+
         if not config:
             return Response({
                 'success': False,
                 'error': f'Property purpose "{purpose_code}" not found'
             }, status=status.HTTP_404_NOT_FOUND)
-        
-        # Define field types
+
+        # ============================================================
+        # FIELD TYPE MAP — only purpose-specific fields live here.
+        # Basic fields (title, description, price, location, bedrooms,
+        # bathrooms, garages) are rendered by the STATIC template in
+        # property_add.html, so they must NOT appear in this map or
+        # in the dynamic output.
+        # ============================================================
         field_types = {
-            'title': 'text',
-            'description': 'textarea',
-            'price': 'number',
-            'location': 'text',
-            'bedrooms': 'number',
-            'bathrooms': 'number',
-            'garages': 'number',
-            'total_area': 'number',
+            # Land fields
             'land_size_hectares': 'number',
             'land_size_acres': 'number',
             'land_use': 'text',
@@ -3983,6 +3984,33 @@ def get_property_purpose_fields(request, purpose_code):
             'topography': 'select',
             'road_access': 'text',
             'development_potential': 'textarea',
+            'water_access': 'boolean',
+            'electricity_access': 'boolean',
+
+            # Sale fields
+            'bond_available': 'boolean',
+            'transfer_duty': 'number',
+            'registration_fees': 'number',
+            'levies': 'number',
+            'rates_taxes': 'number',
+
+            # Stay / booking fields
+            'stay_type': 'select',
+            'minimum_stay': 'number',
+            'maximum_stay': 'number',
+            'booking_unit': 'select',
+            'booking_mode': 'select',
+            'is_bookable': 'boolean',
+
+            # Rental / lease fields
+            'deposit_amount': 'number',
+            'lease_duration_months': 'number',
+            'notice_period_days': 'number',
+            'utilities_included': 'boolean',
+            'maintenance_fee': 'number',
+            'rental_increase_percentage': 'number',
+
+            # Student accommodation
             'student_accommodation_type': 'select',
             'semester_duration_months': 'number',
             'per_student_price': 'number',
@@ -3994,21 +4022,8 @@ def get_property_purpose_fields(request, purpose_code):
             'shuttle_service': 'boolean',
             'security_guards': 'boolean',
             'cctv_cameras': 'boolean',
-            'stay_type': 'select',
-            'minimum_stay': 'number',
-            'maximum_stay': 'number',
-            'booking_unit': 'select',
-            'deposit_amount': 'number',
-            'lease_duration_months': 'number',
-            'notice_period_days': 'number',
-            'utilities_included': 'boolean',
-            'maintenance_fee': 'number',
-            'rental_increase_percentage': 'number',
-            'bond_available': 'boolean',
-            'transfer_duty': 'number',
-            'registration_fees': 'number',
-            'levies': 'number',
-            'rates_taxes': 'number',
+
+            # Commercial
             'commercial_type': 'select',
             'number_of_floors': 'number',
             'parking_available': 'number',
@@ -4018,6 +4033,8 @@ def get_property_purpose_fields(request, purpose_code):
             'restaurant_equipment': 'boolean',
             'kitchen_facilities': 'boolean',
             'signage_available': 'boolean',
+
+            # Property condition
             'condition': 'select',
             'year_built': 'number',
             'last_renovated': 'number',
@@ -4028,33 +4045,60 @@ def get_property_purpose_fields(request, purpose_code):
             'pets_allowed': 'boolean',
             'pet_deposit': 'number',
             'furnishing_status': 'select',
-            'listing_type': 'select',
-            'status': 'select',
-            'booking_mode': 'select',
-            'is_bookable': 'boolean',
+
+            # Sizing
+            'total_area': 'number',
+
+            # Promotion toggles
             'is_featured': 'boolean',
             'is_premium': 'boolean',
             'is_online': 'boolean',
-            'price_currency': 'select',
+
+            # Pricing options
             'pricing_structure': 'select',
         }
-        
-        # Build field list with all configurations
+
+        # ============================================================
+        # FIELDS RENDERED BY THE STATIC TEMPLATE — filtered out below
+        # so a misconfigured purpose config can never cause duplicates.
+        # ============================================================
+        STATIC_FIELDS = {
+            # Basic information already rendered by property_add.html
+            'title', 'description',
+
+            # Price / currency already rendered by property_add.html
+            'base_price', 'price', 'price_currency', 'currency',
+
+            # Main property selectors already rendered statically
+            'listing_type', 'property_type', 'property_category', 'status',
+
+            # Property counts already rendered statically
+            'bedrooms', 'bathrooms', 'garages',
+
+            # Location fields already rendered statically
+            'location', 'address', 'street_address', 'city', 'state',
+            'province', 'state_province', 'country', 'postal_code',
+            'neighborhood', 'suburb', 'landmark',
+            'latitude', 'longitude', 'formatted_address', 'place_id',
+        }
+
+        # Build field list
         fields = []
-        
-        # Get all fields from show_fields
+
         for section, field_list in config.get('show_fields', {}).items():
             for field_name in field_list:
-                # Get options for select fields
+                # Skip anything the static form already renders
+                if field_name in STATIC_FIELDS:
+                    continue
+
+                # Select options per field
                 options = []
                 if field_name == 'stay_type':
                     options = ['daily', 'weekly', 'bi_weekly', 'monthly', 'semester', 'yearly', 'permanent', 'flexible', 'not_applicable']
                 elif field_name == 'booking_unit':
                     options = ['hour', 'day', 'week', 'month', 'year', 'semester', 'once_off']
-                elif field_name == 'listing_type':
-                    options = ['sale', 'rent', 'lease', 'booking', 'event', 'auction']
-                elif field_name == 'status':
-                    options = ['available', 'booked', 'occupied', 'maintenance', 'coming_soon', 'closed', 'sold', 'rented']
+                elif field_name == 'booking_mode':
+                    options = ['instant', 'scheduled', 'on_demand', 'subscription', 'traditional']
                 elif field_name == 'condition':
                     options = ['new', 'excellent', 'good', 'needs_renovation', 'fixer_upper', 'under_construction', 'land_only']
                 elif field_name == 'furnishing_status':
@@ -4065,39 +4109,70 @@ def get_property_purpose_fields(request, purpose_code):
                     options = ['Dormitory', 'Apartment', 'Townhouse', 'House', 'Studio', 'Other']
                 elif field_name == 'topography':
                     options = ['Flat', 'Gently Sloped', 'Sloped', 'Hilly', 'Mountainous']
-                
+                elif field_name == 'pricing_structure':
+                    options = ['fixed', 'tiered', 'dynamic', 'negotiable', 'per_person', 'per_night', 'per_sqm']
+
                 fields.append({
                     'name': field_name,
                     'type': field_types.get(field_name, 'text'),
-                    'label': config.get('field_labels', {}).get(field_name, field_name.replace('_', ' ').title()),
+                    'label': config.get('field_labels', {}).get(
+                        field_name,
+                        field_name.replace('_', ' ').title()
+                    ),
                     'placeholder': config.get('field_placeholders', {}).get(field_name, ''),
                     'help_text': config.get('field_help_texts', {}).get(field_name, ''),
                     'section': section,
                     'required': field_name in config.get('required_fields', []),
                     'options': options,
                 })
-        
-        # Add basic fields if not already included
-        basic_fields = ['title', 'description', 'price', 'location', 'bedrooms', 'bathrooms', 'garages']
-        existing_field_names = [f['name'] for f in fields]
-        for field_name in basic_fields:
-            if field_name not in existing_field_names:
-                fields.append({
-                    'name': field_name,
-                    'type': field_types.get(field_name, 'text'),
-                    'label': field_name.replace('_', ' ').title(),
-                    'placeholder': '',
-                    'help_text': '',
-                    'section': 'basic',
-                    'required': field_name in ['title', 'description', 'price', 'location'],
-                    'options': [],
-                })
-        
+
+        # Remove duplicate fields and remove the dynamic "basic" section.
+        # The Basic Information fields are already present in property_add.html.
+        unique_fields = []
+        seen_field_names = set()
+        for field in fields:
+            field_name = field.get('name')
+            if not field_name or field_name in seen_field_names:
+                continue
+            seen_field_names.add(field_name)
+            unique_fields.append(field)
+
+        raw_sections = config.get('sections', [])
+        cleaned_sections = []
+        dynamic_section_names = {
+            str(field.get('section', '')).strip().lower()
+            for field in unique_fields
+            if field.get('section')
+        }
+
+        for section in raw_sections if isinstance(raw_sections, (list, tuple)) else []:
+            if isinstance(section, str):
+                section_name = section.strip().lower()
+                if section_name == 'basic':
+                    continue
+                if not dynamic_section_names or section_name in dynamic_section_names:
+                    cleaned_sections.append(section)
+            elif isinstance(section, dict):
+                section_key = (
+                    section.get('name')
+                    or section.get('key')
+                    or section.get('id')
+                    or section.get('code')
+                    or ''
+                )
+                section_name = str(section_key).strip().lower()
+                if section_name == 'basic':
+                    continue
+                if not dynamic_section_names or section_name in dynamic_section_names:
+                    cleaned_sections.append(section)
+            else:
+                cleaned_sections.append(section)
+
         return Response({
             'success': True,
             'purpose': purpose_code,
-            'fields': fields,
-            'sections': config.get('sections', []),
+            'fields': unique_fields,
+            'sections': cleaned_sections,
             'hidden_fields': config.get('hidden_fields', []),
             'config': {
                 'title': config.get('title', ''),
@@ -4113,6 +4188,7 @@ def get_property_purpose_fields(request, purpose_code):
                 'requires_land_fields': config.get('requires_land_fields', False),
             }
         })
+
     except Exception as e:
         import traceback
         print(f"Error in get_property_purpose_fields: {str(e)}")
@@ -4122,6 +4198,69 @@ def get_property_purpose_fields(request, purpose_code):
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@login_required
+def property_map(request):
+    properties = Property.objects.filter(
+        is_active=True,
+        latitude__isnull=False,
+        longitude__isnull=False
+    ).select_related(
+        'property_type',
+        'owner',
+        'company'
+    ).order_by('-created_at')
+
+    map_properties = []
+
+    for prop in properties:
+        try:
+            latitude = float(prop.latitude)
+            longitude = float(prop.longitude)
+        except (TypeError, ValueError):
+            continue
+
+        map_properties.append({
+            'id': str(prop.id),
+            'title': prop.title or 'Property',
+            'description': prop.description or '',
+            'address': prop.address or '',
+            'city': prop.city or '',
+            'state': prop.state or '',
+            'country': prop.country or '',
+            'latitude': latitude,
+            'longitude': longitude,
+            'price': str(prop.base_price) if prop.base_price else '',
+            'currency': prop.price_currency or 'ZAR',
+            'status': prop.status or '',
+            'listing_type': prop.listing_type or '',
+            'bedrooms': prop.bedrooms or 0,
+            'bathrooms': prop.bathrooms or 0,
+            'garages': prop.garages or 0,
+            'property_type': (
+                prop.property_type.name
+                if prop.property_type
+                else 'Property'
+            ),
+            'image': prop.get_main_image_url(),
+        })
+
+    return render(
+        request,
+        'hiring/property_map.html',
+        {
+            'properties': properties,
+            'map_properties': map_properties,
+            'GOOGLE_MAPS_API_KEY': getattr(
+                settings,
+                'GOOGLE_MAPS_API_KEY',
+                ''
+            ),
+            'user': request.user,
+        }
+    )
+
+        
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_dynamic_property(request):
@@ -4220,144 +4359,6 @@ def update_dynamic_property(request, property_id):
         'success': False,
         'errors': serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_property_purpose_fields(request, purpose_code):
-    """Get all fields for a specific property purpose with their configurations"""
-    config = get_property_config(purpose_code)
-    
-    if not config:
-        return Response({
-            'success': False,
-            'error': f'Property purpose "{purpose_code}" not found'
-        }, status=status.HTTP_404_NOT_FOUND)
-    
-    # Define field types
-    field_types = {
-        'title': 'text',
-        'description': 'textarea',
-        'price': 'number',
-        'location': 'text',
-        'bedrooms': 'number',
-        'bathrooms': 'number',
-        'garages': 'number',
-        'total_area': 'number',
-        'land_size_hectares': 'number',
-        'land_size_acres': 'number',
-        'land_use': 'text',
-        'zoning': 'text',
-        'soil_type': 'text',
-        'topography': 'select',
-        'road_access': 'text',
-        'development_potential': 'textarea',
-        'student_accommodation_type': 'select',
-        'semester_duration_months': 'number',
-        'per_student_price': 'number',
-        'is_per_student_pricing': 'boolean',
-        'includes_meals': 'boolean',
-        'includes_internet': 'boolean',
-        'includes_study_area': 'boolean',
-        'proximity_to_campus': 'text',
-        'shuttle_service': 'boolean',
-        'security_guards': 'boolean',
-        'cctv_cameras': 'boolean',
-        'stay_type': 'select',
-        'minimum_stay': 'number',
-        'maximum_stay': 'number',
-        'booking_unit': 'select',
-        'deposit_amount': 'number',
-        'lease_duration_months': 'number',
-        'notice_period_days': 'number',
-        'utilities_included': 'boolean',
-        'maintenance_fee': 'number',
-        'rental_increase_percentage': 'number',
-        'bond_available': 'boolean',
-        'transfer_duty': 'number',
-        'registration_fees': 'number',
-        'levies': 'number',
-        'rates_taxes': 'number',
-        'commercial_type': 'select',
-        'number_of_floors': 'number',
-        'parking_available': 'number',
-        'loading_bays': 'number',
-        'ceiling_height': 'number',
-        'commercial_zone': 'text',
-        'restaurant_equipment': 'boolean',
-        'kitchen_facilities': 'boolean',
-        'signage_available': 'boolean',
-        'condition': 'select',
-        'year_built': 'number',
-        'last_renovated': 'number',
-        'energy_rating': 'text',
-        'solar_panels': 'boolean',
-        'water_tank': 'boolean',
-        'inverters': 'boolean',
-        'pets_allowed': 'boolean',
-        'pet_deposit': 'number',
-        'furnishing_status': 'select',
-        'listing_type': 'select',
-        'status': 'select',
-        'booking_mode': 'select',
-        'is_bookable': 'boolean',
-        'is_featured': 'boolean',
-        'is_premium': 'boolean',
-        'is_online': 'boolean',
-        'price_currency': 'select',
-        'pricing_structure': 'select',
-    }
-    
-    # Build field list with all configurations
-    fields = {}
-    
-    # Get all fields from show_fields
-    for section, field_list in config.get('show_fields', {}).items():
-        for field_name in field_list:
-            fields[field_name] = {
-                'name': field_name,
-                'type': field_types.get(field_name, 'text'),
-                'label': config.get('field_labels', {}).get(field_name, field_name.replace('_', ' ').title()),
-                'placeholder': config.get('field_placeholders', {}).get(field_name, ''),
-                'help_text': config.get('field_help_texts', {}).get(field_name, ''),
-                'section': section,
-                'required': field_name in config.get('required_fields', []),
-            }
-    
-    # Add basic fields if not already included
-    basic_fields = ['title', 'description', 'price', 'location', 'bedrooms', 'bathrooms', 'garages']
-    for field_name in basic_fields:
-        if field_name not in fields:
-            fields[field_name] = {
-                'name': field_name,
-                'type': field_types.get(field_name, 'text'),
-                'label': field_name.replace('_', ' ').title(),
-                'placeholder': '',
-                'help_text': '',
-                'section': 'basic',
-                'required': field_name in ['title', 'description', 'price', 'location'],
-            }
-    
-    return Response({
-        'success': True,
-        'purpose': purpose_code,
-        'fields': list(fields.values()),
-        'sections': config.get('sections', []),
-        'hidden_fields': config.get('hidden_fields', []),
-        'config': {
-            'title': config.get('title', ''),
-            'icon': config.get('icon', ''),
-            'badge_color': config.get('badge_color', ''),
-            'description': config.get('description', ''),
-            'default_status': config.get('default_status', 'available'),
-            'listing_types': config.get('listing_types', []),
-            'show_pricing_options': config.get('show_pricing_options', False),
-            'show_booking_options': config.get('show_booking_options', False),
-            'show_lease_options': config.get('show_lease_options', False),
-            'show_sale_options': config.get('show_sale_options', False),
-            'requires_land_fields': config.get('requires_land_fields', False),
-        }
-    })
 
 
 @login_required
