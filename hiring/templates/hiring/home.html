@@ -334,12 +334,82 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 }
 
 
+/* Latest from the neighbourhood — compact Facebook-style discovery strip on phones.
+   Aim: ~3 full cards plus a visible slice of the fourth. */
 @media (max-width:576px){
-  #recommendationScroll .mini-card{
-    flex:0 0 min(72vw,260px);
-    width:min(72vw,260px);
+  #recommendationScroll{
+    gap:7px;
+    padding:2px 1px 10px;
+    scroll-padding-left:1px;
+    scrollbar-width:none;
   }
-  #recommendationScroll .mini-thumb{aspect-ratio:4/3;}
+  #recommendationScroll::-webkit-scrollbar{display:none;}
+
+  #recommendationScroll .mini-card{
+    /* 26vw gives roughly 3 cards + part of card 4 on common phone widths. */
+    flex:0 0 clamp(88px,26vw,112px);
+    width:clamp(88px,26vw,112px);
+    border-radius:13px;
+    box-shadow:0 3px 10px rgba(22,36,31,.055);
+  }
+
+  #recommendationScroll .mini-thumb{
+    aspect-ratio:1/1;
+  }
+
+  #recommendationScroll .mini-badge{
+    top:5px;
+    right:5px;
+    max-width:calc(100% - 10px);
+    padding:2px 6px;
+    font-size:7px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  #recommendationScroll .mini-info{
+    padding:7px 7px 8px;
+  }
+
+  #recommendationScroll .mini-title{
+    font-size:10.5px;
+    line-height:1.22;
+    -webkit-line-clamp:2;
+    min-height:25px;
+  }
+
+  #recommendationScroll .mini-sub{
+    font-size:8.5px;
+    margin-top:2px;
+  }
+
+  #recommendationScroll .mini-meta{
+    margin-top:4px;
+    gap:4px;
+  }
+
+  #recommendationScroll .mini-price{
+    min-width:0;
+    max-width:72%;
+    font-size:8.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  #recommendationScroll .mini-likes{
+    flex-shrink:0;
+    font-size:7.5px;
+  }
+}
+
+@media (max-width:360px){
+  #recommendationScroll{gap:6px;}
+  #recommendationScroll .mini-card{
+    flex-basis:clamp(82px,25.8vw,96px);
+    width:clamp(82px,25.8vw,96px);
+  }
 }
 /* Reels strip */
 .reel-mini{
@@ -1842,8 +1912,12 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 <!-- ===== HEADER ===== -->
 <header class="header-area">
   <div class="header-inner">
-    <a href="/" class="brand">
-      <span class="brand-mark">O</span>
+    <a href="/carwash/" class="brand"
+      aria-label="Open OppoGlobe Car Wash"
+      title="Car Wash">
+      <span class="brand-mark">
+        <i class="fas fa-car-side"></i>
+      </span>
       <span class="brand-word">OppoGlobe</span>
     </a>
 

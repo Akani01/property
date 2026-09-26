@@ -25,6 +25,7 @@ urlpatterns = [
     path(".well-known/assetlinks.json", assetlinks),
     path('admin/', admin.site.urls),
     path('', include('hiring.urls')),
+    path('carwash/', include('carwash.urls')),
     path('', include('pwa.urls')),
     path('', include('realestate.urls')),
     path('api/', include('realestate.urls')),

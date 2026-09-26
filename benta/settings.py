@@ -156,6 +156,7 @@ INSTALLED_APPS = [
     'education',
     'notifications',
     'ads',
+    'carwash',
 
     # Communication
     'channels',
