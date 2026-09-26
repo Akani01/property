@@ -296,20 +296,21 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .hscroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
 
 .mini-card{
-  flex:0 0 148px; width:148px; scroll-snap-align:start; background:var(--surface);
-  border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; cursor:pointer;
-  transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+  flex:0 0 164px; width:164px; scroll-snap-align:start; background:var(--surface);
+  border:1px solid var(--line); border-radius:16px; overflow:hidden; cursor:pointer;
+  box-shadow:0 4px 14px rgba(22,36,31,.055);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s ease;
 }
-.mini-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
-.mini-thumb{position:relative; width:100%; aspect-ratio:1/1; background:var(--jade-wash); overflow:hidden; display:flex; align-items:center; justify-content:center;}
+.mini-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(22,36,31,.10); border-color:#d8ded9;}
+.mini-thumb{position:relative; width:100%; aspect-ratio:4/3; background:var(--jade-wash); overflow:hidden; display:flex; align-items:center; justify-content:center;}
 .mini-thumb img{width:100%; height:100%; object-fit:cover;}
 .mini-thumb .ph{font-size:26px; color:var(--jade); opacity:.35;}
 .mini-badge{
   position:absolute; top:6px; right:6px; padding:2px 8px; border-radius:99px;
   font-size:8.5px; font-weight:700; letter-spacing:.2px; color:#fff; background:var(--jade);
 }
-.mini-info{padding:8px 9px 10px;}
-.mini-title{font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.mini-info{padding:10px 11px 11px;}
+.mini-title{font-size:12.5px; font-weight:700; line-height:1.28; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
 .mini-sub{font-size:10.5px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
 .mini-meta{display:flex; align-items:center; justify-content:space-between; margin-top:5px;}
 .mini-price{font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--coral-deep);}
@@ -332,74 +333,101 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   #seeAllGrid{grid-template-columns:minmax(0,1fr) !important;}
 }
 
+
+@media (max-width:576px){
+  #recommendationScroll .mini-card{
+    flex:0 0 min(72vw,260px);
+    width:min(72vw,260px);
+  }
+  #recommendationScroll .mini-thumb{aspect-ratio:4/3;}
+}
 /* Reels strip */
 .reel-mini{
-  flex:0 0 clamp(138px,22vw,168px);
-  width:clamp(138px,22vw,168px);
-  min-width:0;
+  flex:0 0 208px;
+  width:208px;
   scroll-snap-align:start;
-  border-radius:var(--radius-sm);
+  border-radius:18px;
   overflow:hidden;
   cursor:pointer;
   background:#0d1210;
-  box-shadow:var(--shadow-sm);
-  transition:transform .2s var(--ease);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 8px 24px rgba(13,18,16,.16);
+  transition:transform .2s var(--ease), box-shadow .2s ease;
 }
-.reel-mini:hover{transform:translateY(-4px) scale(1.01);}
+.reel-mini:hover{transform:translateY(-4px); box-shadow:0 14px 32px rgba(13,18,16,.23);}
 .reel-mini .thumb{
   position:relative;
   width:100%;
   aspect-ratio:4/5;
   background:#0d1210;
   overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 .reel-mini video{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  object-fit:contain;
-  background:#000;
+  object-fit:cover;
+  object-position:center;
+  background:#0d1210;
   opacity:0;
-  transition:opacity .18s ease;
+  transform:scale(1.035);
+  transition:opacity .18s ease, transform .28s ease;
 }
-.reel-mini video.preview-ready{opacity:1;}
+.reel-mini.preview-ready video{opacity:1;}
+.reel-mini:hover video{transform:scale(1.075);}
 .reel-mini .thumb-preview-fallback{
   position:absolute;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(145deg,#101713,#070a09);
-  color:rgba(255,255,255,.42);
-  font-size:28px;
+  background:linear-gradient(145deg,#18211d,#080b0a);
+  color:rgba(255,255,255,.36);
+  font-size:30px;
 }
-.reel-mini.preview-ready .thumb-preview-fallback{display:none;}
+.reel-mini.preview-ready .thumb-preview-fallback{opacity:0;pointer-events:none;}
+.reel-mini .fade{
+  position:absolute;
+  inset:auto 0 0 0;
+  height:58%;
+  background:linear-gradient(to top,rgba(0,0,0,.76),rgba(0,0,0,.18) 56%,transparent);
+  pointer-events:none;
+}
+/* No center play icon: the video frame itself is the invitation to watch. */
+.reel-mini .play{display:none!important;}
+.reel-mini .views{
+  position:absolute;
+  top:9px;
+  right:9px;
+  z-index:3;
+  font-size:9.5px;
+  font-weight:700;
+  color:#fff;
+  background:rgba(0,0,0,.48);
+  padding:4px 9px;
+  border-radius:99px;
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.reel-mini .info{padding:11px 12px 12px;background:#121815;color:#fff;}
+.reel-mini .info .t{font-size:13px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reel-mini .info .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px;font-size:10px;color:rgba(255,255,255,.68);}
+.reel-mini .info .row span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 @media (max-width:576px){
   .reel-mini{
-    flex-basis:clamp(128px,42vw,156px);
-    width:clamp(128px,42vw,156px);
+    flex:0 0 clamp(176px,58vw,226px);
+    width:clamp(176px,58vw,226px);
+    border-radius:17px;
   }
 }
 @media (max-width:360px){
   .reel-mini{
-    flex-basis:44vw;
-    width:44vw;
+    flex-basis:62vw;
+    width:62vw;
   }
 }
-.reel-mini .fade{position:absolute; inset:auto 0 0 0; height:55%; background:linear-gradient(to top, rgba(0,0,0,.75), transparent); pointer-events:none;}
-.reel-mini .play{
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:42px; height:42px; border-radius:50%;
-  background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.3); backdrop-filter:blur(3px);
-  display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; pointer-events:none;
-}
-.reel-mini .views{position:absolute; top:7px; right:7px; font-size:9px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:99px;}
-.reel-mini .info{padding:8px 9px 9px; background:#121815; color:#fff;}
-.reel-mini .info .t{font-size:11.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.reel-mini .info .row{display:flex; align-items:center; justify-content:space-between; margin-top:4px; font-size:9.5px; color:rgba(255,255,255,.65);}
 
 /* Education mini */
 .edu-mini{flex:0 0 118px; width:118px;}
@@ -646,11 +674,30 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
    ============================================================ */
 .reels-badge{display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg, var(--coral), var(--plum)); color:#fff; font-size:9px; font-weight:700; padding:2px 10px; border-radius:99px; letter-spacing:.3px;}
 .reels-upload-btn{display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:var(--ink); color:#fff; border:none; border-radius:99px; font-weight:600; cursor:pointer; font-size:12.5px;}
-.reels-stage{background:#0d1210; border-radius:var(--radius-md); overflow:hidden; height:min(72vh,640px); box-shadow:var(--shadow-lg); position:relative;}
-.reels-feed{height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; scroll-behavior:smooth;}
+.reels-stage{
+  width:min(100%,430px);
+  height:min(74dvh,720px);
+  min-height:520px;
+  margin:0 auto;
+  background:#0d1210;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+}
+.reels-feed{height:100%; overflow-y:auto; overflow-x:hidden; scroll-snap-type:y mandatory; scroll-behavior:smooth; overscroll-behavior-y:contain;}
 .reels-feed::-webkit-scrollbar{display:none;}
-.reels-item{height:100%; scroll-snap-align:start; position:relative; background:#000; overflow:hidden; min-height:260px;}
-.reels-item video{width:100%; height:100%; object-fit:contain; background:#000; position:absolute; inset:0; cursor:pointer;}
+.reels-item{width:100%; height:100%; scroll-snap-align:start; scroll-snap-stop:always; position:relative; background:#000; overflow:hidden; min-height:100%;}
+.reels-item video{width:100%; height:100%; object-fit:contain; object-position:center; background:#000; position:absolute; inset:0; cursor:pointer;}
+@media (max-width:576px){
+  .reels-stage{width:100%;height:min(72dvh,680px);min-height:460px;border-radius:18px;}
+}
+@media (max-width:420px){
+  .reels-stage{height:min(70dvh,640px);min-height:430px;}
+}
+@media (orientation:landscape) and (max-height:600px){
+  .reels-stage{width:min(56vw,360px);height:calc(100dvh - var(--header-h) - 22px);min-height:320px;margin-inline:auto;}
+}
 .reels-overlay{position:absolute; inset:auto 0 0 0; padding:16px; color:#fff; pointer-events:none;}
 .reels-overlay .author{display:flex; align-items:center; gap:8px; font-size:12px; opacity:.9; pointer-events:auto;}
 .reels-overlay .avatar{width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--gold)); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700;}
@@ -2559,7 +2606,8 @@ function scrollToTab(tabName){
   const y = target.getBoundingClientRect().top + window.scrollY - 76;
   window.scrollTo({ top:y, behavior:'smooth' });
 }
-function switchTab(tabName){
+function switchTab(tabName, options = {}){
+  const shouldScroll = options.scroll !== false;
   currentTab = tabName;
   const mobileTabs = document.querySelectorAll('#mobileBottomNav .bn-tab');
   mobileTabs.forEach(btn=>{
@@ -2590,6 +2638,7 @@ function switchTab(tabName){
   if (tabName === 'education') loadEducationContent();
 
   closeRail();
+  if (shouldScroll) setTimeout(()=>scrollToTab(tabName), 120);
 }
 
 /* ============================================================
@@ -2629,13 +2678,29 @@ document.addEventListener('click', function(e){
   const type = card.dataset.type, id = card.dataset.id;
   if (type === 'property') handlePropertyCardClick(id);
 });
+function waitForElement(getElement, onFound, attempts = 20, delay = 120){
+  let count = 0;
+  const check = () => {
+    const el = getElement();
+    if (el){ onFound(el); return; }
+    count += 1;
+    if (count < attempts) setTimeout(check, delay);
+  };
+  check();
+}
+
 function handlePropertyCardClick(id){
-  switchTab('properties');
-  const el = document.getElementById(`property-${id}`);
-  if (el){
-    el.style.outline='2px solid var(--coral)';
-    setTimeout(()=>el.style.outline='',1800);
-  }
+  closeSeeAll?.();
+  switchTab('properties', {scroll:false});
+  waitForElement(
+    () => document.getElementById(`property-${id}`),
+    (el) => {
+      el.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
+      el.style.outline='2px solid var(--coral)';
+      el.style.outlineOffset='3px';
+      setTimeout(()=>{ el.style.outline=''; el.style.outlineOffset=''; },1900);
+    }
+  );
 }
 
 /* See all modal */
@@ -2674,7 +2739,6 @@ function renderReelsHorizontalStrip(){
         <div class="thumb-preview-fallback"><i class="fas fa-video"></i></div>
         <video src="${escapeHtml(reel.video_url||'')}" muted playsinline preload="auto" aria-label="${escapeHtml(reel.title||'Reel preview')}"></video>
         <div class="fade"></div>
-        <div class="play"><i class="fas fa-play"></i></div>
         <div class="views"><i class="fas fa-eye"></i> ${formatNumber(reel.views||0)}</div>
       </div>
       <div class="info">
@@ -2744,14 +2808,16 @@ function focusReelInsideFeed(reelId){
 }
 
 function handleReelThumbClick(reelId){
-  switchTab('reels');
+  switchTab('reels', {scroll:false});
+  setTimeout(()=>scrollToTab('reels'), 70);
+
   let tries = 0;
   const openTarget = () => {
     if (focusReelInsideFeed(reelId)) return;
     tries += 1;
-    if (tries < 8) setTimeout(openTarget, 120);
+    if (tries < 20) setTimeout(openTarget, 120);
   };
-  setTimeout(openTarget, 80);
+  setTimeout(openTarget, 100);
 }
 function incrementReelView(reelId){
   fetch(`/api/videos/${reelId}/view/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()}, body:JSON.stringify({}) })
