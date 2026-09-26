@@ -296,43 +296,255 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .hscroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
 
 .mini-card{
-  flex:0 0 148px; width:148px; scroll-snap-align:start; background:var(--surface);
-  border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; cursor:pointer;
-  transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+  --community-accent:var(--jade);
+  flex:0 0 196px;
+  width:196px;
+  min-width:0;
+  scroll-snap-align:start;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  cursor:pointer;
+  background:linear-gradient(180deg,#fff 0%,#fcfdfc 100%);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 4px 14px rgba(22,36,31,.055);
+  transition:transform .18s var(--ease),box-shadow .18s ease,border-color .18s ease;
 }
-.mini-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
-.mini-thumb{position:relative; width:100%; aspect-ratio:1/1; background:var(--jade-wash); overflow:hidden; display:flex; align-items:center; justify-content:center;}
-.mini-thumb img{width:100%; height:100%; object-fit:cover;}
-.mini-thumb .ph{font-size:26px; color:var(--jade); opacity:.35;}
+.mini-card:hover{
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb,var(--community-accent) 28%,var(--line));
+  box-shadow:0 12px 26px rgba(22,36,31,.10);
+}
+.mini-card[data-type="reel"]{--community-accent:var(--coral);}
+.mini-card[data-type="post"]{--community-accent:var(--sky);}
+.mini-card[data-type="property"]{--community-accent:var(--jade);}
+.mini-thumb{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/10;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,var(--jade-wash),var(--paper));
+}
+.mini-thumb img,
+.mini-thumb video{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.mini-thumb img{object-fit:cover;}
+.mini-thumb video{object-fit:contain;background:#080b0a;}
+.mini-thumb .ph{
+  font-size:27px;
+  color:var(--community-accent);
+  opacity:.38;
+}
+.mini-thumb::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0 0;
+  height:42%;
+  pointer-events:none;
+  background:linear-gradient(to top,rgba(10,17,14,.34),transparent);
+}
+.mini-type-icon{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  z-index:4;
+  width:28px;
+  height:28px;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  background:color-mix(in srgb,var(--community-accent) 88%,#000 12%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 5px 12px rgba(0,0,0,.14);
+  font-size:11px;
+}
 .mini-badge{
-  position:absolute; top:6px; right:6px; padding:2px 8px; border-radius:99px;
-  font-size:8.5px; font-weight:700; letter-spacing:.2px; color:#fff; background:var(--jade);
+  position:absolute;
+  top:8px;
+  right:8px;
+  z-index:4;
+  max-width:calc(100% - 16px);
+  padding:4px 9px;
+  border-radius:99px;
+  overflow:hidden;
+  color:#fff;
+  background:color-mix(in srgb,var(--community-accent) 88%,#000 12%);
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  font-size:8.5px;
+  line-height:1.1;
+  font-weight:800;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
-.mini-info{padding:8px 9px 10px;}
-.mini-title{font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.mini-sub{font-size:10.5px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
-.mini-meta{display:flex; align-items:center; justify-content:space-between; margin-top:5px;}
-.mini-price{font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--coral-deep);}
-.mini-likes{font-size:9.5px; color:var(--ink-faint); display:flex; align-items:center; gap:2px;}
+.mini-info{
+  min-height:104px;
+  padding:11px 12px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.mini-kicker{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--community-accent);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.mini-title{
+  color:var(--ink);
+  font-family:var(--font-display);
+  font-size:13px;
+  font-weight:700;
+  line-height:1.25;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.mini-sub{
+  color:var(--ink-faint);
+  font-size:10.5px;
+  line-height:1.35;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mini-meta{
+  margin-top:auto;
+  padding-top:6px;
+  border-top:1px solid var(--line-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.mini-price{
+  min-width:0;
+  overflow:hidden;
+  color:var(--community-accent);
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  font-weight:700;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.mini-likes{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  color:var(--ink-faint);
+  font-size:9.5px;
+}
 
-/* Reels strip */
+/* Reels strip — same visual family as community, but portrait media */
 .reel-mini{
-  flex:0 0 168px; width:168px; scroll-snap-align:start; border-radius:var(--radius-sm); overflow:hidden;
-  cursor:pointer; background:#0d1210; box-shadow:var(--shadow-sm); transition:transform .2s var(--ease);
+  flex:0 0 176px;
+  width:176px;
+  scroll-snap-align:start;
+  overflow:hidden;
+  cursor:pointer;
+  background:#0d1210;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;
+  box-shadow:0 5px 16px rgba(13,18,16,.12);
+  transition:transform .2s var(--ease),box-shadow .2s ease;
 }
-.reel-mini:hover{transform:translateY(-4px) scale(1.01);}
-.reel-mini .thumb{position:relative; width:100%; aspect-ratio:4/5; background:#0d1210; overflow:hidden;}
-.reel-mini video{width:100%; height:100%; object-fit:cover;}
-.reel-mini .fade{position:absolute; inset:auto 0 0 0; height:55%; background:linear-gradient(to top, rgba(0,0,0,.75), transparent); pointer-events:none;}
+.reel-mini:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(13,18,16,.18);}
+.reel-mini .thumb{
+  position:relative;
+  width:100%;
+  aspect-ratio:4/5;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#080b0a;
+}
+.reel-mini video{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  object-position:center;
+  background:#080b0a;
+}
+.reel-mini .reel-preview-fallback{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at 50% 30%,rgba(255,107,74,.18),transparent 38%),linear-gradient(145deg,#101714,#080b0a);
+  color:rgba(255,255,255,.4);
+  font-size:30px;
+}
+.reel-mini video.preview-ready + .reel-preview-fallback{display:none;}
+.reel-mini .fade{position:absolute;z-index:2;inset:auto 0 0 0;height:52%;background:linear-gradient(to top,rgba(0,0,0,.76),transparent);pointer-events:none;}
 .reel-mini .play{
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:42px; height:42px; border-radius:50%;
-  background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.3); backdrop-filter:blur(3px);
-  display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; pointer-events:none;
+  position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.34);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;pointer-events:none;
+  box-shadow:0 7px 18px rgba(0,0,0,.18);
 }
-.reel-mini .views{position:absolute; top:7px; right:7px; font-size:9px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:99px;}
-.reel-mini .info{padding:8px 9px 9px; background:#121815; color:#fff;}
-.reel-mini .info .t{font-size:11.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.reel-mini .info .row{display:flex; align-items:center; justify-content:space-between; margin-top:4px; font-size:9.5px; color:rgba(255,255,255,.65);}
+.reel-mini .views{position:absolute;z-index:4;top:8px;right:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.58);padding:3px 8px;border-radius:99px;}
+.reel-mini .info{padding:9px 10px 10px;background:#121815;color:#fff;}
+.reel-mini .info .t{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reel-mini .info .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:9.5px;color:rgba(255,255,255,.65);}
+.reel-mini .info .row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* See-all community gallery: fixed relationship + responsive card geometry */
+#seeAllModal .modal-box{width:min(960px,calc(100vw - 24px));max-width:960px;}
+#seeAllModal .see-all-filters{padding:10px 18px;border-bottom:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.96);}
+#seeAllModal .see-all-filter{
+  min-height:34px;padding:6px 12px;border:1px solid var(--line);border-radius:99px;
+  background:var(--paper);color:var(--ink-soft);font-size:10.5px;font-weight:700;cursor:pointer;
+}
+#seeAllModal .see-all-filter.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+#seeAllGrid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-items:stretch;
+  gap:14px!important;
+  padding:16px!important;
+}
+#seeAllGrid .mini-card{
+  width:100%;
+  min-width:0;
+  height:100%;
+  flex:none;
+  scroll-snap-align:none;
+}
+@media(max-width:820px){#seeAllGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}}
+@media(max-width:620px){
+  .mini-card{flex-basis:178px;width:178px;}
+  #seeAllModal.modal-veil{align-items:center;}
+  #seeAllModal .modal-box{width:calc(100vw - 14px);max-height:calc(100dvh - 18px);border-radius:18px!important;}
+  #seeAllModal .see-all-filters{padding:9px 12px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+  #seeAllModal .see-all-filters::-webkit-scrollbar{display:none;}
+  #seeAllGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:12px!important;}
+  #seeAllGrid .mini-info{min-height:96px;padding:9px 10px 10px;}
+  #seeAllGrid .mini-title{font-size:12px;}
+}
+@media(max-width:360px){#seeAllGrid{grid-template-columns:minmax(0,1fr)!important;}#seeAllGrid .mini-thumb{aspect-ratio:16/9;}}
 
 /* Education mini */
 .edu-mini{flex:0 0 118px; width:118px;}
@@ -583,7 +795,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .reels-feed{height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; scroll-behavior:smooth;}
 .reels-feed::-webkit-scrollbar{display:none;}
 .reels-item{height:100%; scroll-snap-align:start; position:relative; background:#000; overflow:hidden; min-height:260px;}
-.reels-item video{width:100%; height:100%; object-fit:cover; position:absolute; inset:0; cursor:pointer;}
+.reels-item video{width:100%; height:100%; object-fit:contain; object-position:center; background:#000; position:absolute; inset:0; cursor:pointer;}
 .reels-overlay{position:absolute; inset:auto 0 0 0; padding:16px; color:#fff; pointer-events:none;}
 .reels-overlay .author{display:flex; align-items:center; gap:8px; font-size:12px; opacity:.9; pointer-events:auto;}
 .reels-overlay .avatar{width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--gold)); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700;}
@@ -595,6 +807,20 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .reels-act-btn .circle.liked{background:rgba(255,107,74,.35); border-color:rgba(255,107,74,.5); color:var(--coral);}
 .reels-act-btn .n{font-size:10px; font-family:var(--font-mono);}
 .reels-views{position:absolute; top:10px; right:10px; z-index:15; font-size:9.5px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:3px 10px; border-radius:99px;}
+.reels-item::before{content:'';position:absolute;inset:0;background:#000;z-index:0;}
+.reels-item video{z-index:1;}
+.reels-overlay,.reels-side-actions,.reels-views{z-index:4;}
+@media(max-width:640px){
+  .reels-stage{height:calc(100dvh - var(--header-h) - var(--bottom-nav-h) - 34px);min-height:440px;max-height:760px;border-radius:16px;}
+  .reels-overlay{padding:14px 58px 14px 14px;}
+  .reels-overlay .desc{max-width:100%;}
+  .reels-side-actions{right:9px;bottom:68px;}
+}
+@media(max-width:420px){
+  .reels-stage{height:calc(100dvh - var(--header-h) - var(--bottom-nav-h) - 24px);min-height:400px;}
+  .reels-act-btn .circle{width:38px;height:38px;font-size:15px;}
+}
+
 
 /* ============================================================
    MAINTENANCE
@@ -1868,11 +2094,13 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
           <h5><i class="fas fa-fire" style="color:var(--coral); margin-right:8px;"></i>Everything happening now</h5>
           <button class="x-close" onclick="closeSeeAll()">&times;</button>
         </div>
-        <div style="padding:10px 18px; border-bottom:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="edu-chip active" data-filter="all" onclick="filterSeeAll('all', this)">All</button>
-          <button class="edu-chip" data-filter="property" onclick="filterSeeAll('property', this)">🏠 Properties</button>
+        <div class="see-all-filters">
+          <button class="see-all-filter active" data-filter="all" onclick="filterSeeAll('all', this)"><i class="fas fa-layer-group"></i> All</button>
+          <button class="see-all-filter" data-filter="property" onclick="filterSeeAll('property', this)"><i class="fas fa-house"></i> Properties</button>
+          <button class="see-all-filter" data-filter="reel" onclick="filterSeeAll('reel', this)"><i class="fas fa-video"></i> Reels</button>
+          <button class="see-all-filter" data-filter="post" onclick="filterSeeAll('post', this)"><i class="fas fa-comments"></i> Community posts</button>
         </div>
-        <div class="modal-box-body" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px;" id="seeAllGrid"></div>
+        <div class="modal-box-body" id="seeAllGrid"></div>
       </div>
     </div>
 
@@ -2481,14 +2709,14 @@ function closeRail(){
    TABS
    ============================================================ */
 let currentTab = 'properties';
-function scrollToTab(tabName){
-  const target = document.getElementById(tabName+'Tab');
-  if (!target) return;
-  const y = target.getBoundingClientRect().top + window.scrollY - 76;
-  window.scrollTo({ top:y, behavior:'smooth' });
-}
+
+/*
+ * Tab changes are state changes, not page scrolling.
+ * This keeps header/community navigation from dragging the document down.
+ */
 function switchTab(tabName){
   currentTab = tabName;
+
   const mobileTabs = document.querySelectorAll('#mobileBottomNav .bn-tab');
   mobileTabs.forEach(btn=>{
     const active = btn.dataset.tab === tabName;
@@ -2497,11 +2725,13 @@ function switchTab(tabName){
     btn.classList.remove('show-label');
     if (btn._labelTimer) clearTimeout(btn._labelTimer);
   });
+
   const activeMobileTab = document.querySelector(`#mobileBottomNav .bn-tab[data-tab="${tabName}"]`);
   if (activeMobileTab){
     activeMobileTab.classList.add('show-label');
     activeMobileTab._labelTimer = setTimeout(()=>activeMobileTab.classList.remove('show-label'), 1250);
   }
+
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(tabName+'Tab')?.classList.add('active');
 
@@ -2518,69 +2748,249 @@ function switchTab(tabName){
   if (tabName === 'education') loadEducationContent();
 
   closeRail();
-  setTimeout(()=>scrollToTab(tabName), 150);
 }
 
 /* ============================================================
-   COMMUNITY STRIP (properties recommendation cards)
+   LATEST FROM THE COMMUNITY
+   One visual family: properties + reels + neighbourhood posts.
+   Uses data already loaded by the existing backend functions.
    ============================================================ */
 let allRecommendations = [];
+
+function communityPropertyCard(p){
+  return {
+    type:'property',
+    id:p.id,
+    title:p.title || 'Untitled property',
+    subtitle:[p.city, p.country].filter(Boolean).join(', ') || 'Property listing',
+    image:p.main_image_url || p.image_url || null,
+    video:null,
+    badge:p.listing_type === 'sale' ? 'For sale' : p.listing_type === 'rent' ? 'For rent' : 'Property',
+    kicker:'Property',
+    meta:`${p.price_currency || 'ZAR'} ${Number(p.price||0).toLocaleString()}`,
+    engagement:p.likes_count || 0,
+    icon:'fa-house'
+  };
+}
+
+function communityReelCard(reel){
+  return {
+    type:'reel',
+    id:reel.id,
+    title:reel.title || 'Community reel',
+    subtitle:reel.author_name || 'Neighbourhood video',
+    image:reel.thumbnail_url || reel.poster_url || null,
+    video:reel.video_url || null,
+    badge:'Reel',
+    kicker:'Video',
+    meta:`${formatNumber(reel.views||0)} views`,
+    engagement:reel.likes_count || 0,
+    icon:'fa-play'
+  };
+}
+
+function communityPostCard(post){
+  const author = post.author?.username || post.author_name || 'Neighbour';
+  const text = String(post.content || 'Community update').trim();
+  return {
+    type:'post',
+    id:post.id,
+    title:text.length > 68 ? text.slice(0,68).trim()+'…' : text,
+    subtitle:author,
+    image:post.image || post.image_url || null,
+    video:null,
+    badge:'Community',
+    kicker:'Post',
+    meta:`${post.comments_count||0} comments`,
+    engagement:post.likes_count || 0,
+    icon:'fa-comments'
+  };
+}
+
+function buildCommunityRecommendations(){
+  const propertyCards = (allProperties || []).slice(0,12).map(communityPropertyCard);
+  const reelCards = (reelsState?.reels || []).slice(0,8).map(communityReelCard);
+  const postCards = (allFeedPosts || []).slice(0,8).map(communityPostCard);
+
+  /* Interleave types instead of grouping them so the strip feels intentionally related. */
+  const groups = [propertyCards, reelCards, postCards];
+  const cards = [];
+  let index = 0;
+  while (groups.some(group => index < group.length)){
+    groups.forEach(group=>{ if (group[index]) cards.push(group[index]); });
+    index += 1;
+  }
+  return cards;
+}
+
 function renderHorizontalCards(){
   const container = document.getElementById('recommendationScroll');
   if (!container) return;
-  const cards = (allProperties||[]).map(p => ({
-    type:'property', id:p.id, title:p.title || 'Untitled property',
-    subtitle: `${p.city || 'Unknown'}, ${p.country || 'SA'}`,
-    image: p.main_image_url || null,
-    badge: p.listing_type === 'sale' ? 'For sale' : p.listing_type === 'rent' ? 'For rent' : 'Available',
-    price: `${p.price_currency || 'ZAR'} ${Number(p.price||0).toLocaleString()}`,
-    likes: p.likes_count || 0, icon:'fa-house'
-  }));
-  allRecommendations = cards;
-  if (cards.length === 0){
-    container.innerHTML = `<div class="empty-state" style="width:100%;"><i class="fas fa-house"></i><h4>Nothing here yet</h4><p>Add a property, post or reel to get things moving.</p></div>`;
+
+  allRecommendations = buildCommunityRecommendations();
+
+  if (allRecommendations.length === 0){
+    container.innerHTML = `<div class="empty-state" style="width:100%;"><i class="fas fa-users"></i><h4>Nothing here yet</h4><p>Properties, reels and neighbour posts will appear here.</p></div>`;
     return;
   }
-  const shuffled = [...cards].sort(()=>0.5-Math.random()).slice(0,15);
-  container.innerHTML = shuffled.map(createMiniCardHTML).join('');
+
+  container.innerHTML = allRecommendations.slice(0,15).map(createMiniCardHTML).join('');
+  initialiseCommunityVideoPreviews(container);
 }
+
 function createMiniCardHTML(card){
-  const imgHtml = card.image ? `<img src="${card.image}" alt="${escapeHtml(card.title)}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex';">` : '';
-  return `<div class="mini-card" data-type="${escapeHtml(String(card.type))}" data-id="${escapeHtml(String(card.id))}">
-    <div class="mini-thumb">${imgHtml}<div class="ph" style="display:${card.image?'none':'flex'};align-items:center;justify-content:center;width:100%;height:100%;"><i class="fas ${card.icon}"></i></div><span class="mini-badge">${card.badge}</span></div>
-    <div class="mini-info"><div class="mini-title">${escapeHtml(card.title)}</div><div class="mini-sub">${escapeHtml(card.subtitle)}</div>
-    <div class="mini-meta"><span class="mini-price">${escapeHtml(card.price)}</span><span class="mini-likes"><i class="fas fa-heart" style="color:var(--coral);"></i> ${card.likes}</span></div></div>
-  </div>`;
+  const safeType = escapeHtml(String(card.type || 'property'));
+  const safeTitle = escapeHtml(card.title || 'Community update');
+  const safeSubtitle = escapeHtml(card.subtitle || 'OppoGlobe');
+  const safeBadge = escapeHtml(card.badge || 'Community');
+  const safeKicker = escapeHtml(card.kicker || 'Community');
+  const safeMeta = escapeHtml(card.meta || '');
+  const icon = escapeHtml(card.icon || 'fa-circle');
+
+  let media = '';
+  if (card.type === 'reel' && card.video){
+    const poster = card.image ? ` poster="${escapeHtml(card.image)}"` : '';
+    media = `<video class="community-reel-preview" src="${escapeHtml(card.video)}"${poster} muted playsinline webkit-playsinline preload="metadata" aria-label="${safeTitle}"></video><div class="ph" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><i class="fas fa-video"></i></div>`;
+  } else if (card.image){
+    media = `<img src="${escapeHtml(card.image)}" alt="${safeTitle}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex';"><div class="ph" style="display:none;align-items:center;justify-content:center;width:100%;height:100%;"><i class="fas ${icon}"></i></div>`;
+  } else {
+    media = `<div class="ph" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><i class="fas ${icon}"></i></div>`;
+  }
+
+  return `<article class="mini-card" data-type="${safeType}" data-id="${escapeHtml(String(card.id))}" tabindex="0" role="button">
+    <div class="mini-thumb">
+      ${media}
+      <span class="mini-badge">${safeBadge}</span>
+      <span class="mini-type-icon"><i class="fas ${icon}"></i></span>
+    </div>
+    <div class="mini-info">
+      <div class="mini-kicker"><i class="fas ${icon}"></i>${safeKicker}</div>
+      <div class="mini-title">${safeTitle}</div>
+      <div class="mini-sub">${safeSubtitle}</div>
+      <div class="mini-meta"><span class="mini-price">${safeMeta}</span><span class="mini-likes"><i class="fas fa-heart" style="color:var(--coral);"></i>${formatNumber(card.engagement||0)}</span></div>
+    </div>
+  </article>`;
 }
+
+/*
+ * Cross-browser preview without changing the backend video function.
+ * We show the same backend video URL. Once the browser has decoded a frame,
+ * the placeholder disappears. No canvas/blob rewriting and no replacement URL.
+ */
+function initialiseCommunityVideoPreviews(root=document){
+  root.querySelectorAll('video.community-reel-preview').forEach(video=>{
+    if (video.dataset.previewReady === '1') return;
+    video.dataset.previewReady = '1';
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted','');
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+
+    const reveal = ()=>{
+      if (video.readyState >= 2){
+        video.classList.add('preview-ready');
+        const ph = video.parentElement?.querySelector('.ph');
+        if (ph) ph.style.display = 'none';
+      }
+    };
+
+    video.addEventListener('loadeddata', reveal, {once:true});
+    video.addEventListener('canplay', reveal, {once:true});
+    video.addEventListener('error', ()=>{
+      const ph = video.parentElement?.querySelector('.ph');
+      if (ph) ph.style.display = 'flex';
+    }, {once:true});
+
+    try { video.load(); } catch(e) {}
+  });
+}
+
+function activateCommunityCard(card){
+  const type = card.dataset.type;
+  const id = card.dataset.id;
+  if (!id) return;
+
+  if (document.getElementById('seeAllModal')?.classList.contains('show')) closeSeeAll();
+
+  if (type === 'property'){
+    switchTab('properties');
+    requestAnimationFrame(()=>{
+      const el = document.getElementById(`property-${id}`);
+      if (el){
+        el.style.outline = '2px solid var(--coral)';
+        el.style.outlineOffset = '3px';
+        setTimeout(()=>{ el.style.outline=''; el.style.outlineOffset=''; },1800);
+      }
+    });
+    return;
+  }
+
+  if (type === 'reel'){
+    handleReelThumbClick(id);
+    return;
+  }
+
+  if (type === 'post'){
+    switchTab('feed');
+    requestAnimationFrame(()=>{
+      const el = document.getElementById(`post-${id}`);
+      if (el){
+        el.style.outline = '2px solid var(--sky)';
+        el.style.outlineOffset = '3px';
+        setTimeout(()=>{ el.style.outline=''; el.style.outlineOffset=''; },1800);
+      }
+    });
+  }
+}
+
 document.addEventListener('click', function(e){
   const card = e.target.closest('.mini-card, .see-all-card');
   if (!card) return;
-  const type = card.dataset.type, id = card.dataset.id;
-  if (type === 'property') handlePropertyCardClick(id);
+  activateCommunityCard(card);
 });
-function handlePropertyCardClick(id){
-  switchTab('properties');
-  setTimeout(()=>{
-    const el = document.getElementById(`property-${id}`);
-    if (el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.style.outline='2px solid var(--coral)'; setTimeout(()=>el.style.outline='',1800); }
-  }, 400);
-}
+
+document.addEventListener('keydown', function(e){
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.mini-card, .see-all-card')){
+    e.preventDefault();
+    activateCommunityCard(e.target);
+  }
+});
 
 /* See all modal */
 let seeAllFilter = 'all';
-function openSeeAll(){ document.getElementById('seeAllModal').classList.add('show'); document.body.style.overflow='hidden'; renderSeeAll('all'); }
-function closeSeeAll(){ document.getElementById('seeAllModal').classList.remove('show'); document.body.style.overflow=''; }
+function openSeeAll(){
+  const modal = document.getElementById('seeAllModal');
+  if (!modal) return;
+  allRecommendations = buildCommunityRecommendations();
+  modal.classList.add('show');
+  document.body.style.overflow='hidden';
+  const defaultBtn = modal.querySelector('.see-all-filter[data-filter="all"]');
+  filterSeeAll('all', defaultBtn);
+}
+function closeSeeAll(){
+  document.getElementById('seeAllModal')?.classList.remove('show');
+  document.body.style.overflow='';
+}
 function filterSeeAll(filter, btn){
   seeAllFilter = filter;
-  document.querySelectorAll('#seeAllModal .edu-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('#seeAllModal .see-all-filter').forEach(c=>c.classList.remove('active'));
   btn?.classList.add('active');
   renderSeeAll(filter);
 }
 function renderSeeAll(filter){
   const grid = document.getElementById('seeAllGrid');
-  const filtered = filter === 'all' ? allRecommendations : allRecommendations.filter(c=>c.type===filter);
-  if (filtered.length === 0){ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-magnifying-glass"></i><h4>Nothing found</h4></div>`; return; }
-  grid.innerHTML = filtered.map(c => createMiniCardHTML(c).replace('mini-card','mini-card see-all-card')).join('');
+  if (!grid) return;
+  const source = buildCommunityRecommendations();
+  allRecommendations = source;
+  const filtered = filter === 'all' ? source : source.filter(c=>c.type===filter);
+  if (!filtered.length){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-magnifying-glass"></i><h4>Nothing found</h4><p>Try another community category.</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(c=>createMiniCardHTML(c).replace('class="mini-card"','class="mini-card see-all-card"')).join('');
+  initialiseCommunityVideoPreviews(grid);
 }
 document.getElementById('seeAllModal')?.addEventListener('click', function(e){ if (e.target === this) closeSeeAll(); });
 
@@ -2590,15 +3000,18 @@ document.getElementById('seeAllModal')?.addEventListener('click', function(e){ i
 function renderReelsHorizontalStrip(){
   const container = document.getElementById('reelsStripScroll');
   if (!container) return;
-  const reels = (reelsState.reels || []).slice(0, 10);
-  if (reels.length === 0){
+  const reels = (reelsState.reels || []).slice(0,10);
+  if (!reels.length){
     container.innerHTML = `<div class="empty-state" style="width:100%;"><i class="fas fa-video"></i><h4>No reels yet</h4><p>Be the first to upload one.</p></div>`;
     return;
   }
-  container.innerHTML = reels.map(reel => `
-    <div class="reel-mini" data-reel-id="${reel.id}" onclick="handleReelThumbClick('${reel.id}')">
+
+  container.innerHTML = reels.map(reel=>{
+    const poster = reel.thumbnail_url || reel.poster_url || '';
+    return `<article class="reel-mini" data-reel-id="${escapeHtml(String(reel.id))}" onclick="handleReelThumbClick('${escapeHtml(String(reel.id))}')" tabindex="0" role="button">
       <div class="thumb">
-        <video src="${reel.video_url||''}" muted loop playsinline preload="metadata" onmouseenter="this.play().catch(()=>{})" onmouseleave="this.pause()"></video>
+        <video class="reel-strip-preview" src="${escapeHtml(reel.video_url||'')}" ${poster?`poster="${escapeHtml(poster)}"`:''} muted playsinline webkit-playsinline preload="metadata"></video>
+        <div class="reel-preview-fallback"><i class="fas fa-video"></i></div>
         <div class="fade"></div>
         <div class="play"><i class="fas fa-play"></i></div>
         <div class="views"><i class="fas fa-eye"></i> ${formatNumber(reel.views||0)}</div>
@@ -2607,16 +3020,59 @@ function renderReelsHorizontalStrip(){
         <div class="t">${escapeHtml(reel.title||'Untitled')}</div>
         <div class="row"><span>${escapeHtml(reel.author_name||'Unknown')}</span><span><i class="fas fa-heart"></i> ${formatNumber(reel.likes_count||0)}</span></div>
       </div>
-    </div>`).join('');
+    </article>`;
+  }).join('');
+
+  initialiseReelStripPreviews(container);
 }
+
+function initialiseReelStripPreviews(root=document){
+  root.querySelectorAll('video.reel-strip-preview').forEach(video=>{
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted','');
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+
+    const reveal = ()=>{ if (video.readyState >= 2) video.classList.add('preview-ready'); };
+    video.addEventListener('loadeddata', reveal, {once:true});
+    video.addEventListener('canplay', reveal, {once:true});
+    try { video.load(); } catch(e) {}
+
+    /* Desktop may preview on hover; phones keep a stable decoded frame. */
+    if (window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+      const card = video.closest('.reel-mini');
+      card?.addEventListener('mouseenter', ()=>video.play().catch(()=>{}));
+      card?.addEventListener('mouseleave', ()=>{ video.pause(); try{video.currentTime=0;}catch(e){} });
+    }
+  });
+}
+
+function focusReelInFeed(reelId, autoplay=true){
+  const feed = document.getElementById('reelsFeedContainer');
+  const target = feed?.querySelector(`.reels-item[data-reel-id="${CSS.escape(String(reelId))}"]`);
+  if (!target) return false;
+
+  /* Scroll only the reels feed, never the whole OppoGlobe document. */
+  feed.scrollTo({top:target.offsetTop,behavior:'smooth'});
+  feed.querySelectorAll('video').forEach(v=>{ if (v !== target.querySelector('video')) v.pause(); });
+  if (autoplay) target.querySelector('video')?.play().catch(()=>{});
+  return true;
+}
+
 function handleReelThumbClick(reelId){
+  currentTab = 'reels';
   switchTab('reels');
-  setTimeout(()=>{
-    const target = document.querySelector(`.reels-item[data-reel-id="${reelId}"]`);
-    if (target){ target.scrollIntoView({behavior:'smooth', block:'center'}); target.querySelector('video')?.play(); }
-    else loadReels(1);
-  }, 400);
+
+  /* The strip is built from already-loaded reel state. Render that state immediately
+     so navigation never depends on an arbitrary timeout or network speed. */
+  if (reelsState.reels?.length){
+    renderReels(reelsState.reels);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>focusReelInFeed(reelId,true)));
+  }
 }
+
 function incrementReelView(reelId){
   fetch(`/api/videos/${reelId}/view/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()}, body:JSON.stringify({}) })
     .then(r=>r.json()).then(data=>{ if (data.success) updateReelViewCount(reelId, data.views); }).catch(()=>{});
@@ -3418,8 +3874,22 @@ function renderReels(reels){
 function appendReels(reels){ const container = document.getElementById('reelsFeedContainer'); if (!container) return; reels.forEach(v=>container.appendChild(createReelElement(v))); }
 function createReelElement(reel){
   const div = document.createElement('div'); div.className = 'reels-item'; div.dataset.reelId = reel.id;
-  const videoEl = document.createElement('video'); videoEl.src = reel.video_url; videoEl.loop = true; videoEl.muted = true; videoEl.playsInline = true;
+  const videoEl = document.createElement('video');
+  videoEl.src = reel.video_url;
+  if (reel.thumbnail_url || reel.poster_url) videoEl.poster = reel.thumbnail_url || reel.poster_url;
+  videoEl.loop = true;
+  videoEl.muted = true;
+  videoEl.defaultMuted = true;
+  videoEl.playsInline = true;
+  videoEl.preload = 'metadata';
+  videoEl.setAttribute('muted','');
+  videoEl.setAttribute('playsinline','');
+  videoEl.setAttribute('webkit-playsinline','');
   videoEl.addEventListener('play', function onPlay(){ incrementReelView(reel.id); videoEl.removeEventListener('play', onPlay); });
+  videoEl.addEventListener('click', function(e){
+    e.preventDefault();
+    if (videoEl.paused) videoEl.play().catch(()=>{}); else videoEl.pause();
+  });
   videoEl.addEventListener('dblclick', function(e){ e.preventDefault(); if (!document.fullscreenElement) this.requestFullscreen?.(); else document.exitFullscreen?.(); });
   div.appendChild(videoEl);
   const views = document.createElement('div'); views.className = 'reels-views'; views.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(reel.views||0)}`; div.appendChild(views);
@@ -3434,17 +3904,25 @@ function createReelElement(reel){
   div.appendChild(actions);
   return div;
 }
+let reelObserver = null;
 function setupReelObserver(){
-  const observer = new IntersectionObserver(entries=>{
+  reelObserver?.disconnect?.();
+  const feed = document.getElementById('reelsFeedContainer');
+  if (!feed) return;
+  reelObserver = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
-      if (entry.isIntersecting){
-        entry.target.querySelector('video')?.play().catch(()=>{});
+      const video = entry.target.querySelector('video');
+      if (entry.isIntersecting && entry.intersectionRatio >= .62){
+        feed.querySelectorAll('video').forEach(v=>{ if (v !== video) v.pause(); });
+        video?.play().catch(()=>{});
         const index = Array.from(entry.target.parentElement.children).indexOf(entry.target);
         if (index >= reelsState.reels.length - 3 && reelsState.hasMore) loadReels(reelsState.currentPage+1);
-      } else entry.target.querySelector('video')?.pause();
+      } else {
+        video?.pause();
+      }
     });
-  }, { threshold:0.4 });
-  document.querySelectorAll('.reels-item').forEach(item=>observer.observe(item));
+  }, { root:feed, threshold:[.2,.62,.85] });
+  feed.querySelectorAll('.reels-item').forEach(item=>reelObserver.observe(item));
 }
 function handleReelLike(id){
   fetch(`/api/videos/${id}/like/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()}, body:JSON.stringify({action:'like'}) })
