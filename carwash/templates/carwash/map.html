@@ -641,6 +641,36 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .service-timer.done{background:#eef8f2}.service-timer.cancelled{background:#fff2ef}
 .btn.danger{background:var(--danger);color:#fff}.btn.success{background:var(--jade);color:#fff}
 
+
+/* ---------- customer history + brand marker colours ---------- */
+.customer-nav [data-panel="findWash"] i,
+#customerNav [data-panel="findWash"] i{color:var(--jade)!important}
+.customer-nav [data-panel="trackWash"] i,
+#customerNav [data-panel="trackWash"] i{color:var(--gold)!important}
+.customer-nav .mobile-nav-btn.active i,
+#customerNav .role-tab.active i{filter:none}
+
+.history-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:11px}
+.history-stat{border:1px solid var(--line);border-radius:15px;background:#fff;padding:11px;min-width:0}
+.history-stat strong{display:block;font-family:Fraunces,serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-stat span{display:block;margin-top:3px;color:var(--muted);font-size:9.5px}
+.history-filters{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.history-filters::-webkit-scrollbar{display:none}
+.history-filter{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);padding:7px 11px;font-size:10px;font-weight:800}
+.history-filter.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.wash-history-card{position:relative;overflow:hidden}
+.wash-history-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line)}
+.wash-history-card.status-completed::before{background:var(--jade)}
+.wash-history-card.status-cancelled::before,.wash-history-card.status-declined::before,.wash-history-card.status-expired::before{background:var(--danger)}
+.wash-history-card.status-washing::before,.wash-history-card.status-en_route::before,.wash-history-card.status-arrived::before{background:var(--gold)}
+.history-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.history-meta{border-radius:12px;background:var(--paper);padding:9px 10px;min-width:0}
+.history-meta span{display:block;color:var(--muted);font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.history-meta strong{display:block;margin-top:3px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.payment-state-paid{color:var(--jade2)!important}.payment-state-pending{color:#9a6a08!important}.payment-state-failed{color:var(--danger)!important}
+.history-date{margin-top:8px;color:var(--muted);font-size:9.5px}
+@media(max-width:520px){.history-summary{grid-template-columns:1fr 1fr}.history-stat:last-child{grid-column:1/-1}.history-meta-grid{grid-template-columns:1fr 1fr}}
+
 </style>
 
 
@@ -775,7 +805,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
   <button class="role-tab active" data-panel="findWash"><i class="fas fa-magnifying-glass"></i><span>Find wash</span></button>
 
-  <button class="role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>My washes</span></button>
+  <button class="role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
 
   <button class="role-tab" data-panel="trackWash"><i class="fas fa-route"></i><span>Track</span></button>
 
@@ -789,7 +819,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
   <button class="mobile-nav-btn role-tab active" data-panel="findWash"><i class="fas fa-magnifying-glass"></i><span>Find</span></button>
 
-  <button class="mobile-nav-btn role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>Washes</span></button>
+  <button class="mobile-nav-btn role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
 
   <button class="mobile-nav-btn role-tab" data-panel="trackWash"><i class="fas fa-route"></i><span>Track</span></button>
 
@@ -1231,7 +1261,27 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 
 
-  <section class="panel" id="myWashes"><div class="panel-head"><div class="eyebrow">Your history</div><h2>My washes</h2><p>Current and previous wash requests.</p></div><div class="panel-body"><div id="customerRequests" class="list"><div class="empty">Loading your washes…</div></div></div></section>
+  <section class="panel" id="myWashes">
+    <div class="panel-head">
+      <div class="eyebrow">Your car-wash account</div>
+      <h2>Wash history</h2>
+      <p>See active, completed and cancelled washes together with what you paid.</p>
+    </div>
+    <div class="panel-body">
+      <div class="history-summary" id="washHistorySummary">
+        <div class="history-stat"><strong id="historyTotalCount">—</strong><span>All washes</span></div>
+        <div class="history-stat"><strong id="historyCompletedCount">—</strong><span>Completed</span></div>
+        <div class="history-stat"><strong id="historyPaidTotal">—</strong><span>Total paid</span></div>
+      </div>
+      <div class="history-filters" id="washHistoryFilters">
+        <button class="history-filter active" type="button" data-history-filter="all">All</button>
+        <button class="history-filter" type="button" data-history-filter="active">Active</button>
+        <button class="history-filter" type="button" data-history-filter="completed">Completed</button>
+        <button class="history-filter" type="button" data-history-filter="cancelled">Cancelled</button>
+      </div>
+      <div id="customerRequests" class="list"><div class="empty">Loading your wash history…</div></div>
+    </div>
+  </section>
 
 
 
@@ -1599,7 +1649,12 @@ function focusCurrentRoleLocation(){IS_BUSINESS?detectBusinessLocation():locateM
 
 
 
-function initCustomerWorkspace(){locateMe();if(IS_AUTH){loadCustomerRequests();loadCustomerPayments();loadPaymentGateways()}}
+function initCustomerWorkspace(){
+  locateMe();
+  document.querySelectorAll('#washHistoryFilters .history-filter').forEach(btn=>btn.addEventListener('click',()=>loadCustomerRequests(btn.dataset.historyFilter)));
+  if(IS_AUTH){loadCustomerRequests();loadCustomerPayments();loadPaymentGateways()}
+  setTimeout(applyCarwashDeepLink,0);
+}
 
 
 
@@ -1652,7 +1707,7 @@ async function loadNearby(){
         </div>
       </article>`).join('');
     providers.forEach(p=>{
-      const marker=new google.maps.Marker({position:{lat:Number(p.map_latitude),lng:Number(p.map_longitude)},map,title:p.name,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.CIRCLE,scale:17,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:3}});
+      const marker=new google.maps.Marker({position:{lat:Number(p.map_latitude),lng:Number(p.map_longitude)},map,title:p.name,icon:{path:google.maps.SymbolPath.CIRCLE,scale:15,fillColor:'#1f6f5c',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:3}});
       marker.addListener('click',()=>selectProvider(p.id));
       providerMarkers.push(marker);
     });
@@ -1852,60 +1907,101 @@ async function requestQuoteAndWash(){
 
 
 
-async function loadCustomerRequests(){
+async function loadCustomerRequests(filterOverride=null){
   if(!IS_AUTH)return;
 
   const box=document.getElementById('customerRequests');
+  if(!box)return;
 
   try{
     const data=await api('/carwash/api/requests/');
     const rows=Array.isArray(data)?data:(data.results||[]);
+    window.customerWashHistory=rows;
 
-    if(!rows.length){
-      box.innerHTML='<div class="empty">You have no wash requests yet.</div>';
+    const completed=rows.filter(r=>r.status==='completed');
+    const paidTotal=rows.reduce((sum,r)=>{
+      const p=r.payment_summary;
+      return sum + (p?.status==='paid' ? Number(p.gross_amount||0) : 0);
+    },0);
+    const paidCurrency=rows.find(r=>r.payment_summary?.status==='paid')?.payment_summary?.currency || 'ZAR';
+
+    const totalEl=document.getElementById('historyTotalCount');
+    const completeEl=document.getElementById('historyCompletedCount');
+    const paidEl=document.getElementById('historyPaidTotal');
+    if(totalEl)totalEl.textContent=rows.length;
+    if(completeEl)completeEl.textContent=completed.length;
+    if(paidEl)paidEl.textContent=money(paidTotal,paidCurrency);
+
+    const activeButton=document.querySelector('#washHistoryFilters .history-filter.active');
+    const currentFilter=filterOverride || activeButton?.dataset.historyFilter || 'all';
+    document.querySelectorAll('#washHistoryFilters .history-filter').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.historyFilter===currentFilter);
+    });
+
+    const filtered=rows.filter(r=>{
+      if(currentFilter==='all')return true;
+      if(currentFilter==='active')return !['completed','cancelled','declined','expired'].includes(r.status);
+      if(currentFilter==='completed')return r.status==='completed';
+      if(currentFilter==='cancelled')return ['cancelled','declined','expired'].includes(r.status);
+      return true;
+    });
+
+    if(!filtered.length){
+      box.innerHTML=`<div class="empty">${rows.length?'No washes match this filter yet.':'You have no wash history yet.'}</div>`;
       return;
     }
 
-    box.innerHTML=rows.map(r=>{
+    box.innerHTML=filtered.map(r=>{
       const finished=['completed','cancelled','declined','expired'].includes(r.status);
-      const total=r.quote?.total||r.quote?.total_price||'';
-      const currency=r.quote?.currency||'ZAR';
+      const payment=r.payment_summary;
+      const total=payment?.gross_amount ?? r.quote?.total ?? r.quote?.total_price ?? 0;
+      const currency=payment?.currency ?? r.quote?.currency ?? 'ZAR';
+      const paymentMethod=payment
+        ? (payment.payment_method==='cash' ? 'Cash' : (payment.gateway_name || payment.payment_method || 'Card'))
+        : 'Not selected';
+      const paymentStatus=payment?.status || 'unpaid';
+      const paymentClass=paymentStatus==='paid'?'payment-state-paid':(['failed','cancelled'].includes(paymentStatus)?'payment-state-failed':'payment-state-pending');
+      const durationSeconds=r.service_duration_seconds ?? elapsedFromRequest(r);
+      const duration=durationSeconds!=null ? formatServiceDuration(durationSeconds) : '—';
+      const eventDate=r.completed_at||r.cancelled_at||r.started_at||r.requested_at||r.created_at;
+      const dateLabel=eventDate ? new Intl.DateTimeFormat('en-ZA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(eventDate)) : '—';
+      const statusText=statusLabel(r.status);
+      const statusClass=`status-${String(r.status||'').replace(/[^a-z_]/g,'')}`;
+      const canPay=!payment && !['cancelled','declined','expired'].includes(r.status);
+      const canTrack=!finished || r.status==='completed';
 
       return `
-        <article class="list-card">
+        <article class="list-card wash-history-card ${statusClass}">
           <div class="list-top">
             <div>
               <h4>${escapeHtml(r.quote?.business_name||'Car wash')}</h4>
-              <p>${escapeHtml(r.quote?.service_name||'')} · ${escapeHtml(r.quote?.vehicle_name||'')}</p>
+              <p>${escapeHtml(r.quote?.service_name||'Wash service')} · ${escapeHtml(r.quote?.vehicle_name||'Vehicle')}</p>
             </div>
-            <span class="status-pill">${escapeHtml(r.status)}</span>
+            <span class="status-pill">${escapeHtml(statusText)}</span>
           </div>
+
+          <div class="history-meta-grid">
+            <div class="history-meta"><span>Amount</span><strong>${money(total,currency)}</strong></div>
+            <div class="history-meta"><span>Payment</span><strong>${escapeHtml(paymentMethod)}</strong></div>
+            <div class="history-meta"><span>Payment status</span><strong class="${paymentClass}">${escapeHtml(paymentStatus)}</strong></div>
+            <div class="history-meta"><span>Service duration</span><strong>${escapeHtml(duration)}</strong></div>
+          </div>
+
+          <div class="history-date"><i class="far fa-clock"></i> ${escapeHtml(dateLabel)}</div>
+          ${r.quote?.service_address?`<div class="history-date"><i class="fas fa-location-dot"></i> ${escapeHtml(r.quote.service_address)}</div>`:''}
 
           <div class="actions">
-            <button class="btn small" onclick="trackFromHistory('${r.id}')">
-              <i class="fas fa-route"></i> Track / view
-            </button>
-
-            <button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')">
-              <i class="fas fa-comment-dots"></i> Message provider
-            </button>
-
-            ${!finished?`
-              <button class="btn warm small"
-                      onclick="openPaymentCheckout('${r.id}','${escapeHtml(total)}','${escapeHtml(currency)}')">
-                <i class="fas fa-credit-card"></i> Pay
-              </button>
-            `:''}
+            ${canTrack?`<button class="btn small" onclick="trackFromHistory('${r.id}')"><i class="fas fa-route"></i> ${finished?'View details':'Track / view'}</button>`:''}
+            <button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button>
+            ${canPay?`<button class="btn warm small" onclick="openPaymentCheckout('${r.id}','${escapeHtml(String(total))}','${escapeHtml(currency)}')"><i class="fas fa-credit-card"></i> Pay</button>`:''}
           </div>
-        </article>
-      `;
+        </article>`;
     }).join('');
 
   }catch(e){
     box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
   }
 }
-
 
 
 function trackFromHistory(id){activeRequestId=id;openPanel('trackWash');startTracking(id,true)}
@@ -1923,12 +2019,12 @@ async function startTracking(requestId,focus=false){
         const timer=serviceTimerHtml(r);
         const customerCancel=!['completed','cancelled','declined','expired','washing'].includes(r.status)
           ? `<button class="btn danger small" type="button" onclick="customerCancelWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel request</button>`:'';
-        box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.quote?.business_name||'')}${r.worker?' · '+escapeHtml(r.worker.display_name||r.worker.username):''}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button></div></div>`;
+        box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.quote?.business_name||'')}${r.worker?' · '+escapeHtml(r.worker.display_name||r.worker.username):''}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button>${['completed','cancelled','declined','expired'].includes(r.status)?`<button class="btn small" type="button" onclick="openPanel('myWashes')"><i class="fas fa-clock-rotate-left"></i> View history</button>`:''}</div></div>`;
         ensureServiceTimerTicker();
       }
       if(loc){
         const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};
-        if(!trackingMarker)trackingMarker=new google.maps.Marker({position:pos,map,zIndex:1001,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:7,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:2}});
+        if(!trackingMarker)trackingMarker=new google.maps.Marker({position:pos,map,zIndex:1001,title:'Washer live location',icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:8,fillColor:'#e8a93b',fillOpacity:1,strokeColor:'#17221e',strokeWeight:2}});
         else trackingMarker.setPosition(pos);
         if(focus&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70)}
       }

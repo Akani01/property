@@ -269,40 +269,57 @@ class CarWashStatusHistorySerializer(serializers.ModelSerializer):
 class CarWashRequestSerializer(serializers.ModelSerializer):
 
     quote = CarWashQuoteSerializer(read_only=True)
-
     quote_id = serializers.UUIDField(write_only=True, required=False)
-
     worker = CarWashWorkerSerializer(source='assigned_worker', read_only=True)
-
     status_history = CarWashStatusHistorySerializer(many=True, read_only=True)
-
-
+    payment_summary = serializers.SerializerMethodField()
+    service_duration_seconds = serializers.SerializerMethodField()
 
     class Meta:
-
         model = CarWashRequest
-
         fields = [
-
             'id', 'customer', 'business', 'quote', 'quote_id', 'worker', 'status',
-
             'customer_notes', 'requested_at', 'accepted_at', 'en_route_at', 'arrived_at',
-
             'started_at', 'completed_at', 'cancelled_at', 'created_at', 'updated_at',
-
-            'status_history',
-
+            'status_history', 'payment_summary', 'service_duration_seconds',
         ]
-
         read_only_fields = [
-
             'id', 'customer', 'business', 'status', 'requested_at', 'accepted_at',
-
             'en_route_at', 'arrived_at', 'started_at', 'completed_at', 'cancelled_at',
-
-            'created_at', 'updated_at',
-
+            'created_at', 'updated_at', 'payment_summary', 'service_duration_seconds',
         ]
+
+    def get_payment_summary(self, obj):
+        try:
+            payment = obj.payment
+        except CarWashPayment.DoesNotExist:
+            return None
+
+        gateway_name = ''
+        if payment.gateway_id and payment.gateway:
+            gateway_name = payment.gateway.name
+
+        return {
+            'id': str(payment.id),
+            'payment_method': payment.payment_method,
+            'gateway_name': gateway_name,
+            'currency': payment.currency,
+            'gross_amount': str(payment.gross_amount),
+            'status': payment.status,
+            'paid_at': payment.paid_at,
+            'created_at': payment.created_at,
+        }
+
+    def get_service_duration_seconds(self, obj):
+        if not obj.started_at:
+            return None
+        end = obj.completed_at or obj.cancelled_at
+        if end is None:
+            if obj.status != 'washing':
+                return None
+            from django.utils import timezone
+            end = timezone.now()
+        return max(0, int((end - obj.started_at).total_seconds()))
 
 
 

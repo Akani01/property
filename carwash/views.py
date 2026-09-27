@@ -2150,7 +2150,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
-        ).select_related('quote', 'business', 'assigned_worker__user').distinct()
+        ).select_related(
+            'quote',
+            'quote__vehicle_type',
+            'quote__service',
+            'business',
+            'assigned_worker__user',
+            'payment',
+            'payment__gateway',
+        ).distinct()
 
 
 
