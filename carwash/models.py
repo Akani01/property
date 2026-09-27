@@ -88,9 +88,9 @@ class CarWashBusiness(TimeStampedModel):
 
     place_id = models.CharField(max_length=255, blank=True)
 
-    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True, editable=False)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True, editable=False)
 
-    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True, editable=False)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True, editable=False)
 
 
 
@@ -360,9 +360,9 @@ class CarWashProviderLocation(TimeStampedModel):
 
     worker = models.OneToOneField(CarWashWorker, on_delete=models.CASCADE, related_name='location')
 
-    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16)
 
-    longitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16)
 
     heading = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
 
@@ -410,9 +410,9 @@ class CarWashQuote(TimeStampedModel):
 
 
 
-    service_latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    service_latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
 
-    service_longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    service_longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
 
     service_address = models.CharField(max_length=255, blank=True)
 
@@ -552,9 +552,9 @@ class CarWashStatusHistory(models.Model):
 
     note = models.CharField(max_length=255, blank=True)
 
-    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
 
-    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

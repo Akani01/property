@@ -906,19 +906,23 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
         </div>
 
         <div class="dashboard-card">
-          <h4>Business location</h4>
+          <h4><i class="fas fa-building"></i> Business / office location</h4>
           <p id="dashboardLocationText">
             {% if carwash_business.formatted_address %}
               {{ carwash_business.formatted_address }}
             {% elif carwash_business.address %}
               {{ carwash_business.address }}
             {% else %}
-              Add your business location so nearby customers can find you.
+              Add your permanent business location so drive-in customers can find you.
             {% endif %}
           </p>
           <button class="btn ghost small" type="button" style="margin-top:9px" onclick="openPanel('bizLocation')">
-            <i class="fas fa-location-dot"></i> Manage location
+            <i class="fas fa-location-dot"></i> Manage office address
           </button>
+          <div style="height:1px;background:var(--line);margin:12px 0"></div>
+          <h4><i class="fas fa-location-arrow"></i> Current live location</h4>
+          <p id="liveWorkerAddress">Go live to detect this phone's current address.</p>
+          <p id="liveWorkerAccuracy" style="margin-top:5px;font-size:9px;color:var(--muted)"></p>
         </div>
 
       </div>
@@ -1320,6 +1324,50 @@ let providerMarkers=[]; let businessData=null; let vehicles=[], services=[], pri
 let availableGateways=[];
 let paymentRequestId=null;
 let paymentRequestTotal=null;
+let lastLiveAddressLookup=0;
+let lastLiveAddressLat=null;
+let lastLiveAddressLng=null;
+
+function gpsCoordinate(value){
+  if(value===null||value===undefined||value==='')return null;
+  const n=Number(value);
+  if(!Number.isFinite(n))return null;
+  // Preserve high browser GPS precision. Backend/model accepts 16 decimal places.
+  return n.toFixed(16);
+}
+
+function distanceBetweenCoords(lat1,lng1,lat2,lng2){
+  if([lat1,lng1,lat2,lng2].some(v=>v===null||v===undefined||!Number.isFinite(Number(v))))return Infinity;
+  const R=6371000;
+  const toRad=d=>Number(d)*Math.PI/180;
+  const p1=toRad(lat1),p2=toRad(lat2);
+  const dp=toRad(Number(lat2)-Number(lat1));
+  const dl=toRad(Number(lng2)-Number(lng1));
+  const a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+async function updateLiveWorkerAddress(lat,lng,accuracy=null,force=false){
+  const now=Date.now();
+  const moved=distanceBetweenCoords(lastLiveAddressLat,lastLiveAddressLng,lat,lng);
+  if(!force && now-lastLiveAddressLookup<15000 && moved<25)return;
+  lastLiveAddressLookup=now;
+  try{
+    const data=await api(`/carwash/api/reverse-geocode/?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`);
+    const address=data.formatted_address||'Current live location';
+    const el=document.getElementById('liveWorkerAddress');
+    if(el)el.textContent=address;
+    const st=document.getElementById('workerGpsStatus');
+    if(st)st.innerHTML=`<strong style="color:var(--jade2)"><i class="fas fa-location-arrow"></i> Live now</strong><br>${escapeHtml(address)}`;
+    const acc=document.getElementById('liveWorkerAccuracy');
+    if(acc)acc.textContent=accuracy!=null?`GPS accuracy: about ${Math.round(Number(accuracy))} m`:'Live GPS active';
+    lastLiveAddressLat=Number(lat);
+    lastLiveAddressLng=Number(lng);
+  }catch(e){
+    const el=document.getElementById('liveWorkerAddress');
+    if(el)el.textContent=`${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
+  }
+}
 
 
 
@@ -2130,9 +2178,55 @@ async function toggleWorkerOnline(){if(!WORKER_ID)return;const w=workers.find(x=
 
 
 
-function startWorkerLocationSharing(){if(!navigator.geolocation)return;stopWorkerLocationSharing();workerWatchId=navigator.geolocation.watchPosition(pos=>{api('/carwash/api/provider/location/',{method:'POST',body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude,heading:pos.coords.heading,speed_kph:pos.coords.speed?pos.coords.speed*3.6:null,accuracy_m:pos.coords.accuracy,is_available:true})}).catch(()=>{})},()=>{}, {enableHighAccuracy:true,maximumAge:10000,timeout:15000})}
+function startWorkerLocationSharing(){
+  if(!navigator.geolocation){
+    const st=document.getElementById('workerGpsStatus');
+    if(st)st.textContent='Location services are unavailable on this device.';
+    return;
+  }
+  stopWorkerLocationSharing();
+  const st=document.getElementById('workerGpsStatus');
+  if(st)st.innerHTML='<i class="fas fa-spinner fa-spin"></i> Detecting your current live location…';
 
+  workerWatchId=navigator.geolocation.watchPosition(async pos=>{
+    const c=pos.coords;
+    const latitude=gpsCoordinate(c.latitude);
+    const longitude=gpsCoordinate(c.longitude);
+    if(latitude===null||longitude===null)return;
+    try{
+      await api('/carwash/api/provider/location/',{
+        method:'POST',
+        body:JSON.stringify({
+          latitude,
+          longitude,
+          heading:c.heading!=null?Number(c.heading).toFixed(6):null,
+          speed_kph:c.speed!=null?Number(c.speed*3.6).toFixed(6):null,
+          accuracy_m:c.accuracy!=null?Number(c.accuracy).toFixed(6):null,
+          is_available:true
+        })
+      });
 
+      // This is LIVE phone GPS only. Never overwrite the saved office address.
+      await updateLiveWorkerAddress(latitude,longitude,c.accuracy);
+
+      // Show the current phone position on the business map while live.
+      const livePos={lat:Number(latitude),lng:Number(longitude)};
+      setBusinessMarker(livePos);
+    }catch(e){
+      console.error('Live location update failed:',e);
+      if(st)st.textContent=e.message||'Could not update live location.';
+    }
+  },err=>{
+    console.error('GPS error:',err);
+    if(st){
+      st.textContent=err.code===1
+        ? 'Location permission is blocked. Allow precise location for OppoGlobe Wash.'
+        : err.code===2
+          ? 'Your phone could not determine its current position.'
+          : 'Location detection timed out. Trying again…';
+    }
+  },{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+}
 
 function stopWorkerLocationSharing(){if(workerWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(workerWatchId);workerWatchId=null}}
 
