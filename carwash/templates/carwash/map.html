@@ -76,6 +76,37 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 .round{width:46px;height:46px;border-radius:15px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.92);color:var(--ink);box-shadow:0 7px 20px rgba(23,34,30,.1);display:grid;place-items:center;text-decoration:none}
 
+/* ---------- global message unread badge ---------- */
+.message-icon-link{position:relative!important;overflow:visible!important}
+.message-unread-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#e84d3c;
+  color:#fff;
+  border:2px solid #fff;
+  box-shadow:0 3px 10px rgba(190,42,29,.3);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  line-height:1;
+  font-weight:900;
+  font-family:Inter,system-ui,sans-serif;
+  z-index:5;
+  pointer-events:none;
+}
+.message-unread-badge.show{display:flex}
+.message-icon-link.has-unread{color:#fff!important;background:linear-gradient(135deg,var(--jade),var(--jade2))!important;border-color:transparent!important}
+.message-icon-link.has-unread i{animation:messagePulse 1.8s ease-in-out infinite}
+@keyframes messagePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media(prefers-reduced-motion:reduce){.message-icon-link.has-unread i{animation:none}}
+
+
 .round:active{transform:scale(.96)}
 
 
@@ -705,7 +736,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
     <button class="round" type="button" onclick="focusCurrentRoleLocation()" aria-label="Use my location"><i class="fas fa-location-crosshairs"></i></button>
 
-
+    {% if user.is_authenticated %}
+    <a class="round message-icon-link" id="carwashMessageLink" href="/messaging/" style="display:grid;place-items:center;text-decoration:none" aria-label="Messages" title="Messages">
+      <i class="fas fa-comment-dots"></i>
+      <span class="message-unread-badge" id="carwashMessageBadge" aria-label="0 unread messages">0</span>
+    </a>
+    {% endif %}
 
     <a class="round" href="/" style="display:grid;place-items:center;text-decoration:none" aria-label="Back to OppoGlobe"><i class="fas fa-house"></i></a>
 
@@ -1383,6 +1419,7 @@ let providerMarkers=[]; let businessData=null; let vehicles=[], services=[], pri
 let availableGateways=[];
 let paymentRequestId=null;
 let paymentRequestTotal=null;
+let selectedPriceId=null;
 let lastLiveAddressLookup=0;
 let lastLiveAddressLat=null;
 let lastLiveAddressLng=null;
@@ -1751,6 +1788,7 @@ function resetChoices(){
   if(vc)vc.innerHTML='<div class="choice-placeholder">Select a provider first</div>';
   resetService();
   currentQuote=null;
+  selectedPriceId=null;
   document.getElementById('priceBox')?.classList.remove('show');
   if(document.getElementById('requestBtn'))document.getElementById('requestBtn').disabled=true;
 }
@@ -1760,6 +1798,7 @@ function resetService(){
   const sc=document.getElementById('serviceChoices');
   if(s){s.disabled=true;s.innerHTML='<option value="">Select your vehicle first</option>'}
   if(sc)sc.innerHTML='<div class="choice-placeholder">Select your vehicle first</div>';
+  selectedPriceId=null;
   document.getElementById('priceBox')?.classList.remove('show');
   const btn=document.getElementById('requestBtn');
   if(btn){btn.disabled=true;btn.textContent='Request wash'}
@@ -1803,29 +1842,48 @@ function renderServiceChoices(vehicleId){
     return;
   }
   container.innerHTML=rows.map(({service,price})=>`
-    <button type="button" class="service-choice" data-service-id="${service.id}" onclick="chooseService('${service.id}')">
+    <button type="button" class="service-choice" data-service-id="${service.id}" data-price-id="${price.id}" onclick="chooseService('${service.id}','${price.id}')">
       <div class="service-choice-top"><strong>${escapeHtml(service.name)}</strong><span class="service-price">${money(price.price,price.currency)}</span></div>
       ${service.description?`<p>${escapeHtml(service.description)}</p>`:''}
       <small>${Number(service.estimated_minutes||0)>0?`${Number(service.estimated_minutes)} min · `:''}${mode==='mobile'?'Mobile wash':'At provider location'}</small>
     </button>`).join('');
 }
 
-function chooseService(serviceId){
+function chooseService(serviceId,priceId=''){
   const select=document.getElementById('serviceSelect');
   select.value=serviceId;
-  document.querySelectorAll('.service-choice').forEach(btn=>btn.classList.toggle('active',String(btn.dataset.serviceId)===String(serviceId)));
+
+  let matchedPriceId=priceId || '';
+  document.querySelectorAll('.service-choice').forEach(btn=>{
+    const active=String(btn.dataset.serviceId)===String(serviceId);
+    btn.classList.toggle('active',active);
+    if(active && !matchedPriceId) matchedPriceId=btn.dataset.priceId||'';
+  });
+
+  // Canonical booking choice = the exact business price row.
+  selectedPriceId=matchedPriceId;
   previewLocalPrice();
 }
 
 document.getElementById('vehicleSelect')?.addEventListener('change',function(){if(this.value)chooseVehicle(this.value);else resetService()});
-document.getElementById('serviceSelect')?.addEventListener('change',function(){if(this.value)chooseService(this.value)});
+document.getElementById('serviceSelect')?.addEventListener('change',function(){
+  if(!this.value)return;
+  const v=document.getElementById('vehicleSelect')?.value;
+  const row=(catalog?.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(this.value)&&p.is_active!==false);
+  chooseService(this.value,row?.id||'');
+});
 
 function previewLocalPrice(){
   const v=document.getElementById('vehicleSelect')?.value;
   const s=document.getElementById('serviceSelect')?.value;
   if(!v||!s||!catalog){document.getElementById('priceBox')?.classList.remove('show');return}
-  const row=(catalog.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s));
-  if(!row)return;
+  const row=(catalog.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s)&&p.is_active!==false);
+  if(!row){
+    selectedPriceId=null;
+    document.getElementById('requestBtn').disabled=true;
+    return;
+  }
+  selectedPriceId=row.id||null;
   document.getElementById('servicePrice').textContent=money(row.price,row.currency);
   document.getElementById('travelPrice').textContent=mode==='mobile'?'Calculated in quote':'R0.00';
   document.getElementById('totalPrice').textContent=mode==='mobile'?'Final quote next':money(row.price,row.currency);
@@ -1850,10 +1908,24 @@ async function requestQuoteAndWash(){
   btn.disabled=true;
   status.textContent='Creating your quote…';
 
+  const vehicleId=document.getElementById('vehicleSelect')?.value||'';
+  const serviceId=document.getElementById('serviceSelect')?.value||'';
+  const priceRow=(catalog?.prices||[]).find(p=>
+    String(p.vehicle_type)===String(vehicleId) &&
+    String(p.service)===String(serviceId) &&
+    p.is_active!==false
+  );
+  const priceId=selectedPriceId || priceRow?.id || '';
+
+  if(!priceId){
+    status.textContent='Please choose the vehicle and service again.';
+    btn.disabled=false;
+    return;
+  }
+
   const payload={
     business_id:selectedProvider.id,
-    vehicle_type_id:document.getElementById('vehicleSelect').value,
-    service_id:document.getElementById('serviceSelect').value,
+    price_id:priceId,
     fulfilment_mode:mode,
     latitude:userPos.lat,
     longitude:userPos.lng,
@@ -2632,6 +2704,74 @@ document.getElementById('payoutForm')?.addEventListener('submit',async e=>{
 
 <script>
 /* ============================================================
+   GLOBAL OPPOGLOBE MESSAGE BADGE
+   Same unread-count source used by the home page.
+   ============================================================ */
+let carwashMessageCountTimer = null;
+
+function setCarwashMessageBadge(count){
+  const badge=document.getElementById('carwashMessageBadge');
+  const link=document.getElementById('carwashMessageLink');
+  if(!badge || !link)return;
+
+  const n=Math.max(0,Number(count)||0);
+  if(n>0){
+    badge.textContent=n>99?'99+':String(n);
+    badge.setAttribute('aria-label',`${n} unread ${n===1?'message':'messages'}`);
+    badge.classList.add('show');
+    link.classList.add('has-unread');
+    link.title=`Messages · ${n} unread`;
+  }else{
+    badge.textContent='0';
+    badge.setAttribute('aria-label','0 unread messages');
+    badge.classList.remove('show');
+    link.classList.remove('has-unread');
+    link.title='Messages';
+  }
+}
+
+async function loadCarwashMessageCount(){
+  const badge=document.getElementById('carwashMessageBadge');
+  if(!badge || !IS_AUTH)return;
+
+  try{
+    const response=await fetch('/api/conversations/unread-count/',{
+      method:'GET',
+      headers:{'Accept':'application/json'},
+      credentials:'same-origin',
+      cache:'no-store'
+    });
+
+    if(!response.ok)throw new Error(`Message count failed (${response.status})`);
+    const data=await response.json();
+
+    const count=
+      data?.unread_count ??
+      data?.count ??
+      data?.unread ??
+      data?.data?.unread_count ??
+      0;
+
+    setCarwashMessageBadge(count);
+  }catch(error){
+    console.warn('Could not load unread message count:',error);
+    // Keep the last known value instead of flashing the badge off.
+  }
+}
+
+function startCarwashMessageBadge(){
+  if(!IS_AUTH)return;
+  loadCarwashMessageCount();
+  if(carwashMessageCountTimer)clearInterval(carwashMessageCountTimer);
+  carwashMessageCountTimer=setInterval(loadCarwashMessageCount,15000);
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')loadCarwashMessageCount();
+});
+window.addEventListener('focus',loadCarwashMessageCount);
+
+/* ============================================================
    CARWASH → MAIN OPPOGLOBE MESSAGING
    Uses hiring.Conversation / Message / MessageRecipient
    through the carwash messaging endpoints.
@@ -2754,6 +2894,10 @@ async function messageActiveCarwashRequest(){
   await messageCarwashRequest(activeRequestId);
 }
 
+
+
+// Keep the header message badge live while the Car Wash workspace is open.
+startCarwashMessageBadge();
 </script>
 
 
