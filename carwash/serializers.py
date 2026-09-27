@@ -431,9 +431,11 @@ class QuoteRequestSerializer(serializers.Serializer):
 
     business_id = serializers.UUIDField()
 
-    vehicle_type_id = serializers.UUIDField()
+    price_id = serializers.UUIDField(required=False)
 
-    service_id = serializers.UUIDField()
+    vehicle_type_id = serializers.UUIDField(required=False)
+
+    service_id = serializers.UUIDField(required=False)
 
     fulfilment_mode = serializers.ChoiceField(choices=['mobile', 'onsite'])
 
@@ -450,6 +452,12 @@ class QuoteRequestSerializer(serializers.Serializer):
 
 
     def validate(self, attrs):
+
+        if not attrs.get('price_id') and not (attrs.get('vehicle_type_id') and attrs.get('service_id')):
+
+            raise serializers.ValidationError(
+                'Choose a valid vehicle and service combination.'
+            )
 
         if attrs['fulfilment_mode'] == 'mobile':
 

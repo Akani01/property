@@ -1,6 +1,16 @@
 import os
 
+
+
 from decimal import Decimal, InvalidOperation
+
+
+
+
+
+
+
+
 
 
 
@@ -12,7 +22,15 @@ from django.conf import settings
 
 
 
+
+
+
+
 import requests
+
+
+
+
 
 
 
@@ -20,7 +38,15 @@ from django.db import transaction
 
 
 
+
+
+
+
 from django.db.models import Q, Count
+
+
+
+
 
 
 
@@ -28,7 +54,15 @@ from django.shortcuts import get_object_or_404, render
 
 
 
+
+
+
+
 from django.utils import timezone
+
+
+
+
 
 
 
@@ -36,11 +70,23 @@ from rest_framework import status, viewsets
 
 
 
+
+
+
+
 from rest_framework.decorators import action, api_view, permission_classes
 
 
 
+
+
+
+
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+
+
+
+
 
 
 
@@ -52,7 +98,19 @@ from rest_framework.response import Response
 
 
 
+
+
+
+
+
+
+
+
 from .models import (
+
+
+
+
 
 
 
@@ -60,15 +118,31 @@ from .models import (
 
 
 
+
+
+
+
     CarWashBusiness,
+
+
 
     CarWashLedgerEntry,
 
 
 
+
+
+
+
     CarWashPayment,
 
+
+
     CarWashPayoutProfile,
+
+
+
+
 
 
 
@@ -76,7 +150,15 @@ from .models import (
 
 
 
+
+
+
+
     CarWashQuote,
+
+
+
+
 
 
 
@@ -84,7 +166,15 @@ from .models import (
 
 
 
+
+
+
+
     CarWashReview,
+
+
+
+
 
 
 
@@ -92,9 +182,19 @@ from .models import (
 
 
 
+
+
+
+
     CarWashWorker,
 
+
+
     CarWashWallet,
+
+
+
+
 
 
 
@@ -102,7 +202,15 @@ from .models import (
 
 
 
+
+
+
+
     PaymentGateway,
+
+
+
+
 
 
 
@@ -110,7 +218,15 @@ from .models import (
 
 
 
+
+
+
+
     VehicleType,
+
+
+
+
 
 
 
@@ -118,13 +234,29 @@ from .models import (
 
 
 
+
+
+
+
 from .payments.registry import get_gateway
+
+
+
+
 
 
 
 # Reuse OppoGlobe's main messaging system from the hiring app.
 
+
+
 from hiring.models import Conversation, Message, MessageRecipient
+
+
+
+
+
+
 
 
 
@@ -134,7 +266,15 @@ from .serializers import (
 
 
 
+
+
+
+
     BusinessPaymentGatewaySerializer,
+
+
+
+
 
 
 
@@ -142,7 +282,15 @@ from .serializers import (
 
 
 
+
+
+
+
     CarWashPaymentSerializer,
+
+
+
+
 
 
 
@@ -150,7 +298,15 @@ from .serializers import (
 
 
 
+
+
+
+
     CarWashQuoteSerializer,
+
+
+
+
 
 
 
@@ -158,7 +314,15 @@ from .serializers import (
 
 
 
+
+
+
+
     CarWashReviewSerializer,
+
+
+
+
 
 
 
@@ -166,7 +330,15 @@ from .serializers import (
 
 
 
+
+
+
+
     CarWashWorkerSerializer,
+
+
+
+
 
 
 
@@ -174,7 +346,15 @@ from .serializers import (
 
 
 
+
+
+
+
     PaymentGatewaySerializer,
+
+
+
+
 
 
 
@@ -182,7 +362,15 @@ from .serializers import (
 
 
 
+
+
+
+
     QuoteRequestSerializer,
+
+
+
+
 
 
 
@@ -190,11 +378,23 @@ from .serializers import (
 
 
 
+
+
+
+
     VehicleTypeSerializer,
 
 
 
+
+
+
+
 )
+
+
+
+
 
 
 
@@ -210,7 +410,23 @@ from .services import calculate_quote, haversine_km, record_status, settle_compl
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 def carwash_map(request):
+
+
+
+
 
 
 
@@ -218,11 +434,23 @@ def carwash_map(request):
 
 
 
+
+
+
+
     worker = None
 
 
 
+
+
+
+
     is_business_account = False
+
+
+
+
 
 
 
@@ -234,7 +462,19 @@ def carwash_map(request):
 
 
 
+
+
+
+
+
+
+
+
     if request.user.is_authenticated:
+
+
+
+
 
 
 
@@ -242,7 +482,15 @@ def carwash_map(request):
 
 
 
+
+
+
+
         worker = CarWashWorker.objects.filter(user=request.user, is_active=True).select_related('business').first()
+
+
+
+
 
 
 
@@ -250,7 +498,15 @@ def carwash_map(request):
 
 
 
+
+
+
+
         can_manage_business = bool(
+
+
+
+
 
 
 
@@ -258,7 +514,15 @@ def carwash_map(request):
 
 
 
+
+
+
+
         )
+
+
+
+
 
 
 
@@ -270,7 +534,19 @@ def carwash_map(request):
 
 
 
+
+
+
+
+
+
+
+
     return render(request, 'carwash/map.html', {
+
+
+
+
 
 
 
@@ -278,7 +554,15 @@ def carwash_map(request):
 
 
 
+
+
+
+
         'carwash_business': business,
+
+
+
+
 
 
 
@@ -286,7 +570,15 @@ def carwash_map(request):
 
 
 
+
+
+
+
         'is_carwash_business_user': is_business_account,
+
+
+
+
 
 
 
@@ -294,7 +586,23 @@ def carwash_map(request):
 
 
 
+
+
+
+
     })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -310,7 +618,15 @@ class BusinessOwnedMixin:
 
 
 
+
+
+
+
     def get_business_for_user(self):
+
+
+
+
 
 
 
@@ -326,11 +642,31 @@ class BusinessOwnedMixin:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashBusinessSerializer
+
+
+
+
 
 
 
@@ -342,7 +678,19 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -350,7 +698,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         if self.request.user.is_authenticated and self.request.method not in {'GET', 'HEAD', 'OPTIONS'}:
+
+
+
+
 
 
 
@@ -358,11 +714,23 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 return CarWashBusiness.objects.all().select_related('owner')
 
 
 
+
+
+
+
             return CarWashBusiness.objects.filter(owner=self.request.user).select_related('owner')
+
+
+
+
 
 
 
@@ -374,7 +742,19 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
+
+
+
+
 
 
 
@@ -382,7 +762,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             from rest_framework.exceptions import ValidationError
+
+
+
+
 
 
 
@@ -390,7 +778,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         business = serializer.save(owner=self.request.user)
+
+
+
+
 
 
 
@@ -398,7 +794,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         # business can go online and accept work immediately. Larger teams can
+
+
+
+
 
 
 
@@ -406,7 +810,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         CarWashWorker.objects.get_or_create(
+
+
+
+
 
 
 
@@ -414,7 +826,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             user=self.request.user,
+
+
+
+
 
 
 
@@ -422,7 +842,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 'display_name': self.request.user.get_full_name() or self.request.user.get_username(),
+
+
+
+
 
 
 
@@ -430,7 +858,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 'is_online': False,
+
+
+
+
 
 
 
@@ -438,7 +874,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             },
+
+
+
+
 
 
 
@@ -450,7 +894,19 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+
+
+
+
 
 
 
@@ -458,7 +914,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         business = CarWashBusiness.objects.filter(owner=request.user).first()
+
+
+
+
 
 
 
@@ -466,7 +930,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return Response({'success': True, 'business': None})
+
+
+
+
 
 
 
@@ -474,7 +946,15 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'success': True,
+
+
+
+
 
 
 
@@ -482,7 +962,23 @@ class CarWashBusinessViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -498,7 +994,15 @@ class VehicleTypeViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = VehicleTypeSerializer
+
+
+
+
 
 
 
@@ -510,7 +1014,19 @@ class VehicleTypeViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -518,7 +1034,15 @@ class VehicleTypeViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return VehicleType.objects.all()
+
+
+
+
 
 
 
@@ -530,11 +1054,35 @@ class VehicleTypeViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
 
 
 
+
+
+
+
         serializer.save(business=self.get_business_for_user())
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -550,7 +1098,15 @@ class CarWashServiceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashServiceSerializer
+
+
+
+
 
 
 
@@ -562,7 +1118,19 @@ class CarWashServiceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -570,7 +1138,15 @@ class CarWashServiceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return CarWashService.objects.all()
+
+
+
+
 
 
 
@@ -582,11 +1158,35 @@ class CarWashServiceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
 
 
 
+
+
+
+
         serializer.save(business=self.get_business_for_user())
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -602,7 +1202,15 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = ServiceVehiclePriceSerializer
+
+
+
+
 
 
 
@@ -614,7 +1222,19 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -622,7 +1242,15 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return ServiceVehiclePrice.objects.select_related('service', 'vehicle_type', 'business')
+
+
+
+
 
 
 
@@ -634,7 +1262,19 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
+
+
+
+
 
 
 
@@ -642,7 +1282,15 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
         service = serializer.validated_data['service']
+
+
+
+
 
 
 
@@ -650,7 +1298,15 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
         if service.business_id != business.id or vehicle_type.business_id != business.id:
+
+
+
+
 
 
 
@@ -658,7 +1314,23 @@ class ServiceVehiclePriceViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
         serializer.save(business=business)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -674,7 +1346,15 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashWorkerSerializer
+
+
+
+
 
 
 
@@ -686,7 +1366,19 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -694,7 +1386,15 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return CarWashWorker.objects.all().select_related('business', 'user')
+
+
+
+
 
 
 
@@ -706,7 +1406,19 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
+
+
+
+
 
 
 
@@ -714,7 +1426,15 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
         user = serializer.validated_data['user']
+
+
+
+
 
 
 
@@ -722,11 +1442,23 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             from rest_framework.exceptions import ValidationError
 
 
 
+
+
+
+
             raise ValidationError('This user is already a worker for your business.')
+
+
+
+
 
 
 
@@ -742,11 +1474,31 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 class BusinessPaymentGatewayViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = BusinessPaymentGatewaySerializer
+
+
+
+
 
 
 
@@ -758,7 +1510,19 @@ class BusinessPaymentGatewayViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -766,7 +1530,15 @@ class BusinessPaymentGatewayViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
             return BusinessPaymentGateway.objects.select_related('business', 'gateway')
+
+
+
+
 
 
 
@@ -778,7 +1550,19 @@ class BusinessPaymentGatewayViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
+
+
+
+
 
 
 
@@ -794,11 +1578,31 @@ class BusinessPaymentGatewayViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashPaymentSerializer
+
+
+
+
 
 
 
@@ -810,7 +1614,19 @@ class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -818,7 +1634,15 @@ class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
         return CarWashPayment.objects.filter(
+
+
+
+
 
 
 
@@ -826,11 +1650,23 @@ class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
             Q(wash_request__business__owner=user) |
 
 
 
+
+
+
+
             Q(wash_request__assigned_worker__user=user)
+
+
+
+
 
 
 
@@ -846,7 +1682,23 @@ class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(['POST'])
+
+
+
+
 
 
 
@@ -854,7 +1706,15 @@ class CarWashPaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
+
+
 def update_business_location(request):
+
+
+
+
 
 
 
@@ -866,7 +1726,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     Latitude/longitude/place_id are backend values; they are never human input fields.
+
+
+
+
 
 
 
@@ -874,11 +1746,23 @@ def update_business_location(request):
 
 
 
+
+
+
+
     business = CarWashBusiness.objects.filter(owner=request.user).first()
 
 
 
+
+
+
+
     if not business:
+
+
+
+
 
 
 
@@ -890,7 +1774,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     lat = request.data.get('latitude')
+
+
+
+
 
 
 
@@ -898,7 +1794,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
     formatted_address = (request.data.get('formatted_address') or request.data.get('address') or '').strip()
+
+
+
+
 
 
 
@@ -910,7 +1814,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     if lat is None or lng is None:
+
+
+
+
 
 
 
@@ -922,7 +1838,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     try:
+
+
+
+
 
 
 
@@ -930,11 +1858,23 @@ def update_business_location(request):
 
 
 
+
+
+
+
         lng = Decimal(str(lng))
 
 
 
+
+
+
+
     except (InvalidOperation, TypeError, ValueError):
+
+
+
+
 
 
 
@@ -946,7 +1886,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     # If Google Places did not already give us a label, reverse geocode on the server.
+
+
+
+
 
 
 
@@ -954,7 +1906,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
         api_key = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+
+
+
+
 
 
 
@@ -962,7 +1922,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
             try:
+
+
+
+
 
 
 
@@ -970,7 +1938,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
                     'https://maps.googleapis.com/maps/api/geocode/json',
+
+
+
+
 
 
 
@@ -978,7 +1954,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
                     timeout=8,
+
+
+
+
 
 
 
@@ -986,7 +1970,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
                 data = response.json()
+
+
+
+
 
 
 
@@ -994,7 +1986,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
                     first = data['results'][0]
+
+
+
+
 
 
 
@@ -1002,11 +2002,23 @@ def update_business_location(request):
 
 
 
+
+
+
+
                     place_id = place_id or first.get('place_id', '')
 
 
 
+
+
+
+
             except requests.RequestException:
+
+
+
+
 
 
 
@@ -1018,7 +2030,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     business.latitude = lat
+
+
+
+
 
 
 
@@ -1026,7 +2050,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
     business.place_id = place_id
+
+
+
+
 
 
 
@@ -1034,11 +2066,23 @@ def update_business_location(request):
 
 
 
+
+
+
+
         business.address = formatted_address
 
 
 
+
+
+
+
         business.formatted_address = formatted_address
+
+
+
+
 
 
 
@@ -1050,7 +2094,19 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
     return Response({
+
+
+
+
 
 
 
@@ -1058,7 +2114,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
         'business': CarWashBusinessSerializer(business, context={'request': request}).data,
+
+
+
+
 
 
 
@@ -1074,7 +2138,23 @@ def update_business_location(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(['GET'])
+
+
+
+
 
 
 
@@ -1082,7 +2162,15 @@ def update_business_location(request):
 
 
 
+
+
+
+
 def reverse_geocode(request):
+
+
+
+
 
 
 
@@ -1090,7 +2178,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
     lat = request.GET.get('lat')
+
+
+
+
 
 
 
@@ -1102,7 +2198,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
+
+
+
+
     if not lat or not lng:
+
+
+
+
 
 
 
@@ -1110,7 +2218,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             {'success': False, 'error': 'lat and lng are required'},
+
+
+
+
 
 
 
@@ -1118,7 +2234,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1130,7 +2258,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         lat = Decimal(str(lat))
+
+
+
+
 
 
 
@@ -1138,7 +2274,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
     except (InvalidOperation, TypeError, ValueError):
+
+
+
+
 
 
 
@@ -1146,7 +2290,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             {'success': False, 'error': 'Invalid coordinates'},
+
+
+
+
 
 
 
@@ -1154,7 +2306,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1166,7 +2330,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
     if not google_api_key:
+
+
+
+
 
 
 
@@ -1174,7 +2346,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             {'success': False, 'error': 'Google Maps API key is not configured'},
+
+
+
+
 
 
 
@@ -1182,7 +2362,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1194,7 +2386,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         response = requests.get(
+
+
+
+
 
 
 
@@ -1202,7 +2402,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             params={
+
+
+
+
 
 
 
@@ -1210,7 +2418,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
                 'key': google_api_key,
+
+
+
+
 
 
 
@@ -1218,7 +2434,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             timeout=10,
+
+
+
+
 
 
 
@@ -1226,7 +2450,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         response.raise_for_status()
+
+
+
+
 
 
 
@@ -1238,7 +2470,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
+
+
+
+
         if data.get('status') != 'OK' or not data.get('results'):
+
+
+
+
 
 
 
@@ -1246,7 +2490,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
                 'success': False,
+
+
+
+
 
 
 
@@ -1254,7 +2506,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
                 'google_status': data.get('status', ''),
+
+
+
+
 
 
 
@@ -1266,7 +2526,19 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
+
+
+
+
         first = data['results'][0]
+
+
+
+
 
 
 
@@ -1274,7 +2546,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             'success': True,
+
+
+
+
 
 
 
@@ -1282,7 +2562,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             'place_id': first.get('place_id', ''),
+
+
+
+
 
 
 
@@ -1290,11 +2578,23 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             'longitude': str(lng),
 
 
 
+
+
+
+
         })
+
+
+
+
 
 
 
@@ -1302,7 +2602,15 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
         return Response(
+
+
+
+
 
 
 
@@ -1310,11 +2618,31 @@ def reverse_geocode(request):
 
 
 
+
+
+
+
             status=status.HTTP_502_BAD_GATEWAY,
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1327,161 +2655,320 @@ def reverse_geocode(request):
 
 
 @api_view(['GET'])
+
 @permission_classes([AllowAny])
+
 def nearby_providers(request):
+
     """
+
     Return providers that can actually serve the customer's current map position.
 
+
+
     Mobile providers must have an active worker who is online, available and
+
     publishing live GPS. On-site providers use the business's saved location.
+
     Each returned provider also includes only the business's active/priced
+
     vehicles, services and price combinations for the requested fulfilment mode.
+
     """
+
     lat = request.GET.get('lat')
+
     lng = request.GET.get('lng')
+
     fulfilment = request.GET.get('fulfilment', 'mobile').strip().lower()
 
+
+
     if fulfilment not in {'mobile', 'onsite'}:
+
         return Response(
+
             {'success': False, 'error': 'fulfilment must be mobile or onsite'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
+
+
 
     if not lat or not lng:
+
         return Response(
+
             {'success': False, 'error': 'lat and lng are required'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
+
+
 
     try:
+
         lat = Decimal(str(lat))
+
         lng = Decimal(str(lng))
+
         radius = Decimal(str(request.GET.get('radius', '25')))
+
     except (InvalidOperation, TypeError, ValueError):
+
         return Response(
+
             {'success': False, 'error': 'Invalid coordinates or radius'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
 
+
+
     if radius <= 0:
+
         radius = Decimal('25')
+
     radius = min(radius, Decimal('100'))
 
+
+
     businesses = (
+
         CarWashBusiness.objects
+
         .filter(is_active=True, is_accepting_jobs=True)
+
         .select_related('owner')
+
         .prefetch_related('vehicle_types', 'services', 'service_prices')
+
     )
 
+
+
     if fulfilment == 'mobile':
+
         businesses = businesses.filter(fulfilment_mode__in=['mobile', 'both'])
+
     else:
+
         businesses = businesses.filter(fulfilment_mode__in=['onsite', 'both'])
+
+
 
     results = []
 
+
+
     for business in businesses:
+
         worker = None
 
+
+
         if fulfilment == 'mobile':
+
             location = (
+
                 CarWashProviderLocation.objects
+
                 .filter(
+
                     worker__business=business,
+
                     worker__is_active=True,
+
                     worker__is_online=True,
+
                     worker__is_available=True,
+
                     is_active=True,
+
                 )
+
                 .select_related('worker', 'worker__user', 'worker__business')
+
                 .order_by('-recorded_at')
+
                 .first()
+
             )
 
+
+
             if not location:
+
                 continue
 
+
+
             worker = location.worker
+
             b_lat = location.latitude
+
             b_lng = location.longitude
+
         else:
+
             if business.latitude is None or business.longitude is None:
+
                 continue
+
             b_lat = business.latitude
+
             b_lng = business.longitude
+
+
 
         distance = Decimal(str(round(haversine_km(lat, lng, b_lat, b_lng), 2)))
 
+
+
         effective_radius = (
+
             min(radius, business.service_radius_km)
+
             if fulfilment == 'mobile'
+
             else radius
+
         )
+
         if distance > effective_radius:
+
             continue
+
+
 
         active_prices = (
+
             ServiceVehiclePrice.objects
+
             .filter(
+
                 business=business,
+
                 is_active=True,
+
                 vehicle_type__is_active=True,
+
                 service__is_active=True,
+
             )
+
             .select_related('service', 'vehicle_type')
+
         )
 
+
+
         if fulfilment == 'mobile':
+
             active_prices = active_prices.filter(service__mobile_available=True)
+
         else:
+
             active_prices = active_prices.filter(service__onsite_available=True)
 
+
+
         if not active_prices.exists():
+
             continue
 
+
+
         vehicle_ids = active_prices.values_list('vehicle_type_id', flat=True).distinct()
+
         service_ids = active_prices.values_list('service_id', flat=True).distinct()
 
+
+
         vehicles = business.vehicle_types.filter(id__in=vehicle_ids, is_active=True)
+
         services = business.services.filter(id__in=service_ids, is_active=True)
 
+
+
         data = CarWashBusinessSerializer(
+
             business,
+
             context={'request': request},
+
         ).data
+
         data.update({
+
             'distance_km': str(distance),
+
             'map_latitude': str(b_lat),
+
             'map_longitude': str(b_lng),
+
             'available_worker_id': str(worker.id) if worker else None,
+
             'available_worker_name': (
+
                 worker.display_name
+
                 or worker.user.get_full_name()
+
                 or worker.user.get_username()
+
             ) if worker else None,
+
             'vehicles': VehicleTypeSerializer(vehicles, many=True).data,
+
             'services': CarWashServiceSerializer(services, many=True).data,
+
             'prices': ServiceVehiclePriceSerializer(active_prices, many=True).data,
+
             'available_options_count': active_prices.count(),
+
         })
+
         results.append(data)
+
+
 
     results.sort(key=lambda item: Decimal(item['distance_km']))
 
+
+
     return Response({
+
         'success': True,
+
         'providers': results,
+
         'count': len(results),
+
         'fulfilment': fulfilment,
+
     })
+
+
+
 
 
 @api_view(['GET'])
 
 
 
+
+
+
+
 @permission_classes([AllowAny])
+
+
+
+
 
 
 
@@ -1489,7 +2976,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
     """
+
+
+
+
 
 
 
@@ -1501,7 +2996,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
+
+
+
+
     Only return vehicle + service combinations that the business has priced,
+
+
+
+
 
 
 
@@ -1509,7 +3016,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
     """
+
+
+
+
 
 
 
@@ -1517,7 +3032,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         CarWashBusiness,
+
+
+
+
 
 
 
@@ -1525,7 +3048,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         is_active=True,
+
+
+
+
 
 
 
@@ -1533,7 +3064,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
     )
+
+
+
+
+
+
+
+
 
 
 
@@ -1545,7 +3088,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
     if fulfilment not in {'mobile', 'onsite'}:
+
+
+
+
 
 
 
@@ -1553,7 +3104,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             {'success': False, 'error': 'fulfilment must be mobile or onsite'},
+
+
+
+
 
 
 
@@ -1561,7 +3120,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1573,7 +3144,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         return Response(
+
+
+
+
 
 
 
@@ -1581,11 +3160,27 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             status=status.HTTP_400_BAD_REQUEST,
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1597,7 +3192,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         return Response(
+
+
+
+
 
 
 
@@ -1605,11 +3208,27 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             status=status.HTTP_400_BAD_REQUEST,
 
 
 
+
+
+
+
         )
+
+
+
+
+
+
+
+
 
 
 
@@ -1621,7 +3240,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         business.service_prices
+
+
+
+
 
 
 
@@ -1629,7 +3256,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             is_active=True,
+
+
+
+
 
 
 
@@ -1637,7 +3272,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             service__is_active=True,
+
+
+
+
 
 
 
@@ -1645,11 +3288,27 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         .select_related('service', 'vehicle_type')
 
 
 
+
+
+
+
     )
+
+
+
+
+
+
+
+
 
 
 
@@ -1661,11 +3320,23 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         prices = prices.filter(service__mobile_available=True)
 
 
 
+
+
+
+
     else:
+
+
+
+
 
 
 
@@ -1677,7 +3348,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
+
+
+
+
     vehicle_ids = prices.values_list('vehicle_type_id', flat=True).distinct()
+
+
+
+
 
 
 
@@ -1689,7 +3372,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
+
+
+
+
     vehicles = business.vehicle_types.filter(
+
+
+
+
 
 
 
@@ -1697,11 +3392,23 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         is_active=True,
 
 
 
+
+
+
+
     )
+
+
+
+
 
 
 
@@ -1709,7 +3416,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         id__in=service_ids,
+
+
+
+
 
 
 
@@ -1717,7 +3432,19 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
     )
+
+
+
+
+
+
+
+
 
 
 
@@ -1729,7 +3456,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         'success': True,
+
+
+
+
 
 
 
@@ -1737,7 +3472,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         'business': CarWashBusinessSerializer(
+
+
+
+
 
 
 
@@ -1745,7 +3488,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
             context={'request': request},
+
+
+
+
 
 
 
@@ -1753,7 +3504,15 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         'vehicles': VehicleTypeSerializer(vehicles, many=True).data,
+
+
+
+
 
 
 
@@ -1761,11 +3520,31 @@ def business_catalog(request, business_id):
 
 
 
+
+
+
+
         'prices': ServiceVehiclePriceSerializer(prices, many=True).data,
 
 
 
+
+
+
+
     })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1778,343 +3557,344 @@ def business_catalog(request, business_id):
 
 
 @api_view(['POST'])
-
-
-
 @permission_classes([IsAuthenticated])
-
-
-
 def create_quote(request):
+    """
+    Create a quote from either the preferred `price_id` payload used by the
+    current frontend, or the legacy business/service/vehicle UUID payload.
 
+    `price_id` is preferred because a ServiceVehiclePrice row already binds
+    the business, vehicle, service and price together, so stale hidden select
+    values cannot produce a mismatched quote.
+    """
+    raw_price_id = request.data.get('price_id')
+    serializer_payload = request.data.copy()
+    price_row = None
 
+    if raw_price_id not in (None, '', 'null', 'undefined'):
+        try:
+            price_row = (
+                ServiceVehiclePrice.objects
+                .select_related('business', 'service', 'vehicle_type')
+                .get(
+                    id=raw_price_id,
+                    is_active=True,
+                    business__is_active=True,
+                    business__is_accepting_jobs=True,
+                    service__is_active=True,
+                    vehicle_type__is_active=True,
+                )
+            )
+        except ServiceVehiclePrice.DoesNotExist:
+            return Response(
+                {'success': False, 'error': 'The selected wash price is no longer available.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except (ValueError, TypeError):
+            return Response(
+                {
+                    'success': False,
+                    'error': 'The selected wash price is invalid.',
+                    'price_id': ['Must be a valid UUID.'],
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as exc:
+            if exc.__class__.__name__ == 'ValidationError':
+                return Response(
+                    {
+                        'success': False,
+                        'error': 'The selected wash price is invalid.',
+                        'price_id': ['Must be a valid UUID.'],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            raise
 
-    serializer = QuoteRequestSerializer(data=request.data)
+        # Feed the existing QuoteRequestSerializer authoritative UUIDs derived
+        # from the selected price row. This avoids changing/breaking serializers.
+        serializer_payload['business_id'] = str(price_row.business_id)
+        serializer_payload['vehicle_type_id'] = str(price_row.vehicle_type_id)
+        serializer_payload['service_id'] = str(price_row.service_id)
 
-
-
+    serializer = QuoteRequestSerializer(data=serializer_payload)
     serializer.is_valid(raise_exception=True)
-
-
-
     data = serializer.validated_data
 
-
-
-
-
-
-
-    business = get_object_or_404(CarWashBusiness, id=data['business_id'], is_active=True, is_accepting_jobs=True)
-
-
-
-    vehicle = get_object_or_404(VehicleType, id=data['vehicle_type_id'], business=business, is_active=True)
-
-
-
-    service = get_object_or_404(CarWashService, id=data['service_id'], business=business, is_active=True)
-
-
-
-
-
-
+    if price_row is not None:
+        business = price_row.business
+        vehicle = price_row.vehicle_type
+        service = price_row.service
+    else:
+        # Backward compatibility with older clients.
+        business = get_object_or_404(
+            CarWashBusiness,
+            id=data['business_id'],
+            is_active=True,
+            is_accepting_jobs=True,
+        )
+        vehicle = get_object_or_404(
+            VehicleType,
+            id=data['vehicle_type_id'],
+            business=business,
+            is_active=True,
+        )
+        service = get_object_or_404(
+            CarWashService,
+            id=data['service_id'],
+            business=business,
+            is_active=True,
+        )
+        price_row = get_object_or_404(
+            ServiceVehiclePrice.objects.select_related('service', 'vehicle_type'),
+            business=business,
+            vehicle_type=vehicle,
+            service=service,
+            is_active=True,
+        )
 
     fulfilment = data['fulfilment_mode']
 
+    if fulfilment == 'mobile':
+        if not business.supports_mobile or not service.mobile_available:
+            return Response(
+                {'success': False, 'error': 'Mobile service is not available for this selection.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if data.get('latitude') is None or data.get('longitude') is None:
+            return Response(
+                {'success': False, 'error': 'Your current location is required for a mobile wash.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-
-    if fulfilment == 'mobile' and (not business.supports_mobile or not service.mobile_available):
-
-
-
-        return Response({'success': False, 'error': 'Mobile service is not available for this selection.'}, status=400)
-
-
-
-    if fulfilment == 'onsite' and (not business.supports_onsite or not service.onsite_available):
-
-
-
-        return Response({'success': False, 'error': 'On-site service is not available for this selection.'}, status=400)
-
-
-
-
-
-
-
-    price_row = get_object_or_404(
-
-
-
-        ServiceVehiclePrice,
-
-
-
-        business=business,
-
-
-
-        vehicle_type=vehicle,
-
-
-
-        service=service,
-
-
-
-        is_active=True,
-
-
-
-    )
-
-
-
-
-
-
+    if fulfilment == 'onsite':
+        if not business.supports_onsite or not service.onsite_available:
+            return Response(
+                {'success': False, 'error': 'On-site service is not available for this selection.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     pricing = calculate_quote(
-
-
-
         business=business,
-
-
-
         price_row=price_row,
-
-
-
         fulfilment_mode=fulfilment,
-
-
-
         route_distance_km=data.get('route_distance_km', Decimal('0.00')),
-
-
-
     )
-
-
-
-
-
-
 
     if fulfilment == 'mobile':
-
-
-
         service_latitude = data.get('latitude')
-
-
-
         service_longitude = data.get('longitude')
-
-
-
         service_address = data.get('address', '')
-
-
-
         service_place_id = data.get('place_id', '')
-
-
-
     else:
-
-
-
         if business.latitude is None or business.longitude is None:
-
-
-
-            return Response({'success': False, 'error': 'This business has not configured its Google Maps location yet.'}, status=400)
-
-
-
+            return Response(
+                {'success': False, 'error': 'This business has not configured its Google Maps location yet.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         service_latitude = business.latitude
-
-
-
         service_longitude = business.longitude
-
-
-
         service_address = business.formatted_address or business.address
-
-
-
         service_place_id = business.place_id
 
-
-
-
-
-
-
     quote = CarWashQuote.objects.create(
-
-
-
         customer=request.user,
-
-
-
         business=business,
-
-
-
         vehicle_type=vehicle,
-
-
-
         service=service,
-
-
-
         fulfilment_mode=fulfilment,
-
-
-
         service_latitude=service_latitude,
-
-
-
         service_longitude=service_longitude,
-
-
-
         service_address=service_address,
-
-
-
         service_place_id=service_place_id,
-
-
-
         route_distance_km=data.get('route_distance_km', Decimal('0.00')),
-
-
-
         currency=price_row.currency,
-
-
-
         expires_at=timezone.now() + timezone.timedelta(minutes=10),
-
-
-
         **pricing,
+    )
 
-
-
+    return Response(
+        {
+            'success': True,
+            'quote': CarWashQuoteSerializer(quote).data,
+            'selection': {
+                'price_id': str(price_row.id),
+                'business_id': str(business.id),
+                'vehicle_type_id': str(vehicle.id),
+                'service_id': str(service.id),
+            },
+        },
+        status=status.HTTP_201_CREATED,
     )
 
 
-
-
-
-
-
-    return Response({'success': True, 'quote': CarWashQuoteSerializer(quote).data}, status=201)
-
-
-
-
-
-
-
-
-
-
-
 # ============================================================
+
 # CARWASH NOTIFICATIONS
+
 # ============================================================
+
 def _notify_carwash_user(user, title, message, wash_request, panel='trackWash'):
+
     """Send one unified in-app + push notification without breaking carwash flow."""
+
     if not user:
+
         return
+
     try:
+
         from hiring.views import NotificationService
+
         NotificationService.notify(
+
             user=user,
+
             title=title,
+
             message=message,
+
             notification_type='system',
+
             app_source='carwash',
+
             action_url=f'/carwash/?panel={panel}&request={wash_request.id}',
+
             send_push=True,
+
             sound=True,
+
         )
+
     except Exception:
+
         # Notifications must never roll back a wash request/status update.
+
         pass
 
 
+
+
+
 def _notify_new_carwash_request(wash_request):
+
     customer_name = wash_request.customer.get_full_name() or wash_request.customer.get_username()
+
     owner = getattr(wash_request.business, 'owner', None)
+
     _notify_carwash_user(
+
         owner,
+
         'New car wash request',
+
         f'{customer_name} requested {wash_request.quote.service_name if hasattr(wash_request.quote, "service_name") else wash_request.quote.service.name}.',
+
         wash_request,
+
         panel='bizRequests',
+
     )
+
+
+
 
 
 def _notify_carwash_status(wash_request, actor=None):
+
     status_map = {
+
         'requested': ('Car wash requested', 'Your car wash request has been sent.'),
+
         'accepted': ('Car wash accepted', 'Your provider accepted your car wash request.'),
+
         'en_route': ('Provider en route', 'Your washer is on the way.'),
+
         'arrived': ('Provider arrived', 'Your washer has arrived.'),
+
         'washing': ('Wash started', 'Your car wash has started. The service timer is now running.'),
+
         'completed': ('Wash complete', 'Your car wash is complete.'),
+
         'cancelled': ('Car wash cancelled', 'This car wash request was cancelled.'),
+
         'declined': ('Car wash declined', 'The provider could not accept your request.'),
+
         'expired': ('Car wash request expired', 'Your car wash request expired.'),
+
     }
+
     title, message = status_map.get(
+
         wash_request.status,
+
         ('Car wash update', f'Your car wash status is now {wash_request.status}.'),
+
     )
 
+
+
     # Provider action -> tell customer. Customer action -> tell provider/worker.
+
     if not actor or actor.id != wash_request.customer_id:
+
         _notify_carwash_user(wash_request.customer, title, message, wash_request, panel='trackWash')
 
+
+
     if wash_request.status == 'cancelled' and actor and actor.id == wash_request.customer_id:
+
         owner = getattr(wash_request.business, 'owner', None)
+
         _notify_carwash_user(
+
             owner,
+
             'Customer cancelled wash',
+
             f'{wash_request.customer.get_full_name() or wash_request.customer.get_username()} cancelled the wash request.',
+
             wash_request,
+
             panel='bizRequests',
+
         )
+
         worker_user = getattr(getattr(wash_request, 'assigned_worker', None), 'user', None)
+
         if worker_user and (not owner or worker_user.id != owner.id):
+
             _notify_carwash_user(
+
                 worker_user,
+
                 'Wash cancelled',
+
                 'The customer cancelled this wash request.',
+
                 wash_request,
+
                 panel='bizRequests',
+
             )
+
+
+
 
 
 class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashRequestSerializer
+
+
+
+
 
 
 
@@ -2126,7 +3906,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -2134,7 +3926,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         return CarWashRequest.objects.filter(
+
+
+
+
 
 
 
@@ -2142,7 +3942,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             Q(business__owner=user) |
+
+
+
+
 
 
 
@@ -2150,15 +3958,35 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         ).select_related(
+
             'quote',
+
             'quote__vehicle_type',
+
             'quote__service',
+
             'business',
+
             'assigned_worker__user',
+
             'payment',
+
             'payment__gateway',
+
         ).distinct()
+
+
+
+
+
+
+
+
 
 
 
@@ -2170,7 +3998,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     def create(self, request, *args, **kwargs):
+
+
+
+
 
 
 
@@ -2178,7 +4014,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         quote = get_object_or_404(
+
+
+
+
 
 
 
@@ -2186,7 +4030,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             id=quote_id,
+
+
+
+
 
 
 
@@ -2194,7 +4046,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             is_used=False,
+
+
+
+
 
 
 
@@ -2202,7 +4062,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         if quote.expires_at <= timezone.now():
+
+
+
+
 
 
 
@@ -2214,7 +4082,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         wash_request = CarWashRequest.objects.create(
+
+
+
+
 
 
 
@@ -2222,7 +4102,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             business=quote.business,
+
+
+
+
 
 
 
@@ -2230,7 +4118,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             status='requested',
+
+
+
+
 
 
 
@@ -2238,7 +4134,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         )
+
+
+
+
 
 
 
@@ -2246,13 +4150,31 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         quote.save(update_fields=['is_used', 'updated_at'])
+
+
+
+
 
 
 
         record_status(wash_request, 'requested', request.user, 'Customer requested wash')
 
+
+
         transaction.on_commit(lambda: _notify_new_carwash_request(wash_request))
+
+
+
+
+
+
+
+
 
 
 
@@ -2268,7 +4190,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     @action(detail=True, methods=['post'])
+
+
+
+
 
 
 
@@ -2276,7 +4210,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     def accept(self, request, pk=None):
+
+
+
+
 
 
 
@@ -2284,7 +4226,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         worker = get_object_or_404(
+
+
+
+
 
 
 
@@ -2292,7 +4242,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             user=request.user,
+
+
+
+
 
 
 
@@ -2300,7 +4258,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             is_active=True,
+
+
+
+
 
 
 
@@ -2308,11 +4274,23 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         )
 
 
 
+
+
+
+
         if wash_request.status not in {'requested', 'searching'}:
+
+
+
+
 
 
 
@@ -2324,7 +4302,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         wash_request.assigned_worker = worker
+
+
+
+
 
 
 
@@ -2332,7 +4322,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         wash_request.accepted_at = timezone.now()
+
+
+
+
 
 
 
@@ -2340,7 +4338,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         worker.is_available = False
+
+
+
+
 
 
 
@@ -2348,11 +4354,27 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         record_status(wash_request, 'accepted', request.user, 'Washer accepted request')
+
+
 
         transaction.on_commit(lambda: _notify_carwash_status(wash_request, request.user))
 
+
+
         return Response({'success': True, 'request': self.get_serializer(wash_request).data})
+
+
+
+
+
+
+
+
 
 
 
@@ -2364,7 +4386,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     def set_status(self, request, pk=None):
+
+
+
+
 
 
 
@@ -2372,7 +4402,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         new_status = request.data.get('status')
+
+
+
+
 
 
 
@@ -2380,7 +4418,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         if new_status not in valid:
+
+
+
+
 
 
 
@@ -2392,7 +4438,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         is_customer = wash_request.customer_id == request.user.id
+
+
+
+
 
 
 
@@ -2400,11 +4458,23 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         is_owner = wash_request.business.owner_id == request.user.id
 
 
 
+
+
+
+
         if not (is_customer or is_worker or is_owner or request.user.is_superuser):
+
+
+
+
 
 
 
@@ -2416,7 +4486,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         allowed = {
+
+
+
+
 
 
 
@@ -2424,7 +4506,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'en_route': {'arrived', 'cancelled'},
+
+
+
+
 
 
 
@@ -2432,7 +4522,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'washing': {'completed', 'cancelled'},
+
+
+
+
 
 
 
@@ -2440,11 +4538,23 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         }
 
 
 
+
+
+
+
         if new_status not in allowed.get(wash_request.status, set()) and not request.user.is_superuser:
+
+
+
+
 
 
 
@@ -2456,7 +4566,19 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         now = timezone.now()
+
+
+
+
 
 
 
@@ -2464,7 +4586,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         field_map = {
+
+
+
+
 
 
 
@@ -2472,7 +4602,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'arrived': 'arrived_at',
+
+
+
+
 
 
 
@@ -2480,7 +4618,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'completed': 'completed_at',
+
+
+
+
 
 
 
@@ -2488,17 +4634,39 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         }
 
 
 
+
+
+
+
         if new_status in field_map:
+
             field_name = field_map[new_status]
+
             # Preserve the original start time if the endpoint is retried.
+
             if not getattr(wash_request, field_name, None):
+
                 setattr(wash_request, field_name, now)
 
+
+
         wash_request.save()
+
+
+
+
+
+
+
+
 
 
 
@@ -2510,7 +4678,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             wash_request,
+
+
+
+
 
 
 
@@ -2518,7 +4694,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             request.user,
+
+
+
+
 
 
 
@@ -2526,11 +4710,23 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             request.data.get('latitude'),
 
 
 
+
+
+
+
             request.data.get('longitude'),
+
+
+
+
 
 
 
@@ -2542,18 +4738,41 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
         if new_status in {'completed', 'cancelled'} and wash_request.assigned_worker:
+
             worker = wash_request.assigned_worker
+
             if new_status == 'completed':
+
                 worker.completed_washes += 1
+
             worker.is_available = True
+
             fields = ['is_available', 'updated_at']
+
             if new_status == 'completed':
+
                 fields.insert(0, 'completed_washes')
+
             worker.save(update_fields=fields)
 
+
+
         if new_status == 'completed':
+
             try:
+
+
+
+
 
 
 
@@ -2561,7 +4780,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 if payment.payment_method == 'cash' and payment.status != 'paid':
+
+
+
+
 
 
 
@@ -2569,7 +4796,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                     payment.paid_at = now
+
+
+
+
 
 
 
@@ -2577,7 +4812,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 if payment.status == 'paid':
+
+
+
+
 
 
 
@@ -2585,12 +4828,29 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             except CarWashPayment.DoesNotExist:
+
                 pass
+
+
 
         transaction.on_commit(lambda: _notify_carwash_status(wash_request, request.user))
 
+
+
         return Response({'success': True, 'request': self.get_serializer(wash_request).data})
+
+
+
+
+
+
+
+
 
 
 
@@ -2602,7 +4862,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     def tracking(self, request, pk=None):
+
+
+
+
 
 
 
@@ -2610,7 +4878,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         location = None
+
+
+
+
 
 
 
@@ -2618,7 +4894,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             location = CarWashProviderLocation.objects.filter(
+
+
+
+
 
 
 
@@ -2626,7 +4910,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
                 is_active=True,
+
+
+
+
 
 
 
@@ -2634,7 +4926,15 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         return Response({
+
+
+
+
 
 
 
@@ -2642,11 +4942,23 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             'request': self.get_serializer(wash_request).data,
 
 
 
+
+
+
+
             'provider_location': CarWashProviderLocationSerializer(location).data if location else None,
+
+
+
+
 
 
 
@@ -2662,117 +4974,243 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(['POST'])
+
 @permission_classes([IsAuthenticated])
+
 def update_provider_location(request):
+
     """
+
     Store live worker GPS and synchronise the worker's live state.
 
+
+
     A worker who is actively publishing GPS is online. If is_available is sent
+
     by the frontend, that explicit value is respected. Otherwise a worker whose
+
     business is accepting jobs becomes available unless they already have an
+
     active wash assigned to them.
+
     """
+
     worker = (
+
         CarWashWorker.objects
+
         .filter(user=request.user, is_active=True)
+
         .select_related('business', 'user')
+
         .first()
+
     )
 
+
+
     if worker is None:
+
         return Response(
+
             {'success': False, 'error': 'No active car-wash worker profile exists for this account.'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
+
+
 
     business = worker.business
+
     if not business.is_active:
+
         return Response(
+
             {'success': False, 'error': 'This car-wash business is not active.'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
+
+
 
     lat = request.data.get('latitude')
+
     lng = request.data.get('longitude')
+
     if lat in (None, '') or lng in (None, ''):
+
         return Response(
+
             {'success': False, 'error': 'latitude and longitude are required.'},
+
             status=status.HTTP_400_BAD_REQUEST,
+
         )
 
+
+
     try:
+
         lat = Decimal(str(lat))
+
         lng = Decimal(str(lng))
+
     except (InvalidOperation, TypeError, ValueError):
+
         return Response({'success': False, 'error': 'Invalid latitude or longitude.'}, status=400)
 
+
+
     if not (Decimal('-90') <= lat <= Decimal('90')):
+
         return Response({'success': False, 'error': 'Latitude is out of range.'}, status=400)
+
     if not (Decimal('-180') <= lng <= Decimal('180')):
+
         return Response({'success': False, 'error': 'Longitude is out of range.'}, status=400)
 
+
+
     def optional_decimal(name):
+
         value = request.data.get(name)
+
         if value in (None, '', 'null', 'undefined'):
-            return None
-        try:
-            return Decimal(str(value))
-        except (InvalidOperation, TypeError, ValueError):
+
             return None
 
+        try:
+
+            return Decimal(str(value))
+
+        except (InvalidOperation, TypeError, ValueError):
+
+            return None
+
+
+
     incoming_available = request.data.get('is_available')
+
     if isinstance(incoming_available, str):
+
         incoming_available = incoming_available.strip().lower() in {'true', '1', 'yes', 'on'}
+
+
 
     worker.is_online = True
 
+
+
     if incoming_available is not None:
+
         worker.is_available = bool(incoming_available)
+
     elif business.is_accepting_jobs:
+
         active_job_exists = CarWashRequest.objects.filter(
+
             assigned_worker=worker,
+
             status__in=['accepted', 'en_route', 'arrived', 'washing'],
+
         ).exists()
+
         worker.is_available = not active_job_exists
+
+
 
     worker.save(update_fields=['is_online', 'is_available', 'updated_at'])
 
+
+
     location, _ = CarWashProviderLocation.objects.update_or_create(
+
         worker=worker,
+
         defaults={
+
             'latitude': lat,
+
             'longitude': lng,
+
             'heading': optional_decimal('heading'),
+
             'speed_kph': optional_decimal('speed_kph'),
+
             'accuracy_m': optional_decimal('accuracy_m'),
+
             'is_active': True,
+
             'recorded_at': timezone.now(),
+
         },
+
     )
 
+
+
     return Response({
+
         'success': True,
+
         'worker': {
+
             'id': str(worker.id),
+
             'name': worker.display_name or worker.user.get_full_name() or worker.user.get_username(),
+
             'is_online': worker.is_online,
+
             'is_available': worker.is_available,
+
         },
+
         'business': {
+
             'id': str(business.id),
+
             'name': business.name,
+
             'is_accepting_jobs': business.is_accepting_jobs,
+
         },
+
         'location': CarWashProviderLocationSerializer(location).data,
+
     })
+
+
+
 
 
 @api_view(['POST'])
 
 
 
+
+
+
+
 @permission_classes([IsAuthenticated])
+
+
+
+
 
 
 
@@ -2780,11 +5218,23 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
     wash_request = get_object_or_404(CarWashRequest, id=request_id, customer=request.user)
 
 
 
+
+
+
+
     if hasattr(wash_request, 'payment'):
+
+
+
+
 
 
 
@@ -2796,7 +5246,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
     serializer = CreatePaymentSerializer(data=request.data)
+
+
+
+
 
 
 
@@ -2804,7 +5266,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
     method = serializer.validated_data['payment_method']
+
+
+
+
 
 
 
@@ -2816,7 +5286,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
     gateway_obj = None
+
+
+
+
 
 
 
@@ -2828,7 +5310,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
     if method != 'cash':
+
+
+
+
 
 
 
@@ -2836,7 +5330,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
             gateway_obj = get_object_or_404(PaymentGateway, code=gateway_code, is_active=True)
+
+
+
+
 
 
 
@@ -2844,7 +5346,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
             capability = {
+
+
+
+
 
 
 
@@ -2852,7 +5362,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
                 'eft': 'supports_eft',
+
+
+
+
 
 
 
@@ -2860,7 +5378,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
             }[method]
+
+
+
+
 
 
 
@@ -2868,7 +5394,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
             if not gateway_obj:
+
+
+
+
 
 
 
@@ -2876,7 +5410,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         if gateway_obj.supports_split_payments:
+
+
+
+
 
 
 
@@ -2888,7 +5430,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
     quote = wash_request.quote
+
+
+
+
 
 
 
@@ -2896,7 +5450,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         wash_request=wash_request,
+
+
+
+
 
 
 
@@ -2904,7 +5466,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         payment_method=method,
+
+
+
+
 
 
 
@@ -2912,7 +5482,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         currency=quote.currency,
+
+
+
+
 
 
 
@@ -2920,7 +5498,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         platform_commission=quote.platform_commission,
+
+
+
+
 
 
 
@@ -2928,7 +5514,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
     )
+
+
+
+
+
+
+
+
 
 
 
@@ -2940,7 +5538,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         gateway = get_gateway('cash')
+
+
+
+
 
 
 
@@ -2948,7 +5554,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         return Response({'success': True, 'payment': CarWashPaymentSerializer(payment).data, **result}, status=201)
+
+
+
+
+
+
+
+
 
 
 
@@ -2960,7 +5578,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         payment=payment,
+
+
+
+
 
 
 
@@ -2968,11 +5594,23 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         amount=payment.gross_amount,
 
 
 
+
+
+
+
         status='created',
+
+
+
+
 
 
 
@@ -2984,7 +5622,19 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
     try:
+
+
+
+
 
 
 
@@ -2992,7 +5642,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         result = gateway.initialize_payment(payment, request)
+
+
+
+
 
 
 
@@ -3000,11 +5658,23 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         attempt.response_data = result
 
 
 
+
+
+
+
         attempt.save(update_fields=['status', 'response_data', 'updated_at'])
+
+
+
+
 
 
 
@@ -3012,7 +5682,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
     except Exception as exc:
+
+
+
+
 
 
 
@@ -3020,7 +5698,15 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         attempt.response_data = {'error': str(exc)}
+
+
+
+
 
 
 
@@ -3028,11 +5714,23 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
         payment.status = 'failed'
 
 
 
+
+
+
+
         payment.save(update_fields=['status', 'updated_at'])
+
+
+
+
 
 
 
@@ -3048,69 +5746,145 @@ def create_payment(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 # ============================================================
+
+
 
 # OPPOGLOBE SHARED MESSAGING — CARWASH ↔ HIRING CHAT SYSTEM
 
+
+
 # ============================================================
+
+
+
+
 
 
 
 def _get_or_create_direct_conversation(user_a, user_b):
 
+
+
     """
 
+
+
     Reuse an existing one-to-one Conversation between two OppoGlobe users,
+
+
 
     or create one using the Conversation model from the hiring app.
 
 
 
+
+
+
+
     This keeps carwash chat inside the same global /messaging/ inbox.
+
+
 
     """
 
+
+
     if not user_a or not user_b:
+
+
 
         raise ValueError('Both messaging users are required.')
 
 
 
+
+
+
+
     if user_a.pk == user_b.pk:
+
+
 
         raise ValueError('You cannot start a conversation with yourself.')
 
 
 
+
+
+
+
     conversation = (
+
+
 
         Conversation.objects
 
+
+
         .filter(is_active=True, participants=user_a)
+
+
 
         .filter(participants=user_b)
 
+
+
         .annotate(participant_count=Count('participants'))
+
+
 
         .filter(participant_count=2)
 
+
+
         .order_by('-updated_at')
 
+
+
         .first()
+
+
 
     )
 
 
 
+
+
+
+
     if conversation:
+
+
 
         return conversation, False
 
 
 
+
+
+
+
     conversation = Conversation.objects.create(is_active=True)
 
+
+
     conversation.participants.add(user_a, user_b)
+
+
 
     return conversation, True
 
@@ -3118,97 +5892,197 @@ def _get_or_create_direct_conversation(user_a, user_b):
 
 
 
+
+
+
+
+
+
 def _create_carwash_message(conversation, sender, content):
 
+
+
     """
+
+
 
     Create a normal hiring.Message and MessageRecipient rows so the existing
 
+
+
     OppoGlobe messaging unread-count/read-state logic keeps working.
+
+
 
     """
 
+
+
     content = (content or '').strip()
 
+
+
     if not content:
+
+
 
         return None
 
 
 
+
+
+
+
     if not conversation.participants.filter(pk=sender.pk).exists():
+
+
 
         raise ValueError('Sender is not part of this conversation.')
 
 
 
+
+
+
+
     message = Message.objects.create(
+
+
 
         conversation=conversation,
 
+
+
         sender=sender,
+
+
 
         content=content,
 
+
+
         message_type='text',
 
+
+
         delivered_at=timezone.now(),
+
+
 
     )
 
 
 
+
+
+
+
     recipients = conversation.participants.exclude(pk=sender.pk)
+
+
 
     MessageRecipient.objects.bulk_create([
 
+
+
         MessageRecipient(
+
+
 
             message=message,
 
+
+
             recipient=recipient,
+
+
 
             is_read=False,
 
+
+
         )
 
+
+
         for recipient in recipients
+
+
 
     ])
 
 
 
+
+
+
+
     # Touch conversation so it rises to the top of the global inbox.
+
+
 
     Conversation.objects.filter(pk=conversation.pk).update(updated_at=timezone.now())
 
 
 
+
+
+
+
     # Reuse the push/in-app notification service when available. Import here
+
+
 
     # (runtime) to avoid a module-level circular import between hiring/carwash.
 
+
+
     try:
+
+
 
         from hiring.views import NotificationService
 
+
+
         for recipient in recipients:
+
+
 
             NotificationService.send_message_notification(
 
+
+
                 message=message,
+
+
 
                 recipient=recipient,
 
+
+
                 sound=True,
+
+
 
             )
 
+
+
     except Exception:
+
+
 
         # Messaging must never fail just because notification delivery fails.
 
+
+
         pass
+
+
+
+
 
 
 
@@ -3218,39 +6092,81 @@ def _create_carwash_message(conversation, sender, content):
 
 
 
+
+
+
+
+
+
 @api_view(['POST'])
+
+
 
 @permission_classes([IsAuthenticated])
 
+
+
 def start_carwash_business_conversation(request, business_id):
+
+
 
     """
 
+
+
     Start/reuse a conversation between the logged-in customer/user and a
+
+
 
     car-wash business owner.
 
 
 
+
+
+
+
     Optional POST body:
+
+
 
         {"message": "Hi, are you available now?"}
 
 
 
+
+
+
+
     Returns the hiring Conversation id and the global messaging URL.
+
+
 
     """
 
+
+
     business = get_object_or_404(
+
+
 
         CarWashBusiness.objects.select_related('owner'),
 
+
+
         id=business_id,
+
+
 
         is_active=True,
 
+
+
     )
+
+
+
+
 
 
 
@@ -3258,91 +6174,185 @@ def start_carwash_business_conversation(request, business_id):
 
 
 
+
+
+
+
     if recipient_id := getattr(recipient, 'id', None):
+
+
 
         if recipient_id == request.user.id:
 
+
+
             return Response(
+
+
 
                 {'success': False, 'error': 'This is your own car wash business.'},
 
+
+
                 status=status.HTTP_400_BAD_REQUEST,
+
+
 
             )
 
 
 
+
+
+
+
     try:
+
+
 
         conversation, created = _get_or_create_direct_conversation(
 
+
+
             request.user,
+
+
 
             recipient,
 
+
+
         )
+
+
 
     except ValueError as exc:
 
+
+
         return Response(
+
+
 
             {'success': False, 'error': str(exc)},
 
+
+
             status=status.HTTP_400_BAD_REQUEST,
 
+
+
         )
+
+
+
+
 
 
 
     message = None
 
+
+
     first_message = (request.data.get('message') or '').strip()
+
+
 
     if first_message:
 
+
+
         message = _create_carwash_message(
+
+
 
             conversation,
 
+
+
             request.user,
 
+
+
             first_message,
+
+
 
         )
 
 
 
+
+
+
+
     return Response({
+
+
 
         'success': True,
 
+
+
         'created': created,
+
+
 
         'conversation_id': str(conversation.id),
 
+
+
         'recipient': {
+
+
 
             'id': str(recipient.id),
 
+
+
             'username': recipient.get_username(),
+
+
 
             'name': recipient.get_full_name() or recipient.get_username(),
 
+
+
         },
+
+
 
         'business': {
 
+
+
             'id': str(business.id),
+
+
 
             'name': business.name,
 
+
+
         },
+
+
 
         'message_id': str(message.id) if message else None,
 
+
+
         'messaging_url': f'/messaging/?conversation={conversation.id}',
 
+
+
     }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+
+
+
+
+
 
 
 
@@ -3350,21 +6360,41 @@ def start_carwash_business_conversation(request, business_id):
 
 @api_view(['POST'])
 
+
+
 @permission_classes([IsAuthenticated])
+
+
 
 def start_carwash_request_conversation(request, request_id):
 
+
+
     """
+
+
 
     Context-aware chat for an actual wash request.
 
 
 
+
+
+
+
     Routing:
+
+
 
       customer -> assigned worker when present, otherwise business owner
 
+
+
       assigned worker/business owner -> customer
+
+
+
+
 
 
 
@@ -3372,147 +6402,293 @@ def start_carwash_request_conversation(request, request_id):
 
 
 
+
+
+
+
     Optional POST body:
+
+
 
         {"message": "I'm at the gate."}
 
+
+
     """
+
+
 
     wash_request = get_object_or_404(
 
+
+
         CarWashRequest.objects.select_related(
+
+
 
             'customer',
 
+
+
             'business__owner',
+
+
 
             'assigned_worker__user',
 
+
+
             'quote',
+
+
 
         ),
 
+
+
         id=request_id,
 
+
+
     )
+
+
+
+
 
 
 
     is_customer = wash_request.customer_id == request.user.id
 
+
+
     is_owner = wash_request.business.owner_id == request.user.id
+
+
 
     is_worker = bool(
 
+
+
         wash_request.assigned_worker
 
+
+
         and wash_request.assigned_worker.user_id == request.user.id
+
+
 
     )
 
 
 
+
+
+
+
     if not (is_customer or is_owner or is_worker or request.user.is_superuser):
+
+
 
         return Response(
 
+
+
             {'success': False, 'error': 'You are not part of this wash request.'},
+
+
 
             status=status.HTTP_403_FORBIDDEN,
 
+
+
         )
+
+
+
+
 
 
 
     if is_customer:
 
+
+
         if wash_request.assigned_worker and wash_request.assigned_worker.user_id:
+
+
 
             recipient = wash_request.assigned_worker.user
 
+
+
             recipient_role = 'washer'
+
+
 
         else:
 
+
+
             recipient = wash_request.business.owner
+
+
 
             recipient_role = 'business'
 
+
+
     else:
 
+
+
         recipient = wash_request.customer
+
+
 
         recipient_role = 'customer'
 
 
 
+
+
+
+
     try:
+
+
 
         conversation, created = _get_or_create_direct_conversation(
 
+
+
             request.user,
+
+
 
             recipient,
 
+
+
         )
+
+
 
     except ValueError as exc:
 
+
+
         return Response(
+
+
 
             {'success': False, 'error': str(exc)},
 
+
+
             status=status.HTTP_400_BAD_REQUEST,
 
+
+
         )
+
+
+
+
 
 
 
     message = None
 
+
+
     first_message = (request.data.get('message') or '').strip()
+
+
+
+
 
 
 
     if first_message:
 
+
+
         message = _create_carwash_message(
+
+
 
             conversation,
 
+
+
             request.user,
 
+
+
             first_message,
+
+
 
         )
 
 
 
+
+
+
+
     return Response({
+
+
 
         'success': True,
 
+
+
         'created': created,
+
+
 
         'conversation_id': str(conversation.id),
 
+
+
         'wash_request_id': str(wash_request.id),
+
+
 
         'recipient': {
 
+
+
             'id': str(recipient.id),
+
+
 
             'username': recipient.get_username(),
 
+
+
             'name': recipient.get_full_name() or recipient.get_username(),
+
+
 
             'role': recipient_role,
 
+
+
         },
+
+
 
         'message_id': str(message.id) if message else None,
 
+
+
         'messaging_url': f'/messaging/?conversation={conversation.id}',
+
+
 
     }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
@@ -3526,181 +6702,369 @@ def start_carwash_request_conversation(request, request_id):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 # ============================================================
+
+
 
 # BUSINESS MONEY SUMMARY
 
+
+
 # ============================================================
+
+
+
+
 
 
 
 @api_view(['GET'])
 
+
+
 @permission_classes([IsAuthenticated])
+
+
 
 def business_money_summary(request):
 
+
+
     """
+
+
 
     Money overview for the car-wash business owner.
 
 
 
+
+
+
+
     Cash payments still create CarWashPayment rows. When a cash wash is
+
+
 
     completed, the existing set_status() flow marks the payment paid and calls
 
+
+
     settle_completed_payment(payment), which keeps commission_due / ledger
+
+
 
     accounting in one place.
 
+
+
     """
+
+
 
     business = CarWashBusiness.objects.filter(
 
+
+
         owner=request.user,
 
+
+
         is_active=True,
+
+
 
     ).first()
 
 
 
+
+
+
+
     if not business:
+
+
 
         return Response(
 
+
+
             {
+
+
 
                 'success': False,
 
+
+
                 'error': 'Only the car-wash business owner can view this money summary.',
+
+
 
             },
 
+
+
             status=status.HTTP_403_FORBIDDEN,
 
+
+
         )
+
+
+
+
 
 
 
     wallet, _ = CarWashWallet.objects.get_or_create(
 
+
+
         business=business,
 
+
+
     )
+
+
+
+
 
 
 
     payments = CarWashPayment.objects.filter(
 
+
+
         wash_request__business=business
 
+
+
     )
+
+
+
+
 
 
 
     total_paid = sum(
 
+
+
         (p.gross_amount for p in payments.filter(status='paid')),
+
+
 
         Decimal('0.00'),
 
+
+
     )
+
+
 
     total_provider = sum(
 
+
+
         (p.provider_amount for p in payments.filter(status='paid')),
+
+
 
         Decimal('0.00'),
 
+
+
     )
+
+
 
     total_commission = sum(
 
+
+
         (p.platform_commission for p in payments.filter(status='paid')),
+
+
 
         Decimal('0.00'),
 
+
+
     )
+
+
+
+
 
 
 
     cash_paid = payments.filter(
 
+
+
         status='paid',
+
+
 
         payment_method='cash',
 
+
+
     )
+
+
+
+
 
 
 
     cash_volume = sum(
 
+
+
         (p.gross_amount for p in cash_paid),
+
+
 
         Decimal('0.00'),
 
+
+
     )
+
+
+
+
 
 
 
     recent_ledger = CarWashLedgerEntry.objects.filter(
 
+
+
         business=business
+
+
 
     ).order_by('-created_at')[:20]
 
 
 
+
+
+
+
     return Response({
+
+
 
         'success': True,
 
+
+
         'wallet': {
+
+
 
             'available_balance': str(wallet.available_balance),
 
+
+
             'commission_due': str(wallet.commission_due),
 
+
+
         },
+
+
 
         'totals': {
 
+
+
             'paid_volume': str(total_paid),
+
+
 
             'provider_earnings': str(total_provider),
 
+
+
             'oppoglobe_commission': str(total_commission),
+
+
 
             'cash_volume': str(cash_volume),
 
+
+
         },
+
+
 
         'cash_commission_limit': str(business.cash_commission_limit),
 
+
+
         'commission_rate': str(business.commission_rate),
+
+
 
         'ledger': [
 
+
+
             {
+
+
 
                 'id': str(entry.id),
 
+
+
                 'type': entry.entry_type,
+
+
 
                 'amount': str(entry.amount),
 
+
+
                 'description': entry.description,
+
+
 
                 'created_at': entry.created_at.isoformat(),
 
+
+
             }
+
+
 
             for entry in recent_ledger
 
+
+
         ],
+
+
 
     })
 
@@ -3708,257 +7072,523 @@ def business_money_summary(request):
 
 
 
+
+
+
+
+
+
 # ============================================================
+
+
 
 # BUSINESS PAYOUT DETAILS
 
+
+
 # ============================================================
+
+
+
+
 
 
 
 @api_view(['GET', 'POST', 'PATCH'])
 
+
+
 @permission_classes([IsAuthenticated])
+
+
 
 def business_payout_details(request):
 
+
+
     """
+
+
 
     Business owners can save the bank account OppoGlobe admins should pay.
 
 
 
+
+
+
+
     We intentionally do NOT store a full debit/credit card number here.
+
+
 
     Manual payouts should be made to the business bank account. If card-based
 
+
+
     payouts are added later, store only a payment-provider token and last4.
+
+
 
     """
 
+
+
     business = CarWashBusiness.objects.filter(
+
+
 
         owner=request.user,
 
+
+
         is_active=True,
+
+
 
     ).first()
 
 
 
+
+
+
+
     if not business:
+
+
 
         return Response(
 
+
+
             {
+
+
 
                 'success': False,
 
+
+
                 'error': 'Only the car-wash business owner can manage payout details.',
+
+
 
             },
 
+
+
             status=status.HTTP_403_FORBIDDEN,
 
+
+
         )
+
+
+
+
 
 
 
     payout, _ = CarWashPayoutProfile.objects.get_or_create(
 
+
+
         business=business
+
+
 
     )
 
 
 
+
+
+
+
     if request.method == 'GET':
+
+
 
         account_number = payout.account_number or ''
 
+
+
         masked = ''
+
+
 
         if account_number:
 
+
+
             visible = account_number[-4:]
+
+
 
             masked = ('•' * max(0, len(account_number) - 4)) + visible
 
 
 
+
+
+
+
         return Response({
+
+
 
             'success': True,
 
+
+
             'payout': {
+
+
 
                 'bank_name': payout.bank_name,
 
+
+
                 'account_holder': payout.account_holder,
+
+
 
                 'account_number_masked': masked,
 
+
+
                 'branch_code': payout.branch_code,
+
+
 
                 'account_type': payout.account_type,
 
+
+
                 'payout_reference': payout.payout_reference,
+
+
 
                 'is_complete': payout.is_complete,
 
+
+
                 'verified_at': payout.verified_at,
 
+
+
             },
+
+
 
         })
 
 
 
+
+
+
+
     bank_name = (request.data.get('bank_name') or payout.bank_name or '').strip()
+
+
 
     account_holder = (
 
+
+
         request.data.get('account_holder')
+
+
 
         or payout.account_holder
 
+
+
         or ''
 
+
+
     ).strip()
+
+
 
     branch_code = (
 
+
+
         request.data.get('branch_code')
+
+
 
         or payout.branch_code
 
+
+
         or ''
 
+
+
     ).strip()
+
+
 
     account_type = (
 
+
+
         request.data.get('account_type')
+
+
 
         or payout.account_type
 
+
+
         or 'cheque'
+
+
 
     ).strip().lower()
 
+
+
     payout_reference = (
+
+
 
         request.data.get('payout_reference')
 
+
+
         or payout.payout_reference
+
+
 
         or business.name
 
+
+
     ).strip()
+
+
+
+
 
 
 
     incoming_account = request.data.get('account_number')
 
+
+
     if incoming_account is None:
+
+
 
         account_number = payout.account_number
 
+
+
     else:
+
+
 
         account_number = ''.join(
 
+
+
             ch for ch in str(incoming_account) if ch.isdigit()
 
+
+
         )
+
+
+
+
 
 
 
     allowed_types = {'cheque', 'savings', 'transmission', 'business'}
 
+
+
     if account_type not in allowed_types:
+
+
 
         return Response(
 
+
+
             {'success': False, 'error': 'Invalid account type.'},
+
+
 
             status=status.HTTP_400_BAD_REQUEST,
 
+
+
         )
+
+
+
+
 
 
 
     if account_number and len(account_number) < 6:
 
+
+
         return Response(
+
+
 
             {'success': False, 'error': 'Account number looks too short.'},
 
+
+
             status=status.HTTP_400_BAD_REQUEST,
+
+
 
         )
 
 
 
+
+
+
+
     payout.bank_name = bank_name
+
+
 
     payout.account_holder = account_holder
 
+
+
     payout.account_number = account_number
+
+
 
     payout.branch_code = branch_code
 
+
+
     payout.account_type = account_type
+
+
 
     payout.payout_reference = payout_reference
 
 
 
+
+
+
+
     # Any edit means admin verification should be reconsidered.
 
+
+
     payout.verified_at = None
+
+
 
     payout.save()
 
 
 
+
+
+
+
     masked = ''
+
+
 
     if payout.account_number:
 
+
+
         visible = payout.account_number[-4:]
+
+
 
         masked = ('•' * max(0, len(payout.account_number) - 4)) + visible
 
 
 
+
+
+
+
     return Response({
+
+
 
         'success': True,
 
+
+
         'message': 'Payout details saved.',
+
+
 
         'payout': {
 
+
+
             'bank_name': payout.bank_name,
+
+
 
             'account_holder': payout.account_holder,
 
+
+
             'account_number_masked': masked,
+
+
 
             'branch_code': payout.branch_code,
 
+
+
             'account_type': payout.account_type,
+
+
 
             'payout_reference': payout.payout_reference,
 
+
+
             'is_complete': payout.is_complete,
+
+
 
             'verified_at': payout.verified_at,
 
+
+
         },
 
+
+
     })
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3970,103 +7600,211 @@ def business_payout_details(request):
 
 class PaymentGatewayViewSet(viewsets.ReadOnlyModelViewSet):
 
+
+
     serializer_class = PaymentGatewaySerializer
+
+
 
     permission_classes = [AllowAny]
 
 
 
+
+
+
+
     def get_queryset(self):
 
+
+
         """
+
+
 
         Automatically expose Yoco when the server has a Yoco secret key.
 
 
 
+
+
+
+
         This means /carwash/api/gateways/ will not depend on a manual database
+
+
 
         seed step. If YOCO_SECRET_KEY exists, the Yoco PaymentGateway row is
 
+
+
         created or repaired automatically.
+
+
 
         """
 
+
+
         yoco_secret = (
+
+
 
             getattr(settings, 'YOCO_SECRET_KEY', '')
 
+
+
             or os.getenv('YOCO_SECRET_KEY', '')
 
+
+
         ).strip()
+
+
+
+
 
 
 
         yoco_public = (
 
+
+
             getattr(settings, 'YOCO_PUBLIC_KEY', '')
 
+
+
             or os.getenv('YOCO_PUBLIC_KEY', '')
+
+
 
         ).strip()
 
 
 
+
+
+
+
         if yoco_secret:
+
+
 
             PaymentGateway.objects.update_or_create(
 
+
+
                 code='yoco',
+
+
 
                 defaults={
 
+
+
                     'name': 'Yoco',
+
+
 
                     'is_active': True,
 
+
+
                     'priority': 10,
+
+
 
                     'supports_card': True,
 
+
+
                     'supports_eft': False,
+
+
 
                     'supports_wallet': False,
 
+
+
                     'supports_split_payments': False,
+
+
 
                     'supports_refunds': True,
 
+
+
                     'supports_payouts': False,
+
+
 
                     'config': {
 
+
+
                         'currency': 'ZAR',
+
+
 
                         'mode': (
 
+
+
                             'test'
+
+
 
                             if 'test' in yoco_secret.lower()
 
+
+
                             or 'test' in yoco_public.lower()
+
+
 
                             else 'live'
 
+
+
                         ),
+
+
 
                     },
 
+
+
                 },
+
+
 
             )
 
 
 
+
+
+
+
         return PaymentGateway.objects.filter(
+
+
 
             is_active=True
 
+
+
         ).order_by('priority', 'name')
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4080,7 +7818,15 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
     serializer_class = CarWashReviewSerializer
+
+
+
+
 
 
 
@@ -4092,7 +7838,19 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def get_queryset(self):
+
+
+
+
 
 
 
@@ -4104,7 +7862,19 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
     def perform_create(self, serializer):
+
+
+
+
 
 
 
@@ -4112,7 +7882,15 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         if wash_request.customer_id != self.request.user.id or wash_request.status != 'completed':
+
+
+
+
 
 
 
@@ -4120,7 +7898,15 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
         serializer.save(
+
+
+
+
 
 
 
@@ -4128,11 +7914,23 @@ class CarWashReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
             business=wash_request.business,
 
 
 
+
+
+
+
             worker=wash_request.assigned_worker,
+
+
+
+
 
 
 
