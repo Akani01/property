@@ -43,7 +43,6 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from webpush import send_user_notification
 from webpush.models import PushInformation
-from carwash.models import *
 from realestate.models import (
     Property, 
     PropertyType, 
@@ -295,7 +294,7 @@ class NotificationService:
             'refunded': ('Booking Refunded', f'Your booking for {booking.property.title} has been refunded.'),
         }
         title, message = status_map.get(booking.status, ('Property Booking Update', f'Your booking status is now {booking.status}.'))
-        return NotificationService.notify(booking.guest, title, message, 'booking', 'realestate', f'/bookings/{booking.id}/', True, sound)
+        return NotificationService.notify(booking.guest, title, message, 'booking', 'realestate', f'/bookings/?booking={booking.id}', True, sound)
 
     @staticmethod
     def send_new_property_booking_to_owner(booking, sound=True):
@@ -304,7 +303,7 @@ class NotificationService:
         if not recipient or recipient == booking.guest:
             return None
         guest_name = booking.guest.get_full_name() or booking.guest.username
-        return NotificationService.notify(recipient, 'New Property Booking', f'{guest_name} created a booking for {prop.title}.', 'booking', 'realestate', f'/property-bookings/{booking.id}/', True, sound)
+        return NotificationService.notify(recipient, 'New Property Booking', f'{guest_name} created a booking for {prop.title}.', 'booking', 'realestate', f'/bookings/?booking={booking.id}', True, sound)
 
     @staticmethod
     def send_property_inquiry(inquiry, sound=True):
@@ -329,7 +328,7 @@ class NotificationService:
             'expired': ('Car Wash Request Expired', 'Your car wash request expired.'),
         }
         title, message = status_map.get(wash_request.status, ('Car Wash Update', f'Your car wash request status is now {wash_request.status}.'))
-        return NotificationService.notify(wash_request.customer, title, message, 'carwash', 'carwash', f'/carwash/request/{wash_request.id}/', True, sound)
+        return NotificationService.notify(wash_request.customer, title, message, 'carwash', 'carwash', f'/carwash/?panel=trackWash&request={wash_request.id}', True, sound)
 
     @staticmethod
     def send_new_carwash_request_to_business(wash_request, sound=True):
@@ -337,7 +336,7 @@ class NotificationService:
         if not owner:
             return None
         customer_name = wash_request.customer.get_full_name() or wash_request.customer.username
-        return NotificationService.notify(owner, 'New Car Wash Request', f'{customer_name} requested a car wash from {wash_request.business.name}.', 'carwash', 'carwash', f'/carwash/business/requests/{wash_request.id}/', True, sound)
+        return NotificationService.notify(owner, 'New Car Wash Request', f'{customer_name} requested a car wash from {wash_request.business.name}.', 'carwash', 'carwash', f'/carwash/?panel=bizRequests&request={wash_request.id}', True, sound)
 
     @staticmethod
     def send_carwash_worker_assignment(wash_request, sound=True):
@@ -345,7 +344,7 @@ class NotificationService:
         user = getattr(worker, 'user', None) if worker else None
         if not user:
             return None
-        return NotificationService.notify(user, 'New Car Wash Job', 'You have been assigned a new car wash request.', 'carwash', 'carwash', f'/carwash/worker/request/{wash_request.id}/', True, sound)
+        return NotificationService.notify(user, 'New Car Wash Job', 'You have been assigned a new car wash request.', 'carwash', 'carwash', f'/carwash/?panel=bizRequests&request={wash_request.id}', True, sound)
 
     @staticmethod
     def send_bursary_application_update(application, sound=True):
@@ -3715,13 +3714,9 @@ def alerts_page(request):
     """Render the unified OppoGlobe notification centre."""
     return render(request, 'hiring/alerts.html', {
         'page_title': 'Notifications',
-        'vapid_public_key': getattr(
-            settings,
-            'PWA_VAPID_PUBLIC_KEY',
-            ''
-        ),
+        'vapid_public_key': getattr(settings, 'VAPID_PUBLIC_KEY', ''),
     })
-    
+
 def preferences_page(request):
     """Render notification preferences page"""
     return render(request, 'hiring/preferences.html')
@@ -10833,7 +10828,37 @@ def sync_pending_data(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
+@csrf_exempt
+@login_required
+def legacy_save_push_subscription(request):
+    """Save push notification subscription"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # Extract the subscription data properly
+            subscription_data = {
+                'endpoint': data.get('endpoint'),
+                'expirationTime': data.get('expirationTime'),
+                'keys': data.get('keys', {})
+            }
+            
+            # The webpush model uses 'subscription' field
+            PushInformation.objects.update_or_create(
+                user=request.user,
+                subscription=subscription_data,
+                defaults={
+                    'active': True
+                }
+            )
+            
+            return JsonResponse({'success': True, 'message': 'Subscription saved!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+    
 @login_required
 def legacy_send_test_notification(request):
     """Send a test push notification"""
@@ -11941,98 +11966,23 @@ def api_delete_alert(request, alert_id):
         logger.exception('Delete notification failed: %s', exc)
         return Response({'success': False, 'error': 'Unable to delete notification.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @csrf_exempt
 @login_required
 def save_push_subscription(request):
-    """
-    Save or update the current browser/device push subscription.
-    """
-
     if request.method != 'POST':
-        return JsonResponse({
-            'success': False,
-            'error': 'POST required'
-        }, status=405)
-
+        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
     try:
         data = json.loads(request.body.decode('utf-8'))
-
-        endpoint = (data.get('endpoint') or '').strip()
-        keys = data.get('keys') or {}
-
-        p256dh = (keys.get('p256dh') or '').strip()
-        auth = (keys.get('auth') or '').strip()
-
-        # --------------------------------------------------
-        # Validate browser subscription
-        # --------------------------------------------------
-
+        endpoint = data.get('endpoint')
         if not endpoint:
-            return JsonResponse({
-                'success': False,
-                'error': 'Push endpoint is missing.'
-            }, status=400)
-
-        if not p256dh:
-            return JsonResponse({
-                'success': False,
-                'error': 'Push p256dh key is missing.'
-            }, status=400)
-
-        if not auth:
-            return JsonResponse({
-                'success': False,
-                'error': 'Push auth key is missing.'
-            }, status=400)
-
-        # --------------------------------------------------
-        # Save using YOUR PushSubscription model
-        # --------------------------------------------------
-
-        subscription, created = PushSubscription.objects.update_or_create(
-            endpoint=endpoint,
-            defaults={
-                'user': request.user,
-                'p256dh': p256dh,
-                'auth': auth,
-            }
-        )
-
-        logger.info(
-            "Push subscription %s for user=%s subscription_id=%s",
-            "created" if created else "updated",
-            request.user.id,
-            subscription.id,
-        )
-
-        return JsonResponse({
-            'success': True,
-            'created': created,
-            'subscription_id': subscription.id,
-            'message': (
-                'Phone notifications enabled.'
-                if created
-                else 'Phone notification subscription updated.'
-            )
-        })
-
-    except json.JSONDecodeError:
-        return JsonResponse({
-            'success': False,
-            'error': 'Invalid JSON body.'
-        }, status=400)
-
+            return JsonResponse({'success': False, 'error': 'Push endpoint is missing.'}, status=400)
+        subscription_data = {'endpoint': endpoint, 'expirationTime': data.get('expirationTime'), 'keys': data.get('keys', {})}
+        PushInformation.objects.update_or_create(user=request.user, subscription=subscription_data, defaults={'active': True})
+        return JsonResponse({'success': True, 'message': 'Phone notifications enabled.'})
     except Exception as exc:
-        logger.exception(
-            'Saving push subscription failed for user %s: %s',
-            getattr(request.user, 'id', None),
-            exc
-        )
-
-        return JsonResponse({
-            'success': False,
-            'error': str(exc)
-        }, status=500)
+        logger.exception('Saving push subscription failed: %s', exc)
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
 
 
 @login_required

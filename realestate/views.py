@@ -114,6 +114,207 @@ class PropertyFeatureViewSet(viewsets.ModelViewSet):
 
 
 # ============================================================
+# PROPERTY BOOKING PAYMENT + NOTIFICATION HELPERS
+# ============================================================
+def _booking_owner_user(booking):
+    """Resolve the user who should receive business-side booking alerts."""
+    prop = booking.property
+    if getattr(prop, 'owner', None):
+        return prop.owner
+    if getattr(prop, 'listing_agent', None):
+        return prop.listing_agent
+    business = getattr(booking, 'business', None) or getattr(prop, 'company', None)
+    return getattr(business, 'user', None) if business else None
+
+
+def _notify_property_booking(booking, *, event='status', sound=True):
+    """Use OppoGlobe's unified notification service for property booking events."""
+    try:
+        from hiring.views import NotificationService
+
+        booking_url = f'/bookings/?booking={booking.id}'
+        owner = _booking_owner_user(booking)
+
+        if event == 'created':
+            NotificationService.notify(
+                booking.guest,
+                'Booking received',
+                f'Your booking for {booking.property.title} has been created.',
+                notification_type='booking',
+                app_source='realestate',
+                action_url=booking_url,
+                send_push=True,
+                sound=sound,
+            )
+            if owner and owner != booking.guest:
+                guest_name = booking.guest.get_full_name() or booking.guest.get_username()
+                NotificationService.notify(
+                    owner,
+                    'New property booking',
+                    f'{guest_name} booked {booking.property.title}.',
+                    notification_type='booking',
+                    app_source='realestate',
+                    action_url=booking_url,
+                    send_push=True,
+                    sound=sound,
+                )
+            return
+
+        if event == 'paid':
+            NotificationService.notify(
+                booking.guest,
+                'Payment received',
+                f'Your {booking.currency} {booking.total_amount} payment for {booking.property.title} was received.',
+                notification_type='payment',
+                app_source='realestate',
+                action_url=booking_url,
+                send_push=True,
+                sound=sound,
+            )
+            if owner and owner != booking.guest:
+                NotificationService.notify(
+                    owner,
+                    'Property booking paid',
+                    f'Payment was received for {booking.property.title} · {booking.booking_reference}.',
+                    notification_type='payment',
+                    app_source='realestate',
+                    action_url=booking_url,
+                    send_push=True,
+                    sound=sound,
+                )
+            return
+
+        if event in {'payment_failed', 'payment_cancelled'}:
+            label = 'failed' if event == 'payment_failed' else 'was cancelled'
+            NotificationService.notify(
+                booking.guest,
+                'Booking payment update',
+                f'Your Yoco payment for {booking.property.title} {label}. You can try again from My bookings.',
+                notification_type='payment',
+                app_source='realestate',
+                action_url=booking_url,
+                send_push=True,
+                sound=sound,
+            )
+            return
+
+        # Normal booking status changes.
+        NotificationService.send_property_booking_to_guest(booking, sound=sound)
+    except Exception as exc:
+        logger.warning('Property booking notification failed for %s: %s', getattr(booking, 'id', None), exc)
+
+
+def _property_yoco_checkout(*, booking, payment, request):
+    """Create the hosted Yoco checkout for an existing property booking."""
+    yoco_secret = str(getattr(settings, 'YOCO_SECRET_KEY', '') or '').strip()
+    if not yoco_secret:
+        raise ValueError('Yoco card payments are not configured.')
+    if booking.currency != 'ZAR':
+        raise ValueError('Yoco checkout currently requires ZAR.')
+
+    amount_cents = int((Decimal(booking.total_amount) * Decimal('100')).quantize(Decimal('1')))
+    if amount_cents < 200:
+        raise ValueError('Yoco requires a minimum card payment of R2.00.')
+
+    base_url = request.build_absolute_uri('/').rstrip('/')
+    return_url = f'{base_url}/bookings/?booking={booking.id}'
+    payload = {
+        'amount': amount_cents,
+        'currency': 'ZAR',
+        'successUrl': f'{return_url}&payment=success',
+        'cancelUrl': f'{return_url}&payment=cancelled',
+        'failureUrl': f'{return_url}&payment=failed',
+        'metadata': {
+            'module': 'property_booking',
+            'booking_id': str(booking.id),
+            'booking_reference': booking.booking_reference,
+            'property_id': str(booking.property_id),
+            'property_title': booking.property.title,
+            'payer_id': str(booking.guest_id),
+            'business_id': str(booking.business_id or ''),
+            'payment_id': str(payment.id),
+        },
+    }
+
+    response = requests.post(
+        'https://payments.yoco.com/api/checkouts',
+        headers={
+            'Authorization': f'Bearer {yoco_secret}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Idempotency-Key': f'property-booking-{booking.id}-{payment.id}',
+        },
+        json=payload,
+        timeout=30,
+    )
+    try:
+        data = response.json() if response.content else {}
+    except ValueError:
+        data = {}
+
+    if not response.ok:
+        raise ValueError(data.get('message') or data.get('error') or data.get('detail') or f'Yoco returned HTTP {response.status_code}.')
+
+    checkout_id = data.get('id') or data.get('checkoutId') or data.get('checkout_id')
+    redirect_url = data.get('redirectUrl') or data.get('redirect_url') or data.get('url')
+    if not checkout_id or not redirect_url:
+        raise ValueError('Yoco created the checkout but did not return the checkout ID/redirect URL.')
+
+    payment.yoco_checkout_id = str(checkout_id)
+    payment.redirect_url = str(redirect_url)
+    payment.gateway_response = data
+    payment.gateway = 'yoco'
+    payment.payment_method = 'card'
+    payment.status = 'processing'
+    payment.save(update_fields=[
+        'yoco_checkout_id', 'redirect_url', 'gateway_response', 'gateway',
+        'payment_method', 'status', 'updated_at'
+    ])
+    return redirect_url
+
+
+def _verify_property_yoco_payment(payment):
+    """Verify a Yoco checkout server-side when the customer returns to /bookings/."""
+    checkout_id = (payment.yoco_checkout_id or '').strip()
+    secret = str(getattr(settings, 'YOCO_SECRET_KEY', '') or '').strip()
+    if not checkout_id or not secret:
+        return False
+
+    try:
+        response = requests.get(
+            f'https://payments.yoco.com/api/checkouts/{checkout_id}',
+            headers={
+                'Authorization': f'Bearer {secret}',
+                'Accept': 'application/json',
+            },
+            timeout=20,
+        )
+        data = response.json() if response.content else {}
+        if not response.ok:
+            return False
+
+        raw = str(data.get('status') or '').lower()
+        if raw in {'succeeded', 'successful', 'completed', 'paid'}:
+            newly_paid = payment.status != 'paid'
+            payment.status = 'paid'
+            payment.paid_at = payment.paid_at or timezone.now()
+            payment.gateway_response = data
+            payment.save(update_fields=['status', 'paid_at', 'gateway_response', 'updated_at'])
+
+            booking = payment.booking
+            booking.payment_status = 'paid'
+            booking.payment_reference = checkout_id
+            if booking.status == 'pending':
+                booking.status = 'confirmed'
+            booking.save(update_fields=['payment_status', 'payment_reference', 'status', 'updated_at'])
+            if newly_paid:
+                _notify_property_booking(booking, event='paid', sound=True)
+            return True
+    except Exception as exc:
+        logger.warning('Yoco booking verification failed for %s: %s', payment.id, exc)
+    return False
+
+# ============================================================
 # PROPERTY VIEWSET - WITH PUBLIC ACCESS
 # ============================================================
 class PropertyViewSet(viewsets.ModelViewSet):
@@ -597,6 +798,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
             )
 
         if method == 'cash':
+            _notify_property_booking(booking, event='created', sound=True)
             return Response({
                 'success': True,
                 'message': 'Booking created. Pay cash according to the business arrangement.',
@@ -605,72 +807,29 @@ class PropertyViewSet(viewsets.ModelViewSet):
                 'payment_method': 'cash',
             }, status=201)
 
-        yoco_secret = getattr(settings, 'YOCO_SECRET_KEY', '')
-        if not yoco_secret:
-            payment.status = 'failed'
-            payment.gateway_response = {'error': 'YOCO_SECRET_KEY is not configured'}
-            payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
-            return Response({'success': False, 'error': 'Yoco card payments are not configured.'}, status=503)
-
-        if booking.currency != 'ZAR':
-            return Response({'success': False, 'error': 'Yoco checkout currently requires ZAR.'}, status=400)
-
-        amount_cents = int((total_amount * Decimal('100')).quantize(Decimal('1')))
-        if amount_cents < 200:
-            return Response({'success': False, 'error': 'Yoco requires a minimum card payment of R2.00.'}, status=400)
-
-        base_url = request.build_absolute_uri('/').rstrip('/')
-        payload = {
-            'amount': amount_cents,
-            'currency': 'ZAR',
-            'successUrl': f'{base_url}/bookings/?payment=success&booking={booking.id}',
-            'cancelUrl': f'{base_url}/bookings/?payment=cancelled&booking={booking.id}',
-            'failureUrl': f'{base_url}/bookings/?payment=failed&booking={booking.id}',
-            'metadata': {
-                'booking_id': str(booking.id),
-                'booking_reference': booking.booking_reference,
-                'property_id': str(prop.id),
-                'property_title': prop.title,
-                'payer_id': str(request.user.id),
-                'business_id': str(business.id) if business else '',
-            },
-        }
+        # Notify both sides immediately when the booking exists. The customer
+        # will receive another notification when Yoco confirms payment.
+        _notify_property_booking(booking, event='created', sound=True)
 
         try:
-            response = requests.post(
-                'https://payments.yoco.com/api/checkouts',
-                headers={
-                    'Authorization': f'Bearer {yoco_secret}',
-                    'Content-Type': 'application/json',
-                    'Idempotency-Key': f'property-booking-{booking.id}',
-                },
-                json=payload,
-                timeout=20,
+            redirect_url = _property_yoco_checkout(
+                booking=booking,
+                payment=payment,
+                request=request,
             )
-            data = response.json() if response.content else {}
-            if response.status_code >= 400:
-                raise ValueError(data.get('message') or data.get('error') or f'Yoco returned {response.status_code}')
-
-            payment.yoco_checkout_id = data.get('id', '')
-            payment.redirect_url = data.get('redirectUrl', '')
-            payment.gateway_response = data
-            payment.status = 'processing'
-            payment.save(update_fields=['yoco_checkout_id', 'redirect_url', 'gateway_response', 'status', 'updated_at'])
-
-            if not payment.redirect_url:
-                raise ValueError('Yoco did not return a checkout redirect URL.')
-
             return Response({
                 'success': True,
                 'booking': BookingSerializer(booking).data,
                 'payment': PropertyBookingPaymentSerializer(payment).data,
                 'payment_method': 'card',
-                'redirect_url': payment.redirect_url,
+                'redirect_url': redirect_url,
+                'booking_url': f'/bookings/?booking={booking.id}',
             }, status=201)
         except Exception as exc:
             payment.status = 'failed'
             payment.gateway_response = {'error': str(exc)}
             payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
+            _notify_property_booking(booking, event='payment_failed', sound=True)
             return Response({'success': False, 'error': f'Yoco checkout failed: {exc}'}, status=502)
 
 
@@ -964,6 +1123,66 @@ def public_property_page(request, property_id):
 
 
 # ============================================================
+# PROPERTY BOOKING HTML PAGES
+# ============================================================
+@login_required
+def bookings_page(request):
+    """Customer booking history + Yoco return page."""
+    booking_id = (request.GET.get('booking') or '').strip()
+    return_state = (request.GET.get('payment') or '').strip().lower()
+
+    bookings = (
+        Booking.objects
+        .filter(guest=request.user)
+        .select_related('property', 'business')
+        .order_by('-created_at')
+    )
+
+    selected_booking = bookings.filter(id=booking_id).first() if booking_id else None
+    selected_payment = None
+    payment_message = ''
+    payment_message_type = ''
+
+    if selected_booking:
+        selected_payment = PropertyBookingPayment.objects.filter(booking=selected_booking).first()
+        # A success redirect is not proof of payment. Verify with Yoco before
+        # displaying PAID; the webhook remains the primary reconciliation path.
+        if return_state == 'success' and selected_payment and selected_payment.gateway == 'yoco':
+            if _verify_property_yoco_payment(selected_payment):
+                payment_message = 'Payment confirmed. Your booking is ready.'
+                payment_message_type = 'success'
+            else:
+                payment_message = 'Payment returned from Yoco. Confirmation is still processing.'
+                payment_message_type = 'pending'
+        elif return_state == 'cancelled':
+            payment_message = 'Yoco checkout was cancelled. Your booking is still saved.'
+            payment_message_type = 'warning'
+        elif return_state == 'failed':
+            payment_message = 'The card payment did not complete. You can try again below.'
+            payment_message_type = 'error'
+
+    payment_rows = {
+        row.booking_id: row
+        for row in PropertyBookingPayment.objects.filter(booking__in=bookings)
+    }
+
+    return render(request, 'hiring/bookings.html', {
+        'bookings': bookings,
+        'payment_rows': payment_rows,
+        'selected_booking': selected_booking,
+        'selected_payment': selected_payment,
+        'payment_message': payment_message,
+        'payment_message_type': payment_message_type,
+    })
+
+
+@login_required
+def booking_detail_page(request, booking_id):
+    """Friendly canonical URL that reuses the My bookings screen."""
+    return redirect(f'/bookings/?booking={booking_id}')
+
+
+# ============================================================
 # BOOKING VIEWSET
 # ============================================================
 class BookingViewSet(viewsets.ModelViewSet):
@@ -985,10 +1204,58 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         booking = self.get_object()
+        if booking.status in {'completed', 'refunded', 'cancelled'}:
+            return Response({'success': False, 'error': 'This booking can no longer be cancelled.'}, status=400)
         booking.status = 'cancelled'
         booking.cancellation_date = timezone.now()
-        booking.save()
-        return Response({'message': 'Booking cancelled successfully'})
+        booking.save(update_fields=['status', 'cancellation_date', 'updated_at'])
+        payment = PropertyBookingPayment.objects.filter(booking=booking).first()
+        if payment and payment.status in {'pending', 'processing'}:
+            payment.status = 'cancelled'
+            payment.save(update_fields=['status', 'updated_at'])
+        _notify_property_booking(booking, event='status', sound=True)
+        return Response({'success': True, 'message': 'Booking cancelled successfully'})
+
+    @action(detail=True, methods=['post'], url_path='retry-payment')
+    def retry_payment(self, request, pk=None):
+        booking = self.get_object()
+        if booking.payment_status == 'paid':
+            return Response({'success': False, 'error': 'This booking is already paid.'}, status=400)
+        if booking.status in {'cancelled', 'completed', 'refunded'}:
+            return Response({'success': False, 'error': 'Payment cannot be restarted for this booking.'}, status=400)
+
+        payment, _ = PropertyBookingPayment.objects.get_or_create(
+            booking=booking,
+            defaults={
+                'payer': request.user,
+                'business': booking.business,
+                'payment_method': 'card',
+                'gateway': 'yoco',
+                'status': 'pending',
+                'amount': booking.total_amount,
+                'currency': booking.currency,
+            }
+        )
+        payment.payer = request.user
+        payment.business = booking.business
+        payment.payment_method = 'card'
+        payment.gateway = 'yoco'
+        payment.amount = booking.total_amount
+        payment.currency = booking.currency
+        payment.status = 'pending'
+        payment.save()
+        booking.payment_method = 'card'
+        booking.save(update_fields=['payment_method', 'updated_at'])
+
+        try:
+            redirect_url = _property_yoco_checkout(booking=booking, payment=payment, request=request)
+            return Response({'success': True, 'redirect_url': redirect_url})
+        except Exception as exc:
+            payment.status = 'failed'
+            payment.gateway_response = {'error': str(exc)}
+            payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
+            _notify_property_booking(booking, event='payment_failed', sound=True)
+            return Response({'success': False, 'error': str(exc)}, status=502)
 
 
 
@@ -1039,17 +1306,25 @@ class BookingViewSet(viewsets.ModelViewSet):
         failed = ('failed' in event_type or 'cancel' in event_type or raw_status in {'failed', 'cancelled', 'canceled'})
 
         if succeeded:
+            newly_paid = payment.status != 'paid'
             payment.status = 'paid'
-            payment.paid_at = timezone.now()
+            payment.paid_at = payment.paid_at or timezone.now()
             payment.booking.payment_status = 'paid'
             payment.booking.payment_reference = payment.yoco_checkout_id
-            payment.booking.save(update_fields=['payment_status', 'payment_reference', 'updated_at'])
+            if payment.booking.status == 'pending':
+                payment.booking.status = 'confirmed'
+            payment.booking.save(update_fields=['payment_status', 'payment_reference', 'status', 'updated_at'])
             payment.save(update_fields=['status', 'paid_at', 'updated_at'])
+            if newly_paid:
+                _notify_property_booking(payment.booking, event='paid', sound=True)
         elif failed:
+            was_failed = payment.status == 'failed'
             payment.status = 'failed'
             payment.booking.payment_status = 'failed'
             payment.booking.save(update_fields=['payment_status', 'updated_at'])
             payment.save(update_fields=['status', 'updated_at'])
+            if not was_failed:
+                _notify_property_booking(payment.booking, event='payment_failed', sound=True)
 
         return Response({'success': True})
 

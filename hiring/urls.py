@@ -5,6 +5,7 @@ from . import views
 from . import message_views
 
 from django.views.generic import TemplateView
+from realestate import views as realestate_views
 
 
 # URL patterns for messaging - mounted under /api/conversations/
@@ -59,6 +60,10 @@ urlpatterns = [
     path('logout/', views.custom_logout, name='logout_page'),
 
     path('analytics/', views.analytics_page, name='analytics'),
+
+    # ===================== PROPERTY BOOKINGS =====================
+    path('bookings/', realestate_views.bookings_page, name='bookings_page'),
+    path('bookings/<uuid:booking_id>/', realestate_views.booking_detail_page, name='booking_detail_page'),
 
     # ===================== PWA + PUSH NOTIFICATIONS =====================
     path('black-theme/', views.black_theme_settings, name='black_theme'),
