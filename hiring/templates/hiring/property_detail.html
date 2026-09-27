@@ -2131,6 +2131,46 @@
             .agent-card .contact-methods .social-btn.message { grid-column:auto; }
             .map-property-overlay { left:8px; right:8px; bottom:8px; }
         }
+
+
+        /* ===== PURPOSE-AWARE DETAIL + BOOKING ===== */
+        .purpose-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#e8f5e9;color:#1f7a3f;font-size:11px;font-weight:700;margin-top:8px}
+        .purpose-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+        .purpose-tile{padding:12px;border:1px solid var(--border);border-radius:12px;background:#fbfcfd;min-width:0}
+        .purpose-tile small{display:block;color:var(--gray);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+        .purpose-tile strong{display:block;font-size:13px;overflow-wrap:anywhere}
+        .price-context{display:block;margin-top:4px;color:var(--gray);font-size:12px;font-weight:500}
+        .customer-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+        .customer-actions .btn{min-height:46px;border-radius:11px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px}
+        .customer-actions .btn-main{grid-column:1/-1;background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff}
+        .customer-actions .btn-chat{background:#eef4ff;color:#1557b0;border:1px solid #d8e6ff}
+        .customer-actions .btn-map-action{background:#eaf7ee;color:#24783c;border:1px solid #ccebd5}
+        .owner-tools-note{font-size:11px;color:var(--gray);margin-top:10px;line-height:1.5}
+        .booking-overlay{position:fixed;inset:0;background:rgba(10,15,25,.58);z-index:10050;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+        .booking-overlay.show{display:flex}
+        .booking-sheet{width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.28);padding:20px}
+        .booking-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+        .booking-sheet-head h3{font-size:19px;font-weight:800;margin:0 0 4px}
+        .booking-sheet-head p{font-size:12px;color:var(--gray);margin:0}
+        .booking-close{width:38px;height:38px;border-radius:50%;background:var(--light-gray);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+        .booking-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .booking-field{display:flex;flex-direction:column;gap:6px}
+        .booking-field.full{grid-column:1/-1}
+        .booking-field label{font-size:11px;font-weight:700;color:var(--gray)}
+        .booking-field input,.booking-field textarea{width:100%;border:1px solid var(--border);border-radius:11px;padding:11px 12px;font-size:13px;outline:none;background:#fff}
+        .booking-field input:focus,.booking-field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,115,232,.1)}
+        .payment-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+        .pay-choice{border:1px solid var(--border);border-radius:13px;padding:13px;text-align:left;background:#fff;transition:.2s ease}
+        .pay-choice.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,115,232,.1);background:#f8fbff}
+        .pay-choice strong{display:flex;align-items:center;gap:7px;font-size:13px}
+        .pay-choice span{display:block;font-size:10.5px;color:var(--gray);margin-top:4px;line-height:1.4}
+        .booking-summary{margin-top:14px;padding:13px;border-radius:13px;background:#f7f9fb;border:1px solid var(--border);font-size:12px}
+        .booking-summary-row{display:flex;justify-content:space-between;gap:12px;margin:5px 0}
+        .booking-summary-row.total{padding-top:9px;margin-top:9px;border-top:1px solid var(--border);font-weight:800;font-size:14px}
+        .booking-submit{width:100%;min-height:48px;margin-top:14px;border-radius:12px;background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
+        .booking-note{margin-top:9px;font-size:10.5px;color:var(--gray);text-align:center;line-height:1.45}
+        @media(max-width:575px){.purpose-grid,.booking-form-grid,.payment-choice,.customer-actions{grid-template-columns:1fr}.booking-field.full,.customer-actions .btn-main{grid-column:auto}.booking-sheet{padding:16px;border-radius:18px}}
+
     </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}"
@@ -2306,23 +2346,83 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                     <p style="line-height:1.8;color:var(--gray);font-size:14px;">{{ property.description|default:"No description provided." }}</p>
                 </div>
 
-                <!-- Property Details -->
+                <!-- Property Details — purpose-aware -->
                 <div class="info-card">
                     <div class="card-title"><i class="fas fa-info-circle"></i> Property Details</div>
+
+                    <span class="purpose-chip"><i class="fas fa-layer-group"></i> {{ property.get_purpose_display|default:"Property listing" }}</span>
 
                     <div class="info-row">
                         <span class="label">Property Type</span>
                         <span class="value">{{ property.property_type.name|default:"Not specified" }}</span>
                     </div>
                     <div class="info-row">
+                        <span class="label">Purpose</span>
+                        <span class="value">{{ property.get_purpose_display|default:"Not specified" }}</span>
+                    </div>
+                    <div class="info-row">
                         <span class="label">Listing Type</span>
                         <span class="value">{{ property.get_listing_type_display|default:"Not specified" }}</span>
                     </div>
-                   
+                    <div class="info-row">
+                        <span class="label">Status</span>
+                        <span class="value"><span class="badge-status {{ property.status }}">{{ property.get_status_display }}</span></span>
+                    </div>
+
+                    {% if property.is_short_stay %}
                     <div class="info-row">
                         <span class="label">Minimum Stay</span>
-                        <span class="value">{{ property.minimum_stay|default:"1" }} {{ property.get_booking_unit_display|default:"night" }}(s)</span>
+                        <span class="value">{{ property.minimum_stay|default:"1" }} day(s)</span>
                     </div>
+                    {% if property.maximum_stay %}
+                    <div class="info-row"><span class="label">Maximum Stay</span><span class="value">{{ property.maximum_stay }} day(s)</span></div>
+                    {% endif %}
+                    {% if property.stay_type %}<div class="info-row"><span class="label">Stay Type</span><span class="value">{{ property.get_stay_type_display }}</span></div>{% endif %}
+                    {% endif %}
+
+                    {% if property.is_long_stay %}
+                    {% if property.deposit_amount %}<div class="info-row"><span class="label">Deposit</span><span class="value">{{ property.price_currency|default:"ZAR" }} {{ property.deposit_amount|floatformat:0 }}</span></div>{% endif %}
+                    {% if property.lease_duration_months %}<div class="info-row"><span class="label">Lease Duration</span><span class="value">{{ property.lease_duration_months }} month(s)</span></div>{% endif %}
+                    {% if property.notice_period_days %}<div class="info-row"><span class="label">Notice Period</span><span class="value">{{ property.notice_period_days }} day(s)</span></div>{% endif %}
+                    <div class="info-row"><span class="label">Utilities</span><span class="value">{% if property.utilities_included %}Included{% else %}Not included / ask owner{% endif %}</span></div>
+                    {% endif %}
+
+                    {% if property.is_student_accommodation %}
+                    {% if property.student_accommodation_type %}<div class="info-row"><span class="label">Accommodation</span><span class="value">{{ property.student_accommodation_type }}</span></div>{% endif %}
+                    {% if property.is_per_student_pricing and property.per_student_price %}<div class="info-row"><span class="label">Per Student</span><span class="value">{{ property.price_currency|default:"ZAR" }} {{ property.per_student_price|floatformat:0 }}</span></div>{% endif %}
+                    {% if property.semester_duration_months %}<div class="info-row"><span class="label">Semester</span><span class="value">{{ property.semester_duration_months }} month(s)</span></div>{% endif %}
+                    <div class="purpose-grid">
+                        <div class="purpose-tile"><small>Internet</small><strong>{% if property.includes_internet %}Included{% else %}Not included{% endif %}</strong></div>
+                        <div class="purpose-tile"><small>Study area</small><strong>{% if property.includes_study_area %}Available{% else %}Not listed{% endif %}</strong></div>
+                    </div>
+                    {% endif %}
+
+                    {% if property.is_land_sale %}
+                    {% if property.land_size_hectares %}<div class="info-row"><span class="label">Land Size</span><span class="value">{{ property.land_size_hectares }} ha</span></div>{% elif property.land_size_acres %}<div class="info-row"><span class="label">Land Size</span><span class="value">{{ property.land_size_acres }} acres</span></div>{% endif %}
+                    {% if property.zoning %}<div class="info-row"><span class="label">Zoning</span><span class="value">{{ property.zoning }}</span></div>{% endif %}
+                    {% if property.land_use %}<div class="info-row"><span class="label">Land Use</span><span class="value">{{ property.land_use }}</span></div>{% endif %}
+                    {% if property.topography %}<div class="info-row"><span class="label">Topography</span><span class="value">{{ property.topography }}</span></div>{% endif %}
+                    {% if property.road_access %}<div class="info-row"><span class="label">Road Access</span><span class="value">{{ property.road_access }}</span></div>{% endif %}
+                    <div class="purpose-grid">
+                        <div class="purpose-tile"><small>Water</small><strong>{% if property.water_access %}Available{% else %}Not confirmed{% endif %}</strong></div>
+                        <div class="purpose-tile"><small>Electricity</small><strong>{% if property.electricity_access %}Available{% else %}Not confirmed{% endif %}</strong></div>
+                    </div>
+                    {% if property.development_potential %}<div class="info-row"><span class="label">Development Potential</span><span class="value">{{ property.development_potential }}</span></div>{% endif %}
+                    {% endif %}
+
+                    {% if property.is_commercial %}
+                    {% if property.commercial_type %}<div class="info-row"><span class="label">Commercial Type</span><span class="value">{{ property.commercial_type }}</span></div>{% endif %}
+                    {% if property.floor_area %}<div class="info-row"><span class="label">Floor Area</span><span class="value">{{ property.floor_area }} m²</span></div>{% endif %}
+                    {% if property.parking_available %}<div class="info-row"><span class="label">Parking</span><span class="value">{{ property.parking_available }} space(s)</span></div>{% endif %}
+                    {% if property.loading_bays %}<div class="info-row"><span class="label">Loading Bays</span><span class="value">{{ property.loading_bays }}</span></div>{% endif %}
+                    {% if property.commercial_zone %}<div class="info-row"><span class="label">Commercial Zone</span><span class="value">{{ property.commercial_zone }}</span></div>{% endif %}
+                    {% endif %}
+
+                    {% if property.is_for_sale and not property.is_land_sale %}
+                    {% if property.levies %}<div class="info-row"><span class="label">Levies</span><span class="value">{{ property.price_currency|default:"ZAR" }} {{ property.levies|floatformat:0 }}</span></div>{% endif %}
+                    {% if property.rates_taxes %}<div class="info-row"><span class="label">Rates & Taxes</span><span class="value">{{ property.price_currency|default:"ZAR" }} {{ property.rates_taxes|floatformat:0 }}</span></div>{% endif %}
+                    <div class="info-row"><span class="label">Bond</span><span class="value">{% if property.bond_available %}Bond options indicated{% else %}Ask owner / agent{% endif %}</span></div>
+                    {% endif %}
                 </div>
 
                 <!-- ============================================================
@@ -2479,8 +2579,17 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                 <div class="sidebar-card">
                     <div class="price">
                         {{ property.price_currency|default:"ZAR" }} {{ property.base_price|floatformat:0 }}
+                        {% if property.is_short_stay %}
                         <small>/{{ property.get_booking_unit_display|default:"night" }}</small>
+                        {% elif property.is_long_stay %}
+                        <small>/{{ property.get_booking_unit_display|default:"month" }}</small>
+                        {% elif property.is_student_accommodation %}
+                        <small>{% if property.is_per_student_pricing %}/student{% else %}/{{ property.get_booking_unit_display|default:"term" }}{% endif %}</small>
+                        {% endif %}
                     </div>
+                    <span class="price-context">
+                        {% if property.is_land_sale or property.is_for_sale %}Sale price{% elif property.is_commercial %}Commercial asking price / rent{% elif property.is_short_stay %}Stay rate{% elif property.is_student_accommodation %}Student accommodation rate{% else %}Rental rate{% endif %}
+                    </span>
 
                     <div style="margin-top:10px;padding:10px 0;border-top:1px solid var(--border);">
                         <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);">
@@ -2491,7 +2600,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                         </div>
                         <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);margin-top:4px;">
                             <span>Listing ID</span>
-                            <span style="font-weight:500;font-size:12px;">#{{ property.id|stringformat:"08d" }}</span>
+                            <span style="font-weight:500;font-size:12px;">{{ property.property_reference|default:property.id }}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray);margin-top:4px;">
                             <span>Created</span>
@@ -2507,17 +2616,28 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                         {% endif %}
                     </div>
 
+                    {% if is_owner or user_can_edit %}
                     <div class="action-btns">
-                        <a href="{% url 'property_edit' property.id %}" class="btn btn-primary">
-                            <i class="fas fa-edit"></i> Edit Property
-                        </a>
-                        <a href="{% url 'property_rooms_manage' property.id %}" class="btn btn-secondary">
-                            <i class="fas fa-door-open"></i> Manage Rooms
-                        </a>
-                        <button onclick="deleteProperty('{{ property.id }}')" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Delete Property
-                        </button>
+                        <a href="{% url 'property_edit' property.id %}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Property</a>
+                        <a href="{% url 'property_rooms_manage' property.id %}" class="btn btn-secondary"><i class="fas fa-door-open"></i> Manage Rooms</a>
+                        <button onclick="deleteProperty('{{ property.id }}')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete Property</button>
                     </div>
+                    <div class="owner-tools-note"><i class="fas fa-shield-halved"></i> Management controls are only visible to the property owner / authorised manager.</div>
+                    {% else %}
+                    <div class="customer-actions">
+                        {% if property.is_land_sale or property.is_for_sale or property.is_commercial %}
+                        <button type="button" class="btn btn-main" onclick="messagePropertyOwner('{{ property.id }}','{{ property.title|escapejs }}')"><i class="fas fa-comments"></i> Enquire about this property</button>
+                        {% else %}
+                            {% if property.is_bookable and property.status == 'available' %}
+                            <button type="button" class="btn btn-main" onclick="openPropertyBooking()"><i class="fas fa-calendar-check"></i> Book this property</button>
+                            {% else %}
+                            <button type="button" class="btn btn-main" onclick="messagePropertyOwner('{{ property.id }}','{{ property.title|escapejs }}')"><i class="fas fa-comments"></i> Ask about availability</button>
+                            {% endif %}
+                        {% endif %}
+                        <button type="button" class="btn btn-chat" onclick="messagePropertyOwner('{{ property.id }}','{{ property.title|escapejs }}')"><i class="fas fa-comment-dots"></i> Discuss</button>
+                        <a class="btn btn-map-action" href="/property-map/?property={{ property.id }}"><i class="fas fa-location-dot"></i> Map</a>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- ============================================================
@@ -2801,6 +2921,38 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
         </div>
 
     </div>
+
+    <!-- ===== PROPERTY BOOKING / PAYMENT ===== -->
+    {% if not is_owner and not property.is_land_sale and not property.is_for_sale and not property.is_commercial %}
+    <div class="booking-overlay" id="propertyBookingOverlay" aria-hidden="true">
+        <div class="booking-sheet" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+            <div class="booking-sheet-head">
+                <div><h3 id="bookingTitle">Book {{ property.title }}</h3><p>Choose your dates, then pay with cash or securely by card through Yoco.</p></div>
+                <button type="button" class="booking-close" onclick="closePropertyBooking()" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="booking-form-grid">
+                <div class="booking-field"><label>Check-in</label><input id="bookingCheckIn" type="datetime-local"></div>
+                <div class="booking-field"><label>Check-out</label><input id="bookingCheckOut" type="datetime-local"></div>
+                <div class="booking-field"><label>Guests</label><input id="bookingGuests" type="number" min="1" max="{{ property.max_occupancy|default:50 }}" value="1"></div>
+                <div class="booking-field full"><label>Special requests</label><textarea id="bookingSpecialRequests" rows="3" placeholder="Anything the host/business should know?"></textarea></div>
+                <div class="booking-field full"><label>Payment method</label>
+                    <div class="payment-choice">
+                        <button type="button" class="pay-choice active" data-payment="cash" onclick="selectPropertyPayment('cash',this)"><strong><i class="fas fa-money-bill-wave"></i> Cash</strong><span>Pay according to the business arrangement. The booking is still recorded in OppoGlobe.</span></button>
+                        <button type="button" class="pay-choice" data-payment="card" onclick="selectPropertyPayment('card',this)"><strong><i class="fas fa-credit-card"></i> Card · Yoco</strong><span>Secure hosted checkout. OppoGlobe does not store your card number or CVV.</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="booking-summary">
+                {% if property.is_short_stay %}<div class="booking-summary-row"><span>Minimum stay</span><strong>{{ property.minimum_stay|default:1 }} day(s)</strong></div>{% endif %}
+                <div class="booking-summary-row"><span>Rate</span><strong>{{ property.price_currency|default:"ZAR" }} {{ property.base_price|floatformat:2 }}{% if property.booking_unit %} / {{ property.get_booking_unit_display }}{% endif %}</strong></div>
+                <div class="booking-summary-row"><span>Duration</span><strong id="bookingDuration">Choose dates</strong></div>
+                <div class="booking-summary-row total"><span>Estimated total</span><strong id="bookingEstimatedTotal">—</strong></div>
+            </div>
+            <button type="button" class="booking-submit" id="bookingSubmitBtn" onclick="submitPropertyBooking()"><i class="fas fa-lock"></i> Confirm booking</button>
+            <div class="booking-note">Card payments continue on Yoco's secure checkout. Cash bookings remain pending until the business confirms the arrangement.</div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- ===== FULLSCREEN PHOTO VIEWER ===== -->
     <div class="lightbox-overlay"
@@ -3272,6 +3424,70 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
 
             console.log('Gallery initialized:', imageUrls.length, 'unique image(s)');
         })();
+    </script>
+
+    <script>
+        const PROPERTY_BOOKING = {
+            id: '{{ property.id|escapejs }}',
+            purpose: '{{ property.property_purpose|default:""|escapejs }}',
+            unit: '{{ property.booking_unit|default:"day"|escapejs }}',
+            price: Number('{{ property.base_price|default:0|escapejs }}') || 0,
+            currency: '{{ property.price_currency|default:"ZAR"|escapejs }}',
+            minimumStay: Number('{{ property.minimum_stay|default:1|escapejs }}') || 1,
+            paymentMethod: 'cash'
+        };
+
+        function openPropertyBooking(){
+            if(!isLoggedIn){ showToast('Please sign in before booking this property','warning'); return; }
+            const overlay=document.getElementById('propertyBookingOverlay');
+            if(!overlay){ messagePropertyOwner(PROPERTY_BOOKING.id, '{{ property.title|escapejs }}'); return; }
+            overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+            const now=new Date(); const local=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+            const cin=document.getElementById('bookingCheckIn'); const cout=document.getElementById('bookingCheckOut');
+            if(cin && !cin.value){ cin.min=local; cin.value=local; }
+            if(cout && !cout.value){ const d=new Date(now.getTime()+86400000); cout.min=local; cout.value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16); }
+            updatePropertyBookingEstimate();
+        }
+        function closePropertyBooking(){ const o=document.getElementById('propertyBookingOverlay'); if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true')} document.body.style.overflow=''; }
+        function selectPropertyPayment(method,el){ PROPERTY_BOOKING.paymentMethod=method; document.querySelectorAll('.pay-choice').forEach(x=>x.classList.remove('active')); el?.classList.add('active'); }
+        function bookingUnits(start,end){
+            const ms=end-start; const days=Math.max(1,Math.ceil(ms/86400000)); const unit=PROPERTY_BOOKING.unit;
+            if(unit==='hour') return Math.max(1,Math.ceil(ms/3600000));
+            if(unit==='week') return Math.max(1,Math.ceil(days/7));
+            if(unit==='month') return Math.max(1,Math.ceil(days/30));
+            if(unit==='semester') return Math.max(1,Math.ceil(days/180));
+            if(unit==='year') return Math.max(1,Math.ceil(days/365));
+            if(unit==='once_off') return 1;
+            return days;
+        }
+        function updatePropertyBookingEstimate(){
+            const a=new Date(document.getElementById('bookingCheckIn')?.value||''); const b=new Date(document.getElementById('bookingCheckOut')?.value||'');
+            const duration=document.getElementById('bookingDuration'); const total=document.getElementById('bookingEstimatedTotal');
+            if(!Number.isFinite(a.getTime())||!Number.isFinite(b.getTime())||b<=a){ if(duration)duration.textContent='Choose valid dates'; if(total)total.textContent='—'; return; }
+            const days=Math.max(1,Math.ceil((b-a)/86400000)); const units=bookingUnits(a,b); if(duration)duration.textContent=`${days} day${days===1?'':'s'} · ${units} billing unit${units===1?'':'s'}`;
+            if(total)total.textContent=`${PROPERTY_BOOKING.currency} ${(PROPERTY_BOOKING.price*units).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+        }
+        document.getElementById('bookingCheckIn')?.addEventListener('change',updatePropertyBookingEstimate);
+        document.getElementById('bookingCheckOut')?.addEventListener('change',updatePropertyBookingEstimate);
+        document.getElementById('propertyBookingOverlay')?.addEventListener('click',e=>{if(e.target.id==='propertyBookingOverlay')closePropertyBooking()});
+
+        async function submitPropertyBooking(){
+            if(!isLoggedIn){ showToast('Please sign in before booking','warning'); return; }
+            const checkIn=document.getElementById('bookingCheckIn')?.value; const checkOut=document.getElementById('bookingCheckOut')?.value;
+            if(!checkIn||!checkOut){ showToast('Choose check-in and check-out','warning'); return; }
+            const a=new Date(checkIn), b=new Date(checkOut); if(!Number.isFinite(a.getTime())||!Number.isFinite(b.getTime())||b<=a){ showToast('Check-out must be after check-in','warning'); return; }
+            const days=Math.max(1,Math.ceil((b-a)/86400000));
+            if((PROPERTY_BOOKING.purpose==='short_stay'||PROPERTY_BOOKING.purpose==='vacation_rental') && days<PROPERTY_BOOKING.minimumStay){ showToast(`Minimum stay is ${PROPERTY_BOOKING.minimumStay} day(s)`,'warning'); return; }
+            const btn=document.getElementById('bookingSubmitBtn'); const original=btn?.innerHTML; if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Creating booking…'}
+            try{
+                const res=await fetch(`/api/properties/${encodeURIComponent(PROPERTY_BOOKING.id)}/book/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken(),'Accept':'application/json'},credentials:'same-origin',body:JSON.stringify({check_in:new Date(checkIn).toISOString(),check_out:new Date(checkOut).toISOString(),number_of_guests:Number(document.getElementById('bookingGuests')?.value||1),special_requests:document.getElementById('bookingSpecialRequests')?.value||'',payment_method:PROPERTY_BOOKING.paymentMethod})});
+                const data=await res.json().catch(()=>({})); if(!res.ok||!data.success)throw new Error(data.error||data.detail||'Could not create booking.');
+                if(data.payment_method==='card'&&data.redirect_url){ showToast('Opening secure Yoco checkout…','success'); window.location.href=data.redirect_url; return; }
+                closePropertyBooking(); showToast(data.message||'Booking created.','success');
+                setTimeout(()=>{ window.location.href='/bookings/'; },1100);
+            }catch(err){ showToast(err.message||'Booking failed','error'); }
+            finally{ if(btn){btn.disabled=false;btn.innerHTML=original||'<i class="fas fa-lock"></i> Confirm booking';} }
+        }
     </script>
 
     {% if property.latitude and property.longitude %}

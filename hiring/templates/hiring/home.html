@@ -780,6 +780,16 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .reels-act-btn .n{font-size:10px; font-family:var(--font-mono);}
 .reels-views{position:absolute; top:10px; right:10px; z-index:15; font-size:9.5px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:3px 10px; border-radius:99px;}
 
+
+/* 2026 maintenance + property checkout refresh */
+.maint-hero{position:relative;overflow:hidden;padding:18px;margin-bottom:12px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 92% 10%,rgba(31,111,92,.16),transparent 28%),linear-gradient(145deg,#fff,#f8fbf9);box-shadow:var(--shadow-sm)}
+.maint-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.maint-hero h2{font-size:clamp(20px,3.3vw,28px);font-weight:700}.maint-hero p{margin:5px 0 0;color:var(--ink-soft);font-size:12.5px;max-width:540px}.maint-hero-icon{width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--jade),var(--jade-deep));color:#fff;box-shadow:0 10px 24px rgba(31,111,92,.20)}
+.maint-compose-grid{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px}.maint-payment-hint{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:11px;color:var(--ink-soft)}
+.maint-feed-card{border-radius:18px!important}.mf-cost{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding:9px 10px;border:1px solid var(--line-soft);border-radius:12px;background:var(--paper);font-size:11px}.mf-cost strong{font-family:var(--font-mono);color:var(--jade-deep)}
+.property-booking-modal .modal-box{max-width:560px}.booking-summary{padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--paper);margin-bottom:13px}.booking-summary h4{font-size:15px}.booking-summary p{margin:3px 0 0;color:var(--ink-soft);font-size:11.5px}.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.booking-field label,.pay-setup-field label{display:block;margin-bottom:5px;font-size:10.5px;font-weight:700;color:var(--ink-soft)}.booking-field input,.booking-field select,.booking-field textarea,.pay-setup-field input,.pay-setup-field select{width:100%;min-height:42px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:var(--paper);font-size:12.5px}.booking-field.full{grid-column:1/-1}.payment-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.payment-choice{position:relative;padding:13px;border:1.5px solid var(--line);border-radius:14px;background:#fff;text-align:left;cursor:pointer;transition:.15s}.payment-choice.active{border-color:var(--jade);background:var(--jade-wash);box-shadow:0 0 0 3px rgba(31,111,92,.07)}.payment-choice strong{display:flex;align-items:center;gap:7px;font-size:12px}.payment-choice span{display:block;margin-top:4px;font-size:10.5px;color:var(--ink-faint)}.payment-choice.card strong i{color:var(--jade)}.payment-choice.cash strong i{color:var(--gold)}.checkout-total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 0;margin-top:12px;border-top:1px solid var(--line)}.checkout-total-row strong{font-family:var(--font-mono);color:var(--coral-deep);font-size:16px}.pay-setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pay-setup-banner{padding:11px 12px;margin-bottom:12px;border-radius:13px;background:var(--jade-wash);color:var(--jade-deep);font-size:11px}.purpose-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:99px;background:var(--jade-wash);color:var(--jade-deep);font-size:8.5px;font-weight:800;margin-top:3px}.prop-meta.land span:nth-child(n+3){display:none}
+@media(max-width:640px){.maint-compose-grid,.booking-grid,.payment-choice-grid,.pay-setup-grid{grid-template-columns:1fr}.property-booking-modal .modal-box{width:calc(100vw - 16px)}.booking-field.full{grid-column:1}.maint-hero{padding:15px}.maint-hero-icon{width:42px;height:42px}}
+
+
 /* ============================================================
    MAINTENANCE
    ============================================================ */
@@ -1569,6 +1579,112 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 }
 
 /* ============================================================
+   CAR WASH QUICK ACCESS — sits above the OppoGlobe robot
+   ============================================================ */
+#carWashQuickWidget{
+  position:fixed;
+  right:16px;
+  bottom:calc(var(--bottom-nav-h) + 86px + var(--safe-b));
+  z-index:1249;
+  width:min(238px,calc(100vw - 32px));
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 11px;
+  border:1px solid rgba(31,111,92,.18);
+  border-radius:17px;
+  background:rgba(255,255,255,.94);
+  color:var(--ink);
+  box-shadow:0 13px 34px rgba(22,36,31,.14);
+  backdrop-filter:blur(18px) saturate(145%);
+  -webkit-backdrop-filter:blur(18px) saturate(145%);
+  transition:transform .2s var(--ease),box-shadow .2s ease,border-color .2s ease;
+}
+#carWashQuickWidget:hover{
+  transform:translateY(-2px);
+  box-shadow:0 17px 38px rgba(22,36,31,.18);
+  border-color:rgba(31,111,92,.34);
+}
+.carwash-widget-icon{
+  width:43px;
+  height:43px;
+  flex:0 0 43px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  color:#fff;
+  background:linear-gradient(145deg,var(--jade),var(--jade-deep));
+  box-shadow:0 7px 17px rgba(31,111,92,.22);
+}
+.carwash-widget-icon .fa-car-side{font-size:17px;}
+.carwash-widget-icon .wash-drop{
+  position:absolute;
+  right:-2px;
+  bottom:-2px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--gold);
+  color:#352607;
+  border:2px solid #fff;
+  font-size:8px;
+}
+.carwash-widget-copy{min-width:0;flex:1;}
+.carwash-widget-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:var(--font-display);
+  font-size:13.5px;
+  line-height:1.15;
+  font-weight:700;
+  color:var(--jade-deep);
+}
+.carwash-widget-title .live-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--success);
+  box-shadow:0 0 0 3px rgba(44,154,91,.12);
+}
+.carwash-widget-intro{
+  display:block;
+  margin-top:3px;
+  font-size:10.5px;
+  line-height:1.3;
+  color:var(--ink-soft);
+}
+.carwash-widget-arrow{
+  flex:0 0 27px;
+  width:27px;height:27px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--gold-wash);
+  color:#9a6b11;
+  font-size:10px;
+}
+@media (min-width:1000px){
+  #carWashQuickWidget{bottom:86px;right:16px;}
+}
+@media (max-width:480px){
+  #carWashQuickWidget{
+    right:10px;
+    bottom:calc(var(--bottom-nav-h) + 82px + var(--safe-b));
+    width:min(220px,calc(100vw - 20px));
+    padding:9px 10px;
+    border-radius:16px;
+  }
+  .carwash-widget-icon{width:39px;height:39px;flex-basis:39px;border-radius:12px;}
+  .carwash-widget-title{font-size:12.5px;}
+  .carwash-widget-intro{font-size:9.7px;}
+}
+@media (max-width:350px){
+  #carWashQuickWidget{width:198px;}
+  .carwash-widget-intro{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+}
+
+/* ============================================================
    AI CHAT
    ============================================================ */
 #aiToggle{
@@ -1887,19 +2003,32 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 }
 
 @media (max-width:470px){
-  .brand-word{display:none;}
-  .brand{padding:3px;}
+  /* Keep the Car Wash identity visible on phones. The home icon is removed
+     first so the title never has to disappear. */
+  .brand-word{
+    display:inline-block;
+    font-size:13.5px;
+    line-height:1;
+    max-width:74px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .brand{padding:3px 2px;gap:6px;min-width:0;}
+  .brand-mark{width:35px;height:35px;border-radius:11px;font-size:15px;}
   .nav-icons > li:first-child{display:none;}
   .apps-grip-btn{display:flex;}
   .nav-icons{margin-left:auto;}
 }
 
 @media (max-width:370px){
-  .header-inner{padding-left:6px;}
-  .brand-mark{width:36px;height:36px;}
-  .icon-btn,.avatar-btn{width:34px;height:34px;}
+  .header-inner{padding-left:5px;padding-right:4px;gap:2px;}
+  .brand{gap:5px;}
+  .brand-mark{width:32px;height:32px;border-radius:10px;font-size:14px;}
+  .brand-word{display:inline-block;font-size:12px;max-width:62px;}
+  .icon-btn,.avatar-btn{width:32px;height:32px;font-size:13px;}
   .apps-grip-btn{display:none;}
-  .auth-btn{padding:0 9px;font-size:10.5px;}
+  .auth-btn{padding:0 8px;font-size:10px;}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -1940,6 +2069,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
               <a href="/properties/manage/"><i class="fas fa-house"></i> Properties</a>
               <a href="/properties/add/"><i class="fas fa-circle-plus"></i> Add Property</a>
               <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i> Bookings</a>
+              <button type="button" onclick="openPropertyPaymentSetup()"><i class="fas fa-credit-card"></i> Property payments</button>
               <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
               <a href="/admin-portal/applications/"><i class="fas fa-file-lines"></i> Applications</a>
               <a href="/admin-portal/analytics/"><i class="fas fa-chart-column"></i> Analytics</a>
@@ -2163,6 +2293,17 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
     </div>
 
     <div id="maintenanceTab" class="tab-content" style="margin-top:14px;">
+      <div class="maint-hero">
+        <div class="maint-hero-top">
+          <div>
+            <div class="hero-kicker" style="margin-bottom:4px;"><i class="fas fa-screwdriver-wrench"></i> Property care</div>
+            <h2>Maintenance without the admin headache.</h2>
+            <p>Report the issue, attach a photo, share the location and follow progress from one clean timeline.</p>
+          </div>
+          <div class="maint-hero-icon"><i class="fas fa-toolbox"></i></div>
+        </div>
+      </div>
+
       <div class="maint-stats">
         <div class="maint-stat" style="background:linear-gradient(135deg,var(--jade),var(--jade-deep));"><div class="n" id="totalMaintenance">0</div><div class="l">Total</div></div>
         <div class="maint-stat" style="background:linear-gradient(135deg,var(--coral),var(--coral-deep));"><div class="n" id="pendingMaintenance">0</div><div class="l">Pending</div></div>
@@ -2174,38 +2315,39 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
         <div class="maint-topbar">
           <div class="loc-status" id="locationStatus"><i class="fas fa-location-dot"></i><span id="locationText">Location not detected</span><button class="detect-btn" onclick="detectLocation()"><i class="fas fa-crosshairs"></i> Detect</button></div>
           <div class="tagset">
-            <span style="font-size:11px; color:var(--ink-faint); font-weight:600;">Tags:</span>
+            <span style="font-size:11px;color:var(--ink-faint);font-weight:700;">Priority</span>
             <button class="tag-chip urgent" onclick="addMaintenanceTag('urgent')"><i class="fas fa-triangle-exclamation"></i> Urgent</button>
             <button class="tag-chip high" onclick="addMaintenanceTag('high')"><i class="fas fa-arrow-up"></i> High</button>
             <button class="tag-chip medium" onclick="addMaintenanceTag('medium')"><i class="fas fa-minus"></i> Medium</button>
-            <button class="tag-chip progress" onclick="addMaintenanceTag('in_progress')"><i class="fas fa-play"></i> Progress</button>
-            <button class="tag-chip done" onclick="addMaintenanceTag('completed')"><i class="fas fa-check"></i> Done</button>
           </div>
         </div>
         <div class="maint-form">
-          <select id="maintenanceQuickProperty" class="maint-select"><option value="">General issue / no specific property</option></select>
-          <div class="maint-input-row">
+          <div class="maint-compose-grid">
+            <select id="maintenanceQuickProperty" class="maint-select" style="margin:0;"><option value="">General issue / no specific property</option></select>
+            <div class="maint-payment-hint"><i class="fas fa-circle-info me-1" style="color:var(--jade)"></i> Maintenance requests stay separate from property booking payments.</div>
+          </div>
+          <div class="maint-input-row" style="margin-top:10px;">
             <div class="maint-input-wrap">
-              <textarea id="maintenanceQuickInput" class="maint-textarea" placeholder="What needs fixing? e.g. wash the car, fix the pipe, garden cleanup…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMaintenanceQuick();}"></textarea>
+              <textarea id="maintenanceQuickInput" class="maint-textarea" placeholder="What needs fixing? e.g. leaking pipe in kitchen, broken gate, garden cleanup…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMaintenanceQuick();}"></textarea>
               <div id="maintenanceTagsDisplay" class="tags-display"></div>
-              <div id="maintenanceQuickImagePreview" class="hidden" style="margin-top:6px; position:relative; display:inline-block;">
-                <img id="maintenanceQuickPreviewImg" alt="Preview" style="max-height:80px; border-radius:8px; border:1px solid var(--line);">
-                <button type="button" onclick="clearMaintenanceImage()" style="position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; border:none; background:var(--danger); color:#fff; font-size:10px;"><i class="fas fa-times"></i></button>
+              <div id="maintenanceQuickImagePreview" class="hidden" style="margin-top:8px;position:relative;display:inline-block;">
+                <img id="maintenanceQuickPreviewImg" alt="Preview" style="max-height:110px;border-radius:12px;border:1px solid var(--line);">
+                <button type="button" onclick="clearMaintenanceImage()" style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:10px;"><i class="fas fa-times"></i></button>
               </div>
             </div>
-            <button class="maint-send" onclick="sendMaintenanceQuick()"><i class="fas fa-paper-plane"></i></button>
+            <button class="maint-send" onclick="sendMaintenanceQuick()" title="Send maintenance request"><i class="fas fa-paper-plane"></i></button>
           </div>
           <div class="maint-bottom">
-            <button class="text-action" onclick="document.getElementById('maintenanceQuickImage').click()"><i class="fas fa-image"></i> Photo</button>
+            <button class="text-action" onclick="document.getElementById('maintenanceQuickImage').click()"><i class="fas fa-camera"></i> Add photo</button>
             <input type="file" id="maintenanceQuickImage" accept="image/*" style="display:none;" onchange="previewMaintenanceImage(this)">
-            <div style="display:flex; align-items:center; gap:5px; margin-left:auto; font-size:11px; color:var(--ink-faint);">
-              <input class="form-check-input" type="checkbox" id="autoReplyToggle" checked><label for="autoReplyToggle">Auto-reply</label>
-            </div>
+            <button class="text-action" type="button" onclick="detectLocation()"><i class="fas fa-location-crosshairs"></i> Refresh location</button>
+            <span style="margin-left:auto;font-size:10.5px;color:var(--ink-faint);">Enter to send · Shift+Enter for a new line</span>
           </div>
         </div>
       </div>
 
-      <div id="maintenanceContainer" style="margin-top:14px;"></div>
+      <div class="section-head" style="margin-top:16px;"><h2><i class="fas fa-clock-rotate-left"></i> Maintenance timeline</h2><button class="link-btn" onclick="loadMaintenanceRequests()"><i class="fas fa-rotate"></i> Refresh</button></div>
+      <div id="maintenanceContainer"></div>
     </div>
 
     <div id="jobsTab" class="tab-content" style="margin-top:14px;"><div id="jobsContainer"></div></div>
@@ -2406,6 +2548,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   <div class="modal-header"><h5 class="modal-title" style="font-family:var(--font-display); font-size:15px;"><i class="fas fa-grip me-2"></i>Jump to</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
   <div class="modal-body">
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+      <a href="/carwash/" class="text-center p-2" style="border-radius:10px; background:var(--jade-wash); border:1px solid rgba(31,111,92,.14);"><i class="fas fa-car-side d-block mb-1" style="color:var(--jade); font-size:20px;"></i><span style="font-size:10px;font-weight:700;color:var(--jade-deep);">Car Wash</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('properties');closeAppsModal()"><i class="fas fa-house d-block mb-1" style="color:var(--jade); font-size:20px;"></i><span style="font-size:10px;">Property</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('reels');closeAppsModal()"><i class="fas fa-video d-block mb-1" style="color:var(--coral); font-size:20px;"></i><span style="font-size:10px;">Reels</span></a>
       <a href="#" class="text-center p-2" style="border-radius:10px; background:var(--paper);" onclick="switchTab('maintenance');closeAppsModal()"><i class="fas fa-screwdriver-wrench d-block mb-1" style="color:var(--sky); font-size:20px;"></i><span style="font-size:10px;">Maint.</span></a>
@@ -2486,6 +2629,19 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
   </div>
 </div></div></div>
 
+<!-- ===== CAR WASH QUICK ACCESS ===== -->
+<a id="carWashQuickWidget" href="/carwash/" aria-label="Open OppoGlobe Car Wash">
+  <span class="carwash-widget-icon" aria-hidden="true">
+    <i class="fas fa-car-side"></i>
+    <span class="wash-drop"><i class="fas fa-droplet"></i></span>
+  </span>
+  <span class="carwash-widget-copy">
+    <span class="carwash-widget-title"><span class="live-dot"></span> Car Wash</span>
+    <span class="carwash-widget-intro">Mobile wash or find a nearby drive-in.</span>
+  </span>
+  <span class="carwash-widget-arrow" aria-hidden="true"><i class="fas fa-arrow-up-right-from-square"></i></span>
+</a>
+
 <!-- ===== AI CHAT ===== -->
 <div id="aiPanel">
   <div class="ai-head">
@@ -2565,6 +2721,55 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- PROPERTY BOOKING / PAYMENT -->
+<div class="modal-veil property-booking-modal" id="propertyBookingModal" onclick="if(event.target===this)closePropertyBooking()">
+  <div class="modal-box">
+    <div class="modal-box-head"><h5>Book property</h5><button class="x-close" onclick="closePropertyBooking()" aria-label="Close"></button></div>
+    <div class="modal-box-body">
+      <div class="booking-summary"><h4 id="bookingPropertyTitle">Property</h4><p id="bookingPropertyPurpose">Choose your dates and payment method.</p></div>
+      <div class="booking-grid">
+        <div class="booking-field"><label>Check in</label><input id="bookingCheckIn" type="datetime-local"></div>
+        <div class="booking-field"><label>Check out</label><input id="bookingCheckOut" type="datetime-local"></div>
+        <div class="booking-field"><label>Guests</label><input id="bookingGuests" type="number" min="1" value="1"></div>
+        <div class="booking-field"><label>Booking price</label><input id="bookingUnitPrice" type="text" readonly></div>
+        <div class="booking-field full"><label>Special requests</label><textarea id="bookingSpecialRequests" rows="2" placeholder="Anything the host should know?"></textarea></div>
+      </div>
+      <div id="bookingMinimumStay" class="pay-setup-banner hidden"></div>
+      <div style="margin-top:13px;font-size:11px;font-weight:800;color:var(--ink-soft);">How do you want to pay?</div>
+      <div class="payment-choice-grid">
+        <button type="button" class="payment-choice cash active" data-payment-method="cash" onclick="selectPropertyPaymentMethod('cash')"><strong><i class="fas fa-money-bill-wave"></i> Cash</strong><span>Arrange cash payment with the property business.</span></button>
+        <button type="button" class="payment-choice card" data-payment-method="card" onclick="selectPropertyPaymentMethod('card')"><strong><i class="fas fa-credit-card"></i> Card · Yoco</strong><span>Secure hosted checkout. OppoGlobe never stores your card number.</span></button>
+      </div>
+      <div class="checkout-total-row"><span>Estimated total</span><strong id="bookingEstimatedTotal">—</strong></div>
+      <div id="bookingError" style="margin-top:9px;color:var(--danger);font-size:11px;"></div>
+    </div>
+    <div class="modal-box-foot"><button class="link-btn" onclick="closePropertyBooking()">Cancel</button><button class="btn-jade" id="confirmPropertyBookingBtn" onclick="submitPropertyBooking()"><i class="fas fa-calendar-check me-1"></i> Continue</button></div>
+  </div>
+</div>
+
+<!-- BUSINESS PROPERTY PAYMENT SETUP -->
+<div class="modal-veil" id="propertyPaymentSetupModal" onclick="if(event.target===this)closePropertyPaymentSetup()">
+  <div class="modal-box" style="max-width:620px;">
+    <div class="modal-box-head"><h5>Property payments & payouts</h5><button class="x-close" onclick="closePropertyPaymentSetup()" aria-label="Close"></button></div>
+    <div class="modal-box-body">
+      <div class="pay-setup-banner"><i class="fas fa-shield-halved me-1"></i> Card details are entered on Yoco's hosted checkout. Save only your payout bank account and optional Yoco merchant reference here.</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;"><label><input type="checkbox" id="propAcceptCash" checked> Accept cash</label><label><input type="checkbox" id="propAcceptCard" checked> Accept card</label><label><input type="checkbox" id="propYocoEnabled" checked> Use Yoco</label></div>
+      <div class="pay-setup-grid">
+        <div class="pay-setup-field"><label>Yoco merchant reference (optional)</label><input id="propYocoReference" placeholder="Your reconciliation reference"></div>
+        <div class="pay-setup-field"><label>Bank</label><input id="propBankName" placeholder="e.g. FNB"></div>
+        <div class="pay-setup-field"><label>Account holder</label><input id="propAccountHolder" placeholder="Business / account holder"></div>
+        <div class="pay-setup-field"><label>Account number</label><input id="propAccountNumber" inputmode="numeric" autocomplete="off" placeholder="Leave blank to keep saved account"></div>
+        <div class="pay-setup-field"><label>Branch code</label><input id="propBranchCode" inputmode="numeric" placeholder="e.g. 250655"></div>
+        <div class="pay-setup-field"><label>Account type</label><select id="propAccountType"><option value="cheque">Cheque / Current</option><option value="savings">Savings</option><option value="business">Business</option><option value="transmission">Transmission</option></select></div>
+        <div class="pay-setup-field"><label>Payout reference</label><input id="propPayoutReference" placeholder="Business name"></div>
+      </div>
+      <div id="propPaymentSetupStatus" style="margin-top:10px;font-size:11px;color:var(--ink-faint);"></div>
+    </div>
+    <div class="modal-box-foot"><button class="link-btn" onclick="closePropertyPaymentSetup()">Close</button><button class="btn-jade" onclick="savePropertyPaymentSetup()"><i class="fas fa-floppy-disk me-1"></i> Save payment setup</button></div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    CORE UTILITIES
@@ -3134,7 +3339,7 @@ function renderStars(rating){
 function createPropertyCardHTML(p){
   const { ownerId, ownerName, ownerInitial, ownerBadge } = resolveOwner(p);
   const badgeLabel = ownerBadge==='owner' ? 'Owner' : ownerBadge==='admin' ? 'Business' : '';
-  const price = p.price || p.price_amount || 0;
+  const price = p.price || p.base_price || p.price_amount || 0;
   const priceDisplay = `${p.price_currency||'ZAR'} ${Number(price).toLocaleString()}`;
   const rating = p.average_rating || 0, ratingCount = p.rating_count || 0;
   const userLiked = p.user_interaction === 'like', userDisliked = p.user_interaction === 'dislike', userRating = p.user_rating || 0;
@@ -3157,7 +3362,7 @@ function createPropertyCardHTML(p){
       <div class="prop-title">${escapeHtml(p.title||'Untitled')}</div>
       <div class="prop-loc"><i class="fas fa-location-dot"></i> ${escapeHtml(p.city||'Unknown')}, ${escapeHtml(p.country||'SA')}</div>
       <div class="prop-price-row"><span class="prop-price">${escapeHtml(priceDisplay)}</span><span class="prop-rating"><span class="stars">${renderStars(rating)}</span> ${rating.toFixed(1)} <span style="color:var(--ink-faint);">(${ratingCount})</span></span></div>
-      <div class="prop-meta"><span><i class="fas fa-bed"></i> ${p.bedrooms||0}</span><span><i class="fas fa-bath"></i> ${p.bathrooms||0}</span><span><i class="fas fa-car"></i> ${p.garages||0}</span></div>
+      ${renderPropertyPurposeMeta(p)}
       <div class="prop-owner">
         <div class="ava" onclick="event.stopPropagation();visitProfile('${ownerId}')" title="View ${escapeHtml(ownerName)}'s profile">${ownerInitial}</div>
         <div class="owner-msg-chip" onclick="event.stopPropagation();messagePropertyOwner('${id}','${title}')" title="Send ${escapeHtml(ownerName)} a message">
@@ -3169,7 +3374,7 @@ function createPropertyCardHTML(p){
       </div>
       <div class="prop-actions">
         <button class="pill-btn view" onclick="viewProperty('${id}')">View</button>
-        ${p.status==='available' ? `<button class="pill-btn book" onclick="bookProperty('${id}')">Book</button>` : `<button class="pill-btn booked" disabled>Booked</button>`}
+        ${propertyPrimaryActionHTML(p)}
         <button class="pill-btn discuss" onclick="discussProperty('${id}','${title}')">Discuss</button>
       </div>
     </div>
@@ -3255,15 +3460,97 @@ function loadTopCreators(){
   else container.innerHTML = creators.map(c=>`<div class="stat-row"><span>${escapeHtml(c.name)}</span><span style="color:var(--ink-faint);">${c.properties} listed</span></div>`).join('');
 }
 function viewProperty(id){ window.location.href = `/properties/${id}/`; }
-function bookProperty(id){
-  if (!requireLogin()) return;
-  const btn = event.target.closest('.pill-btn'); if (!btn) return;
-  const original = btn.innerHTML; btn.innerHTML = '<span class="spin" style="width:11px;height:11px;"></span>'; btn.disabled = true;
-  fetch(`/api/properties/${id}/book/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()} })
-    .then(r=>r.json()).then(data=>{ btn.innerHTML = original; btn.disabled = false;
-      if (data.success){ showToast('Property booked!','success'); loadProperties(); } else showToast('Booking request sent','info'); })
-    .catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Please try again','info'); });
+function propertyPurpose(p){ return String(p?.property_purpose || '').toLowerCase(); }
+function isStayBookableProperty(p){
+  const purpose=propertyPurpose(p);
+  if(['sale','land_sale','commercial_lease'].includes(purpose)) return false;
+  if(['sale','auction'].includes(String(p?.listing_type||'').toLowerCase())) return false;
+  return p?.is_bookable !== false;
 }
+function propertyPrimaryActionHTML(p){
+  const id=p.id;
+  if(p.status!=='available') return `<button class="pill-btn booked" disabled>${p.status==='booked'?'Booked':'Unavailable'}</button>`;
+  if(isStayBookableProperty(p)) return `<button class="pill-btn book" onclick="openPropertyBooking('${id}')">Book</button>`;
+  return `<button class="pill-btn book" onclick="discussProperty('${id}','${escapeHtml(p.title||'Property').replace(/'/g,"\\'")}')">Enquire</button>`;
+}
+function renderPropertyPurposeMeta(p){
+  const purpose=propertyPurpose(p);
+  const purposeLabel={sale:'For sale',land_sale:'Land sale',commercial_lease:'Commercial lease',short_stay:'Short stay',vacation_rental:'Vacation',long_stay:'Long stay',rent:'Rental',student_accommodation:'Student accommodation',permanent:'Permanent'}[purpose] || (p.listing_type||'Property');
+  if(purpose==='land_sale'){
+    const area=p.land_size_hectares?`${p.land_size_hectares} ha`:p.land_area?`${p.land_area} m²`:'Land';
+    return `<div class="prop-meta land"><span><i class="fas fa-ruler-combined"></i> ${escapeHtml(area)}</span><span><i class="fas fa-map"></i> ${escapeHtml(p.zoning||'Land')}</span></div><span class="purpose-chip"><i class="fas fa-mountain-sun"></i>${escapeHtml(purposeLabel)}</span>`;
+  }
+  if(purpose==='commercial_lease'){
+    return `<div class="prop-meta"><span><i class="fas fa-building"></i> ${escapeHtml(p.commercial_type||'Commercial')}</span><span><i class="fas fa-square-parking"></i> ${p.parking_available||p.parking_spaces||0}</span></div><span class="purpose-chip"><i class="fas fa-store"></i>${escapeHtml(purposeLabel)}</span>`;
+  }
+  return `<div class="prop-meta"><span><i class="fas fa-bed"></i> ${p.bedrooms||0}</span><span><i class="fas fa-bath"></i> ${p.bathrooms||0}</span><span><i class="fas fa-car"></i> ${p.garages||p.parking_spaces||0}</span></div><span class="purpose-chip"><i class="fas fa-house"></i>${escapeHtml(purposeLabel)}</span>`;
+}
+
+let propertyBookingState={property:null,paymentMethod:'cash'};
+function bookProperty(id){ openPropertyBooking(id); }
+function openPropertyBooking(id){
+  if(!requireLogin()) return;
+  const p=(allProperties||[]).find(x=>String(x.id)===String(id));
+  if(!p) return showToast('Property details are still loading','info');
+  if(!isStayBookableProperty(p)) return discussProperty(id,(p.title||'Property').replace(/'/g,"\\'"));
+  propertyBookingState={property:p,paymentMethod:'cash'};
+  document.getElementById('bookingPropertyTitle').textContent=p.title||'Property booking';
+  document.getElementById('bookingPropertyPurpose').textContent=(p.property_purpose||p.listing_type||'Stay').replaceAll('_',' ');
+  document.getElementById('bookingUnitPrice').value=`${p.price_currency||'ZAR'} ${Number(p.base_price||p.price||0).toLocaleString()} ${p.booking_unit?'/ '+String(p.booking_unit).replace('_',' '):''}`;
+  const min=document.getElementById('bookingMinimumStay');
+  const purpose=propertyPurpose(p);
+  if(['short_stay','vacation_rental'].includes(purpose) && Number(p.minimum_stay||0)>0){min.textContent=`Minimum stay: ${p.minimum_stay} day(s)`;min.classList.remove('hidden');}else{min.classList.add('hidden');min.textContent='';}
+  const now=new Date(), tomorrow=new Date(Date.now()+86400000);
+  const local=v=>new Date(v.getTime()-v.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  document.getElementById('bookingCheckIn').value=local(now);
+  document.getElementById('bookingCheckOut').value=local(tomorrow);
+  document.getElementById('bookingError').textContent='';
+  selectPropertyPaymentMethod('cash');
+  updatePropertyBookingEstimate();
+  document.getElementById('propertyBookingModal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closePropertyBooking(){document.getElementById('propertyBookingModal')?.classList.remove('show');document.body.style.overflow='';}
+function selectPropertyPaymentMethod(method){
+  propertyBookingState.paymentMethod=method;
+  document.querySelectorAll('#propertyBookingModal .payment-choice').forEach(b=>b.classList.toggle('active',b.dataset.paymentMethod===method));
+  const btn=document.getElementById('confirmPropertyBookingBtn');
+  if(btn)btn.innerHTML=method==='card'?'<i class="fas fa-lock me-1"></i> Continue to Yoco':'<i class="fas fa-calendar-check me-1"></i> Book with cash';
+}
+function updatePropertyBookingEstimate(){
+  const p=propertyBookingState.property;if(!p)return;
+  const start=new Date(document.getElementById('bookingCheckIn').value),end=new Date(document.getElementById('bookingCheckOut').value);
+  let units=1;if(start&&!Number.isNaN(start)&&end&&!Number.isNaN(end)&&end>start){const days=Math.max(1,Math.ceil((end-start)/86400000));const unit=p.booking_unit||'day';units=unit==='week'?Math.max(1,Math.ceil(days/7)):unit==='month'?Math.max(1,Math.ceil(days/30)):unit==='semester'?Math.max(1,Math.ceil(days/180)):unit==='year'?Math.max(1,Math.ceil(days/365)):unit==='once_off'?1:unit==='hour'?Math.max(1,Math.ceil((end-start)/3600000)):days;}
+  const total=Number(p.base_price||p.price||0)*units;document.getElementById('bookingEstimatedTotal').textContent=`${p.price_currency||'ZAR'} ${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+}
+document.getElementById('bookingCheckIn')?.addEventListener('change',updatePropertyBookingEstimate);
+document.getElementById('bookingCheckOut')?.addEventListener('change',updatePropertyBookingEstimate);
+async function submitPropertyBooking(){
+  const p=propertyBookingState.property;if(!p)return;
+  const err=document.getElementById('bookingError'),btn=document.getElementById('confirmPropertyBookingBtn');err.textContent='';
+  const checkIn=document.getElementById('bookingCheckIn').value,checkOut=document.getElementById('bookingCheckOut').value;
+  if(!checkIn||!checkOut){err.textContent='Choose check-in and check-out.';return;}
+  const old=btn.innerHTML;btn.disabled=true;btn.innerHTML='<span class="spin" style="width:13px;height:13px;"></span> Processing…';
+  try{
+    const response=await fetch(`/api/properties/${encodeURIComponent(p.id)}/book/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken(),'Accept':'application/json'},body:JSON.stringify({check_in:new Date(checkIn).toISOString(),check_out:new Date(checkOut).toISOString(),number_of_guests:Number(document.getElementById('bookingGuests').value||1),special_requests:document.getElementById('bookingSpecialRequests').value||'',payment_method:propertyBookingState.paymentMethod})});
+    const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||'Could not create booking.');
+    if(propertyBookingState.paymentMethod==='card'&&data.redirect_url){window.location.href=data.redirect_url;return;}
+    closePropertyBooking();showToast('Booking created — cash selected','success');loadProperties();
+  }catch(e){err.textContent=e.message||'Could not create booking.';}finally{btn.disabled=false;btn.innerHTML=old;}
+}
+
+async function openPropertyPaymentSetup(){
+  document.getElementById('profileMenu')?.classList.remove('show');
+  document.getElementById('propertyPaymentSetupModal').classList.add('show');document.body.style.overflow='hidden';
+  const status=document.getElementById('propPaymentSetupStatus');status.textContent='Loading payment setup…';
+  try{const r=await fetch('/api/properties/payment-settings/',{credentials:'same-origin',headers:{'Accept':'application/json'}});const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||'Could not load payment setup.');const p=d.profile||{};document.getElementById('propAcceptCash').checked=p.accept_cash!==false;document.getElementById('propAcceptCard').checked=p.accept_card!==false;document.getElementById('propYocoEnabled').checked=p.yoco_enabled!==false;document.getElementById('propYocoReference').value=p.yoco_merchant_reference||'';document.getElementById('propBankName').value=p.bank_name||'';document.getElementById('propAccountHolder').value=p.account_holder||'';document.getElementById('propBranchCode').value=p.branch_code||'';document.getElementById('propAccountType').value=p.account_type||'cheque';document.getElementById('propPayoutReference').value=p.payout_reference||'';document.getElementById('propAccountNumber').value='';document.getElementById('propAccountNumber').placeholder=p.account_number_masked?`Saved ${p.account_number_masked}`:'Enter payout account number';status.textContent=p.is_payout_complete?'Payout account ready.':'Add your payout bank account.';}catch(e){status.textContent=e.message;}
+}
+function closePropertyPaymentSetup(){document.getElementById('propertyPaymentSetupModal')?.classList.remove('show');document.body.style.overflow='';}
+async function savePropertyPaymentSetup(){
+  const status=document.getElementById('propPaymentSetupStatus');const payload={accept_cash:document.getElementById('propAcceptCash').checked,accept_card:document.getElementById('propAcceptCard').checked,yoco_enabled:document.getElementById('propYocoEnabled').checked,yoco_merchant_reference:document.getElementById('propYocoReference').value.trim(),bank_name:document.getElementById('propBankName').value.trim(),account_holder:document.getElementById('propAccountHolder').value.trim(),branch_code:document.getElementById('propBranchCode').value.trim(),account_type:document.getElementById('propAccountType').value,payout_reference:document.getElementById('propPayoutReference').value.trim()};const acct=document.getElementById('propAccountNumber').value.trim();if(acct)payload.account_number=acct;status.textContent='Saving…';
+  try{const r=await fetch('/api/properties/payment-settings/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken(),'Accept':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||'Could not save payment setup.');status.textContent=d.profile?.is_payout_complete?'Saved · payout account ready.':'Saved · payout account still incomplete.';document.getElementById('propAccountNumber').value='';showToast('Property payment setup saved','success');}catch(e){status.textContent=e.message;showToast(e.message,'error');}
+}
+
 function togglePropertyInteraction(propertyId, action){
   if (!requireLogin()) return;
   fetch(`/api/properties/${propertyId}/interact/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()}, body:JSON.stringify({action}) })

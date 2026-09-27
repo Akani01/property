@@ -113,7 +113,9 @@ class PropertyListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'property_reference', 'title', 'description',
             'city', 'country', 'address',
-            'base_price', 'price_currency', 'listing_type',
+            'property_category', 'property_purpose', 'property_config_used',
+            'base_price', 'price_currency', 'listing_type', 'transaction_type',
+            'stay_type', 'booking_unit', 'minimum_stay', 'maximum_stay',
             'status', 'is_featured', 'is_premium', 'is_bookable',
             'bedrooms', 'bathrooms', 'garages', 'parking_spaces',
             'total_area',
@@ -1754,9 +1756,16 @@ class PropertyCreateDynamicSerializer(DynamicPropertySerializer):
                 'per_student_price': 'Per student price is required when per-student pricing is enabled'
             })
 
-        # Short stay needs a minimum stay
-        if purpose in ['short_stay', 'vacation_rental'] and not data.get('minimum_stay'):
-            data['minimum_stay'] = 1
+        # Short stay / vacation rental is the ONLY purpose that uses
+        # minimum/maximum stay. Clear stale values for every other purpose.
+        if purpose in ['short_stay', 'vacation_rental']:
+            if not data.get('minimum_stay'):
+                data['minimum_stay'] = 1
+        else:
+            data['minimum_stay'] = None
+            data['maximum_stay'] = None
+            if purpose in ['sale', 'land_sale', 'commercial_lease']:
+                data['stay_type'] = 'not_applicable'
 
         return data
 
@@ -1818,6 +1827,15 @@ class PropertyUpdateDynamicSerializer(DynamicPropertySerializer):
                 'per_student_price': 'Per student price is required when per-student pricing is enabled'
             })
 
+        if purpose in ['short_stay', 'vacation_rental']:
+            if not data.get('minimum_stay', getattr(self.instance, 'minimum_stay', None)):
+                data['minimum_stay'] = 1
+        else:
+            data['minimum_stay'] = None
+            data['maximum_stay'] = None
+            if purpose in ['sale', 'land_sale', 'commercial_lease']:
+                data['stay_type'] = 'not_applicable'
+
         return data
 
     def update(self, instance, validated_data):
@@ -1832,3 +1850,34 @@ class PropertyUpdateDynamicSerializer(DynamicPropertySerializer):
             instance.features.set(features)
 
         return instance
+
+# ============================================================
+# PROPERTY PAYMENT SERIALIZERS
+# ============================================================
+class PropertyPaymentProfileSerializer(serializers.ModelSerializer):
+    account_number_masked = serializers.CharField(source='masked_account_number', read_only=True)
+    is_payout_complete = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = PropertyPaymentProfile
+        fields = [
+            'id', 'business', 'accept_cash', 'accept_card', 'yoco_enabled',
+            'yoco_merchant_reference', 'bank_name', 'account_holder',
+            'account_number_masked', 'branch_code', 'account_type',
+            'payout_reference', 'is_payout_complete', 'created_at', 'updated_at',
+        ]
+        read_only_fields = fields
+
+
+class PropertyBookingPaymentSerializer(serializers.ModelSerializer):
+    property_title = serializers.CharField(source='booking.property.title', read_only=True)
+    booking_reference = serializers.CharField(source='booking.booking_reference', read_only=True)
+
+    class Meta:
+        model = PropertyBookingPayment
+        fields = [
+            'id', 'booking', 'booking_reference', 'property_title', 'payer', 'business',
+            'payment_method', 'gateway', 'status', 'amount', 'currency',
+            'yoco_checkout_id', 'redirect_url', 'paid_at', 'created_at', 'updated_at',
+        ]
+        read_only_fields = fields

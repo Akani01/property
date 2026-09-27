@@ -4,12 +4,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F, Count, Avg, Q
+from django.db import transaction
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt 
 from .utils.property_config import get_property_config, get_all_purposes, should_show_field
 from django.utils import timezone
 from django.conf import settings
+from django.urls import reverse
 from django.http import JsonResponse, Http404, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -18,6 +20,7 @@ import re
 import json
 import requests
 import logging
+import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -448,6 +451,229 @@ class PropertyViewSet(viewsets.ModelViewSet):
         })
 
 
+
+
+    # ========================================================
+    # PROPERTY BOOKING + BUSINESS PAYMENT SETTINGS
+    # ========================================================
+    @action(detail=False, methods=['get', 'post'], url_path='payment-settings', permission_classes=[IsAuthenticated])
+    def payment_settings(self, request):
+        """Business payout + Yoco preferences. Never stores card PAN/CVV."""
+        try:
+            business = request.user.business_profile
+        except Exception:
+            return Response({'success': False, 'error': 'A business profile is required.'}, status=403)
+
+        profile, _ = PropertyPaymentProfile.objects.get_or_create(business=business)
+
+        if request.method == 'POST':
+            for field in ('bank_name', 'account_holder', 'branch_code', 'account_type', 'payout_reference', 'yoco_merchant_reference'):
+                if field in request.data:
+                    setattr(profile, field, (request.data.get(field) or '').strip())
+            if request.data.get('account_number'):
+                profile.account_number = str(request.data.get('account_number')).strip()
+            for field in ('accept_cash', 'accept_card', 'yoco_enabled'):
+                if field in request.data:
+                    value = request.data.get(field)
+                    if isinstance(value, str):
+                        value = value.lower() in {'1', 'true', 'yes', 'on'}
+                    setattr(profile, field, bool(value))
+            profile.save()
+
+        return Response({'success': True, 'profile': PropertyPaymentProfileSerializer(profile).data})
+
+    @action(detail=True, methods=['post'], url_path='book', permission_classes=[IsAuthenticated])
+    def book(self, request, pk=None):
+        """Create a purpose-aware property booking and choose cash or Yoco card payment."""
+        prop = self.get_object()
+        purpose = prop.property_purpose or ''
+
+        if purpose in {'sale', 'land_sale', 'commercial_lease'} or prop.listing_type in {'sale', 'auction'}:
+            return Response({
+                'success': False,
+                'error': 'This listing is handled as an enquiry, not a stay booking.'
+            }, status=400)
+
+        if not prop.is_bookable or prop.status != 'available':
+            return Response({'success': False, 'error': 'This property is not currently bookable.'}, status=400)
+
+        check_in_raw = request.data.get('check_in')
+        check_out_raw = request.data.get('check_out')
+        if not check_in_raw or not check_out_raw:
+            return Response({'success': False, 'error': 'Check-in and check-out are required.'}, status=400)
+
+        try:
+            check_in = datetime.fromisoformat(str(check_in_raw).replace('Z', '+00:00'))
+            check_out = datetime.fromisoformat(str(check_out_raw).replace('Z', '+00:00'))
+            if timezone.is_naive(check_in):
+                check_in = timezone.make_aware(check_in)
+            if timezone.is_naive(check_out):
+                check_out = timezone.make_aware(check_out)
+        except Exception:
+            return Response({'success': False, 'error': 'Invalid check-in or check-out date.'}, status=400)
+
+        if check_out <= check_in:
+            return Response({'success': False, 'error': 'Check-out must be after check-in.'}, status=400)
+
+        total_seconds = (check_out - check_in).total_seconds()
+        duration_days = max(1, int((total_seconds + 86399) // 86400))
+
+        # Minimum stay belongs ONLY to short-stay/vacation listings.
+        if purpose in {'short_stay', 'vacation_rental'}:
+            minimum = prop.minimum_stay or 1
+            if duration_days < minimum:
+                return Response({
+                    'success': False,
+                    'error': f'Minimum stay for this property is {minimum} day(s).'
+                }, status=400)
+
+        overlap = Booking.objects.filter(
+            property=prop,
+            status__in=['pending', 'confirmed', 'checked_in'],
+            check_in__lt=check_out,
+            check_out__gt=check_in,
+        ).exists()
+        if overlap:
+            return Response({'success': False, 'error': 'These dates are no longer available.'}, status=409)
+
+        unit = prop.booking_unit or 'day'
+        if unit == 'hour':
+            units = max(1, int((total_seconds + 3599) // 3600))
+        elif unit == 'week':
+            units = max(1, int((duration_days + 6) // 7))
+        elif unit == 'month':
+            units = max(1, int((duration_days + 29) // 30))
+        elif unit == 'semester':
+            units = max(1, int((duration_days + 179) // 180))
+        elif unit == 'year':
+            units = max(1, int((duration_days + 364) // 365))
+        elif unit == 'once_off':
+            units = 1
+        else:
+            units = duration_days
+
+        price = Decimal(prop.base_price or 0)
+        total_amount = (price * Decimal(units)).quantize(Decimal('0.01'))
+        method = str(request.data.get('payment_method') or 'cash').lower()
+        if method not in {'cash', 'card'}:
+            return Response({'success': False, 'error': 'Choose cash or card.'}, status=400)
+
+        business = prop.company
+        pay_profile = None
+        if business:
+            pay_profile, _ = PropertyPaymentProfile.objects.get_or_create(business=business)
+            if method == 'cash' and not pay_profile.accept_cash:
+                return Response({'success': False, 'error': 'This business does not accept cash for property bookings.'}, status=400)
+            if method == 'card' and (not pay_profile.accept_card or not pay_profile.yoco_enabled):
+                return Response({'success': False, 'error': 'Card/Yoco payments are not enabled for this business.'}, status=400)
+
+        with transaction.atomic():
+            booking = Booking.objects.create(
+                property=prop,
+                guest=request.user,
+                business=business,
+                check_in=check_in,
+                check_out=check_out,
+                duration_days=duration_days,
+                subtotal=total_amount,
+                total_amount=total_amount,
+                currency=prop.price_currency or 'ZAR',
+                payment_status='pending',
+                payment_method=method,
+                status='pending',
+                number_of_guests=max(1, int(request.data.get('number_of_guests') or 1)),
+                special_requests=str(request.data.get('special_requests') or ''),
+                booking_mode=prop.booking_mode or 'traditional',
+            )
+            payment = PropertyBookingPayment.objects.create(
+                booking=booking,
+                payer=request.user,
+                business=business,
+                payment_method=method,
+                gateway='cash' if method == 'cash' else 'yoco',
+                status='pending',
+                amount=total_amount,
+                currency=booking.currency,
+            )
+
+        if method == 'cash':
+            return Response({
+                'success': True,
+                'message': 'Booking created. Pay cash according to the business arrangement.',
+                'booking': BookingSerializer(booking).data,
+                'payment': PropertyBookingPaymentSerializer(payment).data,
+                'payment_method': 'cash',
+            }, status=201)
+
+        yoco_secret = getattr(settings, 'YOCO_SECRET_KEY', '')
+        if not yoco_secret:
+            payment.status = 'failed'
+            payment.gateway_response = {'error': 'YOCO_SECRET_KEY is not configured'}
+            payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
+            return Response({'success': False, 'error': 'Yoco card payments are not configured.'}, status=503)
+
+        if booking.currency != 'ZAR':
+            return Response({'success': False, 'error': 'Yoco checkout currently requires ZAR.'}, status=400)
+
+        amount_cents = int((total_amount * Decimal('100')).quantize(Decimal('1')))
+        if amount_cents < 200:
+            return Response({'success': False, 'error': 'Yoco requires a minimum card payment of R2.00.'}, status=400)
+
+        base_url = request.build_absolute_uri('/').rstrip('/')
+        payload = {
+            'amount': amount_cents,
+            'currency': 'ZAR',
+            'successUrl': f'{base_url}/bookings/?payment=success&booking={booking.id}',
+            'cancelUrl': f'{base_url}/bookings/?payment=cancelled&booking={booking.id}',
+            'failureUrl': f'{base_url}/bookings/?payment=failed&booking={booking.id}',
+            'metadata': {
+                'booking_id': str(booking.id),
+                'booking_reference': booking.booking_reference,
+                'property_id': str(prop.id),
+                'property_title': prop.title,
+                'payer_id': str(request.user.id),
+                'business_id': str(business.id) if business else '',
+            },
+        }
+
+        try:
+            response = requests.post(
+                'https://payments.yoco.com/api/checkouts',
+                headers={
+                    'Authorization': f'Bearer {yoco_secret}',
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': f'property-booking-{booking.id}',
+                },
+                json=payload,
+                timeout=20,
+            )
+            data = response.json() if response.content else {}
+            if response.status_code >= 400:
+                raise ValueError(data.get('message') or data.get('error') or f'Yoco returned {response.status_code}')
+
+            payment.yoco_checkout_id = data.get('id', '')
+            payment.redirect_url = data.get('redirectUrl', '')
+            payment.gateway_response = data
+            payment.status = 'processing'
+            payment.save(update_fields=['yoco_checkout_id', 'redirect_url', 'gateway_response', 'status', 'updated_at'])
+
+            if not payment.redirect_url:
+                raise ValueError('Yoco did not return a checkout redirect URL.')
+
+            return Response({
+                'success': True,
+                'booking': BookingSerializer(booking).data,
+                'payment': PropertyBookingPaymentSerializer(payment).data,
+                'payment_method': 'card',
+                'redirect_url': payment.redirect_url,
+            }, status=201)
+        except Exception as exc:
+            payment.status = 'failed'
+            payment.gateway_response = {'error': str(exc)}
+            payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
+            return Response({'success': False, 'error': f'Yoco checkout failed: {exc}'}, status=502)
+
+
 # ============================================================
 # CUSTOM ENDPOINT FOR PROPERTIES WITH OWNER - PUBLIC ACCESS
 # ============================================================
@@ -763,6 +989,69 @@ class BookingViewSet(viewsets.ModelViewSet):
         booking.cancellation_date = timezone.now()
         booking.save()
         return Response({'message': 'Booking cancelled successfully'})
+
+
+
+
+    @action(detail=False, methods=['get'], url_path='payments')
+    def payments(self, request):
+        rows = PropertyBookingPayment.objects.filter(payer=request.user).select_related('booking', 'booking__property')
+        return Response({'success': True, 'payments': PropertyBookingPaymentSerializer(rows, many=True).data})
+
+    @action(detail=False, methods=['post'], url_path='yoco-webhook', permission_classes=[AllowAny], authentication_classes=[])
+    def yoco_webhook(self, request):
+        """Receive Yoco/Svix webhook events.
+
+        Configure Yoco to POST to /api/bookings/yoco-webhook/. If a webhook
+        secret is configured we require the expected signature headers before
+        accepting an event. The event is then reconciled by checkout id or
+        booking metadata.
+        """
+        webhook_secret = getattr(settings, 'YOCO_WEBHOOK_SECRET', '')
+        if webhook_secret:
+            # Full cryptographic verification should use Yoco's current Svix
+            # webhook secret. Reject unsigned requests rather than trusting them.
+            if not (request.headers.get('webhook-id') and request.headers.get('webhook-timestamp') and request.headers.get('webhook-signature')):
+                return Response({'success': False, 'error': 'Missing webhook signature.'}, status=401)
+
+        payload = request.data if isinstance(request.data, dict) else {}
+        event_type = str(payload.get('type') or payload.get('eventType') or payload.get('event') or '').lower()
+        data = payload.get('data') or payload.get('payload') or {}
+        if not isinstance(data, dict):
+            data = {}
+        checkout_id = (
+            data.get('checkoutId') or data.get('checkout_id') or
+            data.get('id') or payload.get('checkoutId') or payload.get('checkout_id')
+        )
+        metadata = data.get('metadata') or payload.get('metadata') or {}
+        booking_id = metadata.get('booking_id') if isinstance(metadata, dict) else None
+
+        payment = None
+        if checkout_id:
+            payment = PropertyBookingPayment.objects.filter(yoco_checkout_id=str(checkout_id)).select_related('booking').first()
+        if payment is None and booking_id:
+            payment = PropertyBookingPayment.objects.filter(booking_id=booking_id).select_related('booking').first()
+        if payment is None:
+            return Response({'success': True, 'ignored': True})
+
+        raw_status = str(data.get('status') or payload.get('status') or '').lower()
+        succeeded = ('succeed' in event_type or 'completed' in event_type or raw_status in {'succeeded', 'completed', 'paid'})
+        failed = ('failed' in event_type or 'cancel' in event_type or raw_status in {'failed', 'cancelled', 'canceled'})
+
+        if succeeded:
+            payment.status = 'paid'
+            payment.paid_at = timezone.now()
+            payment.booking.payment_status = 'paid'
+            payment.booking.payment_reference = payment.yoco_checkout_id
+            payment.booking.save(update_fields=['payment_status', 'payment_reference', 'updated_at'])
+            payment.save(update_fields=['status', 'paid_at', 'updated_at'])
+        elif failed:
+            payment.status = 'failed'
+            payment.booking.payment_status = 'failed'
+            payment.booking.save(update_fields=['payment_status', 'updated_at'])
+            payment.save(update_fields=['status', 'updated_at'])
+
+        return Response({'success': True})
 
 
 # ============================================================

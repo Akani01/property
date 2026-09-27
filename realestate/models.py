@@ -607,6 +607,20 @@ class Property(models.Model):
             year = timezone.now().year
             random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             self.property_reference = f"PROP-{year}-{random_chars}"
+
+        # Purpose-aware stay fields. Minimum/maximum stay only make sense for
+        # short-stay and vacation-rental inventory. Clear stale values when a
+        # listing is switched to another purpose so the UI can never leak a
+        # minimum-stay label onto land, sale, commercial or long-stay listings.
+        if self.property_purpose in {'short_stay', 'vacation_rental'}:
+            if not self.minimum_stay:
+                self.minimum_stay = 1
+        else:
+            self.minimum_stay = None
+            self.maximum_stay = None
+            if self.property_purpose in {'sale', 'land_sale', 'commercial_lease'}:
+                self.stay_type = 'not_applicable'
+
         if self.address and (not self.latitude or not self.longitude):
             self.geocode_address()
         super().save(*args, **kwargs)
@@ -1811,3 +1825,93 @@ class AgentConnection(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.connection_type} - {self.agent.display_name or self.agent.user.username}"
+
+# ============================================================
+# PROPERTY PAYMENTS / BUSINESS PAYOUT SETTINGS
+# ============================================================
+class PropertyPaymentProfile(models.Model):
+    """Safe payment/payout preferences for a property business.
+
+    Card PAN/CVV data is deliberately NOT stored here. Yoco hosts card entry.
+    """
+    ACCOUNT_TYPES = (
+        ('cheque', 'Cheque / Current'),
+        ('savings', 'Savings'),
+        ('business', 'Business'),
+        ('transmission', 'Transmission'),
+    )
+
+    business = models.OneToOneField(
+        BusinessProfile,
+        on_delete=models.CASCADE,
+        related_name='property_payment_profile',
+    )
+    accept_cash = models.BooleanField(default=True)
+    accept_card = models.BooleanField(default=True)
+    yoco_enabled = models.BooleanField(default=True)
+    yoco_merchant_reference = models.CharField(max_length=200, blank=True)
+
+    bank_name = models.CharField(max_length=120, blank=True)
+    account_holder = models.CharField(max_length=160, blank=True)
+    account_number = models.CharField(max_length=40, blank=True)
+    branch_code = models.CharField(max_length=20, blank=True)
+    account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES, default='cheque')
+    payout_reference = models.CharField(max_length=120, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'realestate'
+
+    @property
+    def is_payout_complete(self):
+        return bool(self.bank_name and self.account_holder and self.account_number and self.branch_code)
+
+    @property
+    def masked_account_number(self):
+        value = self.account_number or ''
+        if not value:
+            return ''
+        return ('•' * max(0, len(value) - 4)) + value[-4:]
+
+    def __str__(self):
+        return f"{self.business} property payment profile"
+
+
+class PropertyBookingPayment(models.Model):
+    METHOD_CHOICES = (
+        ('cash', 'Cash'),
+        ('card', 'Card / Yoco'),
+    )
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+        ('refunded', 'Refunded'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment_record')
+    payer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='property_booking_payments')
+    business = models.ForeignKey(BusinessProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='property_booking_payments')
+    payment_method = models.CharField(max_length=20, choices=METHOD_CHOICES)
+    gateway = models.CharField(max_length=30, blank=True, default='')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    currency = models.CharField(max_length=3, default='ZAR')
+    yoco_checkout_id = models.CharField(max_length=200, blank=True)
+    redirect_url = models.URLField(blank=True)
+    gateway_response = models.JSONField(default=dict, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'realestate'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.booking.booking_reference} - {self.payment_method} - {self.status}"
