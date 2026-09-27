@@ -632,6 +632,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .provider-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.provider-meta{font-size:9px;color:var(--muted);margin-top:5px}
 @media(max-width:520px){.service-choice-list{grid-template-columns:1fr}.vehicle-choice{min-width:96px}.provider{min-width:76vw}}
 
+
+/* ---------- service timer ---------- */
+.service-timer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.service-timer-main{display:flex;align-items:center;gap:9px;min-width:0}.service-timer-main i{color:var(--jade)}
+.service-timer-copy strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.service-timer-value{font-variant-numeric:tabular-nums;font-size:19px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.service-timer.done{background:#eef8f2}.service-timer.cancelled{background:#fff2ef}
+.btn.danger{background:var(--danger);color:#fff}.btn.success{background:var(--jade);color:#fff}
+
 </style>
 
 
@@ -1389,6 +1398,57 @@ function escapeHtml(v){const d=document.createElement('div');d.textContent=v??''
 
 function statusLabel(s){return({requested:'Finding a washer…',searching:'Finding a washer…',accepted:'Washer accepted your request',en_route:'Your washer is approaching',arrived:'Your washer has arrived',washing:'Your wash is in progress',completed:'Wash completed',cancelled:'Request cancelled',declined:'Request declined',expired:'Request expired'})[s]||s}
 
+let serviceTimerTicker=null;
+function formatServiceDuration(seconds){
+  seconds=Math.max(0,Math.floor(Number(seconds)||0));
+  const h=Math.floor(seconds/3600);
+  const m=Math.floor((seconds%3600)/60);
+  const sec=seconds%60;
+  return h>0
+    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function elapsedFromRequest(r){
+  if(!r?.started_at)return null;
+  const start=Date.parse(r.started_at);
+  if(!Number.isFinite(start))return null;
+  const endValue=r.completed_at||r.cancelled_at||null;
+  const end=endValue?Date.parse(endValue):Date.now();
+  return Math.max(0,Math.floor((end-start)/1000));
+}
+function serviceTimerHtml(r){
+  const elapsed=elapsedFromRequest(r);
+  if(elapsed===null)return '';
+  const live=r.status==='washing';
+  const cls=r.status==='completed'?'done':(r.status==='cancelled'?'cancelled':'');
+  const label=live?'Service running':(r.status==='completed'?'Service duration':'Time before cancellation');
+  const end=r.completed_at||r.cancelled_at||'';
+  return `<div class="service-timer ${cls}"><div class="service-timer-main"><i class="fas fa-stopwatch"></i><div class="service-timer-copy"><strong>${label}</strong><div class="service-timer-value" data-service-start="${escapeHtml(r.started_at)}" data-service-end="${escapeHtml(end)}">${formatServiceDuration(elapsed)}</div></div></div>${live?'<span class="status-pill">LIVE</span>':''}</div>`;
+}
+function refreshServiceTimers(){
+  document.querySelectorAll('[data-service-start]').forEach(el=>{
+    const start=Date.parse(el.dataset.serviceStart||'');
+    if(!Number.isFinite(start))return;
+    const endRaw=el.dataset.serviceEnd||'';
+    const end=endRaw?Date.parse(endRaw):Date.now();
+    el.textContent=formatServiceDuration(Math.max(0,(end-start)/1000));
+  });
+}
+function ensureServiceTimerTicker(){
+  if(serviceTimerTicker!==null)return;
+  refreshServiceTimers();
+  serviceTimerTicker=setInterval(refreshServiceTimers,1000);
+}
+function applyCarwashDeepLink(){
+  const params=new URLSearchParams(window.location.search);
+  const panel=params.get('panel');
+  const requestId=params.get('request');
+  if(panel&&document.getElementById(panel))openPanel(panel);
+  if(requestId&&!IS_BUSINESS){activeRequestId=requestId;openPanel('trackWash');startTracking(requestId,true)}
+  if(requestId&&IS_BUSINESS){openPanel('bizRequests');loadBusinessRequests()}
+}
+
+
 
 
 
@@ -1852,8 +1912,40 @@ function trackFromHistory(id){activeRequestId=id;openPanel('trackWash');startTra
 
 
 
-async function startTracking(requestId,focus=false){activeRequestId=requestId;const draw=async()=>{try{const data=await api(`/carwash/api/requests/${requestId}/tracking/`);const r=data.request,loc=data.provider_location;const box=document.getElementById('trackContent');if(box)box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.quote?.business_name||'')}${r.worker?' · '+escapeHtml(r.worker.display_name||r.worker.username):''}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p></div>`;if(loc){const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};if(!trackingMarker)trackingMarker=new google.maps.Marker({position:pos,map,zIndex:1001,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:7,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:2}});else trackingMarker.setPosition(pos);if(focus&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70)}}if(!['completed','cancelled','declined','expired'].includes(r.status))setTimeout(draw,5000)}catch(e){setTimeout(draw,8000)}};draw()}
+async function startTracking(requestId,focus=false){
+  activeRequestId=requestId;
+  const draw=async()=>{
+    try{
+      const data=await api(`/carwash/api/requests/${requestId}/tracking/`);
+      const r=data.request,loc=data.provider_location;
+      const box=document.getElementById('trackContent');
+      if(box){
+        const timer=serviceTimerHtml(r);
+        const customerCancel=!['completed','cancelled','declined','expired','washing'].includes(r.status)
+          ? `<button class="btn danger small" type="button" onclick="customerCancelWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel request</button>`:'';
+        box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.quote?.business_name||'')}${r.worker?' · '+escapeHtml(r.worker.display_name||r.worker.username):''}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button></div></div>`;
+        ensureServiceTimerTicker();
+      }
+      if(loc){
+        const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};
+        if(!trackingMarker)trackingMarker=new google.maps.Marker({position:pos,map,zIndex:1001,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:7,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:2}});
+        else trackingMarker.setPosition(pos);
+        if(focus&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70)}
+      }
+      if(!['completed','cancelled','declined','expired'].includes(r.status))setTimeout(draw,5000);
+    }catch(e){setTimeout(draw,8000)}
+  };
+  draw();
+}
 
+async function customerCancelWash(id){
+  if(!confirm('Cancel this car wash request?'))return;
+  try{
+    await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status:'cancelled',note:'Customer cancelled request'})});
+    await loadCustomerRequests();
+    startTracking(id,false);
+  }catch(e){alert(e.message)}
+}
 
 
 async function loadCustomerPayments(){
@@ -2129,17 +2221,28 @@ async function toggleAvailability(){if(!businessData)return;const goingLive=!bus
 
 
 
-async function loadBusinessRequests(){if(!BUSINESS_ID)return;const box=document.getElementById('businessRequests');try{const d=await api('/carwash/api/requests/');const rows=Array.isArray(d)?d:(d.results||[]);box.innerHTML=rows.length?rows.map(r=>`<article class="list-card"><div class="list-top"><div><h4>${escapeHtml(r.quote?.service_name||'Wash request')}</h4><p>${escapeHtml(r.quote?.vehicle_name||'')} · ${escapeHtml(r.quote?.service_address||'')}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><div class="actions">
-<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')">
-  <i class="fas fa-comment-dots"></i> Message customer
-</button>
+async function loadBusinessRequests(){
+  if(!BUSINESS_ID)return;
+  const box=document.getElementById('businessRequests');
+  try{
+    const d=await api('/carwash/api/requests/');
+    const rows=Array.isArray(d)?d:(d.results||[]);
+    box.innerHTML=rows.length?rows.map(r=>{
+      const timer=serviceTimerHtml(r);
+      const cancellable=['requested','accepted','en_route','arrived','washing'].includes(r.status);
+      return `<article class="list-card"><div class="list-top"><div><h4>${escapeHtml(r.quote?.service_name||'Wash request')}</h4><p>${escapeHtml(r.quote?.vehicle_name||'')} · ${escapeHtml(r.quote?.service_address||'')}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div>${timer}<div class="actions">
+<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message customer</button>
 ${r.status==='requested'?`<button class="btn small" onclick="businessAccept('${r.id}')">Accept</button>`:''}
 ${r.status==='accepted'?`<button class="btn small" onclick="businessSetStatus('${r.id}','en_route')">En route</button>`:''}
 ${r.status==='en_route'?`<button class="btn small" onclick="businessSetStatus('${r.id}','arrived')">Arrived</button>`:''}
-${r.status==='arrived'?`<button class="btn small" onclick="businessSetStatus('${r.id}','washing')">Start wash</button>`:''}
-${r.status==='washing'?`<button class="btn small" onclick="businessSetStatus('${r.id}','completed')">Complete</button>`:''}
-</div></article>`).join(''):'<div class="empty">No wash requests yet.</div>'}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
-
+${r.status==='arrived'?`<button class="btn success small" onclick="businessSetStatus('${r.id}','washing')"><i class="fas fa-play"></i> Start wash</button>`:''}
+${r.status==='washing'?`<button class="btn success small" onclick="finishWash('${r.id}')"><i class="fas fa-check"></i> Done</button>`:''}
+${cancellable?`<button class="btn danger small" onclick="cancelBusinessWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel</button>`:''}
+</div></article>`;
+    }).join(''):'<div class="empty">No wash requests yet.</div>';
+    ensureServiceTimerTicker();
+  }catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}
+}
 
 
 async function businessAccept(id){try{await api(`/carwash/api/requests/${id}/accept/`,{method:'POST',body:'{}'});loadBusinessRequests()}catch(e){alert(e.message)}}
@@ -2147,6 +2250,19 @@ async function businessAccept(id){try{await api(`/carwash/api/requests/${id}/acc
 
 
 async function businessSetStatus(id,status){try{await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status})});loadBusinessRequests()}catch(e){alert(e.message)}}
+
+async function finishWash(id){
+  if(!confirm('Mark this wash as done? The service timer will stop.'))return;
+  await businessSetStatus(id,'completed');
+}
+async function cancelBusinessWash(id){
+  const reason=prompt('Optional cancellation reason:','') ?? null;
+  if(reason===null)return;
+  try{
+    await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status:'cancelled',note:reason||'Provider cancelled wash'})});
+    loadBusinessRequests();
+  }catch(e){alert(e.message)}
+}
 
 
 

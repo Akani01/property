@@ -2033,6 +2033,83 @@ def create_quote(request):
 
 
 
+# ============================================================
+# CARWASH NOTIFICATIONS
+# ============================================================
+def _notify_carwash_user(user, title, message, wash_request, panel='trackWash'):
+    """Send one unified in-app + push notification without breaking carwash flow."""
+    if not user:
+        return
+    try:
+        from hiring.views import NotificationService
+        NotificationService.notify(
+            user=user,
+            title=title,
+            message=message,
+            notification_type='system',
+            app_source='carwash',
+            action_url=f'/carwash/?panel={panel}&request={wash_request.id}',
+            send_push=True,
+            sound=True,
+        )
+    except Exception:
+        # Notifications must never roll back a wash request/status update.
+        pass
+
+
+def _notify_new_carwash_request(wash_request):
+    customer_name = wash_request.customer.get_full_name() or wash_request.customer.get_username()
+    owner = getattr(wash_request.business, 'owner', None)
+    _notify_carwash_user(
+        owner,
+        'New car wash request',
+        f'{customer_name} requested {wash_request.quote.service_name if hasattr(wash_request.quote, "service_name") else wash_request.quote.service.name}.',
+        wash_request,
+        panel='bizRequests',
+    )
+
+
+def _notify_carwash_status(wash_request, actor=None):
+    status_map = {
+        'requested': ('Car wash requested', 'Your car wash request has been sent.'),
+        'accepted': ('Car wash accepted', 'Your provider accepted your car wash request.'),
+        'en_route': ('Provider en route', 'Your washer is on the way.'),
+        'arrived': ('Provider arrived', 'Your washer has arrived.'),
+        'washing': ('Wash started', 'Your car wash has started. The service timer is now running.'),
+        'completed': ('Wash complete', 'Your car wash is complete.'),
+        'cancelled': ('Car wash cancelled', 'This car wash request was cancelled.'),
+        'declined': ('Car wash declined', 'The provider could not accept your request.'),
+        'expired': ('Car wash request expired', 'Your car wash request expired.'),
+    }
+    title, message = status_map.get(
+        wash_request.status,
+        ('Car wash update', f'Your car wash status is now {wash_request.status}.'),
+    )
+
+    # Provider action -> tell customer. Customer action -> tell provider/worker.
+    if not actor or actor.id != wash_request.customer_id:
+        _notify_carwash_user(wash_request.customer, title, message, wash_request, panel='trackWash')
+
+    if wash_request.status == 'cancelled' and actor and actor.id == wash_request.customer_id:
+        owner = getattr(wash_request.business, 'owner', None)
+        _notify_carwash_user(
+            owner,
+            'Customer cancelled wash',
+            f'{wash_request.customer.get_full_name() or wash_request.customer.get_username()} cancelled the wash request.',
+            wash_request,
+            panel='bizRequests',
+        )
+        worker_user = getattr(getattr(wash_request, 'assigned_worker', None), 'user', None)
+        if worker_user and (not owner or worker_user.id != owner.id):
+            _notify_carwash_user(
+                worker_user,
+                'Wash cancelled',
+                'The customer cancelled this wash request.',
+                wash_request,
+                panel='bizRequests',
+            )
+
+
 class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
@@ -2167,6 +2244,8 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
         record_status(wash_request, 'requested', request.user, 'Customer requested wash')
 
+        transaction.on_commit(lambda: _notify_new_carwash_request(wash_request))
+
 
 
 
@@ -2263,7 +2342,7 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
         record_status(wash_request, 'accepted', request.user, 'Washer accepted request')
 
-
+        transaction.on_commit(lambda: _notify_carwash_status(wash_request, request.user))
 
         return Response({'success': True, 'request': self.get_serializer(wash_request).data})
 
@@ -2345,7 +2424,7 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
-            'washing': {'completed'},
+            'washing': {'completed', 'cancelled'},
 
 
 
@@ -2406,12 +2485,10 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
         if new_status in field_map:
-
-
-
-            setattr(wash_request, field_map[new_status], now)
-
-
+            field_name = field_map[new_status]
+            # Preserve the original start time if the endpoint is retried.
+            if not getattr(wash_request, field_name, None):
+                setattr(wash_request, field_name, now)
 
         wash_request.save()
 
@@ -2457,26 +2534,17 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
-        if new_status == 'completed' and wash_request.assigned_worker:
-
-
-
+        if new_status in {'completed', 'cancelled'} and wash_request.assigned_worker:
             worker = wash_request.assigned_worker
-
-
-
-            worker.completed_washes += 1
-
-
-
+            if new_status == 'completed':
+                worker.completed_washes += 1
             worker.is_available = True
+            fields = ['is_available', 'updated_at']
+            if new_status == 'completed':
+                fields.insert(0, 'completed_washes')
+            worker.save(update_fields=fields)
 
-
-
-            worker.save(update_fields=['completed_washes', 'is_available', 'updated_at'])
-
-
-
+        if new_status == 'completed':
             try:
 
 
@@ -2510,16 +2578,9 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
             except CarWashPayment.DoesNotExist:
-
-
-
                 pass
 
-
-
-
-
-
+        transaction.on_commit(lambda: _notify_carwash_status(wash_request, request.user))
 
         return Response({'success': True, 'request': self.get_serializer(wash_request).data})
 
