@@ -444,6 +444,8 @@ DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
 
 
+YOCO_PUBLIC_KEY = os.getenv("YOCO_PUBLIC_KEY", "")
+YOCO_SECRET_KEY = os.getenv("YOCO_SECRET_KEY", "")
 # ============================================================
 # STATIC FILES
 # ============================================================

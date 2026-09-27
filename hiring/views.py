@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -42,6 +43,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from webpush import send_user_notification
 from webpush.models import PushInformation
+from carwash.models import *
 from realestate.models import (
     Property, 
     PropertyType, 
@@ -62,6 +64,8 @@ from notifications.models import *
 from realestate.models import PropertyAnalytics
 from hiring.models import CustomUser, ApplicantProfile, BusinessProfile
 from django.db import transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import logging
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
@@ -147,73 +151,263 @@ def superuser_required(view_func):
 
 # ===== END OF UPDATED ADMIN_REQUIRED DECORATOR =====
 
-# Create a simple notification service inline to avoid missing imports
+# ============================================================
+# OPPOGLOBE UNIFIED NOTIFICATION SERVICE
+# ============================================================
 class NotificationService:
+    DEFAULT_ICON = '/static/hiring/icons/icon-192.png'
+    DEFAULT_BADGE = '/static/hiring/icons/icon-72x72.png'
+
+    @staticmethod
+    def _payload(title, message, action_url='/alerts/', app_source='system', notification_type='system', sound=True, icon=None, badge=None):
+        return {
+            'head': title,
+            'title': title,
+            'body': message,
+            'icon': icon or NotificationService.DEFAULT_ICON,
+            'badge': badge or NotificationService.DEFAULT_BADGE,
+            'url': action_url or '/alerts/',
+            'action_url': action_url or '/alerts/',
+            'app_source': app_source or 'system',
+            'notification_type': notification_type or 'system',
+            'silent': not bool(sound),
+            'sound': bool(sound),
+            'tag': f"oppoglobe-{app_source or 'system'}-{notification_type or 'system'}",
+        }
+
+    @staticmethod
+    def _send_push(user, payload, ttl=86400):
+        if not user or not getattr(user, 'is_active', True):
+            return False
+        try:
+            send_user_notification(user=user, payload=json.dumps(payload), ttl=ttl)
+            return True
+        except Exception as exc:
+            logger.warning('OppoGlobe push failed for user %s: %s', getattr(user, 'id', None), exc)
+            return False
+
+    @staticmethod
+    def notify(user, title, message, notification_type='system', app_source='system', action_url='/alerts/', send_push=True, sound=True, icon=None, badge=None, ttl=86400, create_in_app=True):
+        if not user:
+            return {'success': False, 'alert': None, 'push_sent': False, 'error': 'No user supplied'}
+        try:
+            payload = NotificationService._payload(title, message, action_url, app_source, notification_type, sound, icon, badge)
+            alert_obj = None
+            business_profile = BusinessProfile.objects.filter(user=user).first()
+
+            if create_in_app:
+                if business_profile:
+                    valid = {'application', 'expiry', 'custom', 'system'}
+                    alert_obj = BusinessAlert(
+                        business=business_profile,
+                        alert_type=notification_type if notification_type in valid else 'custom',
+                        title=title,
+                        message=message,
+                        is_active=True,
+                        is_read=False,
+                    )
+                    alert_obj._oppoglobe_push_payload = payload if send_push else False
+                    alert_obj._oppoglobe_push_ttl = ttl
+                    alert_obj.save()
+                    try:
+                        BusinessSentNotification.objects.create(
+                            business=business_profile,
+                            subject=title,
+                            message=message,
+                            notification_type=notification_type if notification_type in {'application', 'job', 'system', 'marketing'} else 'system',
+                        )
+                    except Exception as exc:
+                        logger.warning('Business notification history failed: %s', exc)
+                else:
+                    profile = ApplicantProfile.objects.filter(user=user).first()
+                    if profile is None:
+                        profile = ApplicantProfile.objects.create(user=user)
+                    alert_obj = Alert(applicant=profile, title=title, message=message, is_read=False)
+                    alert_obj._oppoglobe_push_payload = payload if send_push else False
+                    alert_obj._oppoglobe_push_ttl = ttl
+                    alert_obj.save()
+                    try:
+                        SentNotification.objects.create(
+                            applicant=profile,
+                            notification_type=notification_type,
+                            subject=title,
+                            message=message,
+                            sent_via='in_app',
+                        )
+                    except Exception as exc:
+                        logger.warning('Notification history failed: %s', exc)
+                push_sent = bool(send_push)
+            else:
+                push_sent = NotificationService._send_push(user, payload, ttl=ttl) if send_push else False
+
+            return {'success': True, 'alert': alert_obj, 'push_sent': push_sent}
+        except Exception as exc:
+            logger.exception('NotificationService.notify failed: %s', exc)
+            return {'success': False, 'alert': None, 'push_sent': False, 'error': str(exc)}
+
     @staticmethod
     def send_application_submission(application):
-        """
-        Send notification when application is submitted
-        """
-        try:
-            # Create an alert for the applicant
-            Alert.objects.create(
-                applicant=application.applicant,
-                title="Application Submitted",
-                message=f"Your application for {application.job_listing.title} at {application.job_listing.company_name} has been submitted successfully."
-            )
-            
-            # Create a sent notification record
-            SentNotification.objects.create(
-                applicant=application.applicant,
-                notification_type='application_submitted',
-                subject="Application Submitted Successfully",
-                message=f"Your application for {application.job_listing.title} has been received and is under review.",
-                sent_via='in_app'
-            )
-            
-            logger.info(f"Notification sent for application {application.id}")
-            
-        except Exception as e:
-            logger.error(f"Error sending notification for application {application.id}: {str(e)}")
-            # Don't raise the exception - we don't want to break the application flow
-    
+        return NotificationService.notify(
+            application.applicant.user,
+            'Application Submitted',
+            f'Your application for {application.job_listing.title} at {application.job_listing.company_name} has been submitted successfully.',
+            'application', 'hiring', '/applications/', True, True,
+        )
+
+    @staticmethod
+    def send_application_status_update(application, sound=True):
+        return NotificationService.notify(
+            application.applicant.user,
+            'Application Status Updated',
+            f'Your application for {application.job_listing.title} is now {application.get_status_display()}.',
+            'application', 'hiring', '/applications/', True, sound,
+        )
+
     @staticmethod
     def send_job_alert(applicant, job_listing):
-        """
-        Send job alert notification
-        """
-        try:
-            Alert.objects.create(
-                applicant=applicant,
-                title="New Job Match",
-                message=f"A new job matching your criteria: {job_listing.title} at {job_listing.company_name}"
-            )
-            
-            SentNotification.objects.create(
-                applicant=applicant,
-                notification_type='job_alert',
-                subject="New Job Opportunity",
-                message=f"We found a job that matches your profile: {job_listing.title}",
-                sent_via='in_app'
-            )
-            
-        except Exception as e:
-            logger.error(f"Error sending job alert: {str(e)}")
-    
+        return NotificationService.notify(
+            applicant.user,
+            'New Job Match',
+            f'A new job matching your criteria: {job_listing.title} at {job_listing.company_name}',
+            'job', 'hiring', f'/jobs/{job_listing.id}/', True, True,
+        )
+
     @staticmethod
     def send_profile_reminder(applicant):
-        """
-        Send profile completion reminder
-        """
-        try:
-            if applicant.profile_completeness < 70:
-                Alert.objects.create(
-                    applicant=applicant,
-                    title="Complete Your Profile",
-                    message=f"Your profile is {applicant.profile_completeness}% complete. Complete it to increase your chances of getting hired."
-                )
-        except Exception as e:
-            logger.error(f"Error sending profile reminder: {str(e)}")
+        if applicant.profile_completeness >= 70:
+            return None
+        return NotificationService.notify(
+            applicant.user,
+            'Complete Your Profile',
+            f'Your profile is {applicant.profile_completeness}% complete. Complete it to increase your chances of getting hired.',
+            'system', 'hiring', '/profile/', True, False,
+        )
+
+    @staticmethod
+    def send_property_booking_to_guest(booking, sound=True):
+        status_map = {
+            'pending': ('Booking Received', f'Your booking for {booking.property.title} is awaiting confirmation.'),
+            'confirmed': ('Booking Confirmed', f'Your booking for {booking.property.title} has been confirmed.'),
+            'checked_in': ('Checked In', f'You are checked in at {booking.property.title}.'),
+            'checked_out': ('Checked Out', f'Your stay at {booking.property.title} has been checked out.'),
+            'cancelled': ('Booking Cancelled', f'Your booking for {booking.property.title} was cancelled.'),
+            'completed': ('Booking Completed', f'Your booking at {booking.property.title} is complete.'),
+            'refunded': ('Booking Refunded', f'Your booking for {booking.property.title} has been refunded.'),
+        }
+        title, message = status_map.get(booking.status, ('Property Booking Update', f'Your booking status is now {booking.status}.'))
+        return NotificationService.notify(booking.guest, title, message, 'booking', 'realestate', f'/bookings/{booking.id}/', True, sound)
+
+    @staticmethod
+    def send_new_property_booking_to_owner(booking, sound=True):
+        prop = booking.property
+        recipient = prop.owner or prop.listing_agent or (prop.company.user if prop.company else None)
+        if not recipient or recipient == booking.guest:
+            return None
+        guest_name = booking.guest.get_full_name() or booking.guest.username
+        return NotificationService.notify(recipient, 'New Property Booking', f'{guest_name} created a booking for {prop.title}.', 'booking', 'realestate', f'/property-bookings/{booking.id}/', True, sound)
+
+    @staticmethod
+    def send_property_inquiry(inquiry, sound=True):
+        prop = inquiry.property
+        recipient = prop.owner or prop.listing_agent or (prop.company.user if prop.company else None)
+        if not recipient:
+            return None
+        sender_name = f'{inquiry.first_name} {inquiry.last_name}'.strip()
+        return NotificationService.notify(recipient, 'New Property Inquiry', f'{sender_name} sent an inquiry about {prop.title}.', 'booking', 'realestate', f'/property-inquiries/{inquiry.id}/', True, sound)
+
+    @staticmethod
+    def send_carwash_status(wash_request, sound=True):
+        status_map = {
+            'requested': ('Car Wash Requested', 'Your car wash request has been sent to the provider.'),
+            'accepted': ('Car Wash Accepted', 'Your car wash request has been accepted.'),
+            'en_route': ('Provider En Route', 'Your car wash provider is on the way.'),
+            'arrived': ('Provider Arrived', 'Your car wash provider has arrived.'),
+            'washing': ('Wash Started', 'Your vehicle wash is now in progress.'),
+            'completed': ('Car Wash Complete', 'Your car wash has been completed.'),
+            'cancelled': ('Car Wash Cancelled', 'Your car wash request was cancelled.'),
+            'declined': ('Car Wash Declined', 'The provider could not accept your car wash request.'),
+            'expired': ('Car Wash Request Expired', 'Your car wash request expired.'),
+        }
+        title, message = status_map.get(wash_request.status, ('Car Wash Update', f'Your car wash request status is now {wash_request.status}.'))
+        return NotificationService.notify(wash_request.customer, title, message, 'carwash', 'carwash', f'/carwash/request/{wash_request.id}/', True, sound)
+
+    @staticmethod
+    def send_new_carwash_request_to_business(wash_request, sound=True):
+        owner = getattr(wash_request.business, 'owner', None)
+        if not owner:
+            return None
+        customer_name = wash_request.customer.get_full_name() or wash_request.customer.username
+        return NotificationService.notify(owner, 'New Car Wash Request', f'{customer_name} requested a car wash from {wash_request.business.name}.', 'carwash', 'carwash', f'/carwash/business/requests/{wash_request.id}/', True, sound)
+
+    @staticmethod
+    def send_carwash_worker_assignment(wash_request, sound=True):
+        worker = getattr(wash_request, 'assigned_worker', None)
+        user = getattr(worker, 'user', None) if worker else None
+        if not user:
+            return None
+        return NotificationService.notify(user, 'New Car Wash Job', 'You have been assigned a new car wash request.', 'carwash', 'carwash', f'/carwash/worker/request/{wash_request.id}/', True, sound)
+
+    @staticmethod
+    def send_bursary_application_update(application, sound=True):
+        return NotificationService.notify(application.applicant, 'Bursary Application Update', f'Your application for {application.bursary.title} is now {application.get_status_display()}.', 'education', 'education', f'/education/bursary-applications/{application.id}/', True, sound)
+
+    @staticmethod
+    def send_university_application_update(application, sound=True):
+        return NotificationService.notify(application.applicant, 'University Application Update', f'Your application to {application.university.name} is now {application.get_status_display()}.', 'education', 'education', f'/education/university-applications/{application.id}/', True, sound)
+
+    @staticmethod
+    def send_school_application_update(application, sound=True):
+        return NotificationService.notify(application.applicant, 'School Application Update', f'Your application to {application.school.name} is now {application.get_status_display()}.', 'education', 'education', f'/education/school-applications/{application.id}/', True, sound)
+
+    @staticmethod
+    def send_message_notification(message, recipient, sound=True):
+        sender_name = message.sender.get_full_name() or message.sender.username
+        preview = message.content or f'Sent you a {message.message_type}.'
+        if len(preview) > 100:
+            preview = preview[:97] + '...'
+        return NotificationService.notify(recipient, f'New message from {sender_name}', preview, 'message', 'messaging', f'/messaging/{message.conversation.id}/', True, sound)
+
+
+def _infer_notification_source(title, message):
+    value = f'{title} {message}'.lower()
+    if any(x in value for x in ('car wash', 'carwash', 'wash request', 'provider en route')):
+        return 'carwash'
+    if any(x in value for x in ('property', 'booking', 'check-in', 'tenant', 'maintenance')):
+        return 'realestate'
+    if any(x in value for x in ('bursary', 'university', 'school application', 'education')):
+        return 'education'
+    if any(x in value for x in ('job', 'application', 'candidate', 'profile')):
+        return 'hiring'
+    if any(x in value for x in ('message', 'comment', 'reply')):
+        return 'messaging'
+    return 'system'
+
+
+@receiver(post_save, sender=Alert)
+def _oppoglobe_alert_push(sender, instance, created, **kwargs):
+    if not created:
+        return
+    marker = getattr(instance, '_oppoglobe_push_payload', 'missing')
+    if marker is False:
+        return
+    payload = marker if marker != 'missing' else NotificationService._payload(
+        instance.title, instance.message, '/alerts/', _infer_notification_source(instance.title, instance.message), 'system', True
+    )
+    NotificationService._send_push(instance.applicant.user, payload, getattr(instance, '_oppoglobe_push_ttl', 86400))
+
+
+@receiver(post_save, sender=BusinessAlert)
+def _oppoglobe_business_alert_push(sender, instance, created, **kwargs):
+    if not created:
+        return
+    marker = getattr(instance, '_oppoglobe_push_payload', 'missing')
+    if marker is False:
+        return
+    payload = marker if marker != 'missing' else NotificationService._payload(
+        instance.title, instance.message, '/alerts/', _infer_notification_source(instance.title, instance.message), instance.alert_type or 'system', True
+    )
+    NotificationService._send_push(instance.business.user, payload, getattr(instance, '_oppoglobe_push_ttl', 86400))
+
 
 # HTML PAGE VIEWS
 
@@ -1121,6 +1315,7 @@ def property_booking_update(request, booking_id):
         
         booking.status = new_status
         booking.save()
+        NotificationService.send_property_booking_to_guest(booking)
         
         return JsonResponse({
             'success': True,
@@ -1515,6 +1710,8 @@ def book_property_api(request, property_id):
         # Update property status
         property_obj.status = 'booked'
         property_obj.save()
+        NotificationService.send_property_booking_to_guest(booking)
+        NotificationService.send_new_property_booking_to_owner(booking)
         
         return JsonResponse({
             'success': True,
@@ -1695,6 +1892,8 @@ def book_property_api(request, property_id):
         # Update property status
         property_obj.status = 'booked'
         property_obj.save()
+        NotificationService.send_property_booking_to_guest(booking)
+        NotificationService.send_new_property_booking_to_owner(booking)
         
         return JsonResponse({
             'success': True,
@@ -2324,7 +2523,7 @@ def api_skills(request, skill_id=None):
 #to delete the added skills
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def api_delete_alert(request, alert_id):
+def legacy_api_delete_alert(request, alert_id):
     """Delete an alert"""
     if request.user.user_type != 'applicant':
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
@@ -3018,7 +3217,7 @@ def api_apply_job(request, job_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def api_alerts(request):
+def legacy_api_alerts(request):
     if request.user.user_type != 'applicant':
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
     
@@ -3303,7 +3502,7 @@ def api_notification_preferences(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def api_alerts(request):
+def legacy_api_alerts(request):
     """Get alerts for both applicants and business users"""
     # ✅ ALLOW BOTH applicants AND business users
     if request.user.user_type not in ['applicant', 'admin']:
@@ -3395,7 +3594,7 @@ def api_alerts(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def api_mark_alert_read(request, alert_id):
+def legacy_api_mark_alert_read(request, alert_id):
     """Mark an alert as read for both user types"""
     if request.user.user_type not in ['applicant', 'admin']:
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
@@ -3425,7 +3624,7 @@ def api_mark_alert_read(request, alert_id):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def api_delete_alert(request, alert_id):
+def legacy_api_delete_alert(request, alert_id):
     """Delete an alert for both user types"""
     if request.user.user_type not in ['applicant', 'admin']:
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
@@ -3513,8 +3712,11 @@ def employment_page(request):
     return render(request, 'hiring/employment.html')
 
 def alerts_page(request):
-    """Render alerts management page"""
-    return render(request, 'hiring/alerts.html')
+    """Render the unified OppoGlobe notification centre."""
+    return render(request, 'hiring/alerts.html', {
+        'page_title': 'Notifications',
+        'vapid_public_key': getattr(settings, 'VAPID_PUBLIC_KEY', ''),
+    })
 
 def preferences_page(request):
     """Render notification preferences page"""
@@ -7369,7 +7571,7 @@ def api_admin_quick_stats(request):
 # ==================== USER ALERTS VIEWS ====================
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def api_user_alerts(request):
+def legacy_api_user_alerts(request):
     """Get alerts for both applicants and business users - FIXED FOR TEMPLATES"""
     print(f"DEBUG: User: {request.user.username}, User Type: {request.user.user_type}")
     
@@ -7465,7 +7667,7 @@ def api_user_alerts(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def api_mark_alert_read(request, alert_id):
+def legacy_api_mark_alert_read(request, alert_id):
     """Mark an alert as read for both user types - FIXED FOR TEMPLATES"""
     print(f"DEBUG: Mark as read - User: {request.user.username}, User Type: {request.user.user_type}")
     
@@ -7501,7 +7703,7 @@ def api_mark_alert_read(request, alert_id):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def api_delete_alert(request, alert_id):
+def legacy_api_delete_alert(request, alert_id):
     """Delete an alert for both user types - FIXED FOR TEMPLATES"""
     print(f"DEBUG: Delete alert - User: {request.user.username}, User Type: {request.user.user_type}")
     
@@ -10357,7 +10559,7 @@ def pwa_manifest(request):
     return response
 
     
-def pwa_sw(request):
+def legacy_pwa_sw(request):
     """Serve service worker"""
     sw_path = os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'sw.js')
     print(f"Checking SW: {sw_path}")  # Check console
@@ -10629,7 +10831,7 @@ def sync_pending_data(request):
 
 @csrf_exempt
 @login_required
-def save_push_subscription(request):
+def legacy_save_push_subscription(request):
     """Save push notification subscription"""
     if request.method == 'POST':
         try:
@@ -10659,7 +10861,7 @@ def save_push_subscription(request):
 
     
 @login_required
-def send_test_notification(request):
+def legacy_send_test_notification(request):
     """Send a test push notification"""
     try:
         from webpush import send_user_notification
@@ -10681,7 +10883,7 @@ def send_test_notification(request):
 
 
 @cache_control(max_age=86400, public=True)
-def pwa_sw(request):
+def legacy_pwa_sw(request):
     """Serve service worker with caching to avoid rate limiting"""
     sw_paths = [
         os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'sw.js'),
@@ -11679,3 +11881,204 @@ class PasswordResetConfirmView(APIView):
                 'success': False,
                 'error': 'An unexpected error occurred. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# ============================================================
+# CANONICAL OPPOGLOBE ALERT / PUSH ENDPOINTS
+# ============================================================
+def _serialize_unified_alert(alert, user_type):
+    return {
+        'id': str(alert.id),
+        'title': alert.title,
+        'message': alert.message,
+        'is_read': bool(alert.is_read),
+        'created_at': alert.created_at.isoformat(),
+        'type': getattr(alert, 'alert_type', 'system') or 'system',
+        'app_source': _infer_notification_source(alert.title, alert.message),
+        'user_type': user_type,
+    }
+
+
+def _unified_alerts_for_user(user):
+    data = []
+    business_profile = BusinessProfile.objects.filter(user=user).first()
+    if business_profile:
+        queryset = BusinessAlert.objects.filter(business=business_profile, is_active=True).order_by('-created_at')[:100]
+        data = [_serialize_unified_alert(x, 'business') for x in queryset]
+    else:
+        profile = ApplicantProfile.objects.filter(user=user).first()
+        if profile:
+            queryset = Alert.objects.filter(applicant=profile).order_by('-created_at')[:100]
+            data = [_serialize_unified_alert(x, 'applicant') for x in queryset]
+    data.sort(key=lambda x: x['created_at'], reverse=True)
+    return data
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_alerts(request):
+    try:
+        alerts = _unified_alerts_for_user(request.user)
+        return Response({'success': True, 'alerts': alerts, 'total': len(alerts), 'unread_count': sum(1 for x in alerts if not x['is_read'])})
+    except Exception as exc:
+        logger.exception('Unified alerts load failed: %s', exc)
+        return Response({'success': False, 'alerts': [], 'error': 'Failed to load notifications.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_user_alerts(request):
+    try:
+        alerts = _unified_alerts_for_user(request.user)
+        return Response({'success': True, 'alerts': alerts, 'total': len(alerts), 'unread_count': sum(1 for x in alerts if not x['is_read'])})
+    except Exception as exc:
+        logger.exception('Unified user alerts load failed: %s', exc)
+        return Response({'success': False, 'alerts': [], 'error': 'Failed to load notifications.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def _get_current_user_alert(user, alert_id):
+    business_profile = BusinessProfile.objects.filter(user=user).first()
+    if business_profile:
+        return get_object_or_404(BusinessAlert, id=alert_id, business=business_profile)
+    profile = get_object_or_404(ApplicantProfile, user=user)
+    return get_object_or_404(Alert, id=alert_id, applicant=profile)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_mark_alert_read(request, alert_id):
+    try:
+        alert = _get_current_user_alert(request.user, alert_id)
+        alert.is_read = True
+        alert.save(update_fields=['is_read'])
+        return Response({'success': True, 'message': 'Notification marked as read.'})
+    except Exception as exc:
+        logger.exception('Mark notification read failed: %s', exc)
+        return Response({'success': False, 'error': 'Unable to mark notification as read.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def api_delete_alert(request, alert_id):
+    try:
+        alert = _get_current_user_alert(request.user, alert_id)
+        alert.delete()
+        return Response({'success': True, 'message': 'Notification deleted.'})
+    except Exception as exc:
+        logger.exception('Delete notification failed: %s', exc)
+        return Response({'success': False, 'error': 'Unable to delete notification.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@login_required
+def save_push_subscription(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        endpoint = data.get('endpoint')
+        if not endpoint:
+            return JsonResponse({'success': False, 'error': 'Push endpoint is missing.'}, status=400)
+        subscription_data = {'endpoint': endpoint, 'expirationTime': data.get('expirationTime'), 'keys': data.get('keys', {})}
+        PushInformation.objects.update_or_create(user=request.user, subscription=subscription_data, defaults={'active': True})
+        return JsonResponse({'success': True, 'message': 'Phone notifications enabled.'})
+    except Exception as exc:
+        logger.exception('Saving push subscription failed: %s', exc)
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+
+@login_required
+def send_test_notification(request):
+    result = NotificationService.notify(
+        request.user,
+        'OppoGlobe Test',
+        'Your in-app and phone notification system is working.',
+        'system', 'system', '/alerts/', True, True,
+    )
+    safe = {'success': bool(result.get('success')), 'push_sent': bool(result.get('push_sent'))}
+    if result.get('error'):
+        safe['error'] = result['error']
+    return JsonResponse(safe, status=200 if safe['success'] else 400)
+
+
+@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
+def pwa_sw(request):
+    """Serve the root-capable OppoGlobe service worker with push support."""
+    push_logic = r"""
+
+// ===== OppoGlobe push notifications =====
+self.addEventListener('push', function(event) {
+    let data = {};
+    try {
+        data = event.data ? event.data.json() : {};
+    } catch (error) {
+        data = {body: event.data ? event.data.text() : 'You have a new notification.'};
+    }
+
+    const title = data.title || data.head || 'OppoGlobe';
+    const silent = data.silent === true;
+    const options = {
+        body: data.body || 'You have a new notification.',
+        icon: data.icon || '/static/hiring/icons/icon-192.png',
+        badge: data.badge || '/static/hiring/icons/icon-72x72.png',
+        tag: data.tag || 'oppoglobe',
+        renotify: true,
+        silent: silent,
+        vibrate: silent ? undefined : [200, 100, 200],
+        data: {
+            url: data.url || data.action_url || '/alerts/',
+            app_source: data.app_source || 'system',
+            notification_type: data.notification_type || 'system'
+        }
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) || '/alerts/';
+
+    event.waitUntil(
+        clients.matchAll({type: 'window', includeUncontrolled: true}).then(async function(windowClients) {
+            for (const client of windowClients) {
+                if ('focus' in client) {
+                    await client.focus();
+                    if ('navigate' in client) return client.navigate(targetUrl);
+                    return client;
+                }
+            }
+            if (clients.openWindow) return clients.openWindow(targetUrl);
+        })
+    );
+});
+"""
+
+    sw_paths = [
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'hiring', 'js', 'sw.js'),
+        os.path.join(settings.BASE_DIR, 'hiring', 'static', 'sw.js'),
+    ]
+
+    static_root = getattr(settings, 'STATIC_ROOT', None)
+    if static_root:
+        sw_paths.extend([
+            os.path.join(static_root, 'hiring', 'sw.js'),
+            os.path.join(static_root, 'hiring', 'js', 'sw.js'),
+        ])
+
+    content = "self.addEventListener('install',()=>self.skipWaiting());\nself.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));\n"
+
+    for path in sw_paths:
+        if path and os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as handle:
+                content = handle.read()
+            break
+
+    # Do not duplicate handlers if your existing sw.js already contains them.
+    if "addEventListener('push'" not in content and 'addEventListener("push"' not in content:
+        content += push_logic
+
+    response = HttpResponse(content, content_type='application/javascript; charset=utf-8')
+    response['Service-Worker-Allowed'] = '/'
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
+
