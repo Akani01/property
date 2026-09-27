@@ -2661,11 +2661,40 @@ async function postCarwashMessageEndpoint(url, initialMessage=''){
       data.conversation?.id ||
       '';
 
-    const messagingUrl=
-      data.messaging_url ||
-      (conversationId
-        ? `/messaging/?conversation=${encodeURIComponent(conversationId)}`
-        : '/messaging/');
+    const recipientId=
+      data.recipient?.id ||
+      data.user_id ||
+      data.recipient_id ||
+      '';
+
+    const recipientName=
+      data.recipient?.name ||
+      data.recipient?.username ||
+      data.business?.name ||
+      'Car wash user';
+
+    /*
+      IMPORTANT:
+      The global OppoGlobe messaging page already auto-starts/selects chats
+      from ?user_id=... (this is the same behaviour used by properties).
+
+      We still include ?conversation=... as context/fallback, but user_id is
+      placed first so the existing messaging page knows exactly who to open.
+    */
+    const params=new URLSearchParams();
+
+    if(recipientId){
+      params.set('user_id',recipientId);
+    }
+
+    if(conversationId){
+      params.set('conversation',conversationId);
+    }
+
+    params.set('source','carwash');
+    params.set('name',recipientName);
+
+    const messagingUrl=`/messaging/?${params.toString()}`;
 
     window.location.href=messagingUrl;
     return data;
