@@ -598,6 +598,40 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   .payout-grid,.money-summary-grid{grid-template-columns:1fr}
 }
 
+
+/* ---------- minimizable map panels ---------- */
+.panel-head{padding-right:64px}
+.panel-minimize-btn{position:absolute;right:14px;top:14px;width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:rgba(244,246,243,.96);color:var(--ink);display:grid;place-items:center;z-index:8;box-shadow:0 4px 14px rgba(23,34,30,.08);transition:.16s ease}
+.panel-minimize-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.panel.minimized{width:min(430px,100%);max-height:none;overflow:hidden;border-radius:20px}
+.panel.minimized .panel-body{display:none}
+.panel.minimized .panel-head{position:relative;border-bottom:0;padding-top:13px;padding-bottom:13px;padding-right:58px;cursor:pointer}
+.panel.minimized .panel-head p{display:none}
+.panel.minimized .panel-head h1,.panel.minimized .panel-head h2{font-size:17px;margin:2px 0 0}
+.panel.minimized .panel-minimize-btn i{transform:rotate(180deg)}
+@media(max-width:820px){.panel.minimized{width:min(360px,calc(100vw - 16px));margin-left:auto;margin-right:auto}.panel-minimize-btn{right:10px;top:10px;width:36px;height:36px}.panel-head{padding-right:56px}}
+
+/* ---------- customer catalogue cards ---------- */
+.booking-step{margin-top:12px}
+.booking-step-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:7px}
+.booking-step-head strong{font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.booking-step-head span{font-size:9.5px;color:var(--muted)}
+.choice-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:none}
+.choice-strip::-webkit-scrollbar{display:none}
+.vehicle-choice{flex:0 0 auto;min-width:104px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:11px 10px;text-align:left;color:var(--ink);transition:.16s ease}
+.vehicle-choice i{display:block;color:var(--jade);font-size:18px;margin-bottom:8px}
+.vehicle-choice strong{display:block;font-size:11px}.vehicle-choice small{display:block;margin-top:2px;color:var(--muted);font-size:8.5px}
+.vehicle-choice.active{border-color:var(--jade);background:var(--wash);box-shadow:0 7px 18px rgba(31,111,92,.12)}
+.service-choice-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.service-choice{border:1px solid var(--line);border-radius:16px;background:#fff;padding:11px;text-align:left;color:var(--ink);transition:.16s ease}
+.service-choice-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.service-choice strong{font-size:11px}.service-choice .service-price{font-weight:800;font-size:11px;white-space:nowrap;color:var(--jade2)}
+.service-choice p{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.35}.service-choice small{display:block;margin-top:6px;font-size:8.5px;color:var(--muted)}
+.service-choice.active{border-color:var(--jade);background:var(--wash);box-shadow:0 7px 18px rgba(31,111,92,.12)}
+.choice-placeholder{padding:13px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:10px;text-align:center;background:rgba(255,255,255,.55)}
+.booking-hidden-selects{display:none!important}
+.provider-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.provider-meta{font-size:9px;color:var(--muted);margin-top:5px}
+@media(max-width:520px){.service-choice-list{grid-template-columns:1fr}.vehicle-choice{min-width:96px}.provider{min-width:76vw}}
+
 </style>
 
 
@@ -1151,7 +1185,20 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 
 
-    <div class="fields"><div class="field"><label>Vehicle</label><select id="vehicleSelect" disabled><option>Select a provider first</option></select></div><div class="field"><label>Service</label><select id="serviceSelect" disabled><option>Select your vehicle first</option></select></div></div>
+    <div class="booking-step">
+      <div class="booking-step-head"><strong>Vehicle</strong><span>Choose a vehicle added by this business</span></div>
+      <div id="vehicleChoices" class="choice-strip"><div class="choice-placeholder">Select a provider first</div></div>
+    </div>
+
+    <div class="booking-step">
+      <div class="booking-step-head"><strong>Service</strong><span>Only priced services for that vehicle are shown</span></div>
+      <div id="serviceChoices" class="service-choice-list"><div class="choice-placeholder">Select your vehicle first</div></div>
+    </div>
+
+    <div class="booking-hidden-selects" aria-hidden="true">
+      <select id="vehicleSelect" disabled><option value="">Select a provider first</option></select>
+      <select id="serviceSelect" disabled><option value="">Select your vehicle first</option></select>
+    </div>
 
 
 
@@ -1300,9 +1347,37 @@ function statusLabel(s){return({requested:'Finding a washer…',searching:'Findi
 
 
 
-function initWashMap(){map=new google.maps.Map(document.getElementById('map'),{center:{lat:-26.2041,lng:28.0473},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false});bindRoleNav();if(IS_BUSINESS){initBusinessWorkspace()}else{initCustomerWorkspace()}}
+function initWashMap(){map=new google.maps.Map(document.getElementById('map'),{center:{lat:-26.2041,lng:28.0473},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false});installPanelMinimizeControls();bindRoleNav();if(IS_BUSINESS){initBusinessWorkspace()}else{initCustomerWorkspace()}}
 
 
+
+function installPanelMinimizeControls(){
+  document.querySelectorAll('.panel').forEach(panel=>{
+    const head=panel.querySelector('.panel-head');
+    if(!head||head.querySelector('.panel-minimize-btn'))return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='panel-minimize-btn';
+    btn.setAttribute('aria-label','Minimize panel');
+    btn.title='Minimize panel';
+    btn.innerHTML='<i class="fas fa-chevron-down"></i>';
+    btn.addEventListener('click',e=>{e.stopPropagation();togglePanelMinimize(panel.id)});
+    head.appendChild(btn);
+    head.addEventListener('click',e=>{if(panel.classList.contains('minimized')&&!e.target.closest('.panel-minimize-btn'))togglePanelMinimize(panel.id,false)});
+  });
+}
+
+function togglePanelMinimize(id,force){
+  const panel=document.getElementById(id);
+  if(!panel)return;
+  const shouldMinimize=typeof force==='boolean'?force:!panel.classList.contains('minimized');
+  panel.classList.toggle('minimized',shouldMinimize);
+  const btn=panel.querySelector('.panel-minimize-btn');
+  if(btn){
+    btn.setAttribute('aria-label',shouldMinimize?'Restore panel':'Minimize panel');
+    btn.title=shouldMinimize?'Restore panel':'Minimize panel';
+  }
+}
 
 function bindRoleNav(){
 
@@ -1329,6 +1404,8 @@ function activatePanel(id){
   document.querySelectorAll('.role-tab').forEach(b=>b.classList.toggle('active',b.dataset.panel===id));
 
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+
+  document.getElementById(id)?.classList.remove('minimized');
 
   closeMobileMore();
 
@@ -1438,33 +1515,162 @@ function clearProviderMarkers(){providerMarkers.forEach(m=>m.setMap(null));provi
 
 
 
-async function loadNearby(){if(!userPos)return;const list=document.getElementById('providerList');list.innerHTML='<div class="empty">Finding nearby car wash providers…</div>';clearProviderMarkers();try{const data=await api(`/carwash/api/nearby/?lat=${userPos.lat}&lng=${userPos.lng}&fulfilment=${mode}&radius=30`);providers=data.providers||[];if(!providers.length){list.innerHTML='<div class="empty">No available providers nearby yet.</div>';return}list.innerHTML=providers.map(p=>`<article class="provider" data-id="${p.id}" onclick="selectProvider('${p.id}')"><div class="provider-top"><div><h4>${escapeHtml(p.name)}</h4><small>${Number(p.distance_km).toFixed(1)} km away</small></div><div class="rating"><i class="fas fa-star" style="color:#e8a93b"></i> ${Number(p.average_rating||0).toFixed(1)}</div></div><span class="badge">${mode==='mobile'?'Mobile available':'Drive-in available'}</span></article>`).join('');providers.forEach(p=>{const marker=new google.maps.Marker({position:{lat:Number(p.map_latitude),lng:Number(p.map_longitude)},map,title:p.name,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.CIRCLE,scale:17,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:3}});marker.addListener('click',()=>selectProvider(p.id));providerMarkers.push(marker)})}catch(e){list.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+async function loadNearby(){
+  if(!userPos)return;
+  const list=document.getElementById('providerList');
+  list.innerHTML='<div class="empty">Finding nearby car wash providers…</div>';
+  clearProviderMarkers();
+  selectedProvider=null;
+  catalog=null;
+  resetChoices();
+  try{
+    const data=await api(`/carwash/api/nearby/?lat=${encodeURIComponent(userPos.lat)}&lng=${encodeURIComponent(userPos.lng)}&fulfilment=${encodeURIComponent(mode)}&radius=30`);
+    providers=data.providers||[];
+    if(!providers.length){
+      list.innerHTML=`<div class="empty">No ${mode==='mobile'?'live mobile washers':'drive-in washes'} are available within 30 km right now.</div>`;
+      document.getElementById('statusText').textContent=mode==='mobile'?'A provider must be online, available, accepting requests and sharing live location.':'Try again later or switch to Come to me.';
+      return;
+    }
+    list.innerHTML=providers.map(p=>`
+      <article class="provider" data-id="${p.id}" onclick="selectProvider('${p.id}')">
+        <div class="provider-top">
+          <div><h4>${escapeHtml(p.name)}</h4><small>${Number(p.distance_km||0).toFixed(1)} km away</small></div>
+          <div class="rating"><i class="fas fa-star" style="color:#e8a93b"></i> ${Number(p.average_rating||0).toFixed(1)}</div>
+        </div>
+        <div class="provider-meta">${mode==='mobile'&&p.available_worker_name?`Washer: ${escapeHtml(p.available_worker_name)} · `:''}${Number(p.available_options_count||p.prices?.length||0)} bookable option${Number(p.available_options_count||p.prices?.length||0)===1?'':'s'}</div>
+        <div class="provider-actions">
+          <span class="badge">${mode==='mobile'?'Live · mobile available':'Drive-in available'}</span>
+          ${IS_AUTH?`<button class="message-btn" type="button" onclick="event.stopPropagation();messageCarwashBusiness('${p.id}','${escapeHtml(p.name)}')"><i class="fas fa-comment-dots"></i> Message</button>`:''}
+        </div>
+      </article>`).join('');
+    providers.forEach(p=>{
+      const marker=new google.maps.Marker({position:{lat:Number(p.map_latitude),lng:Number(p.map_longitude)},map,title:p.name,label:{text:'W',color:'#fff',fontWeight:'800'},icon:{path:google.maps.SymbolPath.CIRCLE,scale:17,fillColor:'#ff6b4a',fillOpacity:1,strokeColor:'#fff',strokeWeight:3}});
+      marker.addListener('click',()=>selectProvider(p.id));
+      providerMarkers.push(marker);
+    });
+  }catch(e){
+    list.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
+  }
+}
 
+async function selectProvider(id){
+  selectedProvider=providers.find(p=>String(p.id)===String(id));
+  if(!selectedProvider)return;
+  document.querySelectorAll('.provider').forEach(el=>el.classList.toggle('active',el.dataset.id===String(id)));
+  map.panTo({lat:Number(selectedProvider.map_latitude),lng:Number(selectedProvider.map_longitude)});
+  resetChoices();
+  const statusEl=document.getElementById('statusText');
+  statusEl.textContent='Loading this provider’s vehicles and services…';
+  try{
+    if(Array.isArray(selectedProvider.vehicles)&&Array.isArray(selectedProvider.services)&&Array.isArray(selectedProvider.prices)){
+      catalog={success:true,business:selectedProvider,vehicles:selectedProvider.vehicles,services:selectedProvider.services,prices:selectedProvider.prices};
+    }else{
+      catalog=await api(`/carwash/api/businesses/${id}/catalog/?fulfilment=${encodeURIComponent(mode)}`);
+    }
+    if(!catalog.vehicles?.length){
+      document.getElementById('vehicleChoices').innerHTML='<div class="choice-placeholder">This business has no priced vehicle options for this mode.</div>';
+      statusEl.textContent='This provider has no bookable vehicle/service combination yet.';
+      return;
+    }
+    renderVehicleChoices();
+    statusEl.textContent=`Choose a vehicle from ${selectedProvider.name}.`;
+  }catch(e){
+    catalog=null;
+    resetChoices();
+    statusEl.textContent=e.message;
+  }
+}
 
+function resetChoices(){
+  const v=document.getElementById('vehicleSelect');
+  const vc=document.getElementById('vehicleChoices');
+  if(v){v.disabled=true;v.innerHTML='<option value="">Select a provider first</option>'}
+  if(vc)vc.innerHTML='<div class="choice-placeholder">Select a provider first</div>';
+  resetService();
+  currentQuote=null;
+  document.getElementById('priceBox')?.classList.remove('show');
+  if(document.getElementById('requestBtn'))document.getElementById('requestBtn').disabled=true;
+}
 
-async function selectProvider(id){selectedProvider=providers.find(p=>String(p.id)===String(id));if(!selectedProvider)return;document.querySelectorAll('.provider').forEach(el=>el.classList.toggle('active',el.dataset.id===String(id)));map.panTo({lat:Number(selectedProvider.map_latitude),lng:Number(selectedProvider.map_longitude)});resetChoices();const statusEl=document.getElementById('statusText');statusEl.textContent='Loading this provider’s vehicles and services…';try{catalog=await api(`/carwash/api/businesses/${id}/catalog/?fulfilment=${encodeURIComponent(mode)}`);const v=document.getElementById('vehicleSelect');if(!catalog.vehicles.length){v.innerHTML='<option>No vehicles configured yet</option>';statusEl.textContent='This provider has no priced vehicle options yet.';return}v.disabled=false;v.innerHTML='<option value="">Choose vehicle</option>'+catalog.vehicles.map(x=>`<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('');resetService();statusEl.textContent='Choose your vehicle to see available services.'}catch(e){catalog=null;resetChoices();statusEl.textContent=e.message}}
+function resetService(){
+  const s=document.getElementById('serviceSelect');
+  const sc=document.getElementById('serviceChoices');
+  if(s){s.disabled=true;s.innerHTML='<option value="">Select your vehicle first</option>'}
+  if(sc)sc.innerHTML='<div class="choice-placeholder">Select your vehicle first</div>';
+  document.getElementById('priceBox')?.classList.remove('show');
+  const btn=document.getElementById('requestBtn');
+  if(btn){btn.disabled=true;btn.textContent='Request wash'}
+}
 
+function renderVehicleChoices(){
+  const container=document.getElementById('vehicleChoices');
+  const select=document.getElementById('vehicleSelect');
+  const rows=catalog?.vehicles||[];
+  if(!container||!select)return;
+  select.disabled=false;
+  select.innerHTML='<option value="">Choose vehicle</option>'+rows.map(v=>`<option value="${v.id}">${escapeHtml(v.name)}</option>`).join('');
+  container.innerHTML=rows.map(v=>`
+    <button type="button" class="vehicle-choice" data-vehicle-id="${v.id}" onclick="chooseVehicle('${v.id}')">
+      <i class="${escapeHtml(v.icon||'fas fa-car')}"></i>
+      <strong>${escapeHtml(v.name)}</strong>
+      <small>${escapeHtml(v.description||'Vehicle option')}</small>
+    </button>`).join('');
+}
 
+function chooseVehicle(vehicleId){
+  if(!catalog)return;
+  const select=document.getElementById('vehicleSelect');
+  select.value=vehicleId;
+  document.querySelectorAll('.vehicle-choice').forEach(btn=>btn.classList.toggle('active',String(btn.dataset.vehicleId)===String(vehicleId)));
+  renderServiceChoices(vehicleId);
+  document.getElementById('statusText').textContent='Now choose a service and price.';
+}
 
-function resetChoices(){const v=document.getElementById('vehicleSelect');if(v){v.disabled=true;v.innerHTML='<option>Select a provider first</option>'}resetService();currentQuote=null;document.getElementById('priceBox')?.classList.remove('show');if(document.getElementById('requestBtn'))document.getElementById('requestBtn').disabled=true}
+function renderServiceChoices(vehicleId){
+  const container=document.getElementById('serviceChoices');
+  const select=document.getElementById('serviceSelect');
+  if(!container||!select||!catalog)return;
+  const priceRows=(catalog.prices||[]).filter(p=>String(p.vehicle_type)===String(vehicleId)&&p.is_active!==false);
+  const serviceById=new Map((catalog.services||[]).map(s=>[String(s.id),s]));
+  const rows=priceRows.map(price=>({price,service:serviceById.get(String(price.service))})).filter(x=>x.service&&(mode==='mobile'?x.service.mobile_available:x.service.onsite_available));
+  select.disabled=rows.length===0;
+  select.innerHTML='<option value="">Choose service</option>'+rows.map(({service})=>`<option value="${service.id}">${escapeHtml(service.name)}</option>`).join('');
+  if(!rows.length){
+    container.innerHTML='<div class="choice-placeholder">No priced services are available for this vehicle.</div>';
+    return;
+  }
+  container.innerHTML=rows.map(({service,price})=>`
+    <button type="button" class="service-choice" data-service-id="${service.id}" onclick="chooseService('${service.id}')">
+      <div class="service-choice-top"><strong>${escapeHtml(service.name)}</strong><span class="service-price">${money(price.price,price.currency)}</span></div>
+      ${service.description?`<p>${escapeHtml(service.description)}</p>`:''}
+      <small>${Number(service.estimated_minutes||0)>0?`${Number(service.estimated_minutes)} min · `:''}${mode==='mobile'?'Mobile wash':'At provider location'}</small>
+    </button>`).join('');
+}
 
+function chooseService(serviceId){
+  const select=document.getElementById('serviceSelect');
+  select.value=serviceId;
+  document.querySelectorAll('.service-choice').forEach(btn=>btn.classList.toggle('active',String(btn.dataset.serviceId)===String(serviceId)));
+  previewLocalPrice();
+}
 
+document.getElementById('vehicleSelect')?.addEventListener('change',function(){if(this.value)chooseVehicle(this.value);else resetService()});
+document.getElementById('serviceSelect')?.addEventListener('change',function(){if(this.value)chooseService(this.value)});
 
-function resetService(){const s=document.getElementById('serviceSelect');if(!s)return;s.disabled=true;s.innerHTML='<option>Select your vehicle first</option>';document.getElementById('priceBox')?.classList.remove('show');document.getElementById('requestBtn').disabled=true}
-
-
-
-document.getElementById('vehicleSelect')?.addEventListener('change',function(){const vid=this.value,s=document.getElementById('serviceSelect');if(!vid||!catalog){resetService();return}const allowed=new Set(catalog.prices.filter(p=>String(p.vehicle_type)===String(vid)).map(p=>String(p.service)));const rows=catalog.services.filter(x=>allowed.has(String(x.id))&&(mode==='mobile'?x.mobile_available:x.onsite_available));s.disabled=false;s.innerHTML='<option value="">Choose service</option>'+rows.map(x=>`<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('')});
-
-
-
-document.getElementById('serviceSelect')?.addEventListener('change',previewLocalPrice);
-
-
-
-function previewLocalPrice(){const v=document.getElementById('vehicleSelect')?.value,s=document.getElementById('serviceSelect')?.value;if(!v||!s||!catalog){document.getElementById('priceBox')?.classList.remove('show');return}const row=catalog.prices.find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s));if(!row)return;document.getElementById('servicePrice').textContent=money(row.price,row.currency);document.getElementById('travelPrice').textContent=mode==='mobile'?'Calculated in quote':'R0.00';document.getElementById('totalPrice').textContent=mode==='mobile'?'Final quote next':money(row.price,row.currency);document.getElementById('priceBox').classList.add('show');document.getElementById('requestBtn').disabled=false}
-
-
+function previewLocalPrice(){
+  const v=document.getElementById('vehicleSelect')?.value;
+  const s=document.getElementById('serviceSelect')?.value;
+  if(!v||!s||!catalog){document.getElementById('priceBox')?.classList.remove('show');return}
+  const row=(catalog.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s));
+  if(!row)return;
+  document.getElementById('servicePrice').textContent=money(row.price,row.currency);
+  document.getElementById('travelPrice').textContent=mode==='mobile'?'Calculated in quote':'R0.00';
+  document.getElementById('totalPrice').textContent=mode==='mobile'?'Final quote next':money(row.price,row.currency);
+  document.getElementById('priceBox').classList.add('show');
+  document.getElementById('requestBtn').disabled=false;
+  document.getElementById('requestBtn').textContent=`Request wash · ${money(row.price,row.currency)}${mode==='mobile'?' + travel':''}`;
+  document.getElementById('statusText').textContent='Ready to request this wash.';
+}
 
 async function requestQuoteAndWash(){
   if(!IS_AUTH){
@@ -1821,7 +2027,7 @@ async function startCarwashPayment(requestId,paymentMethod,gatewayCode=''){
 
 
 
-async function initBusinessWorkspace(){if(CAN_MANAGE)initBusinessPlaces();if(BUSINESS_ID){await loadBusinessProfile();focusBusinessSavedLocation();if(CAN_MANAGE){loadBusinessDashboard();loadCatalogManager();loadBusinessPayments()}loadBusinessRequests();loadWorkers();if(WORKER_ID)startWorkerLocationSharing()}}
+async function initBusinessWorkspace(){if(CAN_MANAGE)initBusinessPlaces();if(BUSINESS_ID){await loadBusinessProfile();focusBusinessSavedLocation();if(CAN_MANAGE){loadBusinessDashboard();loadCatalogManager();loadBusinessPayments()}loadBusinessRequests();await loadWorkers()}}
 
 
 
@@ -1871,7 +2077,7 @@ document.getElementById('businessSetupForm')?.addEventListener('submit',async e=
 
 
 
-async function toggleAvailability(){if(!businessData)return;try{businessData=await api(`/carwash/api/businesses/${businessData.id}/`,{method:'PATCH',body:JSON.stringify({is_accepting_jobs:!businessData.is_accepting_jobs})});loadBusinessProfile()}catch(e){alert(e.message)}}
+async function toggleAvailability(){if(!businessData)return;const goingLive=!businessData.is_accepting_jobs;try{businessData=await api(`/carwash/api/businesses/${businessData.id}/`,{method:'PATCH',body:JSON.stringify({is_accepting_jobs:goingLive})});await loadBusinessProfile();if(WORKER_ID){if(goingLive){startWorkerLocationSharing();}else{stopWorkerLocationSharing();try{await api(`/carwash/api/workers/${WORKER_ID}/`,{method:'PATCH',body:JSON.stringify({is_online:false,is_available:false})})}catch(_){}}loadWorkers()}}catch(e){alert(e.message)}}
 
 
 
@@ -1916,15 +2122,15 @@ document.getElementById('priceForm')?.addEventListener('submit',async e=>{e.prev
 
 
 
-async function loadWorkers(){if(!BUSINESS_ID)return;const box=document.getElementById('workerList');try{const d=await api('/carwash/api/workers/');workers=Array.isArray(d)?d:(d.results||[]);box.innerHTML=workers.length?workers.map(w=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(w.display_name||w.username)}</h4><p>${w.is_online?'Online':'Offline'} · ${w.is_available?'Available':'Busy'}</p></div><span class="status-pill">${w.completed_washes} washes</span></div></div>`).join(''):'<div class="empty">No workers added yet. Your business owner can also be added as a worker profile.</div>'}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+async function loadWorkers(){if(!BUSINESS_ID)return;const box=document.getElementById('workerList');try{const d=await api('/carwash/api/workers/');workers=Array.isArray(d)?d:(d.results||[]);box.innerHTML=workers.length?workers.map(w=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(w.display_name||w.username)}</h4><p>${w.is_online?'Online':'Offline'} · ${w.is_available?'Available':'Busy'}</p></div><span class="status-pill">${w.completed_washes} washes</span></div></div>`).join(''):'<div class="empty">No workers added yet. Your business owner can also be added as a worker profile.</div>';const mine=workers.find(x=>String(x.id)===String(WORKER_ID));const btn=document.getElementById('workerOnlineBtn');if(btn&&mine)btn.textContent=mine.is_online?'Go offline':'Go online';if(mine?.is_online&&businessData?.is_accepting_jobs)startWorkerLocationSharing();else stopWorkerLocationSharing()}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
 
 
 
-async function toggleWorkerOnline(){if(!WORKER_ID)return;const w=workers.find(x=>String(x.id)===String(WORKER_ID));if(!w)return;try{await api(`/carwash/api/workers/${WORKER_ID}/`,{method:'PATCH',body:JSON.stringify({is_online:!w.is_online,is_available:!w.is_online})});loadWorkers();if(!w.is_online)startWorkerLocationSharing();else stopWorkerLocationSharing()}catch(e){alert(e.message)}}
+async function toggleWorkerOnline(){if(!WORKER_ID)return;const w=workers.find(x=>String(x.id)===String(WORKER_ID));if(!w)return;const goingOnline=!w.is_online;try{await api(`/carwash/api/workers/${WORKER_ID}/`,{method:'PATCH',body:JSON.stringify({is_online:goingOnline,is_available:goingOnline})});if(goingOnline){if(businessData&&!businessData.is_accepting_jobs){businessData=await api(`/carwash/api/businesses/${businessData.id}/`,{method:'PATCH',body:JSON.stringify({is_accepting_jobs:true})});await loadBusinessProfile()}startWorkerLocationSharing()}else stopWorkerLocationSharing();await loadWorkers()}catch(e){alert(e.message)}}
 
 
 
-function startWorkerLocationSharing(){if(!navigator.geolocation)return;stopWorkerLocationSharing();workerWatchId=navigator.geolocation.watchPosition(pos=>{api('/carwash/api/provider/location/',{method:'POST',body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude,heading:pos.coords.heading,speed_kph:pos.coords.speed?pos.coords.speed*3.6:null,accuracy_m:pos.coords.accuracy})}).catch(()=>{})},()=>{}, {enableHighAccuracy:true,maximumAge:10000,timeout:15000})}
+function startWorkerLocationSharing(){if(!navigator.geolocation)return;stopWorkerLocationSharing();workerWatchId=navigator.geolocation.watchPosition(pos=>{api('/carwash/api/provider/location/',{method:'POST',body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude,heading:pos.coords.heading,speed_kph:pos.coords.speed?pos.coords.speed*3.6:null,accuracy_m:pos.coords.accuracy,is_available:true})}).catch(()=>{})},()=>{}, {enableHighAccuracy:true,maximumAge:10000,timeout:15000})}
 
 
 
@@ -2116,8 +2322,9 @@ document.getElementById('payoutForm')?.addEventListener('submit',async e=>{
 
 
 
-<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initWashMap" async defer>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initWashMap" async defer></script>
 
+<script>
 /* ============================================================
    CARWASH → MAIN OPPOGLOBE MESSAGING
    Uses hiring.Conversation / Message / MessageRecipient

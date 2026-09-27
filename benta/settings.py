@@ -336,14 +336,23 @@ PWA_APP_SPLASH_SCREEN = [
     },
 ]
 
-
 # ============================================================
 # WEB PUSH / PWA NOTIFICATIONS
 # ============================================================
 
-PWA_VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
-PWA_VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
-PWA_VAPID_EMAIL = os.environ.get('VAPID_EMAIL', 'akaniivinmiyen@gmail.com')
+PWA_VAPID_PUBLIC_KEY = os.environ.get(
+    'VAPID_PUBLIC_KEY',
+    ''
+)
+
+PWA_VAPID_PRIVATE_KEY = str(
+    BASE_DIR / 'private_key.pem'
+)
+
+PWA_VAPID_EMAIL = os.environ.get(
+    'VAPID_EMAIL',
+    'akaniivinmiyen@gmail.com'
+)
 
 PWA_SETTINGS = {
     'VAPID_PUBLIC_KEY': PWA_VAPID_PUBLIC_KEY,
@@ -354,7 +363,9 @@ PWA_SETTINGS = {
 WEBPUSH_SETTINGS = {
     'VAPID_PUBLIC_KEY': PWA_VAPID_PUBLIC_KEY,
     'VAPID_PRIVATE_KEY': PWA_VAPID_PRIVATE_KEY,
-    'VAPID_CLAIM': {'sub': f'mailto:{PWA_VAPID_EMAIL}'},
+    'VAPID_CLAIM': {
+        'sub': f'mailto:{PWA_VAPID_EMAIL}'
+    },
 }
 
 

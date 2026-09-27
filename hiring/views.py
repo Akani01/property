@@ -3715,9 +3715,13 @@ def alerts_page(request):
     """Render the unified OppoGlobe notification centre."""
     return render(request, 'hiring/alerts.html', {
         'page_title': 'Notifications',
-        'vapid_public_key': getattr(settings, 'VAPID_PUBLIC_KEY', ''),
+        'vapid_public_key': getattr(
+            settings,
+            'PWA_VAPID_PUBLIC_KEY',
+            ''
+        ),
     })
-
+    
 def preferences_page(request):
     """Render notification preferences page"""
     return render(request, 'hiring/preferences.html')
