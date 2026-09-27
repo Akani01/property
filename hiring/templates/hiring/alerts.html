@@ -798,7 +798,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
   transform:translateX(-50%);z-index:3300;display:grid;
 
-  grid-template-columns:repeat(5,minmax(0,1fr)) 62px;align-items:center;
+  grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;
 
   border:1px solid rgba(255,255,255,.52);border-radius:21px;
 
@@ -940,7 +940,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
   .alert-message{font-size:12px}
 
-  .bottom-nav{width:calc(100vw - 12px);height:59px;bottom:calc(6px + var(--safe-b));grid-template-columns:repeat(5,minmax(0,1fr)) 56px;padding:4px 5px}
+  .bottom-nav{width:calc(100vw - 12px);height:59px;bottom:calc(6px + var(--safe-b));grid-template-columns:repeat(5,minmax(0,1fr));padding:4px 5px}
 
   .bn-tab{height:49px}.bn-icon{width:38px;height:38px;font-size:18px}.bn-tab.bn-hero{width:52px;height:52px;margin-top:-16px}.bn-tab.bn-hero .bn-icon{width:52px;height:52px}
 
@@ -974,7 +974,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
   .alert-more{display:none;}
   .action-row{gap:5px;}
   .action-btn{padding:6px 9px;}
-  .bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr)) 54px;width:calc(100vw - 10px);left:50%;bottom:calc(5px + var(--safe-b));}
+  .bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr));width:calc(100vw - 10px);left:50%;bottom:calc(5px + var(--safe-b));}
 }
 
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
@@ -1191,17 +1191,17 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
 
 
-    <section class="push-panel" id="pushPanel">
+    <section class="push-panel" id="soundAlertPanel">
 
       <div class="push-main">
 
-        <div class="push-icon"><i class="fas fa-mobile-screen-button"></i></div>
+        <div class="push-icon"><i class="fas fa-bell"></i></div>
 
         <div class="push-copy">
 
-          <strong id="pushTitle">Phone notifications</strong>
+          <strong id="soundPanelTitle">Alert sound</strong>
 
-          <span id="pushSubtitle">Get important OppoGlobe updates even when the app is closed.</span>
+          <span id="soundPanelSubtitle">OppoGlobe will play your alert sound when a new notification arrives while the app is open.</span>
 
         </div>
 
@@ -1211,23 +1211,17 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
       <div class="push-actions">
 
-        <button class="small-pill" id="soundBtn" type="button" onclick="toggleSound()">
+        <button class="small-pill" id="testSoundBtn" type="button" onclick="testNotificationSound()">
+
+          <i class="fas fa-play"></i> Test sound
+
+        </button>
+
+        <button class="small-pill primary" id="soundBtn" type="button" onclick="toggleSound()">
 
           <i class="fas fa-volume-high" id="soundIcon"></i>
 
           <span id="soundText">Sound on</span>
-
-        </button>
-
-        <button class="small-pill" id="testPushBtn" type="button" onclick="sendTestPush()" style="display:none">
-
-          <i class="fas fa-paper-plane"></i> Test
-
-        </button>
-
-        <button class="small-pill primary" id="enablePushBtn" type="button" onclick="enablePushNotifications()">
-
-          <i class="fas fa-bell"></i> Enable
 
         </button>
 
@@ -1331,25 +1325,17 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
       <div class="device-status">
 
-        <span class="device-label"><i class="fas fa-bell"></i> Browser permission</span>
+        <span class="device-label"><i class="fas fa-volume-high"></i> Alert sound</span>
 
-        <span class="status-chip" id="permissionChip">Checking</span>
-
-      </div>
-
-      <div class="device-status">
-
-        <span class="device-label"><i class="fas fa-mobile-screen"></i> Phone push</span>
-
-        <span class="status-chip" id="pushChip">Checking</span>
+        <span class="status-chip on" id="soundChip">On</span>
 
       </div>
 
       <div class="device-status">
 
-        <span class="device-label"><i class="fas fa-volume-high"></i> Sound preference</span>
+        <span class="device-label"><i class="fas fa-arrows-rotate"></i> Auto check</span>
 
-        <span class="status-chip" id="soundChip">On</span>
+        <span class="status-chip on">15 sec</span>
 
       </div>
 
@@ -1411,17 +1397,11 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
   </a>
 
-  <a class="bn-tab bn-hero" href="/map/" data-nav-label="Explore">
-
-    <span class="bn-icon"><i class="fas fa-location-dot"></i></span>
-
-    <span class="bn-label">Explore</span>
-
-  </a>
-
 </nav>
 
 
+
+<audio id="notificationAudio" preload="auto" src="{% static 'hiring/audio/notification.mp3' %}"></audio>
 
 <div class="toast-stack" id="toastStack"></div>
 
@@ -1429,15 +1409,19 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display);margin:0;letter-spacing:-.01em
 
 <script>
 
-const VAPID_PUBLIC_KEY = "{{ vapid_public_key|default:''|escapejs }}";
-const PUSH_SUBSCRIBE_URL = "/api/push/subscribe/";
-const PUSH_TEST_URL = "/api/push/test/";
-
 let allAlerts = [];
 
 let currentFilter = "all";
 
 let currentQuery = "";
+
+let alertsInitialized = false;
+
+let knownAlertIds = new Set();
+
+let alertPollTimer = null;
+
+let audioUnlocked = false;
 
 
 
@@ -1463,7 +1447,7 @@ const SOURCE_META = {
 
 function getCSRFToken(){
 
-  const match = document.cookie.match(/(?:^|;\s\*)csrftoken=([^;]+)/);
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
 
   return match ? decodeURIComponent(match[1]) : "";
 
@@ -1595,61 +1579,77 @@ function extractAlerts(data){
 
 
 
-async function loadAlerts(){
+async function loadAlerts(options={}){
 
   const container=document.getElementById("alertsContainer");
+  const quiet=options.quiet===true;
 
-  container.innerHTML=`<div class="empty-state"><div class="spinner-mini"></div><p>Loading your notifications...</p></div>`;
+  if(!alertsInitialized && !quiet){
+    container.innerHTML=`<div class="empty-state"><div class="spinner-mini"></div><p>Loading your notifications...</p></div>`;
+  }
 
   try{
-
     const response=await fetch("/api/alerts/",{
-
       method:"GET",
-
       headers:{"Accept":"application/json","X-Requested-With":"XMLHttpRequest"},
-
       credentials:"same-origin",
-
       cache:"no-store"
-
     });
 
     const data=await response.json();
-
     if(!response.ok || data?.success===false) throw new Error(data?.error || `Alerts API returned ${response.status}`);
 
-    allAlerts=extractAlerts(data);
+    const incomingAlerts=extractAlerts(data);
 
+    if(!alertsInitialized){
+      knownAlertIds=new Set(
+        incomingAlerts
+          .map(a=>getAlertId(a))
+          .filter(id=>id!=null)
+          .map(String)
+      );
+      alertsInitialized=true;
+    }else{
+      const newAlerts=incomingAlerts.filter(a=>{
+        const id=getAlertId(a);
+        return id!=null && !knownAlertIds.has(String(id));
+      });
+
+      if(newAlerts.length){
+        playNotificationSound();
+        showToast(
+          newAlerts.length===1 ? "You have a new notification" : `You have ${newAlerts.length} new notifications`,
+          "success"
+        );
+      }
+
+      knownAlertIds=new Set(
+        incomingAlerts
+          .map(a=>getAlertId(a))
+          .filter(id=>id!=null)
+          .map(String)
+      );
+    }
+
+    allAlerts=incomingAlerts;
     updateStats();
-
     renderAlerts();
 
   }catch(err){
+    console.error("Notification refresh failed:",err);
 
-    console.error(err);
+    // Never disturb the user for background polling failures.
+    if(quiet || alertsInitialized) return;
 
     container.innerHTML=`
-
       <div class="error-state">
-
         <div class="empty-visual" style="background:var(--danger-wash);color:var(--danger)"><i class="fas fa-triangle-exclamation"></i></div>
-
         <h4>Could not load notifications</h4>
-
-        <p>${escapeHtml(err.message || "Please check your connection and try again.")}</p>
-
+        <p>Please check your connection and try again.</p>
         <button class="tool-btn" style="margin:14px auto 0" onclick="loadAlerts()"><i class="fas fa-rotate"></i> Try again</button>
-
       </div>`;
-
-    document.getElementById("heroSummary").textContent="We could not reach your notification feed.";
-
   }
-
 }
-
-
 
 function updateStats(){
 
@@ -1939,293 +1939,82 @@ document.getElementById("alertSearch").addEventListener("input",e=>{
 
 
 
-/* Push */
+/* Sound alerts */
 
-function soundEnabled(){return localStorage.getItem("oppoglobe_notification_sound")!=="off"}
+function soundEnabled(){
+  return localStorage.getItem("oppoglobe_notification_sound")!=="off";
+}
 
 function updateSoundUI(){
-
   const on=soundEnabled();
-
-  document.getElementById("soundIcon").className=on?"fas fa-volume-high":"fas fa-volume-xmark";
-
-  document.getElementById("soundText").textContent=on?"Sound on":"Sound off";
-
+  const icon=document.getElementById("soundIcon");
+  const textEl=document.getElementById("soundText");
   const chip=document.getElementById("soundChip");
+  const button=document.getElementById("soundBtn");
 
-  chip.textContent=on?"On":"Off";
+  if(icon) icon.className=on?"fas fa-volume-high":"fas fa-volume-xmark";
+  if(textEl) textEl.textContent=on?"Sound on":"Sound off";
+  if(chip){
+    chip.textContent=on?"On":"Off";
+    chip.className=`status-chip ${on?"on":"off"}`;
+  }
+  if(button) button.className=on?"small-pill primary":"small-pill";
+}
 
-  chip.className=`status-chip ${on?"on":"off"}`;
+function getNotificationAudio(){
+  return document.getElementById("notificationAudio");
+}
 
+async function unlockNotificationAudio(){
+  if(audioUnlocked) return;
+  const audio=getNotificationAudio();
+  if(!audio) return;
+
+  try{
+    const originalVolume=audio.volume;
+    audio.volume=0;
+    await audio.play();
+    audio.pause();
+    audio.currentTime=0;
+    audio.volume=originalVolume;
+    audioUnlocked=true;
+  }catch(_){
+    // Browser may still require another user gesture. Keep this silent.
+  }
+}
+
+async function playNotificationSound(force=false){
+  if(!force && !soundEnabled()) return;
+  const audio=getNotificationAudio();
+  if(!audio) return;
+
+  try{
+    audio.pause();
+    audio.currentTime=0;
+    audio.volume=1;
+    await audio.play();
+    audioUnlocked=true;
+  }catch(err){
+    // Do not show technical/browser autoplay errors to the user.
+    console.debug("Alert sound could not autoplay yet:",err);
+  }
+}
+
+async function testNotificationSound(){
+  await unlockNotificationAudio();
+  await playNotificationSound(true);
 }
 
 function toggleSound(){
-
-  localStorage.setItem("oppoglobe_notification_sound",soundEnabled()?"off":"on");
-
+  const next=!soundEnabled();
+  localStorage.setItem("oppoglobe_notification_sound",next?"on":"off");
   updateSoundUI();
 
-  showToast(soundEnabled()?"Notification sound preference enabled":"Notifications will be requested silently","info");
-
-}
-
-function urlBase64ToUint8Array(base64String){
-
-  const padding="=".repeat((4-base64String.length%4)%4);
-
-  const base64=(base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
-
-  const rawData=atob(base64);
-
-  return Uint8Array.from([...rawData].map(c=>c.charCodeAt(0)));
-
-}
-
-async function ensureServiceWorker(){
-
-  if(!("serviceWorker" in navigator))throw new Error("Service workers are not supported on this browser.");
-
-  let reg=await navigator.serviceWorker.getRegistration();
-
-  if(reg)return reg;
-
-  const candidates=["/sw.js","/serviceworker.js","/pwa-sw.js"];
-
-  let lastErr=null;
-
-  for(const url of candidates){
-
-    try{
-
-      reg=await navigator.serviceWorker.register(url,{scope:"/"});
-
-      if(reg)return reg;
-
-    }catch(err){lastErr=err}
-
-  }
-
-  throw lastErr||new Error("OppoGlobe service worker could not be registered.");
-
-}
-
-async function savePushSubscriptionToServer(subscription){
-  if(!subscription) throw new Error("No push subscription was created by this browser.");
-
-  const payload=subscription.toJSON ? subscription.toJSON() : subscription;
-  const endpoint=(payload?.endpoint||"").trim();
-  const p256dh=(payload?.keys?.p256dh||"").trim();
-  const auth=(payload?.keys?.auth||"").trim();
-
-  if(!endpoint) throw new Error("Push subscription endpoint is missing.");
-  if(!p256dh || !auth) throw new Error("Push subscription encryption keys are missing.");
-
-  const response=await fetch(PUSH_SUBSCRIBE_URL,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Accept":"application/json",
-      "X-CSRFToken":getCSRFToken(),
-      "X-Requested-With":"XMLHttpRequest"
-    },
-    credentials:"same-origin",
-    cache:"no-store",
-    body:JSON.stringify({
-      endpoint,
-      expirationTime:payload?.expirationTime ?? null,
-      keys:{p256dh,auth}
-    })
-  });
-
-  let data={};
-  const text=await response.text();
-  if(text){
-    try{data=JSON.parse(text)}catch(_){data={error:text.slice(0,500)}}
-  }
-
-  if(!response.ok || data?.success===false){
-    throw new Error(data?.error || data?.detail || data?.message || `Push save failed with HTTP ${response.status}.`);
-  }
-
-  return data;
-}
-
-async function getReadyServiceWorkerRegistration(){
-  const registered=await ensureServiceWorker();
-  try{
-    return await navigator.serviceWorker.ready;
-  }catch(_){
-    return registered;
-  }
-}
-
-async function subscribeBrowserForPush(reg){
-  if(!reg?.pushManager) throw new Error("PushManager is not available on the OppoGlobe service worker.");
-
-  const applicationServerKey=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-  if(!applicationServerKey || applicationServerKey.byteLength<60){
-    throw new Error("The OppoGlobe VAPID public key is invalid or incomplete.");
-  }
-
-  let sub=await reg.pushManager.getSubscription();
-  if(sub) return sub;
-
-  return await reg.pushManager.subscribe({
-    userVisibleOnly:true,
-    applicationServerKey
-  });
-}
-
-async function enablePushNotifications(){
-  const btn=document.getElementById("enablePushBtn");
-  const original=btn?.innerHTML || '<i class="fas fa-bell"></i> Enable';
-
-  try{
-    if(!window.isSecureContext && !["localhost","127.0.0.1"].includes(location.hostname)){
-      throw new Error("Phone notifications require HTTPS.");
-    }
-    if(!("Notification" in window) || !("PushManager" in window)){
-      throw new Error("Push notifications are not supported on this browser.");
-    }
-    if(!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.trim().length<60){
-      throw new Error("VAPID public key is missing or incomplete on this page.");
-    }
-    if(Notification.permission==="denied"){
-      throw new Error("Notifications are blocked for OppoGlobe. Allow notifications in the browser/site settings, then try again.");
-    }
-
-    const permission=Notification.permission==="granted" ? "granted" : await Notification.requestPermission();
-    if(permission!=="granted") throw new Error("Notification permission was not granted.");
-
-    if(btn){
-      btn.disabled=true;
-      btn.className="small-pill primary";
-      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Enabling';
-    }
-
-    const reg=await getReadyServiceWorkerRegistration();
-    const sub=await subscribeBrowserForPush(reg);
-    const result=await savePushSubscriptionToServer(sub);
-    console.info("OppoGlobe push subscription saved:",result);
-
-    await checkPushState();
-    showToast("Phone notifications are enabled","success");
-  }catch(err){
-    console.error("Enable push notifications failed:",err);
-    if(btn){
-      btn.disabled=false;
-      btn.className="small-pill primary";
-      btn.innerHTML=original;
-    }
-    showToast(err?.message||"Could not enable phone notifications.","error");
-    await checkPushState();
-  }
-}
-
-async function checkPushState(){
-
-  const permissionChip=document.getElementById("permissionChip");
-
-  const pushChip=document.getElementById("pushChip");
-
-  const btn=document.getElementById("enablePushBtn");
-
-  const test=document.getElementById("testPushBtn");
-
-
-
-  if(!("Notification" in window)){
-
-    permissionChip.textContent="Unsupported";permissionChip.className="status-chip off";
-
-    pushChip.textContent="Unsupported";pushChip.className="status-chip off";
-
-    btn.disabled=true;return;
-
-  }
-
-
-
-  const p=Notification.permission;
-
-  permissionChip.textContent=p==="granted"?"Allowed":p==="denied"?"Blocked":"Not asked";
-
-  permissionChip.className=`status-chip ${p==="granted"?"on":p==="denied"?"off":""}`;
-
-
-
-  try{
-
-    const reg=("serviceWorker" in navigator)?await navigator.serviceWorker.getRegistration():null;
-
-    const sub=reg?await reg.pushManager.getSubscription():null;
-
-    if(sub && p==="granted"){
-
-      pushChip.textContent="On";pushChip.className="status-chip on";
-
-      btn.className="small-pill success";btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Enabled';
-
-      document.getElementById("pushTitle").textContent="Phone notifications are on";
-
-      document.getElementById("pushSubtitle").textContent="OppoGlobe can alert this device when important activity happens.";
-
-      test.style.display="";
-
-    }else{
-
-      pushChip.textContent="Off";pushChip.className="status-chip off";
-
-      btn.className="small-pill primary";btn.disabled=false;btn.innerHTML='<i class="fas fa-bell"></i> Enable';
-
-      test.style.display="none";
-
-    }
-
-  }catch(err){
-
-    pushChip.textContent="Off";pushChip.className="status-chip off";
-
-  }
-
-}
-
-async function sendTestPush(){
-  const btn=document.getElementById("testPushBtn");
-  const original=btn?.innerHTML || '<i class="fas fa-paper-plane"></i> Test';
-
-  try{
-    if(btn){
-      btn.disabled=true;
-      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sending';
-    }
-
-    const response=await fetch(PUSH_TEST_URL,{
-      method:"GET",
-      credentials:"same-origin",
-      cache:"no-store",
-      headers:{"Accept":"application/json","X-Requested-With":"XMLHttpRequest"}
-    });
-
-    let data={};
-    try{data=await response.json()}catch(_){ }
-
-    if(!response.ok || data?.success===false){
-      throw new Error(data?.error || data?.message || `Test push failed with HTTP ${response.status}.`);
-    }
-    if(data?.push_sent===false){
-      throw new Error("The alert was created but phone push was not delivered. Check the Railway VAPID private key and saved device subscription.");
-    }
-
-    showToast("Test notification sent","success");
-  }catch(err){
-    console.error("Test push failed:",err);
-    showToast(err?.message||"Could not send the test notification.","error");
-  }finally{
-    if(btn){
-      btn.disabled=false;
-      btn.innerHTML=original;
-    }
+  if(next){
+    unlockNotificationAudio();
+    showToast("Alert sound is on","success");
+  }else{
+    showToast("Alert sound is off","info");
   }
 }
 
@@ -2288,8 +2077,18 @@ window.addEventListener("offline",updateOnlineState);
 document.addEventListener("DOMContentLoaded",()=>{
   try{ updateSoundUI(); }catch(err){ console.error("Sound UI init failed:",err); }
   try{ updateOnlineState(); }catch(err){ console.error("Online UI init failed:",err); }
-  checkPushState().catch(err=>console.error("Push state init failed:",err));
-  loadAlerts().catch(err=>console.error("Alerts init failed:",err));
+
+  loadAlerts();
+
+  if(alertPollTimer) clearInterval(alertPollTimer);
+  alertPollTimer=setInterval(()=>{
+    if(navigator.onLine) loadAlerts({quiet:true});
+  },15000);
+
+  // Unlock custom audio after the first real user interaction.
+  ["pointerdown","touchstart","keydown"].forEach(eventName=>{
+    window.addEventListener(eventName,unlockNotificationAudio,{once:true,passive:true});
+  });
 });
 
 </script>

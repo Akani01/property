@@ -745,30 +745,59 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .reels-badge{display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg, var(--coral), var(--plum)); color:#fff; font-size:9px; font-weight:700; padding:2px 10px; border-radius:99px; letter-spacing:.3px;}
 .reels-upload-btn{display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:var(--ink); color:#fff; border:none; border-radius:99px; font-weight:600; cursor:pointer; font-size:12.5px;}
 .reels-stage{
-  width:min(100%,430px);
-  height:min(74dvh,720px);
-  min-height:520px;
+  width:min(100%,520px,calc((100dvh - var(--header-h) - 72px) * .5625));
+  aspect-ratio:9 / 16;
+  height:auto;
+  max-height:calc(100dvh - var(--header-h) - 72px);
+  min-height:0;
   margin:0 auto;
-  background:#0d1210;
-  border-radius:20px;
+  background:#050706;
+  border-radius:22px;
   overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  box-shadow:0 22px 60px rgba(0,0,0,.22);
   position:relative;
+  isolation:isolate;
 }
-.reels-feed{height:100%; overflow-y:auto; overflow-x:hidden; scroll-snap-type:y mandatory; scroll-behavior:smooth; overscroll-behavior-y:contain;}
+.reels-feed{height:100%; overflow-y:auto; overflow-x:hidden; scroll-snap-type:y mandatory; scroll-behavior:smooth; overscroll-behavior-y:contain; touch-action:pan-y;}
 .reels-feed::-webkit-scrollbar{display:none;}
 .reels-item{width:100%; height:100%; scroll-snap-align:start; scroll-snap-stop:always; position:relative; background:#000; overflow:hidden; min-height:100%;}
-.reels-item video{width:100%; height:100%; object-fit:contain; object-position:center; background:#000; position:absolute; inset:0; cursor:pointer;}
-@media (max-width:576px){
-  .reels-stage{width:100%;height:min(72dvh,680px);min-height:460px;border-radius:18px;}
+.reels-item::after{content:'';position:absolute;inset:auto 0 0 0;height:46%;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.12) 58%,transparent);pointer-events:none;z-index:2;}
+.reels-item video{width:100%; height:100%; object-fit:cover; object-position:center; background:#000; position:absolute; inset:0; cursor:pointer; touch-action:pan-y; user-select:none; -webkit-user-select:none;}
+.reels-fullscreen-hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:8px auto 10px;color:var(--ink-faint);font-size:10.5px;font-weight:600;}
+.reels-fullscreen-hint i{color:var(--coral);}
+.reels-fullscreen-close{display:none;position:absolute;top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));z-index:90;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.46);color:#fff;backdrop-filter:blur(10px);align-items:center;justify-content:center;font-size:16px;}
+.reels-fullscreen-label{display:none;position:absolute;top:max(15px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:88;padding:6px 12px;border-radius:99px;background:rgba(0,0,0,.42);color:#fff;font-size:10px;font-weight:800;letter-spacing:.04em;backdrop-filter:blur(10px);pointer-events:none;}
+@media (min-width:1000px){
+  .reels-stage{width:min(500px,calc((100dvh - 150px) * .5625));max-height:calc(100dvh - 150px);}
 }
-@media (max-width:420px){
-  .reels-stage{height:min(70dvh,640px);min-height:430px;}
+@media (min-width:1400px){
+  .reels-stage{width:min(540px,calc((100dvh - 138px) * .5625));max-height:calc(100dvh - 138px);}
+}
+@media (max-width:999px){
+  .reels-stage{width:min(100%,480px,calc((100dvh - var(--header-h) - var(--bottom-nav-h) - 34px) * .5625));max-height:calc(100dvh - var(--header-h) - var(--bottom-nav-h) - 34px);border-radius:20px;}
+}
+@media (max-width:576px){
+  .reels-stage{width:min(100%,calc((100dvh - var(--header-h) - var(--bottom-nav-h) - 22px) * .5625));max-height:calc(100dvh - var(--header-h) - var(--bottom-nav-h) - 22px);border-radius:18px;}
+  .reels-fullscreen-hint{font-size:9.5px;margin-top:7px;}
 }
 @media (orientation:landscape) and (max-height:600px){
-  .reels-stage{width:min(56vw,360px);height:calc(100dvh - var(--header-h) - 22px);min-height:320px;margin-inline:auto;}
+  .reels-stage{width:min(44vw,calc((100dvh - 26px) * .5625));max-height:calc(100dvh - 26px);margin-inline:auto;}
 }
-.reels-overlay{position:absolute; inset:auto 0 0 0; padding:16px; color:#fff; pointer-events:none;}
+
+/* App-owned TikTok-style Reels mode. Keeps overlays/actions visible unlike raw video fullscreen. */
+body.reels-fullscreen{overflow:hidden!important;background:#000;}
+body.reels-fullscreen .reels-stage{position:fixed;inset:0;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;border-radius:0!important;z-index:7000;box-shadow:none;background:#000;}
+body.reels-fullscreen .reels-feed{height:100dvh;scroll-snap-type:y mandatory;overscroll-behavior-y:none;}
+body.reels-fullscreen .reels-item{height:100dvh;min-height:100dvh;}
+body.reels-fullscreen .reels-item video{object-fit:cover;object-position:center;}
+body.reels-fullscreen .reels-fullscreen-close{display:flex;}
+body.reels-fullscreen .reels-fullscreen-label{display:block;}
+body.reels-fullscreen .reels-fullscreen-hint{display:none;}
+body.reels-fullscreen .reels-overlay{padding:max(18px,env(safe-area-inset-bottom)) 76px calc(22px + env(safe-area-inset-bottom)) 18px;}
+body.reels-fullscreen .reels-side-actions{right:max(12px,env(safe-area-inset-right));bottom:calc(110px + env(safe-area-inset-bottom));}
+body.reels-fullscreen .reels-views{top:max(15px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));}
+body.reels-fullscreen #reelsCommentPopup{z-index:7600!important;}
+.reels-overlay{position:absolute; inset:auto 0 0 0; padding:16px; color:#fff; pointer-events:none; z-index:5;}
 .reels-overlay .author{display:flex; align-items:center; gap:8px; font-size:12px; opacity:.9; pointer-events:auto;}
 .reels-overlay .avatar{width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, var(--coral), var(--gold)); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700;}
 .reels-overlay .title{font-family:var(--font-display); font-size:15px; font-weight:600; margin-top:4px;}
@@ -780,6 +809,131 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .reels-act-btn .n{font-size:10px; font-family:var(--font-mono);}
 .reels-views{position:absolute; top:10px; right:10px; z-index:15; font-size:9.5px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:3px 10px; border-radius:99px;}
 
+
+
+/* ============================================================
+   2026 DESKTOP REELS — wide shell, portrait media
+   ============================================================ */
+@media (min-width:1000px){
+  #reelsTab{width:100%;}
+  #reelsTab > .d-flex:first-child{max-width:none;}
+
+  .reels-stage{
+    width:100%;
+    max-width:none;
+    height:clamp(560px,72dvh,780px);
+    max-height:780px;
+    aspect-ratio:auto;
+    margin:0;
+    border-radius:26px;
+    background:
+      radial-gradient(circle at 20% 25%,rgba(31,111,92,.18),transparent 34%),
+      radial-gradient(circle at 82% 78%,rgba(255,107,74,.13),transparent 28%),
+      #090d0b;
+    border:1px solid rgba(255,255,255,.06);
+  }
+
+  .reels-item{
+    display:grid;
+    grid-template-columns:minmax(210px,1fr) minmax(315px,440px) minmax(150px,.72fr);
+    align-items:stretch;
+    padding:0;
+    background:transparent;
+  }
+
+  .reels-item::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,rgba(0,0,0,.06),rgba(0,0,0,.32) 28%,rgba(0,0,0,.62) 50%,rgba(0,0,0,.30) 72%,rgba(0,0,0,.06));
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .reels-item::after{display:none;}
+
+  .reels-item video{
+    position:relative;
+    inset:auto;
+    grid-column:2;
+    grid-row:1;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    justify-self:center;
+    z-index:1;
+    box-shadow:0 0 0 1px rgba(255,255,255,.06),0 28px 70px rgba(0,0,0,.30);
+    background:#000;
+  }
+
+  .reels-overlay{
+    position:relative;
+    inset:auto;
+    grid-column:1;
+    grid-row:1;
+    align-self:end;
+    padding:30px 26px 34px 30px;
+    z-index:5;
+    background:linear-gradient(180deg,transparent,rgba(7,12,9,.18));
+    pointer-events:none;
+  }
+
+  .reels-overlay .author{font-size:13px;}
+  .reels-overlay .avatar{width:34px;height:34px;font-size:12px;}
+  .reels-overlay .title{font-size:clamp(20px,2vw,28px);line-height:1.1;margin-top:12px;}
+  .reels-overlay .desc{font-size:13px;line-height:1.55;max-width:330px;margin-top:9px;color:rgba(255,255,255,.80);}
+
+  .reels-side-actions{
+    position:relative;
+    right:auto;
+    bottom:auto;
+    grid-column:3;
+    grid-row:1;
+    align-self:center;
+    justify-self:center;
+    z-index:8;
+    gap:18px;
+  }
+
+  .reels-act-btn .circle{width:48px;height:48px;font-size:18px;background:rgba(255,255,255,.10);}
+  .reels-act-btn .n{font-size:11px;}
+
+  .reels-views{
+    top:18px;
+    right:20px;
+    font-size:10.5px;
+    padding:5px 11px;
+  }
+
+  .reels-fullscreen-hint{justify-content:flex-start;margin:9px 0 12px 2px;}
+}
+
+@media (min-width:1260px){
+  .reels-stage{height:clamp(610px,75dvh,820px);max-height:820px;}
+  .reels-item{grid-template-columns:minmax(260px,1fr) minmax(350px,470px) minmax(180px,.8fr);}
+}
+
+/* Fullscreen always returns to a true vertical social feed. */
+body.reels-fullscreen .reels-item{display:block!important;padding:0!important;background:#000!important;}
+body.reels-fullscreen .reels-item::before{display:none!important;}
+body.reels-fullscreen .reels-item video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;box-shadow:none!important;}
+body.reels-fullscreen .reels-overlay{position:absolute!important;inset:auto 0 0 0!important;background:transparent!important;}
+body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(12px,env(safe-area-inset-right))!important;bottom:calc(110px + env(safe-area-inset-bottom))!important;}
+
+/* Right rail explanation cards — useful even when there is no activity data. */
+.app-explain-card{position:relative;overflow:hidden;}
+.app-explain-card::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;right:-58px;top:-64px;background:radial-gradient(circle,rgba(31,111,92,.12),transparent 70%);pointer-events:none;}
+.app-explain-list{display:flex;flex-direction:column;gap:10px;}
+.app-explain-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line-soft);}
+.app-explain-item:last-child{border-bottom:0;padding-bottom:0;}
+.app-explain-icon{width:32px;height:32px;flex:0 0 32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--jade-wash);color:var(--jade-deep);font-size:12px;}
+.app-explain-item:nth-child(2) .app-explain-icon{background:var(--coral-wash);color:var(--coral-deep);}
+.app-explain-item:nth-child(3) .app-explain-icon{background:var(--gold-wash);color:#8b6516;}
+.app-explain-copy strong{display:block;font-size:11.5px;color:var(--ink);}
+.app-explain-copy span{display:block;margin-top:2px;font-size:10.5px;line-height:1.45;color:var(--ink-faint);}
+.app-explain-cta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding:9px 11px;border-radius:11px;background:var(--paper);color:var(--jade-deep);font-size:10.5px;font-weight:700;}
+.app-explain-cta i{color:var(--gold);}
 
 /* 2026 maintenance + property checkout refresh */
 .maint-hero{position:relative;overflow:hidden;padding:18px;margin-bottom:12px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 92% 10%,rgba(31,111,92,.16),transparent 28%),linear-gradient(145deg,#fff,#f8fbf9);box-shadow:var(--shadow-sm)}
@@ -2254,7 +2408,12 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
         <button class="reels-upload-btn" onclick="document.getElementById('reelsUploadInput').click()"><i class="fas fa-upload"></i>Upload</button>
         <input type="file" id="reelsUploadInput" accept="video/*" style="display:none" onchange="uploadReelsVideo(this)">
       </div>
-      <div class="reels-stage"><div class="reels-feed" id="reelsFeedContainer"></div></div>
+      <div class="reels-fullscreen-hint"><i class="fas fa-expand"></i> Double-tap a reel for full-screen · swipe vertically</div>
+      <div class="reels-stage" id="reelsStage">
+        <button type="button" class="reels-fullscreen-close" id="reelsFullscreenClose" aria-label="Exit full-screen reels"><i class="fas fa-arrow-left"></i></button>
+        <div class="reels-fullscreen-label">REELS</div>
+        <div class="reels-feed" id="reelsFeedContainer"></div>
+      </div>
     </div>
 
     <div id="educationTab" class="tab-content" style="margin-top:14px;">
@@ -2377,13 +2536,42 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
         <div class="stat-row"><span>Active jobs</span><span class="stat-val" id="activeJobsCount">0</span></div>
         <div class="stat-row"><span>Applications</span><span class="stat-val" id="totalApplications">0</span></div>
       </div>
-      <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-clock-rotate-left"></i>Recent activity</div>
-        <div id="recentActivity" class="text-muted small">Nothing yet — your activity will show here.</div>
+      <div class="card card-pad app-explain-card">
+        <div class="card-title"><i class="fas fa-compass"></i>What you can do here</div>
+        <div class="app-explain-list">
+          <div class="app-explain-item">
+            <span class="app-explain-icon"><i class="fas fa-house"></i></span>
+            <div class="app-explain-copy"><strong>Find a place</strong><span>Browse homes, rentals, student accommodation, land and commercial listings.</span></div>
+          </div>
+          <div class="app-explain-item">
+            <span class="app-explain-icon"><i class="fas fa-comments"></i></span>
+            <div class="app-explain-copy"><strong>Talk locally</strong><span>Message owners, businesses and neighbours without leaving OppoGlobe.</span></div>
+          </div>
+          <div class="app-explain-item">
+            <span class="app-explain-icon"><i class="fas fa-screwdriver-wrench"></i></span>
+            <div class="app-explain-copy"><strong>Get things done</strong><span>Report maintenance, find jobs, study opportunities and useful local services.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-map-location-dot"></i>Popular areas</div>
-        <div id="popularLocations" class="text-muted small">Loading…</div>
+      <div class="card card-pad app-explain-card">
+        <div class="card-title"><i class="fas fa-grid-2"></i>OppoGlobe services</div>
+        <div class="app-explain-list">
+          <a href="/carwash/" class="app-explain-item">
+            <span class="app-explain-icon"><i class="fas fa-car-side"></i></span>
+            <div class="app-explain-copy"><strong>Car Wash</strong><span>Request a mobile wash or find a nearby drive-in provider.</span></div>
+          </a>
+          <button type="button" class="app-explain-item" onclick="switchTab('maintenance')" style="width:100%;background:none;border:0;text-align:left;padding-left:0;padding-right:0;">
+            <span class="app-explain-icon"><i class="fas fa-toolbox"></i></span>
+            <div class="app-explain-copy"><strong>Maintenance</strong><span>Report a property issue with photos, priority and location.</span></div>
+          </button>
+          <button type="button" class="app-explain-item" onclick="switchTab('education')" style="width:100%;background:none;border:0;text-align:left;padding-left:0;padding-right:0;">
+            <span class="app-explain-icon"><i class="fas fa-graduation-cap"></i></span>
+            <div class="app-explain-copy"><strong>Education</strong><span>Explore bursaries, schools, universities and study resources.</span></div>
+          </button>
+        </div>
+        <button type="button" class="app-explain-cta" onclick="toggleAppsMenu?.()">
+          <span>Explore the OppoGlobe apps</span><i class="fas fa-arrow-right"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -2886,6 +3074,7 @@ function scrollToTab(tabName){
   window.scrollTo({ top:y, behavior:'smooth' });
 }
 function switchTab(tabName, options = {}){
+  if (tabName !== 'reels' && document.body.classList.contains('reels-fullscreen')) exitReelsFullscreen();
   const shouldScroll = options.scroll !== false;
   currentTab = tabName;
   const mobileTabs = document.querySelectorAll('#mobileBottomNav .bn-tab');
@@ -3979,12 +4168,55 @@ function renderReels(reels){
   setupReelObserver();
 }
 function appendReels(reels){ const container = document.getElementById('reelsFeedContainer'); if (!container) return; reels.forEach(v=>container.appendChild(createReelElement(v))); }
+function enterReelsFullscreen(reelEl){
+  const stage=document.getElementById('reelsStage');
+  const feed=document.getElementById('reelsFeedContainer');
+  if(!stage||!feed)return;
+  document.body.classList.add('reels-fullscreen');
+  document.getElementById('mobileBottomNav')?.classList.add('hide');
+  document.getElementById('aiToggle')?.style.setProperty('visibility','hidden');
+  document.getElementById('carWashQuickWidget')?.style.setProperty('visibility','hidden');
+  const target=reelEl||feed.querySelector('.reels-item');
+  if(target){
+    requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:'auto'}));
+    setTimeout(()=>target.querySelector('video')?.play().catch(()=>{}),40);
+  }
+}
+function exitReelsFullscreen(){
+  document.body.classList.remove('reels-fullscreen');
+  document.getElementById('mobileBottomNav')?.classList.remove('hide');
+  document.getElementById('aiToggle')?.style.removeProperty('visibility');
+  document.getElementById('carWashQuickWidget')?.style.removeProperty('visibility');
+}
+document.getElementById('reelsFullscreenClose')?.addEventListener('click',exitReelsFullscreen);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('reels-fullscreen'))exitReelsFullscreen();});
+
 function createReelElement(reel){
   const div = document.createElement('div'); div.className = 'reels-item'; div.dataset.reelId = reel.id;
   const videoEl = document.createElement('video'); videoEl.src = reel.video_url; videoEl.loop = true; videoEl.muted = true; videoEl.defaultMuted = true; videoEl.playsInline = true; videoEl.setAttribute('playsinline',''); videoEl.setAttribute('webkit-playsinline',''); videoEl.preload = 'metadata';
+  videoEl.addEventListener('loadedmetadata',()=>{
+    const portrait=videoEl.videoHeight>=videoEl.videoWidth;
+    div.classList.toggle('source-portrait',portrait);
+    div.classList.toggle('source-landscape',!portrait);
+  });
   videoEl.addEventListener('play', function onPlay(){ incrementReelView(reel.id); videoEl.removeEventListener('play', onPlay); });
-  videoEl.addEventListener('click', function(){ if (this.paused) this.play().catch(()=>{}); else this.pause(); });
-  videoEl.addEventListener('dblclick', function(e){ e.preventDefault(); if (!document.fullscreenElement) this.requestFullscreen?.(); else document.exitFullscreen?.(); });
+  let tapTimer=null; let lastTap=0;
+  videoEl.addEventListener('click', function(e){
+    e.preventDefault();
+    const now=Date.now();
+    if(now-lastTap<320){
+      if(tapTimer){clearTimeout(tapTimer);tapTimer=null;}
+      lastTap=0;
+      enterReelsFullscreen(div);
+      return;
+    }
+    lastTap=now;
+    tapTimer=setTimeout(()=>{
+      if(videoEl.paused) videoEl.play().catch(()=>{}); else videoEl.pause();
+      tapTimer=null;
+    },330);
+  });
+  videoEl.addEventListener('dblclick', function(e){ e.preventDefault(); enterReelsFullscreen(div); });
   div.appendChild(videoEl);
   const views = document.createElement('div'); views.className = 'reels-views'; views.innerHTML = `<i class="fas fa-eye"></i> ${formatNumber(reel.views||0)}`; div.appendChild(views);
   const overlay = document.createElement('div'); overlay.className = 'reels-overlay';

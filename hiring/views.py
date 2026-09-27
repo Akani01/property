@@ -10833,37 +10833,7 @@ def sync_pending_data(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
-@csrf_exempt
-@login_required
-def legacy_save_push_subscription(request):
-    """Save push notification subscription"""
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            
-            # Extract the subscription data properly
-            subscription_data = {
-                'endpoint': data.get('endpoint'),
-                'expirationTime': data.get('expirationTime'),
-                'keys': data.get('keys', {})
-            }
-            
-            # The webpush model uses 'subscription' field
-            PushInformation.objects.update_or_create(
-                user=request.user,
-                subscription=subscription_data,
-                defaults={
-                    'active': True
-                }
-            )
-            
-            return JsonResponse({'success': True, 'message': 'Subscription saved!'})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-    
 @login_required
 def legacy_send_test_notification(request):
     """Send a test push notification"""
@@ -11971,23 +11941,98 @@ def api_delete_alert(request, alert_id):
         logger.exception('Delete notification failed: %s', exc)
         return Response({'success': False, 'error': 'Unable to delete notification.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @csrf_exempt
 @login_required
 def save_push_subscription(request):
+    """
+    Save or update the current browser/device push subscription.
+    """
+
     if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
+        return JsonResponse({
+            'success': False,
+            'error': 'POST required'
+        }, status=405)
+
     try:
         data = json.loads(request.body.decode('utf-8'))
-        endpoint = data.get('endpoint')
+
+        endpoint = (data.get('endpoint') or '').strip()
+        keys = data.get('keys') or {}
+
+        p256dh = (keys.get('p256dh') or '').strip()
+        auth = (keys.get('auth') or '').strip()
+
+        # --------------------------------------------------
+        # Validate browser subscription
+        # --------------------------------------------------
+
         if not endpoint:
-            return JsonResponse({'success': False, 'error': 'Push endpoint is missing.'}, status=400)
-        subscription_data = {'endpoint': endpoint, 'expirationTime': data.get('expirationTime'), 'keys': data.get('keys', {})}
-        PushInformation.objects.update_or_create(user=request.user, subscription=subscription_data, defaults={'active': True})
-        return JsonResponse({'success': True, 'message': 'Phone notifications enabled.'})
+            return JsonResponse({
+                'success': False,
+                'error': 'Push endpoint is missing.'
+            }, status=400)
+
+        if not p256dh:
+            return JsonResponse({
+                'success': False,
+                'error': 'Push p256dh key is missing.'
+            }, status=400)
+
+        if not auth:
+            return JsonResponse({
+                'success': False,
+                'error': 'Push auth key is missing.'
+            }, status=400)
+
+        # --------------------------------------------------
+        # Save using YOUR PushSubscription model
+        # --------------------------------------------------
+
+        subscription, created = PushSubscription.objects.update_or_create(
+            endpoint=endpoint,
+            defaults={
+                'user': request.user,
+                'p256dh': p256dh,
+                'auth': auth,
+            }
+        )
+
+        logger.info(
+            "Push subscription %s for user=%s subscription_id=%s",
+            "created" if created else "updated",
+            request.user.id,
+            subscription.id,
+        )
+
+        return JsonResponse({
+            'success': True,
+            'created': created,
+            'subscription_id': subscription.id,
+            'message': (
+                'Phone notifications enabled.'
+                if created
+                else 'Phone notification subscription updated.'
+            )
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON body.'
+        }, status=400)
+
     except Exception as exc:
-        logger.exception('Saving push subscription failed: %s', exc)
-        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+        logger.exception(
+            'Saving push subscription failed for user %s: %s',
+            getattr(request.user, 'id', None),
+            exc
+        )
+
+        return JsonResponse({
+            'success': False,
+            'error': str(exc)
+        }, status=500)
 
 
 @login_required
