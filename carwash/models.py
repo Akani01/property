@@ -827,3 +827,63 @@ class CarWashReview(TimeStampedModel):
     class Meta:
 
         ordering = ['-created_at']
+
+
+class CarWashSafetyReport(TimeStampedModel):
+    """Internal OppoGlobe safety record for a car-wash interaction.
+
+    This is an OppoGlobe incident record, not a police docket. It preserves the
+    people/business/request and map coordinates involved so support can review
+    an incident later.
+    """
+
+    CATEGORY_CHOICES = [
+        ('safety', 'Safety concern'),
+        ('harassment', 'Harassment or threatening behaviour'),
+        ('fraud', 'Suspected fraud or scam'),
+        ('property', 'Property or vehicle incident'),
+        ('no_show', 'No-show / location concern'),
+        ('other', 'Other'),
+    ]
+    STATUS_CHOICES = [
+        ('submitted', 'Submitted'),
+        ('reviewing', 'Reviewing'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carwash_safety_reports_made'
+    )
+    reported_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='carwash_safety_reports_received'
+    )
+    wash_request = models.ForeignKey(
+        CarWashRequest, on_delete=models.SET_NULL, null=True, blank=True, related_name='safety_reports'
+    )
+    business = models.ForeignKey(
+        CarWashBusiness, on_delete=models.SET_NULL, null=True, blank=True, related_name='safety_reports'
+    )
+    worker = models.ForeignKey(
+        CarWashWorker, on_delete=models.SET_NULL, null=True, blank=True, related_name='safety_reports'
+    )
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='safety')
+    description = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
+
+    reporter_latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    reporter_longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    reported_latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    reported_longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+
+    nearest_police_name = models.CharField(max_length=180, blank=True)
+    nearest_police_address = models.CharField(max_length=255, blank=True)
+    nearest_police_place_id = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Safety report {self.id} - {self.category}'

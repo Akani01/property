@@ -9,6 +9,7 @@ from .models import (
     CarWashQuote,
     CarWashRequest,
     CarWashReview,
+    CarWashSafetyReport,
     CarWashService,
     CarWashStatusHistory,
     CarWashWallet,
@@ -37,4 +38,5 @@ admin.site.register([
     CarWashWallet,
     CarWashLedgerEntry,
     CarWashReview,
+    CarWashSafetyReport,
 ])

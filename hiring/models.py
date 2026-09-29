@@ -1083,12 +1083,14 @@ class VideoComment(models.Model):
         return self.likes.filter(id=user.id).exists()
 
 
-
 class PushSubscription(models.Model):
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="push_subscriptions"
+        related_name="push_subscriptions",
+        null=True,
+        blank=True,
     )
 
     endpoint = models.TextField(unique=True)
@@ -1099,9 +1101,9 @@ class PushSubscription(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user} - {self.endpoint[:40]}"
-        
+        return f"{self.user or 'Anonymous'} - {self.endpoint[:40]}"
 
+        
 class NewsletterSubscriber(models.Model):
     email = models.EmailField(unique=True)
     subscribed_at = models.DateTimeField(auto_now_add=True)

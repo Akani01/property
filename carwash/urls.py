@@ -55,6 +55,9 @@ urlpatterns = [
         name='carwash_request_message',
     ),
 
+    # Safety / incident reporting
+    path('api/safety/report/', views.create_safety_report, name='carwash_safety_report'),
+
     # Provider payout bank details
     path(
         'api/payout-details/',

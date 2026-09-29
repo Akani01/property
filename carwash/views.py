@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 
 
@@ -106,6 +107,8 @@ from rest_framework.response import Response
 
 
 
+from .identity import public_business_name, public_user_name, public_worker_name
+
 from .models import (
 
 
@@ -171,6 +174,7 @@ from .models import (
 
 
     CarWashReview,
+    CarWashSafetyReport,
 
 
 
@@ -319,6 +323,7 @@ from .serializers import (
 
 
     CarWashReviewSerializer,
+    CarWashSafetyReportSerializer,
 
 
 
@@ -1390,7 +1395,7 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
-            return CarWashWorker.objects.all().select_related('business', 'user')
+            return CarWashWorker.objects.all().select_related('business', 'user', 'location')
 
 
 
@@ -1398,7 +1403,7 @@ class CarWashWorkerViewSet(BusinessOwnedMixin, viewsets.ModelViewSet):
 
 
 
-        return CarWashWorker.objects.filter(business__owner=self.request.user).select_related('business', 'user')
+        return CarWashWorker.objects.filter(business__owner=self.request.user).select_related('business', 'user', 'location')
 
 
 
@@ -2761,6 +2766,7 @@ def nearby_providers(request):
 
 
     results = []
+    live_cutoff = timezone.now() - timedelta(minutes=2)
 
 
 
@@ -2787,6 +2793,7 @@ def nearby_providers(request):
                     worker__is_available=True,
 
                     is_active=True,
+                    recorded_at__gte=live_cutoff,
 
                 )
 
@@ -2912,15 +2919,12 @@ def nearby_providers(request):
 
             'available_worker_id': str(worker.id) if worker else None,
 
-            'available_worker_name': (
-
-                worker.display_name
-
-                or worker.user.get_full_name()
-
-                or worker.user.get_username()
-
-            ) if worker else None,
+            'available_worker_name': public_worker_name(worker) if worker else None,
+            'public_name': public_business_name(business),
+            'location_age_seconds': (
+                max(0, int((timezone.now() - location.recorded_at).total_seconds()))
+                if fulfilment == 'mobile' and location and location.recorded_at else None
+            ),
 
             'vehicles': VehicleTypeSerializer(vehicles, many=True).data,
 
@@ -3778,7 +3782,7 @@ def _notify_carwash_user(user, title, message, wash_request, panel='trackWash'):
 
 def _notify_new_carwash_request(wash_request):
 
-    customer_name = wash_request.customer.get_full_name() or wash_request.customer.get_username()
+    customer_name = public_user_name(wash_request.customer)
 
     owner = getattr(wash_request.business, 'owner', None)
 
@@ -3971,6 +3975,8 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
             'quote__service',
 
             'business',
+            'business__owner',
+            'customer',
 
             'assigned_worker__user',
 
@@ -4296,6 +4302,18 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
             return Response({'error': 'This request is no longer available.'}, status=400)
 
+        if wash_request.quote.fulfilment_mode == 'mobile':
+            fresh_location = CarWashProviderLocation.objects.filter(
+                worker=worker,
+                is_active=True,
+                recorded_at__gte=timezone.now() - timedelta(minutes=2),
+            ).exists()
+            if not fresh_location:
+                return Response(
+                    {'error': 'Your live GPS is not fresh enough. Keep OppoGlobe open and share location before accepting this mobile wash.'},
+                    status=400,
+                )
+
 
 
 
@@ -4464,9 +4482,21 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
         is_owner = wash_request.business.owner_id == request.user.id
 
+        if is_customer and not request.user.is_superuser:
+            if new_status != 'cancelled' or wash_request.status not in {'requested', 'searching', 'accepted', 'en_route', 'arrived'}:
+                return Response({'error': 'Customers may only cancel an active wash before washing starts.'}, status=403)
 
-
-
+        if (is_worker or is_owner) and not request.user.is_superuser:
+            provider_allowed = {
+                'requested': {'cancelled'},
+                'searching': {'cancelled'},
+                'accepted': {'en_route', 'cancelled'},
+                'en_route': {'arrived', 'cancelled'},
+                'arrived': {'washing', 'cancelled'},
+                'washing': {'completed', 'cancelled'},
+            }
+            if new_status not in provider_allowed.get(wash_request.status, set()):
+                return Response({'error': f'Provider cannot move from {wash_request.status} to {new_status}.'}, status=403)
 
 
 
@@ -6314,7 +6344,7 @@ def start_carwash_business_conversation(request, business_id):
 
 
 
-            'name': recipient.get_full_name() or recipient.get_username(),
+            'name': public_business_name(business),
 
 
 
@@ -6670,7 +6700,13 @@ def start_carwash_request_conversation(request, request_id):
 
 
 
-            'name': recipient.get_full_name() or recipient.get_username(),
+            'name': (
+                public_worker_name(wash_request.assigned_worker)
+                if recipient_role == 'washer' and wash_request.assigned_worker
+                else public_business_name(wash_request.business)
+                if recipient_role == 'business'
+                else public_user_name(recipient)
+            ),
 
 
 
@@ -6712,6 +6748,121 @@ def start_carwash_request_conversation(request, request_id):
 
 
 
+
+
+# ============================================================
+# CARWASH SAFETY REPORTING
+# ============================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_safety_report(request):
+    """Create an internal OppoGlobe incident record.
+
+    This records the incident inside OppoGlobe. It does not claim to create a
+    SAPS case. Emergency calling and nearest-police navigation stay separate.
+    """
+    wash_request = None
+    business = None
+    worker = None
+    reported_user = None
+
+    request_id = request.data.get('request_id')
+    business_id = request.data.get('business_id')
+    worker_id = request.data.get('worker_id')
+
+    if request_id:
+        wash_request = get_object_or_404(
+            CarWashRequest.objects.select_related(
+                'customer', 'business__owner', 'assigned_worker__user'
+            ),
+            id=request_id,
+        )
+        involved = (
+            wash_request.customer_id == request.user.id
+            or wash_request.business.owner_id == request.user.id
+            or (wash_request.assigned_worker and wash_request.assigned_worker.user_id == request.user.id)
+            or request.user.is_superuser
+        )
+        if not involved:
+            return Response({'success': False, 'error': 'You are not part of this wash request.'}, status=403)
+
+        business = wash_request.business
+        worker = wash_request.assigned_worker
+        if wash_request.customer_id == request.user.id:
+            reported_user = worker.user if worker else business.owner
+        else:
+            reported_user = wash_request.customer
+
+    elif business_id:
+        business = get_object_or_404(
+            CarWashBusiness.objects.select_related('owner'), id=business_id, is_active=True
+        )
+        if worker_id:
+            worker = get_object_or_404(
+                CarWashWorker.objects.select_related('user', 'business'),
+                id=worker_id, business=business, is_active=True,
+            )
+            reported_user = worker.user
+        else:
+            reported_user = business.owner
+    else:
+        return Response(
+            {'success': False, 'error': 'A wash request or car-wash business is required.'},
+            status=400,
+        )
+
+    allowed_categories = {choice[0] for choice in CarWashSafetyReport.CATEGORY_CHOICES}
+    category = (request.data.get('category') or 'safety').strip()
+    if category not in allowed_categories:
+        category = 'other'
+
+    def optional_decimal(name):
+        value = request.data.get(name)
+        if value in (None, '', 'null', 'undefined'):
+            return None
+        try:
+            return Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
+    report = CarWashSafetyReport.objects.create(
+        reporter=request.user,
+        reported_user=reported_user,
+        wash_request=wash_request,
+        business=business,
+        worker=worker,
+        category=category,
+        description=(request.data.get('description') or '').strip()[:5000],
+        reporter_latitude=optional_decimal('reporter_latitude'),
+        reporter_longitude=optional_decimal('reporter_longitude'),
+        reported_latitude=optional_decimal('reported_latitude'),
+        reported_longitude=optional_decimal('reported_longitude'),
+        nearest_police_name=(request.data.get('nearest_police_name') or '').strip()[:180],
+        nearest_police_address=(request.data.get('nearest_police_address') or '').strip()[:255],
+        nearest_police_place_id=(request.data.get('nearest_police_place_id') or '').strip()[:255],
+    )
+
+    try:
+        from hiring.views import NotificationService
+        NotificationService.notify(
+            user=request.user,
+            title='Safety report submitted',
+            message=f'Your OppoGlobe safety report {report.id} was recorded.',
+            notification_type='system',
+            app_source='carwash',
+            action_url='/carwash/',
+            send_push=True,
+            sound=True,
+        )
+    except Exception:
+        pass
+
+    return Response({
+        'success': True,
+        'report': CarWashSafetyReportSerializer(report).data,
+        'message': 'Your OppoGlobe safety report has been recorded.',
+    }, status=201)
 
 
 # ============================================================

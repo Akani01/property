@@ -702,6 +702,33 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .history-date{margin-top:8px;color:var(--muted);font-size:9.5px}
 @media(max-width:520px){.history-summary{grid-template-columns:1fr 1fr}.history-stat:last-child{grid-column:1/-1}.history-meta-grid{grid-template-columns:1fr 1fr}}
 
+
+
+/* ---------- live Uber-style map markers ---------- */
+.og-map-marker{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;user-select:none;filter:drop-shadow(0 8px 16px rgba(22,36,31,.18));transition:filter .2s ease;z-index:2}
+.og-map-marker:hover{filter:drop-shadow(0 12px 22px rgba(22,36,31,.25));z-index:9}
+.og-marker-card{display:flex;align-items:center;gap:7px;padding:6px 9px 6px 6px;border-radius:16px;background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.95);box-shadow:0 4px 18px rgba(22,36,31,.14);white-space:nowrap;position:relative}
+.og-marker-card:after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+.og-marker-icon{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--jade);color:#fff;position:relative;overflow:visible}
+.og-marker-copy{display:flex;flex-direction:column;line-height:1.05}.og-marker-copy strong{font-size:10.5px;max-width:145px;overflow:hidden;text-overflow:ellipsis}.og-marker-copy span{font-size:8.5px;color:var(--muted);margin-top:3px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.og-map-marker.user .og-marker-icon{background:var(--coral)}.og-map-marker.user .og-marker-card{border-color:rgba(255,107,74,.32)}
+.og-map-marker.provider .og-marker-icon{background:var(--jade)}
+.og-map-marker.en_route .og-marker-icon{background:var(--gold);color:#30240c}
+.og-map-marker.arrived .og-marker-icon{background:var(--sky);color:#fff}
+.og-map-marker.washing .og-marker-icon{background:linear-gradient(135deg,var(--sky),var(--jade));animation:washPulse 1.15s ease-in-out infinite}
+.og-map-marker.business .og-marker-icon{background:var(--plum)}
+.og-map-marker.police .og-marker-icon{background:#3452a4}.og-map-marker.police .og-marker-card{border-color:#dce4ff}
+.og-map-marker.stale{opacity:.68;filter:grayscale(.2) drop-shadow(0 6px 14px rgba(22,36,31,.12))}
+.og-live-pulse{position:absolute;width:13px;height:13px;border-radius:50%;background:currentColor;opacity:.32;animation:ogPulse 1.55s ease-out infinite}
+.og-wash-bubble{position:absolute;width:7px;height:7px;border:1.5px solid #fff;border-radius:50%;opacity:0;animation:bubbleUp 1.8s ease-in infinite}.og-wash-bubble.b1{left:-4px;bottom:2px}.og-wash-bubble.b2{right:-3px;bottom:5px;animation-delay:.5s}.og-wash-bubble.b3{left:15px;bottom:2px;animation-delay:1s}
+@keyframes ogPulse{0%{transform:scale(.7);opacity:.4}100%{transform:scale(3.2);opacity:0}}
+@keyframes washPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes bubbleUp{0%{transform:translateY(4px) scale(.7);opacity:0}25%{opacity:.9}100%{transform:translateY(-28px) scale(1.35);opacity:0}}
+.map-live-banner{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:45;display:none;align-items:center;gap:8px;max-width:min(92vw,520px);padding:8px 12px;border-radius:999px;background:rgba(22,36,31,.9);color:#fff;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(22,36,31,.18);font-size:10.5px;font-weight:800}.map-live-banner.show{display:flex}.map-live-dot{width:8px;height:8px;border-radius:50%;background:#63e6a6;box-shadow:0 0 0 0 rgba(99,230,166,.6);animation:liveDot 1.5s infinite}@keyframes liveDot{70%{box-shadow:0 0 0 8px rgba(99,230,166,0)}100%{box-shadow:0 0 0 0 rgba(99,230,166,0)}}
+.map-float-stack{position:fixed;right:14px;bottom:92px;z-index:44;display:flex;flex-direction:column;gap:8px}.map-float-btn{width:44px;height:44px;border:1px solid rgba(255,255,255,.9);border-radius:15px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(22,36,31,.16);display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:16px;backdrop-filter:blur(14px)}.map-float-btn.safety{color:var(--danger)}
+.safety-modal{position:fixed;inset:0;z-index:5000;background:rgba(22,36,31,.48);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:14px}.safety-modal.show{display:flex}.safety-card{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.24)}.safety-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.safety-head h3{margin:0}.safety-close{border:0;background:var(--paper);width:34px;height:34px;border-radius:50%}.safety-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.safety-actions a,.safety-actions button{min-height:44px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:800;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:7px}.safety-actions .danger{background:var(--danger);border-color:var(--danger);color:#fff}.police-list{display:flex;flex-direction:column;gap:7px;margin:10px 0}.police-row{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}.police-row strong{font-size:12px}.police-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.report-form{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}.report-form select,.report-form textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:7px;font:inherit}.report-form textarea{min-height:80px}.report-confirm{font-size:10.5px;color:var(--muted);margin-top:8px}
+@media(max-width:820px){.map-live-banner{top:69px}.map-float-stack{right:10px;bottom:86px}.safety-card{border-radius:20px;padding:14px}.safety-actions{grid-template-columns:1fr 1fr}}
+
 </style>
 
 
@@ -710,7 +737,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 
 
-<body data-auth="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-business-role="{% if is_carwash_business_user %}1{% else %}0{% endif %}" data-business-id="{% if carwash_business %}{{ carwash_business.id }}{% endif %}" data-worker-id="{% if carwash_worker %}{{ carwash_worker.id }}{% endif %}" data-can-manage="{% if can_manage_carwash_business %}1{% else %}0{% endif %}">
+<body data-auth="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-business-role="{% if is_carwash_business_user %}1{% else %}0{% endif %}" data-business-id="{% if carwash_business %}{{ carwash_business.id }}{% endif %}" data-worker-id="{% if carwash_worker %}{{ carwash_worker.id }}{% endif %}" data-can-manage="{% if can_manage_carwash_business %}1{% else %}0{% endif %}" data-public-name="{{ carwash_public_name|default:''|escape }}">
 
 
 
@@ -1381,7 +1408,32 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 
 
+<audio id="globalCarwashAlertAudio" preload="auto" src="{% static 'hiring/audio/notification.mp3' %}"></audio>
+<div class="map-live-banner" id="mapLiveBanner"><span class="map-live-dot"></span><span id="mapLiveBannerText">Live map connected</span></div>
+<div class="map-float-stack">
+  <button class="map-float-btn" type="button" title="Recenter live map" onclick="recenterLiveMap()"><i class="fas fa-location-crosshairs"></i></button>
+  {% if user.is_authenticated %}<button class="map-float-btn safety" type="button" title="Safety" onclick="openSafetyCenter()"><i class="fas fa-shield-halved"></i></button>{% endif %}
+</div>
 
+<div class="safety-modal" id="carwashSafetyModal" role="dialog" aria-modal="true" aria-label="OppoGlobe safety center">
+  <div class="safety-card">
+    <div class="safety-head"><div><div class="eyebrow">OppoGlobe safety</div><h3>Safety centre</h3><p class="status">For immediate danger, contact emergency services. OppoGlobe reports are internal incident records and are not SAPS case numbers.</p></div><button class="safety-close" onclick="closeSafetyCenter()"><i class="fas fa-xmark"></i></button></div>
+    <div class="safety-actions">
+      <a class="danger" href="tel:10111"><i class="fas fa-phone"></i> SAPS 10111</a>
+      <a class="danger" href="tel:112"><i class="fas fa-mobile-screen"></i> Emergency 112</a>
+      <button type="button" onclick="copySafetyLocation()"><i class="fas fa-location-dot"></i> Copy my GPS</button>
+      <button type="button" onclick="findNearestPolice(true)"><i class="fas fa-building-shield"></i> Nearest police</button>
+    </div>
+    <div id="policeList" class="police-list"><div class="empty">Tap “Nearest police” to find nearby police stations.</div></div>
+    <div class="report-form">
+      <strong>Report this car-wash interaction to OppoGlobe</strong>
+      <select id="safetyCategory"><option value="safety">Safety concern</option><option value="harassment">Harassment / threat</option><option value="fraud">Suspected fraud / scam</option><option value="property">Vehicle / property incident</option><option value="no_show">No-show / location concern</option><option value="other">Other</option></select>
+      <textarea id="safetyDescription" placeholder="Tell OppoGlobe what happened. Do not include passwords or banking PINs."></textarea>
+      <button class="btn danger" type="button" style="width:100%;margin-top:9px" onclick="submitSafetyReport()"><i class="fas fa-shield-halved"></i> Submit safety report</button>
+      <div class="report-confirm" id="safetyReportStatus"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 
@@ -1408,6 +1460,9 @@ let WORKER_ID = document.body.dataset.workerId || '';
 
 
 let map, userMarker, businessMarker, trackingMarker;
+let OppoMapMarker=null, customerWatchId=null, trackingPollTimer=null, workspaceRefreshTimer=null, paymentRefreshTimer=null;
+let trackingDirectionsService=null, trackingDirectionsRenderer=null, trackingFallbackLine=null, lastRoutePoint=null, lastRouteAt=0, mapUserMoved=false;
+let policeMarkers=[], nearestPolice=null, currentTrackingData=null;
 
 
 
@@ -1471,7 +1526,19 @@ function getCookie(name){const row=document.cookie.split('; ').find(v=>v.startsW
 
 
 
-function api(url,options={}){options.headers={...(options.headers||{})};if(options.body&&!options.headers['Content-Type'])options.headers['Content-Type']='application/json';if(options.method&&options.method!=='GET')options.headers['X-CSRFToken']=getCookie('csrftoken');return fetch(url,options).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||d.detail||JSON.stringify(d)||'Request failed');return d})}
+function api(url,options={}){
+  const method=(options.method||'GET').toUpperCase();
+  options.headers={...(options.headers||{}),'Accept':'application/json'};
+  if(options.body&&!options.headers['Content-Type'])options.headers['Content-Type']='application/json';
+  if(method!=='GET')options.headers['X-CSRFToken']=getCookie('csrftoken');
+  if(method==='GET'){
+    const sep=url.includes('?')?'&':'?';
+    url=`${url}${sep}_live=${Date.now()}`;
+    options.cache='no-store';
+    options.headers['Cache-Control']='no-cache';
+  }
+  return fetch(url,options).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||d.detail||JSON.stringify(d)||'Request failed');return d});
+}
 
 
 
@@ -1542,7 +1609,37 @@ function applyCarwashDeepLink(){
 
 
 
-function initWashMap(){map=new google.maps.Map(document.getElementById('map'),{center:{lat:-26.2041,lng:28.0473},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false});installPanelMinimizeControls();bindRoleNav();if(IS_BUSINESS){initBusinessWorkspace()}else{initCustomerWorkspace()}}
+function ensureOppoMapMarkerClass(){
+  if(OppoMapMarker)return;
+  OppoMapMarker=class extends google.maps.OverlayView{
+    constructor({position,map,label='',subtitle='',state='provider',icon='fa-location-dot',heading=null,onClick=null}){
+      super();this.position=new google.maps.LatLng(position);this.label=label;this.subtitle=subtitle;this.state=state;this.icon=icon;this.heading=heading;this.onClick=onClick;this.div=null;this.setMap(map);
+    }
+    onAdd(){
+      this.div=document.createElement('div');this.div.className='og-map-marker';
+      this.div.addEventListener('click',e=>{e.stopPropagation();if(this.onClick)this.onClick();});
+      this.getPanes().overlayMouseTarget.appendChild(this.div);this.render();
+    }
+    draw(){if(!this.div)return;const p=this.getProjection().fromLatLngToDivPixel(this.position);this.div.style.left=`${p.x}px`;this.div.style.top=`${p.y}px`;}
+    onRemove(){this.div?.remove();this.div=null;}
+    render(){if(!this.div)return;const washing=this.state==='washing'?'<i class="og-wash-bubble b1"></i><i class="og-wash-bubble b2"></i><i class="og-wash-bubble b3"></i>':'';const pulse=['user','provider','en_route'].includes(this.state)?'<i class="og-live-pulse"></i>':'';this.div.className=`og-map-marker ${this.state}`;this.div.innerHTML=`<div class="og-marker-card"><div class="og-marker-icon">${pulse}<i class="fas ${this.icon}" style="${this.heading!=null?`transform:rotate(${Number(this.heading)}deg)`:''}"></i>${washing}</div><div class="og-marker-copy"><strong>${escapeHtml(this.label)}</strong><span>${escapeHtml(this.subtitle)}</span></div></div>`;}
+    setPosition(pos){this.position=new google.maps.LatLng(pos);this.draw();}
+    setData({label,subtitle,state,icon,heading}={}){if(label!==undefined)this.label=label;if(subtitle!==undefined)this.subtitle=subtitle;if(state!==undefined)this.state=state;if(icon!==undefined)this.icon=icon;if(heading!==undefined)this.heading=heading;this.render();this.draw();}
+    animateTo(pos,duration=1400){const start=this.position;const end=new google.maps.LatLng(pos);const started=performance.now();const step=now=>{const t=Math.min(1,(now-started)/duration);const eased=1-Math.pow(1-t,3);this.position=new google.maps.LatLng(start.lat()+(end.lat()-start.lat())*eased,start.lng()+(end.lng()-start.lng())*eased);this.draw();if(t<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+  };
+}
+
+function initWashMap(){
+  map=new google.maps.Map(document.getElementById('map'),{center:{lat:-26.2041,lng:28.0473},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false});
+  ensureOppoMapMarkerClass();
+  trackingDirectionsService=new google.maps.DirectionsService();
+  trackingDirectionsRenderer=new google.maps.DirectionsRenderer({map,suppressMarkers:true,preserveViewport:true,polylineOptions:{strokeColor:'#1f6f5c',strokeOpacity:.82,strokeWeight:5}});
+  map.addListener('dragstart',()=>{mapUserMoved=true});map.addListener('zoom_changed',()=>{if(mapUserMoved)return});
+  installPanelMinimizeControls();bindRoleNav();
+  if(IS_BUSINESS){initBusinessWorkspace()}else{initCustomerWorkspace();startCustomerLocationWatch()}
+  startWorkspaceRefreshEngine();
+  setMapLiveBanner('Live map connected',true);
+}
 
 
 
@@ -1695,11 +1792,20 @@ function initCustomerWorkspace(){
 
 
 
-function locateMe(){const label=document.getElementById('addressText');if(!navigator.geolocation){if(label)label.textContent='Location services are unavailable';return}if(label)label.textContent='Finding your location…';navigator.geolocation.getCurrentPosition(async pos=>{userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};setUserMarker(userPos);map.panTo(userPos);map.setZoom(13);await reverseGeocode(userPos);loadNearby()},()=>{if(label)label.textContent='Allow location access to find nearby washers'},{enableHighAccuracy:true,timeout:12000,maximumAge:30000})}
+function locateMe(){const label=document.getElementById('addressText');if(!navigator.geolocation){if(label)label.textContent='Location services are unavailable';return}if(label)label.textContent='Finding your location…';navigator.geolocation.getCurrentPosition(async pos=>{userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};setUserMarker(userPos);map.panTo(userPos);map.setZoom(14);mapUserMoved=false;await reverseGeocode(userPos);loadNearby(true)},()=>{if(label)label.textContent='Allow location access to find nearby washers'},{enableHighAccuracy:true,timeout:12000,maximumAge:5000})}
 
+function currentPublicUserName(){return document.body.dataset.publicName||document.body.dataset.username||'You'}
 
+function setUserMarker(pos){
+  if(!OppoMapMarker)return;
+  if(!userMarker)userMarker=new OppoMapMarker({position:pos,map,label:currentPublicUserName(),subtitle:'You are here',state:'user',icon:'fa-user'});
+  else userMarker.animateTo(pos,650);
+}
 
-function setUserMarker(pos){if(userMarker)userMarker.setMap(null);userMarker=new google.maps.Marker({position:pos,map,title:'You',zIndex:999,icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#1f6f5c',fillOpacity:1,strokeColor:'#fff',strokeWeight:4}})}
+function startCustomerLocationWatch(){
+  if(IS_BUSINESS||!navigator.geolocation||customerWatchId!==null)return;
+  customerWatchId=navigator.geolocation.watchPosition(pos=>{const next={lat:pos.coords.latitude,lng:pos.coords.longitude};userPos=next;setUserMarker(next);},()=>{}, {enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+}
 
 
 
@@ -1715,42 +1821,28 @@ function clearProviderMarkers(){providerMarkers.forEach(m=>m.setMap(null));provi
 
 
 
-async function loadNearby(){
+async function loadNearby(silent=false){
   if(!userPos)return;
   const list=document.getElementById('providerList');
-  list.innerHTML='<div class="empty">Finding nearby car wash providers…</div>';
-  clearProviderMarkers();
-  selectedProvider=null;
-  catalog=null;
-  resetChoices();
+  const selectedId=selectedProvider?.id?String(selectedProvider.id):null;
+  if(!silent||!providers.length)list.innerHTML='<div class="empty">Finding nearby car wash providers…</div>';
   try{
     const data=await api(`/carwash/api/nearby/?lat=${encodeURIComponent(userPos.lat)}&lng=${encodeURIComponent(userPos.lng)}&fulfilment=${encodeURIComponent(mode)}&radius=30`);
-    providers=data.providers||[];
-    if(!providers.length){
-      list.innerHTML=`<div class="empty">No ${mode==='mobile'?'live mobile washers':'drive-in washes'} are available within 30 km right now.</div>`;
-      document.getElementById('statusText').textContent=mode==='mobile'?'A provider must be online, available, accepting requests and sharing live location.':'Try again later or switch to Come to me.';
-      return;
-    }
+    const nextProviders=data.providers||[];
+    providers=nextProviders;
+    if(selectedId){selectedProvider=providers.find(p=>String(p.id)===selectedId)||null;if(!selectedProvider){catalog=null;resetChoices();}}
+    if(!providers.length){clearProviderMarkers();list.innerHTML=`<div class="empty">No ${mode==='mobile'?'live mobile washers':'drive-in washes'} are available within 30 km right now.</div>`;document.getElementById('statusText').textContent=mode==='mobile'?'A provider must be online, available, accepting requests and sharing fresh live location.':'Try again later or switch to Come to me.';return;}
     list.innerHTML=providers.map(p=>`
-      <article class="provider" data-id="${p.id}" onclick="selectProvider('${p.id}')">
-        <div class="provider-top">
-          <div><h4>${escapeHtml(p.name)}</h4><small>${Number(p.distance_km||0).toFixed(1)} km away</small></div>
-          <div class="rating"><i class="fas fa-star" style="color:#e8a93b"></i> ${Number(p.average_rating||0).toFixed(1)}</div>
-        </div>
+      <article class="provider ${selectedProvider&&String(selectedProvider.id)===String(p.id)?'active':''}" data-id="${p.id}" onclick="selectProvider('${p.id}')">
+        <div class="provider-top"><div><h4>${escapeHtml(p.public_name||p.name)}</h4><small>${Number(p.distance_km||0).toFixed(1)} km away</small></div><div class="rating"><i class="fas fa-star" style="color:#e8a93b"></i> ${Number(p.average_rating||0).toFixed(1)}</div></div>
         <div class="provider-meta">${mode==='mobile'&&p.available_worker_name?`Washer: ${escapeHtml(p.available_worker_name)} · `:''}${Number(p.available_options_count||p.prices?.length||0)} bookable option${Number(p.available_options_count||p.prices?.length||0)===1?'':'s'}</div>
-        <div class="provider-actions">
-          <span class="badge">${mode==='mobile'?'Live · mobile available':'Drive-in available'}</span>
-          ${IS_AUTH?`<button class="message-btn" type="button" onclick="event.stopPropagation();messageCarwashBusiness('${p.id}','${escapeHtml(p.name)}')"><i class="fas fa-comment-dots"></i> Message</button>`:''}
-        </div>
+        <div class="provider-actions"><span class="badge">${mode==='mobile'?'Live now · mobile available':'Drive-in available'}</span>${IS_AUTH?`<button class="message-btn" type="button" onclick="event.stopPropagation();messageCarwashBusiness('${p.id}','${escapeHtml(p.public_name||p.name)}')"><i class="fas fa-comment-dots"></i> Message</button><button class="btn ghost small" type="button" onclick="event.stopPropagation();openSafetyCenter({businessId:'${p.id}',workerId:'${p.available_worker_id||''}',reportedName:'${escapeHtml(p.available_worker_name||p.public_name||p.name)}'})"><i class="fas fa-shield-halved"></i> Safety</button>`:''}</div>
       </article>`).join('');
-    providers.forEach(p=>{
-      const marker=new google.maps.Marker({position:{lat:Number(p.map_latitude),lng:Number(p.map_longitude)},map,title:p.name,icon:{path:google.maps.SymbolPath.CIRCLE,scale:15,fillColor:'#1f6f5c',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:3}});
-      marker.addListener('click',()=>selectProvider(p.id));
-      providerMarkers.push(marker);
-    });
-  }catch(e){
-    list.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
-  }
+
+    const existing=new Map(providerMarkers.map(m=>[String(m._providerId||''),m]));const nextMarkers=[];
+    providers.forEach(p=>{const key=String(p.id),pos={lat:Number(p.map_latitude),lng:Number(p.map_longitude)},workerLabel=p.available_worker_name||p.public_name||p.name||'Available washer',subtitle=`${p.public_name||p.name} · ${Number(p.distance_km||0).toFixed(1)} km`;let marker=existing.get(key);if(marker){marker.animateTo(pos,1200);marker.setData({label:workerLabel,subtitle,state:'provider',icon:'fa-person'});existing.delete(key)}else{marker=new OppoMapMarker({position:pos,map,label:workerLabel,subtitle,state:'provider',icon:'fa-person',onClick:()=>selectProvider(p.id)});marker._providerId=key}nextMarkers.push(marker)});
+    existing.forEach(marker=>marker.setMap(null));providerMarkers=nextMarkers;
+  }catch(e){if(!silent||!providers.length)list.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;}
 }
 
 async function selectProvider(id){
@@ -2080,30 +2172,60 @@ function trackFromHistory(id){activeRequestId=id;openPanel('trackWash');startTra
 
 
 
+function trackingStateMeta(status){
+  if(status==='en_route')return{state:'en_route',icon:'fa-car-side',subtitle:'Moving toward you'};
+  if(status==='arrived')return{state:'arrived',icon:'fa-location-dot',subtitle:'Arrived'};
+  if(status==='washing')return{state:'washing',icon:'fa-car-side',subtitle:'Washing your car'};
+  return{state:'provider',icon:'fa-user',subtitle:'Live washer'};
+}
+
+function setMapLiveBanner(text,show=true){const el=document.getElementById('mapLiveBanner'),tx=document.getElementById('mapLiveBannerText');if(tx)tx.textContent=text;if(el)el.classList.toggle('show',show)}
+
+function clearTrackingRoute(){trackingDirectionsRenderer?.setDirections({routes:[]});trackingFallbackLine?.setMap(null);trackingFallbackLine=null;lastRoutePoint=null;lastRouteAt=0}
+
+function updateTrackingRoute(providerPos){
+  if(!userPos||!providerPos)return;
+  if(!trackingFallbackLine)trackingFallbackLine=new google.maps.Polyline({map,path:[providerPos,userPos],strokeColor:'#1f6f5c',strokeOpacity:.3,strokeWeight:4,geodesic:true});else trackingFallbackLine.setPath([providerPos,userPos]);
+  const moved=lastRoutePoint?distanceBetweenCoords(lastRoutePoint.lat,lastRoutePoint.lng,providerPos.lat,providerPos.lng):Infinity;
+  if(moved<150&&Date.now()-lastRouteAt<45000)return;
+  lastRoutePoint={...providerPos};lastRouteAt=Date.now();
+  trackingDirectionsService?.route({origin:providerPos,destination:userPos,travelMode:google.maps.TravelMode.DRIVING},(result,status)=>{if(status==='OK'&&result){trackingDirectionsRenderer.setDirections(result);trackingFallbackLine?.setMap(null);trackingFallbackLine=null;}});
+}
+
+async function refreshTrackingOnce(requestId,focus=false){
+  try{
+    const data=await api(`/carwash/api/requests/${requestId}/tracking/`);
+    currentTrackingData=data;
+    const r=data.request,loc=data.provider_location;
+    const box=document.getElementById('trackContent');
+    if(box){
+      const timer=serviceTimerHtml(r);
+      const customerCancel=!['completed','cancelled','declined','expired','washing'].includes(r.status)?`<button class="btn danger small" type="button" onclick="customerCancelWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel request</button>`:'';
+      const providerName=r.worker_name||r.worker?.public_name||r.worker?.display_name||r.business_name||r.quote?.business_name||'Provider';
+      const liveNote=data.provider_location_is_live?'Live GPS':(loc?'Last known location':'Waiting for live GPS');
+      box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.business_name||r.quote?.business_name||'')} · ${escapeHtml(providerName)}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p><p><i class="fas fa-satellite-dish"></i> ${escapeHtml(liveNote)}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message ${escapeHtml(providerName)}</button><button class="btn ghost small" type="button" onclick="openSafetyCenter({requestId:'${r.id}',reportedName:'${escapeHtml(providerName)}'})"><i class="fas fa-shield-halved"></i> Safety</button>${['completed','cancelled','declined','expired'].includes(r.status)?`<button class="btn small" type="button" onclick="openPanel('myWashes')"><i class="fas fa-clock-rotate-left"></i> View history</button>`:''}</div></div>`;
+      ensureServiceTimerTicker();
+    }
+    if(loc){
+      const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};
+      const meta=trackingStateMeta(r.status);const live=!!data.provider_location_is_live;
+      const name=r.worker_name||loc.worker_name||r.worker?.public_name||r.business_name||'Washer';
+      if(!trackingMarker)trackingMarker=new OppoMapMarker({position:pos,map,label:name,subtitle:live?meta.subtitle:'Last known location',state:live?meta.state:'stale',icon:meta.icon,heading:loc.heading});
+      else{trackingMarker.animateTo(pos,1500);trackingMarker.setData({label:name,subtitle:live?meta.subtitle:'Last known location',state:live?meta.state:'stale',icon:meta.icon,heading:loc.heading});}
+      updateTrackingRoute(pos);
+      setMapLiveBanner(r.status==='washing'?`${name} is washing your car`:live?`${name} · ${meta.subtitle}`:`${name} · GPS reconnecting`,true);
+      if((focus||!mapUserMoved)&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70);mapUserMoved=false;}
+    }
+    if(['completed','cancelled','declined','expired'].includes(r.status)){clearTrackingRoute();setMapLiveBanner(statusLabel(r.status),true);}
+    return data;
+  }catch(e){console.warn('Tracking refresh failed',e);return null;}
+}
+
 async function startTracking(requestId,focus=false){
   activeRequestId=requestId;
-  const draw=async()=>{
-    try{
-      const data=await api(`/carwash/api/requests/${requestId}/tracking/`);
-      const r=data.request,loc=data.provider_location;
-      const box=document.getElementById('trackContent');
-      if(box){
-        const timer=serviceTimerHtml(r);
-        const customerCancel=!['completed','cancelled','declined','expired','washing'].includes(r.status)
-          ? `<button class="btn danger small" type="button" onclick="customerCancelWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel request</button>`:'';
-        box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.quote?.business_name||'')}${r.worker?' · '+escapeHtml(r.worker.display_name||r.worker.username):''}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button>${['completed','cancelled','declined','expired'].includes(r.status)?`<button class="btn small" type="button" onclick="openPanel('myWashes')"><i class="fas fa-clock-rotate-left"></i> View history</button>`:''}</div></div>`;
-        ensureServiceTimerTicker();
-      }
-      if(loc){
-        const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};
-        if(!trackingMarker)trackingMarker=new google.maps.Marker({position:pos,map,zIndex:1001,title:'Washer live location',icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:8,fillColor:'#e8a93b',fillOpacity:1,strokeColor:'#17221e',strokeWeight:2}});
-        else trackingMarker.setPosition(pos);
-        if(focus&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70)}
-      }
-      if(!['completed','cancelled','declined','expired'].includes(r.status))setTimeout(draw,5000);
-    }catch(e){setTimeout(draw,8000)}
-  };
-  draw();
+  if(trackingPollTimer){clearInterval(trackingPollTimer);trackingPollTimer=null;}
+  await refreshTrackingOnce(requestId,focus);
+  trackingPollTimer=setInterval(()=>{if(document.visibilityState==='visible'&&activeRequestId===requestId)refreshTrackingOnce(requestId,false)},4000);
 }
 
 async function customerCancelWash(id){
@@ -2398,8 +2520,8 @@ async function loadBusinessRequests(){
     box.innerHTML=rows.length?rows.map(r=>{
       const timer=serviceTimerHtml(r);
       const cancellable=['requested','accepted','en_route','arrived','washing'].includes(r.status);
-      return `<article class="list-card"><div class="list-top"><div><h4>${escapeHtml(r.quote?.service_name||'Wash request')}</h4><p>${escapeHtml(r.quote?.vehicle_name||'')} · ${escapeHtml(r.quote?.service_address||'')}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div>${timer}<div class="actions">
-<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message customer</button>
+      return `<article class="list-card"><div class="list-top"><div><h4>${escapeHtml(r.customer_name||'Customer')} · ${escapeHtml(r.quote?.service_name||'Wash request')}</h4><p>${escapeHtml(r.quote?.vehicle_name||'')} · ${escapeHtml(r.quote?.service_address||'')}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div>${timer}<div class="actions">
+<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message ${escapeHtml(r.customer_name||'customer')}</button><button class="btn ghost small" type="button" onclick="openSafetyCenter({requestId:'${r.id}',reportedName:'${escapeHtml(r.customer_name||'Customer')}'})"><i class="fas fa-shield-halved"></i> Safety</button>
 ${r.status==='requested'?`<button class="btn small" onclick="businessAccept('${r.id}')">Accept</button>`:''}
 ${r.status==='accepted'?`<button class="btn small" onclick="businessSetStatus('${r.id}','en_route')">En route</button>`:''}
 ${r.status==='en_route'?`<button class="btn small" onclick="businessSetStatus('${r.id}','arrived')">Arrived</button>`:''}
@@ -2454,7 +2576,7 @@ document.getElementById('priceForm')?.addEventListener('submit',async e=>{e.prev
 
 
 
-async function loadWorkers(){if(!BUSINESS_ID)return;const box=document.getElementById('workerList');try{const d=await api('/carwash/api/workers/');workers=Array.isArray(d)?d:(d.results||[]);box.innerHTML=workers.length?workers.map(w=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(w.display_name||w.username)}</h4><p>${w.is_online?'Online':'Offline'} · ${w.is_available?'Available':'Busy'}</p></div><span class="status-pill">${w.completed_washes} washes</span></div></div>`).join(''):'<div class="empty">No workers added yet. Your business owner can also be added as a worker profile.</div>';const mine=workers.find(x=>String(x.id)===String(WORKER_ID));const btn=document.getElementById('workerOnlineBtn');if(btn&&mine)btn.textContent=mine.is_online?'Go offline':'Go online';if(mine?.is_online&&businessData?.is_accepting_jobs)startWorkerLocationSharing();else stopWorkerLocationSharing()}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+async function loadWorkers(){if(!BUSINESS_ID)return;const box=document.getElementById('workerList');try{const d=await api('/carwash/api/workers/');workers=Array.isArray(d)?d:(d.results||[]);box.innerHTML=workers.length?workers.map(w=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(w.public_name||w.display_name||w.username)}</h4><p>${w.effective_online?'Live GPS':(w.is_online?'Reconnecting':'Offline')} · ${w.is_available?'Available':'Busy'}</p></div><span class="status-pill">${w.completed_washes} washes</span></div></div>`).join(''):'<div class="empty">No workers added yet. Your business owner can also be added as a worker profile.</div>';const mine=workers.find(x=>String(x.id)===String(WORKER_ID));const btn=document.getElementById('workerOnlineBtn');if(btn&&mine)btn.textContent=mine.is_online?'Go offline':'Go online';if(mine?.is_online&&businessData?.is_accepting_jobs){if(workerWatchId===null)startWorkerLocationSharing()}else stopWorkerLocationSharing()}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
 
 
 
@@ -2528,7 +2650,7 @@ async function saveBusinessLocation(pos,address,placeId){if(!BUSINESS_ID){alert(
 
 
 
-function setBusinessMarker(pos){if(businessMarker)businessMarker.setMap(null);businessMarker=new google.maps.Marker({position:pos,map,title:businessData?.name||'Your car wash',icon:{path:google.maps.SymbolPath.CIRCLE,scale:16,fillColor:'#1f6f5c',fillOpacity:1,strokeColor:'#fff',strokeWeight:4}})}
+function setBusinessMarker(pos){if(!OppoMapMarker)return;if(!businessMarker)businessMarker=new OppoMapMarker({position:pos,map,label:businessData?.public_name||businessData?.name||'Your car wash',subtitle:'Business location',state:'business',icon:'fa-building'});else businessMarker.animateTo(pos,650)}
 
 
 
@@ -2699,6 +2821,57 @@ document.getElementById('payoutForm')?.addEventListener('submit',async e=>{
 </script>
 
 
+
+
+
+function recenterLiveMap(){mapUserMoved=false;if(currentTrackingData?.provider_location&&userPos){const p=currentTrackingData.provider_location;const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend({lat:Number(p.latitude),lng:Number(p.longitude)});map.fitBounds(bounds,70)}else if(userPos){map.panTo(userPos);map.setZoom(14)}else if(IS_BUSINESS){focusCurrentRoleLocation()}}
+
+function startWorkspaceRefreshEngine(){
+  if(workspaceRefreshTimer)clearInterval(workspaceRefreshTimer);if(paymentRefreshTimer)clearInterval(paymentRefreshTimer);
+  const sync=()=>{if(document.visibilityState!=='visible'||!navigator.onLine)return;if(IS_BUSINESS){loadBusinessRequests();loadWorkers();if(CAN_MANAGE)loadBusinessDashboard();}else{if(userPos)loadNearby(true);if(IS_AUTH)loadCustomerRequests();}};
+  workspaceRefreshTimer=setInterval(sync,IS_BUSINESS?7000:9000);
+  paymentRefreshTimer=setInterval(()=>{if(document.visibilityState!=='visible'||!navigator.onLine)return;IS_BUSINESS&&CAN_MANAGE?loadBusinessPayments():IS_AUTH&&loadCustomerPayments();},30000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync();});window.addEventListener('focus',sync);window.addEventListener('online',()=>{setMapLiveBanner('Back online · syncing',true);sync();});window.addEventListener('offline',()=>setMapLiveBanner('Offline · showing last known activity',true));
+}
+
+function clearPoliceMarkers(){policeMarkers.forEach(m=>m.setMap(null));policeMarkers=[]}
+function openSafetyCenter(context={}){window._carwashSafetyContext={...context};document.getElementById('carwashSafetyModal')?.classList.add('show');if(userPos)findNearestPolice(false)}
+function closeSafetyCenter(){document.getElementById('carwashSafetyModal')?.classList.remove('show');clearPoliceMarkers()}
+async function copySafetyLocation(){if(!userPos){locateMe();document.getElementById('safetyReportStatus').textContent='Finding your location…';return}const value=`${userPos.lat.toFixed(6)}, ${userPos.lng.toFixed(6)}`;try{await navigator.clipboard.writeText(value);document.getElementById('safetyReportStatus').textContent=`Location copied: ${value}`}catch(_){document.getElementById('safetyReportStatus').textContent=value}}
+function policeDistance(place){const loc=place.geometry?.location;if(!loc||!userPos)return Infinity;return distanceBetweenCoords(userPos.lat,userPos.lng,loc.lat(),loc.lng())}
+function findNearestPolice(showStatus=true){
+  const box=document.getElementById('policeList');if(!userPos){if(box)box.innerHTML='<div class="empty">Allow location access first so we can find police near you.</div>';locateMe();return}
+  if(!google.maps.places){if(box)box.innerHTML='<div class="empty">Google Places is unavailable.</div>';return}
+  if(showStatus&&box)box.innerHTML='<div class="empty"><i class="fas fa-spinner fa-spin"></i> Finding nearby police…</div>';
+  new google.maps.places.PlacesService(map).nearbySearch({location:userPos,radius:15000,type:'police'},(results,status)=>{
+    if(status!==google.maps.places.PlacesServiceStatus.OK||!results?.length){if(box)box.innerHTML='<div class="empty">No police stations were returned nearby. In an emergency call 10111 or 112.</div>';return}
+    const sorted=[...results].sort((a,b)=>policeDistance(a)-policeDistance(b)).slice(0,5);nearestPolice=sorted[0];clearPoliceMarkers();
+    sorted.forEach((p,i)=>{const pos={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};policeMarkers.push(new OppoMapMarker({position:pos,map,label:p.name||'Police station',subtitle:i===0?'Nearest police':'Police station',state:'police',icon:'fa-building-shield'}));});
+    if(box)box.innerHTML=sorted.map((p,i)=>{const lat=p.geometry.location.lat(),lng=p.geometry.location.lng();return `<div class="police-row"><div><strong>${escapeHtml(p.name||'Police station')}</strong><span>${(policeDistance(p)/1000).toFixed(1)} km away${i===0?' · nearest':''}</span></div><a class="btn small" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}"><i class="fas fa-route"></i> Navigate</a></div>`}).join('');
+  });
+}
+async function submitSafetyReport(){
+  if(!IS_AUTH)return;const ctx=window._carwashSafetyContext||{};const status=document.getElementById('safetyReportStatus');status.textContent='Submitting safety report…';
+  const providerLoc=currentTrackingData?.provider_location||null;const payload={request_id:ctx.requestId||activeRequestId||null,business_id:ctx.businessId||selectedProvider?.id||null,worker_id:ctx.workerId||selectedProvider?.available_worker_id||null,category:document.getElementById('safetyCategory').value,description:document.getElementById('safetyDescription').value.trim(),reporter_latitude:userPos?.lat??null,reporter_longitude:userPos?.lng??null,reported_latitude:providerLoc?.latitude??selectedProvider?.map_latitude??null,reported_longitude:providerLoc?.longitude??selectedProvider?.map_longitude??null,nearest_police_name:nearestPolice?.name||'',nearest_police_address:nearestPolice?.vicinity||'',nearest_police_place_id:nearestPolice?.place_id||''};
+  try{const data=await api('/carwash/api/safety/report/',{method:'POST',body:JSON.stringify(payload)});status.textContent=`Recorded. Reference: ${data.report?.id||'saved'}`;document.getElementById('safetyDescription').value='';}catch(e){status.textContent=e.message||'Could not submit the report.'}
+}
+
+
+
+let carwashKnownAlertIds=new Set(),carwashAlertsReady=false,carwashAlertTimer=null,carwashAudioUnlocked=false;
+function carwashAlertRows(data){if(Array.isArray(data))return data;for(const key of ['alerts','results','data','notifications'])if(Array.isArray(data?.[key]))return data[key];return[]}
+function carwashAlertId(a){return a?.id??a?.alert_id??a?.pk??null}
+function unlockCarwashAudio(){if(carwashAudioUnlocked)return;const a=document.getElementById('globalCarwashAlertAudio');if(!a)return;const p=a.play();if(p&&typeof p.then==='function')p.then(()=>{a.pause();a.currentTime=0;carwashAudioUnlocked=true}).catch(()=>{});}
+['pointerdown','touchstart','keydown'].forEach(evt=>document.addEventListener(evt,unlockCarwashAudio,{once:false,passive:true}));
+function playCarwashAlertSound(){const a=document.getElementById('globalCarwashAlertAudio');if(!a)return;try{a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(_){}}
+async function pollCarwashAlerts(){
+  if(!IS_AUTH||!navigator.onLine)return;
+  try{const data=await api('/api/alerts/');const rows=carwashAlertRows(data);const ids=rows.map(carwashAlertId).filter(v=>v!=null).map(String);if(!carwashAlertsReady){carwashKnownAlertIds=new Set(ids);carwashAlertsReady=true;return}const fresh=rows.filter(a=>{const id=carwashAlertId(a);return id!=null&&!carwashKnownAlertIds.has(String(id))});carwashKnownAlertIds=new Set(ids);if(fresh.length){playCarwashAlertSound();setMapLiveBanner(fresh.length===1?'New OppoGlobe notification':`${fresh.length} new OppoGlobe notifications`,true);}}
+  catch(_){/* never expose notification transport errors to the user */}
+}
+function startCarwashAlertListener(){if(!IS_AUTH)return;pollCarwashAlerts();if(carwashAlertTimer)clearInterval(carwashAlertTimer);carwashAlertTimer=setInterval(pollCarwashAlerts,15000)}
+document.addEventListener('DOMContentLoaded',startCarwashAlertListener);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pollCarwashAlerts()});window.addEventListener('focus',pollCarwashAlerts);
 
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initWashMap" async defer></script>
 

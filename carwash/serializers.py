@@ -4,6 +4,8 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from .identity import public_business_name, public_user_name, public_worker_name
+
 
 
 from .models import (
@@ -23,6 +25,7 @@ from .models import (
     CarWashRequest,
 
     CarWashReview,
+    CarWashSafetyReport,
 
     CarWashService,
 
@@ -113,6 +116,7 @@ class CarWashBusinessSerializer(serializers.ModelSerializer):
     services = CarWashServiceSerializer(many=True, read_only=True)
 
     owner_name = serializers.SerializerMethodField()
+    public_name = serializers.SerializerMethodField()
 
 
 
@@ -122,7 +126,7 @@ class CarWashBusinessSerializer(serializers.ModelSerializer):
 
         fields = [
 
-            'id', 'owner_name', 'name', 'description', 'phone', 'email', 'logo',
+            'id', 'owner_name', 'public_name', 'name', 'description', 'phone', 'email', 'logo',
 
             'fulfilment_mode', 'is_active', 'is_verified', 'is_accepting_jobs',
 
@@ -138,7 +142,7 @@ class CarWashBusinessSerializer(serializers.ModelSerializer):
 
         read_only_fields = [
 
-            'id', 'owner_name', 'is_verified', 'average_rating', 'rating_count',
+            'id', 'owner_name', 'public_name', 'is_verified', 'average_rating', 'rating_count',
 
             # Google/device populated. Humans never type these.
 
@@ -150,7 +154,11 @@ class CarWashBusinessSerializer(serializers.ModelSerializer):
 
     def get_owner_name(self, obj):
 
-        return obj.owner.get_full_name() or obj.owner.get_username()
+        # A business should never unexpectedly expose the owner's personal name.
+        return obj.owner.get_username()
+
+    def get_public_name(self, obj):
+        return public_business_name(obj)
 
 
 
@@ -158,9 +166,13 @@ class CarWashBusinessSerializer(serializers.ModelSerializer):
 
 class CarWashWorkerSerializer(serializers.ModelSerializer):
 
+    public_name = serializers.SerializerMethodField()
     username = serializers.CharField(source='user.username', read_only=True)
 
     business_name = serializers.CharField(source='business.name', read_only=True)
+    location_age_seconds = serializers.SerializerMethodField()
+    live_location_state = serializers.SerializerMethodField()
+    effective_online = serializers.SerializerMethodField()
 
 
 
@@ -170,13 +182,41 @@ class CarWashWorkerSerializer(serializers.ModelSerializer):
 
         fields = [
 
-            'id', 'business', 'business_name', 'user', 'username', 'display_name', 'phone',
+            'id', 'business', 'business_name', 'user', 'username', 'public_name', 'display_name', 'phone',
 
-            'photo', 'is_active', 'is_online', 'is_available', 'average_rating', 'completed_washes',
+            'photo', 'is_active', 'is_online', 'is_available', 'effective_online', 'live_location_state', 'location_age_seconds', 'average_rating', 'completed_washes',
 
         ]
 
         read_only_fields = ['id', 'business', 'average_rating', 'completed_washes']
+
+    def get_public_name(self, obj):
+        return public_worker_name(obj)
+
+    def get_location_age_seconds(self, obj):
+        try:
+            location = obj.location
+        except Exception:
+            return None
+        if not location.recorded_at:
+            return None
+        from django.utils import timezone
+        return max(0, int((timezone.now() - location.recorded_at).total_seconds()))
+
+    def get_live_location_state(self, obj):
+        age = self.get_location_age_seconds(obj)
+        if not obj.is_online:
+            return 'offline'
+        if age is None:
+            return 'waiting'
+        if age <= 120:
+            return 'live'
+        if age <= 300:
+            return 'stale'
+        return 'offline'
+
+    def get_effective_online(self, obj):
+        return self.get_live_location_state(obj) == 'live'
 
 
 
@@ -186,7 +226,10 @@ class CarWashProviderLocationSerializer(serializers.ModelSerializer):
 
     worker_name = serializers.SerializerMethodField()
 
-    business_name = serializers.CharField(source='worker.business.name', read_only=True)
+    business_name = serializers.SerializerMethodField()
+    location_age_seconds = serializers.SerializerMethodField()
+    is_live = serializers.SerializerMethodField()
+    freshness = serializers.SerializerMethodField()
 
 
 
@@ -199,6 +242,7 @@ class CarWashProviderLocationSerializer(serializers.ModelSerializer):
             'worker', 'worker_name', 'business_name', 'latitude', 'longitude', 'heading',
 
             'speed_kph', 'accuracy_m', 'is_active', 'recorded_at', 'updated_at',
+            'location_age_seconds', 'is_live', 'freshness',
 
         ]
 
@@ -208,7 +252,30 @@ class CarWashProviderLocationSerializer(serializers.ModelSerializer):
 
     def get_worker_name(self, obj):
 
-        return obj.worker.display_name or obj.worker.user.get_username()
+        return public_worker_name(obj.worker)
+
+    def get_business_name(self, obj):
+        return public_business_name(obj.worker.business)
+
+    def get_location_age_seconds(self, obj):
+        if not obj.recorded_at:
+            return None
+        from django.utils import timezone
+        return max(0, int((timezone.now() - obj.recorded_at).total_seconds()))
+
+    def get_is_live(self, obj):
+        age = self.get_location_age_seconds(obj)
+        return bool(obj.is_active and age is not None and age <= 120)
+
+    def get_freshness(self, obj):
+        age = self.get_location_age_seconds(obj)
+        if age is None:
+            return 'unknown'
+        if age <= 120:
+            return 'live'
+        if age <= 300:
+            return 'stale'
+        return 'offline'
 
 
 
@@ -250,7 +317,7 @@ class CarWashQuoteSerializer(serializers.ModelSerializer):
 
 class CarWashStatusHistorySerializer(serializers.ModelSerializer):
 
-    changed_by_name = serializers.CharField(source='changed_by.username', read_only=True, default='')
+    changed_by_name = serializers.SerializerMethodField()
 
 
 
@@ -262,12 +329,18 @@ class CarWashStatusHistorySerializer(serializers.ModelSerializer):
 
         read_only_fields = ['id', 'created_at']
 
+    def get_changed_by_name(self, obj):
+        return public_user_name(obj.changed_by) if obj.changed_by else ''
+
 
 
 
 
 class CarWashRequestSerializer(serializers.ModelSerializer):
 
+    customer_name = serializers.SerializerMethodField()
+    business_name = serializers.SerializerMethodField()
+    worker_name = serializers.SerializerMethodField()
     quote = CarWashQuoteSerializer(read_only=True)
     quote_id = serializers.UUIDField(write_only=True, required=False)
     worker = CarWashWorkerSerializer(source='assigned_worker', read_only=True)
@@ -278,7 +351,7 @@ class CarWashRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarWashRequest
         fields = [
-            'id', 'customer', 'business', 'quote', 'quote_id', 'worker', 'status',
+            'id', 'customer', 'customer_name', 'business', 'business_name', 'quote', 'quote_id', 'worker', 'worker_name', 'status',
             'customer_notes', 'requested_at', 'accepted_at', 'en_route_at', 'arrived_at',
             'started_at', 'completed_at', 'cancelled_at', 'created_at', 'updated_at',
             'status_history', 'payment_summary', 'service_duration_seconds',
@@ -288,6 +361,16 @@ class CarWashRequestSerializer(serializers.ModelSerializer):
             'en_route_at', 'arrived_at', 'started_at', 'completed_at', 'cancelled_at',
             'created_at', 'updated_at', 'payment_summary', 'service_duration_seconds',
         ]
+
+
+    def get_customer_name(self, obj):
+        return public_user_name(obj.customer)
+
+    def get_business_name(self, obj):
+        return public_business_name(obj.business)
+
+    def get_worker_name(self, obj):
+        return public_worker_name(obj.assigned_worker) if obj.assigned_worker else ''
 
     def get_payment_summary(self, obj):
         try:
@@ -411,7 +494,7 @@ class CarWashPaymentSerializer(serializers.ModelSerializer):
 
 class CarWashReviewSerializer(serializers.ModelSerializer):
 
-    customer_name = serializers.CharField(source='customer.username', read_only=True)
+    customer_name = serializers.SerializerMethodField()
 
 
 
@@ -422,6 +505,9 @@ class CarWashReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'wash_request', 'customer', 'customer_name', 'business', 'worker', 'rating', 'comment', 'created_at']
 
         read_only_fields = ['id', 'customer', 'business', 'worker', 'created_at']
+
+    def get_customer_name(self, obj):
+        return public_user_name(obj.customer)
 
 
 
@@ -492,3 +578,38 @@ class ProviderLocationUpdateSerializer(serializers.Serializer):
     speed_kph = serializers.DecimalField(max_digits=7, decimal_places=2, required=False, allow_null=True)
 
     accuracy_m = serializers.DecimalField(max_digits=9, decimal_places=2, required=False, allow_null=True)
+
+
+class CarWashSafetyReportSerializer(serializers.ModelSerializer):
+    reporter_name = serializers.SerializerMethodField()
+    reported_name = serializers.SerializerMethodField()
+    business_name = serializers.SerializerMethodField()
+    worker_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CarWashSafetyReport
+        fields = [
+            'id', 'reporter', 'reporter_name', 'reported_user', 'reported_name',
+            'wash_request', 'business', 'business_name', 'worker', 'worker_name',
+            'category', 'description', 'status', 'reporter_latitude',
+            'reporter_longitude', 'reported_latitude', 'reported_longitude',
+            'nearest_police_name', 'nearest_police_address', 'nearest_police_place_id',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = fields
+
+    def get_reporter_name(self, obj):
+        return public_user_name(obj.reporter)
+
+    def get_reported_name(self, obj):
+        if obj.worker_id:
+            return public_worker_name(obj.worker)
+        if obj.business_id and obj.reported_user_id == getattr(obj.business, 'owner_id', None):
+            return public_business_name(obj.business)
+        return public_user_name(obj.reported_user) if obj.reported_user_id else ''
+
+    def get_business_name(self, obj):
+        return public_business_name(obj.business) if obj.business_id else ''
+
+    def get_worker_name(self, obj):
+        return public_worker_name(obj.worker) if obj.worker_id else ''
