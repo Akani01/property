@@ -488,106 +488,113 @@ body{
 
 
 /* ============================================================
-   PWA / STANDALONE VIEWPORT FIX
-   Keep composer inside the REAL visible viewport on Android/iOS.
+   SAFE PWA COMPOSER FIX
+   CSS-only: does not interfere with chat selection/touch events.
    ============================================================ */
-:root{
-  --og-app-height:100dvh;
-  --og-safe-bottom:env(safe-area-inset-bottom,0px);
-}
 
-html,body{
+html, body{
   width:100%;
   height:100%;
-  min-height:100%;
-  overflow:hidden;
-}
-
-body{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:var(--og-app-height);
   min-height:0;
-  overscroll-behavior:none;
-}
-
-.app{
-  height:var(--og-app-height)!important;
-  min-height:0!important;
-  max-height:var(--og-app-height)!important;
-}
-
-.chat,
-.side,
-.shell{
-  min-height:0!important;
-  max-height:100%!important;
-}
-
-.shell{
-  height:100%;
   overflow:hidden;
 }
 
-/* Composer must participate in the chat flex layout, never sit below it. */
-.comp{
-  position:relative!important;
-  bottom:auto!important;
-  flex:0 0 auto!important;
-  width:100%;
-  max-width:100%;
-  padding-bottom:max(8px,var(--og-safe-bottom))!important;
-}
-
-/* Message list absorbs all remaining height. */
-.msgs{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  overflow-y:auto!important;
-  overscroll-behavior-y:contain;
-}
-
-/* Installed PWA/TWA gets a stricter viewport model. */
-html.og-standalone body,
-html.og-standalone .app{
-  height:var(--og-app-height)!important;
-  max-height:var(--og-app-height)!important;
-}
-
-html.og-keyboard-open .comp{
-  /* keyboard already consumes the bottom inset; avoid double-spacing */
-  padding-bottom:6px!important;
-}
-
-html.og-keyboard-open .msgs{
-  scroll-padding-bottom:72px;
-}
-
-@media(max-width:960px){
-  .app,
-  .chat,
-  .side{
-    height:var(--og-app-height)!important;
-    max-height:var(--og-app-height)!important;
+/* Mobile/tablet messaging viewport */
+@media (max-width:960px){
+  .app{
+    height:100vh;
+    height:100dvh;
+    min-height:0;
+    max-height:100dvh;
+    overflow:hidden;
   }
 
-  .chat{
-    overflow:hidden!important;
+  .chat,
+  .side{
+    height:100%;
+    min-height:0;
+    max-height:100%;
   }
 
   .shell{
-    height:100%!important;
-    max-height:100%!important;
+    height:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+
+  .msgs{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
   }
 
   .comp{
+    position:relative;
+    flex:0 0 auto;
+    width:100%;
+    max-width:100%;
     z-index:30;
-    background:var(--panel2);
+    padding-bottom:max(7px, env(safe-area-inset-bottom,0px));
+  }
+}
+
+/*
+ Installed PWA/TWA:
+ use the stable/small viewport height instead of JavaScript-driven resizing.
+ This keeps the composer above the bottom edge without breaking taps.
+*/
+@media (display-mode:standalone){
+  html, body{
+    height:100%;
+    min-height:0;
+    overscroll-behavior:none;
   }
 
+  .app{
+    height:100svh !important;
+    max-height:100svh !important;
+    min-height:0 !important;
+  }
+
+  .chat,
+  .side,
+  .shell{
+    height:100% !important;
+    max-height:100% !important;
+    min-height:0 !important;
+  }
+
+  .comp{
+    position:relative !important;
+    bottom:auto !important;
+    flex:0 0 auto !important;
+    padding-bottom:max(8px, env(safe-area-inset-bottom,0px)) !important;
+  }
+
+  .msgs{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    scroll-padding-bottom:72px;
+  }
+}
+
+/* Keyboard-friendly sizing */
+@media (max-width:960px){
   .field textarea{
     font-size:16px;
+    max-height:110px;
+  }
+
+  .bar{
+    min-width:0;
+    width:100%;
+  }
+
+  .field{
+    min-width:0;
   }
 }
 
@@ -677,79 +684,6 @@ html.og-keyboard-open .msgs{
 <input id="fileInp" type="file" multiple hidden accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z">
 <div class="viewer" id="viewer"><button aria-label="Close"><i class="fas fa-times"></i></button><img id="viewerImg" alt=""></div>
 <div class="toasts" id="toasts"></div>
-
-
-<script>
-/* OppoGlobe messaging PWA viewport runtime */
-(() => {
-  'use strict';
-
-  const root = document.documentElement;
-  const isStandalone =
-    window.matchMedia?.('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-
-  if (isStandalone) root.classList.add('og-standalone');
-
-  let lastHeight = 0;
-  let raf = 0;
-
-  function updateMessagingViewport() {
-    cancelAnimationFrame(raf);
-
-    raf = requestAnimationFrame(() => {
-      const vv = window.visualViewport;
-      const visibleHeight = Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight);
-
-      if (visibleHeight > 0 && Math.abs(visibleHeight - lastHeight) > 1) {
-        root.style.setProperty('--og-app-height', visibleHeight + 'px');
-        lastHeight = visibleHeight;
-      }
-
-      const layoutHeight = Math.round(window.innerHeight || visibleHeight);
-      const keyboardOpen = !!vv && (layoutHeight - visibleHeight > 120);
-
-      root.classList.toggle('og-keyboard-open', keyboardOpen);
-
-      /* Keep the composer in view when keyboard/PWA chrome changes height. */
-      const input = document.getElementById('inp');
-      const msgs = document.getElementById('msgs');
-
-      if (keyboardOpen && document.activeElement === input && msgs) {
-        requestAnimationFrame(() => {
-          msgs.scrollTop = msgs.scrollHeight;
-        });
-      }
-    });
-  }
-
-  updateMessagingViewport();
-
-  window.addEventListener('resize', updateMessagingViewport, {passive:true});
-  window.addEventListener('orientationchange', () => {
-    setTimeout(updateMessagingViewport, 80);
-    setTimeout(updateMessagingViewport, 300);
-  }, {passive:true});
-
-  if (window.visualViewport) {
-    visualViewport.addEventListener('resize', updateMessagingViewport, {passive:true});
-    visualViewport.addEventListener('scroll', updateMessagingViewport, {passive:true});
-  }
-
-  document.addEventListener('focusin', e => {
-    if (e.target?.id === 'inp') {
-      setTimeout(updateMessagingViewport, 30);
-      setTimeout(updateMessagingViewport, 250);
-    }
-  });
-
-  document.addEventListener('focusout', e => {
-    if (e.target?.id === 'inp') {
-      setTimeout(updateMessagingViewport, 120);
-    }
-  });
-})();
-</script>
 
 <script>
 (() => {
