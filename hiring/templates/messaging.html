@@ -198,32 +198,397 @@ a{color:inherit;text-decoration:none}button,input,textarea{font:inherit;color:in
 @media(pointer:coarse){.ic,.chip{min-height:44px}.chip{min-height:36px}.row{padding-block:11px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* messaging performance + loading polish */
-.list,.msgs{scrollbar-width:thin;scrollbar-color:rgba(91,102,96,.28) transparent}
-.list::-webkit-scrollbar,.msgs::-webkit-scrollbar{width:8px}
-.list::-webkit-scrollbar-track,.msgs::-webkit-scrollbar-track{background:transparent}
-.list::-webkit-scrollbar-thumb,.msgs::-webkit-scrollbar-thumb{background:rgba(91,102,96,.22);border:2px solid transparent;background-clip:padding-box;border-radius:99px}
-.row .av{transition:opacity .16s ease,transform .16s ease,filter .16s ease}
-.row.loading{pointer-events:none}
-.row.loading .av{opacity:.58;filter:saturate(.7)}
-.row.loading .av::before,#cAv.loading::before{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(31,111,92,.16);border-top-color:var(--jade);animation:ogSpin .65s linear infinite;z-index:3}
-#cAv{position:relative}#cAv.loading{opacity:.72}
-@keyframes ogSpin{to{transform:rotate(360deg)}}
-.chat-loading{display:none;position:absolute;inset:60px 0 0;z-index:4;pointer-events:none;background:linear-gradient(180deg,rgba(237,239,234,.82),rgba(237,239,234,.58));backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
-:root[data-theme=dark] .chat-loading{background:linear-gradient(180deg,rgba(13,22,18,.82),rgba(13,22,18,.58))}
-.chat-loading.show{display:flex}
-.chat-loading-inner{margin:auto;min-width:min(86vw,280px);display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 12px 36px rgba(0,0,0,.12);color:var(--soft);font-size:13px;font-weight:600}
-.chat-loading-spinner{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--jade);animation:ogSpin .65s linear infinite;flex:none}
-.row.on{box-shadow:inset 3px 0 0 var(--jade)}
-.row:active{transform:scale(.995)}
-.msgs.refreshing{cursor:progress}
-@media(max-width:820px){
- .side,.chat{width:100%;max-width:100%}
- .chat{will-change:transform}
- .ch{padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
- .who{min-width:0}.who .nm{max-width:min(58vw,360px);overflow:hidden;text-overflow:ellipsis}
- .msgs,.list{-webkit-overflow-scrolling:touch;scrollbar-width:none}
- .msgs::-webkit-scrollbar,.list::-webkit-scrollbar{display:none}
+/* ============================================================
+   RESPONSIVE HARDENING — phone / tablet / laptop / desktop
+   ============================================================ */
+html,body{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+body{
+  min-height:100dvh;
+}
+.app{
+  width:100%;
+  max-width:none;
+  min-width:0;
+}
+
+/* Keep all grid/flex children shrinkable. */
+.rail,.side,.chat,.shell,.ch,.who,.list,.msgs,.comp,.field{
+  min-width:0;
+}
+
+/* Medium desktop / laptop */
+@media (min-width:961px) and (max-width:1250px){
+  :root{--rail:58px;--side:clamp(270px,30vw,340px)}
+  .app{grid-template-columns:var(--rail) var(--side) minmax(0,1fr)}
+  .rail a,.rail button{width:42px;height:42px}
+  .row{grid-template-columns:46px minmax(0,1fr) auto;gap:10px;padding:9px 10px}
+  .av{width:46px;height:46px}
+  .row::after{left:66px}
+  .msgs{padding-inline:clamp(12px,3vw,38px)}
+  .b{max-width:82%}
+}
+
+/* Phones + tablets: true one-pane WhatsApp-style navigation */
+@media (max-width:960px){
+  html,body{overflow:hidden}
+  .app{
+    position:relative;
+    display:block;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+    background:var(--panel);
+  }
+
+  .rail{display:none!important}
+
+  .side,
+  .chat{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    min-height:0!important;
+  }
+
+  .side{
+    z-index:2;
+    border-right:0;
+    transform:none;
+    visibility:visible;
+    background:var(--panel);
+    padding-bottom:calc(66px + env(safe-area-inset-bottom,0px));
+  }
+
+  .chat{
+    z-index:20;
+    transform:translate3d(100%,0,0)!important;
+    visibility:hidden!important;
+    opacity:0;
+    pointer-events:none;
+    transition:
+      transform .24s cubic-bezier(.2,.8,.2,1),
+      opacity .16s ease;
+    background:var(--chat-bg);
+  }
+
+  .app.open .chat{
+    transform:translate3d(0,0,0)!important;
+    visibility:visible!important;
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  /* Once a conversation is open the list cannot sit over the chat. */
+  .app.open .side{
+    visibility:hidden;
+    pointer-events:none;
+  }
+
+  .back{
+    display:grid!important;
+    width:40px;
+    height:40px;
+  }
+
+  .side-h{
+    height:58px;
+    padding-top:max(8px,env(safe-area-inset-top,0px));
+  }
+
+  .ch{
+    height:auto;
+    min-height:58px;
+    padding:
+      max(6px,env(safe-area-inset-top,0px))
+      max(8px,env(safe-area-inset-right,0px))
+      6px
+      max(6px,env(safe-area-inset-left,0px));
+  }
+
+  .who{min-width:0;overflow:hidden}
+  .who>div:last-child{min-width:0}
+  .who .nm{
+    max-width:58vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .list{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    scrollbar-width:none;
+  }
+  .list::-webkit-scrollbar{display:none}
+
+  .msgs{
+    flex:1;
+    min-height:0;
+    width:100%;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    scrollbar-width:none;
+    padding:12px clamp(8px,2.8vw,18px) 10px;
+  }
+  .msgs::-webkit-scrollbar{display:none}
+
+  .b{
+    max-width:min(86%,680px);
+  }
+
+  .img,.vid{
+    width:min(78vw,420px);
+    max-height:52dvh;
+  }
+  .aud{width:min(72vw,320px)}
+  .file{min-width:min(72vw,300px);max-width:78vw}
+
+  .comp{
+    width:100%;
+    padding:
+      7px
+      max(8px,env(safe-area-inset-right,0px))
+      calc(7px + env(safe-area-inset-bottom,0px))
+      max(8px,env(safe-area-inset-left,0px));
+  }
+  .bar{width:100%;min-width:0}
+  .field{min-width:0}
+  .field textarea{
+    width:100%;
+    min-width:0;
+    max-height:110px;
+    font-size:16px; /* prevents iOS zoom */
+  }
+
+  .jump{
+    right:12px;
+    bottom:calc(76px + env(safe-area-inset-bottom,0px));
+  }
+
+  .mnav{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    position:fixed;
+    left:0;right:0;bottom:0;
+    z-index:15;
+    width:100%;
+    min-height:62px;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+    background:color-mix(in srgb,var(--panel) 94%,transparent);
+    border-top:1px solid var(--line);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+  }
+  .app.open~.mnav{display:none!important}
+
+  .mnav a{
+    min-width:0;
+    padding:4px 2px;
+    overflow:hidden;
+    text-align:center;
+  }
+  .mnav a i{font-size:18px}
+}
+
+/* Small phones */
+@media (max-width:480px){
+  .side-h{padding-inline:12px}
+  .search{margin-inline:10px}
+  .chips{padding-inline:10px}
+  .row{
+    grid-template-columns:46px minmax(0,1fr) auto;
+    gap:10px;
+    padding:10px 10px;
+  }
+  .row::after{left:66px}
+  .av{width:46px;height:46px;font-size:14px}
+  .meta{max-width:54px}
+  .tm{font-size:10.5px}
+  .pv{font-size:12.5px}
+  .nm{font-size:14px}
+  .b{max-width:90%}
+  .tx{font-size:14px}
+  .ch .ic{width:38px;height:38px}
+  .who{gap:8px}
+  .who .nm{max-width:50vw;font-size:14.5px}
+  .who .st{font-size:11.5px}
+}
+
+/* Tiny phones */
+@media (max-width:360px){
+  .side-h h1{font-size:18px}
+  .search input{height:38px}
+  .chip{padding:6px 10px}
+  .row{
+    grid-template-columns:42px minmax(0,1fr) auto;
+    gap:8px;
+    padding-inline:8px;
+  }
+  .row::after{left:58px}
+  .av{width:42px;height:42px}
+  .b{max-width:92%}
+  .who .nm{max-width:43vw}
+  .field .ic{width:34px}
+  .go{width:42px;height:42px}
+}
+
+/* Landscape phones: do NOT kill navigation; compact instead. */
+@media (max-width:960px) and (max-height:560px){
+  .side-h{height:48px;padding-top:4px}
+  .chips{display:none}
+  .search{margin-top:3px;margin-bottom:4px}
+  .ch{min-height:48px;padding-top:3px;padding-bottom:3px}
+  .msgs{padding-top:7px}
+  .comp{padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+  .field textarea{min-height:38px;padding-block:8px}
+  .field .ic,.go{height:40px}
+  .go{width:40px}
+  .mnav{min-height:54px;padding-top:3px}
+  .mnav a{font-size:10px}
+  .mnav a i{font-size:16px}
+  .side{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+}
+
+/* Larger desktop */
+@media (min-width:1251px){
+  .app{grid-template-columns:var(--rail) var(--side) minmax(0,1fr)}
+}
+
+
+/* Instant-open chat: composer/header never wait for the network */
+.msg-load-skeleton{
+  padding:16px clamp(10px,5vw,64px);
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.msg-load-line{
+  height:42px;
+  width:min(62%,420px);
+  border-radius:14px;
+  background:linear-gradient(90deg,var(--panel2),var(--hover),var(--panel2));
+  background-size:200% 100%;
+  animation:sh 1.15s linear infinite;
+}
+.msg-load-line.me{align-self:flex-end;width:min(48%,340px);background:linear-gradient(90deg,var(--jade-w),var(--panel2),var(--jade-w));background-size:200% 100%}
+.msg-load-line.short{width:min(36%,250px)}
+.comp.chat-ready{display:block!important;visibility:visible!important;opacity:1!important}
+
+
+/* ============================================================
+   PWA / STANDALONE VIEWPORT FIX
+   Keep composer inside the REAL visible viewport on Android/iOS.
+   ============================================================ */
+:root{
+  --og-app-height:100dvh;
+  --og-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  min-height:100%;
+  overflow:hidden;
+}
+
+body{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:var(--og-app-height);
+  min-height:0;
+  overscroll-behavior:none;
+}
+
+.app{
+  height:var(--og-app-height)!important;
+  min-height:0!important;
+  max-height:var(--og-app-height)!important;
+}
+
+.chat,
+.side,
+.shell{
+  min-height:0!important;
+  max-height:100%!important;
+}
+
+.shell{
+  height:100%;
+  overflow:hidden;
+}
+
+/* Composer must participate in the chat flex layout, never sit below it. */
+.comp{
+  position:relative!important;
+  bottom:auto!important;
+  flex:0 0 auto!important;
+  width:100%;
+  max-width:100%;
+  padding-bottom:max(8px,var(--og-safe-bottom))!important;
+}
+
+/* Message list absorbs all remaining height. */
+.msgs{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain;
+}
+
+/* Installed PWA/TWA gets a stricter viewport model. */
+html.og-standalone body,
+html.og-standalone .app{
+  height:var(--og-app-height)!important;
+  max-height:var(--og-app-height)!important;
+}
+
+html.og-keyboard-open .comp{
+  /* keyboard already consumes the bottom inset; avoid double-spacing */
+  padding-bottom:6px!important;
+}
+
+html.og-keyboard-open .msgs{
+  scroll-padding-bottom:72px;
+}
+
+@media(max-width:960px){
+  .app,
+  .chat,
+  .side{
+    height:var(--og-app-height)!important;
+    max-height:var(--og-app-height)!important;
+  }
+
+  .chat{
+    overflow:hidden!important;
+  }
+
+  .shell{
+    height:100%!important;
+    max-height:100%!important;
+  }
+
+  .comp{
+    z-index:30;
+    background:var(--panel2);
+  }
+
+  .field textarea{
+    font-size:16px;
+  }
 }
 
 </style>
@@ -280,13 +645,6 @@ a{color:inherit;text-decoration:none}button,input,textarea{font:inherit;color:in
         <button class="ic" onclick="OG.refresh(true)" title="Refresh" aria-label="Refresh"><i class="fas fa-rotate"></i></button>
       </header>
 
-      <div class="chat-loading" id="chatLoading" aria-live="polite" aria-busy="true">
-        <div class="chat-loading-inner">
-          <span class="chat-loading-spinner" aria-hidden="true"></span>
-          <span id="chatLoadingText">Opening conversation...</span>
-        </div>
-      </div>
-
       <div class="msgs" id="msgs" aria-live="polite"></div>
       <button class="jump" id="jump" aria-label="Jump to latest"><i class="fas fa-chevron-down"></i><span class="badge" id="jumpN"></span></button>
 
@@ -320,12 +678,85 @@ a{color:inherit;text-decoration:none}button,input,textarea{font:inherit;color:in
 <div class="viewer" id="viewer"><button aria-label="Close"><i class="fas fa-times"></i></button><img id="viewerImg" alt=""></div>
 <div class="toasts" id="toasts"></div>
 
+
+<script>
+/* OppoGlobe messaging PWA viewport runtime */
+(() => {
+  'use strict';
+
+  const root = document.documentElement;
+  const isStandalone =
+    window.matchMedia?.('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (isStandalone) root.classList.add('og-standalone');
+
+  let lastHeight = 0;
+  let raf = 0;
+
+  function updateMessagingViewport() {
+    cancelAnimationFrame(raf);
+
+    raf = requestAnimationFrame(() => {
+      const vv = window.visualViewport;
+      const visibleHeight = Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight);
+
+      if (visibleHeight > 0 && Math.abs(visibleHeight - lastHeight) > 1) {
+        root.style.setProperty('--og-app-height', visibleHeight + 'px');
+        lastHeight = visibleHeight;
+      }
+
+      const layoutHeight = Math.round(window.innerHeight || visibleHeight);
+      const keyboardOpen = !!vv && (layoutHeight - visibleHeight > 120);
+
+      root.classList.toggle('og-keyboard-open', keyboardOpen);
+
+      /* Keep the composer in view when keyboard/PWA chrome changes height. */
+      const input = document.getElementById('inp');
+      const msgs = document.getElementById('msgs');
+
+      if (keyboardOpen && document.activeElement === input && msgs) {
+        requestAnimationFrame(() => {
+          msgs.scrollTop = msgs.scrollHeight;
+        });
+      }
+    });
+  }
+
+  updateMessagingViewport();
+
+  window.addEventListener('resize', updateMessagingViewport, {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(updateMessagingViewport, 80);
+    setTimeout(updateMessagingViewport, 300);
+  }, {passive:true});
+
+  if (window.visualViewport) {
+    visualViewport.addEventListener('resize', updateMessagingViewport, {passive:true});
+    visualViewport.addEventListener('scroll', updateMessagingViewport, {passive:true});
+  }
+
+  document.addEventListener('focusin', e => {
+    if (e.target?.id === 'inp') {
+      setTimeout(updateMessagingViewport, 30);
+      setTimeout(updateMessagingViewport, 250);
+    }
+  });
+
+  document.addEventListener('focusout', e => {
+    if (e.target?.id === 'inp') {
+      setTimeout(updateMessagingViewport, 120);
+    }
+  });
+})();
+</script>
+
 <script>
 (() => {
 'use strict';
 const ME = String('{{ request.user.id|default:"" }}');
 const $ = id => document.getElementById(id);
-const MQ = matchMedia('(max-width:820px)'); const narrow = () => MQ.matches;
+const MQ = matchMedia('(max-width:960px)'); const narrow = () => MQ.matches;
 const app=$('app'), list=$('list'), msgs=$('msgs'), inp=$('inp'), go=$('go'), fileInp=$('fileInp'), q=$('q');
 window.fileInp = fileInp;
 
@@ -334,16 +765,6 @@ let pending={}; // convId -> [{tmp,content,failed}]
 let newWhileUp=0, lastCount=0, polls=[], qTimer=null;
 let rec=null, recChunks=[], recTimer=null, recStart=0, recCancel=false;
 
-let loadingConversationId=null;
-let messageController=null;
-let peopleController=null;
-let convController=null;
-let convLoadPromise=null;
-let lastConvFetch=0;
-let lastMessageFetch=0;
-let resumeTimer=null;
-const messageCache=new Map();
-
 /* ---------- helpers ---------- */
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const csrf=()=>{const m=document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);return m?decodeURIComponent(m[1]):''};
@@ -351,7 +772,7 @@ async function api(url,o={}){
   const h=new Headers(o.headers||{}); h.set('Accept','application/json');
   if(o.body&&!(o.body instanceof FormData)&&!h.has('Content-Type'))h.set('Content-Type','application/json');
   if((o.method||'GET').toUpperCase()!=='GET')h.set('X-CSRFToken',csrf());
-  const r=await fetch(url,{credentials:'same-origin',cache:'no-store',...o,headers:h}); let d={};
+  const r=await fetch(url,{credentials:'same-origin',...o,headers:h}); let d={};
   try{d=await r.json()}catch(_){}
   if(!r.ok||d.success===false){throw new Error(typeof d.error==='object'?JSON.stringify(d.error):(d.error||d.detail||`Request failed (${r.status})`))}
   return d;
@@ -397,47 +818,62 @@ function renderList(){
   }
   list.innerHTML=rows.map(c=>{
     const u=other(c),n=nameOf(u),un=+c.unread_count||0,p=preview(c);
-    return `<button class="row ${String(c.id)===String(curId)?'on':''} ${un?'unread':''} ${String(c.id)===String(loadingConversationId)?'loading':''}" data-id="${esc(c.id)}">
+    return `<button class="row ${String(c.id)===String(curId)?'on':''} ${un?'unread':''}" data-id="${esc(c.id)}">
       <div class="av ${u?.is_online?'on':''}" style="background:${col(u?.id||c.id)}">${esc(ini(n))}</div>
       <div style="min-width:0"><div class="nm">${esc(n)}</div><div class="pv">${p.own?'<i class="fas fa-check-double" style="color:var(--tick)"></i>':''}${p.i}<span style="overflow:hidden;text-overflow:ellipsis">${esc(p.t)}</span></div></div>
       <div class="meta"><span class="tm">${rel(c.last_message?.created_at||c.updated_at)}</span>${un?`<span class="cnt">${un>99?'99+':un}</span>`:''}</div></button>`;
   }).join('');
 }
-async function loadConvs(silent=false,force=false){
-  const now=Date.now();
-  if(!force&&convLoadPromise)return convLoadPromise;
-  if(!force&&silent&&now-lastConvFetch<7000)return;
-  convController?.abort();
-  convController=new AbortController();
-  convLoadPromise=(async()=>{
-    try{
-      const d=await api('/api/conversations/',{signal:convController.signal});
-      convs=Array.isArray(d.conversations)?d.conversations:[];
-      lastConvFetch=Date.now();
-      renderList();
-      if(!silent)await fromUrl();
-    }catch(e){
-      if(e.name==='AbortError')return;
-      if(!silent)list.innerHTML=`<div class="empty"><i class="fas fa-triangle-exclamation"></i><b>Couldn't load chats</b>${esc(e.message)}<br><br><button class="chip on" onclick="location.reload()">Try again</button></div>`;
-    }finally{convLoadPromise=null}
-  })();
-  return convLoadPromise;
+async function loadConvs(silent){
+  try{
+    const d=await api('/api/conversations/'); convs=Array.isArray(d.conversations)?d.conversations:[];
+    renderList();
+    if(!silent)await fromUrl();
+  }catch(e){if(!silent)list.innerHTML=`<div class="empty"><i class="fas fa-triangle-exclamation"></i><b>Couldn't load chats</b>${esc(e.message)}<br><br><button class="chip on" onclick="location.reload()">Try again</button></div>`}
 }
 
 /* ---------- people search ---------- */
 async function searchPeople(term){
-  peopleController?.abort();
   if(!term){renderList();return}
-  peopleController=new AbortController();
   try{
-    const d=await api(`/api/conversations/users/search/?q=${encodeURIComponent(term)}`,{signal:peopleController.signal});
-    const us=d.users||[];
-    if(q.value.trim()!==term||!us.length)return;
-    list.insertAdjacentHTML('beforeend',`<div class="sect">People on OppoGlobe</div>`+us.map(u=>{
-      const n=nameOf(u);
-      return `<button class="row" data-user="${esc(u.id)}"><div class="av ${u.is_online?'on':''}" style="background:${col(u.id)}">${esc(ini(n))}</div><div style="min-width:0"><div class="nm">${esc(n)}</div><div class="pv">@${esc(u.username||'')}</div></div><span></span></button>`;
-    }).join(''));
-  }catch(e){if(e.name!=='AbortError')console.debug('People search failed',e)}
+    const d=await api(`/api/conversations/users/search/?q=${encodeURIComponent(term)}`); const us=d.users||[];
+    if(q.value.trim()!==term)return;
+    if(!us.length)return;
+    list.insertAdjacentHTML('beforeend',`<div class="sect">People on OppoGlobe</div>`+us.map(u=>{const n=nameOf(u);return `<button class="row" data-user="${esc(u.id)}"><div class="av ${u.is_online?'on':''}" style="background:${col(u.id)}">${esc(ini(n))}</div><div style="min-width:0"><div class="nm">${esc(n)}</div><div class="pv">@${esc(u.username||'')}</div></div><span></span></button>`}).join(''));
+  }catch(_){}
+}
+
+
+function conversationById(id){
+  return convs.find(c=>String(c.id)===String(id))||null;
+}
+
+function primeChatHeader(id){
+  const c=conversationById(id);
+  const u=c?other(c):null;
+  const n=nameOf(u);
+  curUser=u||curUser;
+
+  const av=$('cAv');
+  av.textContent=ini(n);
+  av.style.background=col(u?.id||id);
+  av.classList.toggle('on',!!u?.is_online);
+
+  $('cName').textContent=n||'Conversation';
+  const st=$('cSt');
+  st.textContent=u?.is_online?'online':'';
+  st.classList.toggle('on',!!u?.is_online);
+}
+
+function showMessageSkeleton(){
+  if(!msgs)return;
+  msgs.innerHTML=`
+    <div class="msg-load-skeleton" aria-hidden="true">
+      <div class="msg-load-line short"></div>
+      <div class="msg-load-line me"></div>
+      <div class="msg-load-line"></div>
+      <div class="msg-load-line me short"></div>
+    </div>`;
 }
 
 /* ---------- open / close ---------- */
@@ -448,62 +884,139 @@ async function fromUrl(){
 }
 async function start(uid,rowEl=null){
   if(!uid)return;
+
   rowEl?.classList.add('loading');
+
+  // Give immediate feedback on the selected person.
+  const selectedName=rowEl?.querySelector('.nm')?.textContent?.trim()||'New conversation';
+  const selectedAv=rowEl?.querySelector('.av');
+
+  app.classList.add('open');
+  app.setAttribute('data-chat-open','true');
+  $('splash').style.display='none';
+  $('shell').classList.add('on');
+  $('comp').classList.add('chat-ready');
+
+  $('cName').textContent=selectedName;
+  $('cSt').textContent='connecting...';
+  $('cAv').textContent=selectedAv?.textContent||ini(selectedName);
+  if(selectedAv?.style?.background)$('cAv').style.background=selectedAv.style.background;
+  $('cAv').classList.add('loading');
+
+  showMessageSkeleton();
   $('chatLoadingText').textContent='Starting conversation...';
   $('chatLoading').classList.add('show');
+  syncGo();
+
   try{
-    const d=await api(`/api/conversations/start/${encodeURIComponent(uid)}/`,{method:'POST',body:'{}'});
+    const d=await api(`/api/conversations/start/${encodeURIComponent(uid)}/`,{
+      method:'POST',
+      body:'{}'
+    });
+
     const id=d.conversation_id||d.conversation?.id;
     if(!id)throw new Error('Conversation ID was not returned.');
-    q.value='';$('qx').classList.remove('show');
-    await loadConvs(true,true);
-    await open(id,true);
-  }catch(e){toast(e.message||'Could not start chat','error')}
-  finally{rowEl?.classList.remove('loading');if(!curId)$('chatLoading').classList.remove('show')}
+
+    q.value='';
+    $('qx').classList.remove('show');
+
+    // Do not block on a full conversation-list reload before opening.
+    curId=String(id);
+    setUrl(curId);
+
+    // Refresh list in background only.
+    loadConvs(true,true);
+
+    await refresh(false,true,true);
+  }catch(e){
+    toast(e.message||'Could not start chat','error');
+    if(!curId){
+      app.classList.remove('open');
+      app.removeAttribute('data-chat-open');
+      $('shell').classList.remove('on');
+      $('splash').style.display='';
+    }
+  }finally{
+    rowEl?.classList.remove('loading');
+    $('cAv').classList.remove('loading');
+    $('chatLoading').classList.remove('show');
+  }
 }
 async function open(id,push=true){
-  id=String(id||''); if(!id)return;
-  if(id===String(curId)&&messageCache.has(id)&&$('shell').classList.contains('on')){
+  id=String(id||'');
+  if(!id)return;
+
+  // Reopening current chat should feel instant and do nothing destructive.
+  if(id===String(curId)&&$('shell').classList.contains('on')){
     if(narrow())app.classList.add('open');
+    inp.focus({preventScroll:true});
     return;
   }
-  if(id!==String(curId)){sig='';lastCount=0;newWhileUp=0;clearFiles()}
-  messageController?.abort();
-  loadingConversationId=id;
-  curId=id;setUrl(curId);
-  if(push&&narrow()&&!app.classList.contains('open'))history.pushState({og:'chat'},'');
-  app.classList.add('open');app.setAttribute('data-chat-open','true');
-  $('splash').style.display='none';$('shell').classList.add('on');
-  renderList();
-  $('cAv').classList.add('loading');
-  $('chatLoadingText').textContent='Opening conversation...';
-  $('chatLoading').classList.add('show');
 
-  const cached=messageCache.get(id);
-  if(cached){
-    curUser=other(cached.conversation||{});
-    const n=nameOf(curUser),av=$('cAv');
-    av.textContent=ini(n);av.style.background=col(curUser?.id||id);av.classList.toggle('on',!!curUser?.is_online);
-    $('cName').textContent=n;
-    const st=$('cSt');st.textContent=curUser?.is_online?'online':'';st.classList.toggle('on',!!curUser?.is_online);
-    render(cached.messages||[],true);sig=cached.sig||'';lastCount=(cached.messages||[]).length;
-  }else{
-    msgs.innerHTML='';$('cName').textContent='Loading...';$('cSt').textContent='';
+  messageController?.abort();
+
+  if(id!==String(curId)){
+    sig='';
+    lastCount=0;
+    newWhileUp=0;
+    clearFiles();
   }
 
-  try{await refresh(false,!cached,true)}
-  finally{
-    if(curId===id){
-      loadingConversationId=null;$('cAv').classList.remove('loading');$('chatLoading').classList.remove('show');
-      renderList();syncGo();if(!narrow())inp.focus({preventScroll:true});
+  curId=id;
+  loadingConversationId=id;
+  setUrl(id);
+
+  if(push&&narrow()&&!app.classList.contains('open')){
+    history.pushState({og:'chat'},'');
+  }
+
+  // IMPORTANT: render the entire messaging UI BEFORE any network request.
+  app.classList.add('open');
+  app.setAttribute('data-chat-open','true');
+  $('splash').style.display='none';
+  $('shell').classList.add('on');
+  $('comp').classList.add('chat-ready');
+
+  primeChatHeader(id);
+  renderList();
+
+  $('cAv').classList.add('loading');
+  $('chatLoadingText').textContent='Loading messages...';
+
+  const cached=messageCache.get(id);
+
+  if(cached){
+    curUser=other(cached.conversation||{})||curUser;
+    render(cached.messages||[],true);
+    sig=cached.sig||'';
+    lastCount=(cached.messages||[]).length;
+  }else{
+    showMessageSkeleton();
+    $('chatLoading').classList.add('show');
+  }
+
+  syncGo();
+
+  // Composer is usable immediately.
+  requestAnimationFrame(()=>{
+    if(!narrow())inp.focus({preventScroll:true});
+  });
+
+  // Fetch messages after the chat surface is already visible.
+  try{
+    await refresh(false,!cached,true);
+  }finally{
+    if(String(curId)===id){
+      loadingConversationId=null;
+      $('cAv').classList.remove('loading');
+      $('chatLoading').classList.remove('show');
+      renderList();
     }
   }
 }
 function close(fromPop){
   if(!fromPop&&history.state?.og==='chat'){history.back();return}
-  messageController?.abort();loadingConversationId=null;
-  $('chatLoading').classList.remove('show');$('cAv').classList.remove('loading');
-  app.classList.remove('open');app.removeAttribute('data-chat-open');inp.blur();
+  app.classList.remove('open'); inp.blur();
   if(!narrow()){return}
   curId=null; $('shell').classList.remove('on'); $('splash').style.display='';
   const u=new URL(location.href);u.searchParams.delete('conversation');history.replaceState({},'',u);renderList();
@@ -537,50 +1050,35 @@ function bubble(m,o){
   return `<div class="m ${own?'out':''} ${o.first?'first':''}" data-id="${esc(m.id)}"><div class="b">${snd}${fw}${body}</div></div>`;
 }
 function render(list_,force){
-  const was=nearBottom(),prevHeight=msgs.scrollHeight,prevTop=msgs.scrollTop;
-  let last='',prev=null,html='';
+  const was=nearBottom(); let last='',prev=null,html='';
   for(const m of list_){
-    const d=dayLabel(m.created_at);if(d!==last){html+=`<div class="day"><span>${esc(d)}</span></div>`;last=d;prev=null}
+    const d=dayLabel(m.created_at); if(d!==last){html+=`<div class="day"><span>${esc(d)}</span></div>`;last=d;prev=null}
     const own=String(m.sender?.id)===ME;
     const first=!prev||String(prev.sender?.id)!==String(m.sender?.id)||(new Date(m.created_at)-new Date(prev.created_at))>3e5;
-    html+=bubble(m,{own,first,showName:false});prev=m;
+    html+=bubble(m,{own,first,showName:false}); prev=m;
   }
   for(const p of (pending[curId]||[])){
     html+=`<div class="m out first pend ${p.failed?'fail':''}" data-tmp="${p.tmp}"><div class="b"><div class="tx">${linkify(p.content)}</div><span class="info">${p.failed?'<i class="fas fa-circle-exclamation"></i> Tap to retry':'<i class="far fa-clock"></i>'}</span></div></div>`;
   }
   msgs.innerHTML=html;
-  requestAnimationFrame(()=>{
-    if(force||was)toBottom(false);
-    else{msgs.scrollTop=Math.max(0,prevTop+(msgs.scrollHeight-prevHeight));updJump()}
-  });
+  if(force||was)requestAnimationFrame(()=>toBottom(false)); else updJump();
 }
-async function refresh(toastIt=false,force=false,isOpening=false){
-  if(!curId)return;
-  const id=String(curId),now=Date.now();
-  if(!force&&!isOpening&&now-lastMessageFetch<1800)return;
-  if(isOpening){messageController?.abort();messageController=new AbortController()}
-  const signal=messageController?.signal;
-  if(!isOpening)msgs.classList.add('refreshing');
+async function refresh(toastIt,force){
+  if(!curId)return; const id=curId;
   try{
-    const d=await api(`/api/conversations/${encodeURIComponent(id)}/messages/`,signal?{signal}:{});
-    if(id!==String(curId))return;
-    lastMessageFetch=Date.now();
-    curUser=other(d.conversation||{});
-    const n=nameOf(curUser),av=$('cAv');
-    av.textContent=ini(n);av.style.background=col(curUser?.id||id);av.classList.toggle('on',!!curUser?.is_online);
-    $('cName').textContent=n;
-    const st=$('cSt');st.textContent=curUser?.is_online?'online':'';st.classList.toggle('on',!!curUser?.is_online);
+    const d=await api(`/api/conversations/${encodeURIComponent(id)}/messages/`); if(id!==curId)return;
+    curUser=other(d.conversation||{}); const n=nameOf(curUser);
+    const av=$('cAv'); av.textContent=ini(n); av.style.background=col(curUser?.id||id); av.classList.toggle('on',!!curUser?.is_online);
+    $('cName').textContent=n; const st=$('cSt'); st.textContent=curUser?.is_online?'online':''; st.classList.toggle('on',!!curUser?.is_online);
     const ms=Array.isArray(d.messages)?d.messages:[];
     const s=ms.map(m=>`${m.id}:${m.updated_at||m.created_at}:${m.is_read}`).join('|')+'|'+(pending[id]||[]).map(p=>p.tmp+p.failed).join();
-    messageCache.set(id,{messages:ms,conversation:d.conversation||{},sig:s});
     if(s!==sig||force){
       const incoming=ms.length>lastCount&&lastCount>0?ms.slice(lastCount).filter(m=>String(m.sender?.id)!==ME).length:0;
       if(incoming&&!nearBottom())newWhileUp+=incoming;
-      render(ms,force);sig=s;lastCount=ms.length;
+      render(ms,force); sig=s; lastCount=ms.length;
     }
-    if(toastIt)toast('Up to date','success');
-  }catch(e){if(e.name!=='AbortError'&&toastIt)toast(e.message,'error')}
-  finally{msgs.classList.remove('refreshing')}
+    loadConvs(true); badge(); if(toastIt)toast('Up to date','success');
+  }catch(e){if(toastIt)toast(e.message,'error')}
 }
 
 /* ---------- sending ---------- */
@@ -596,9 +1094,7 @@ async function sendText(content,tmp){
     await api(`/api/conversations/${encodeURIComponent(id)}/messages/`,{method:'POST',body:JSON.stringify({content,message_type:'text'})});
     pending[id]=(pending[id]||[]).filter(p=>p.tmp!==tmp);
   }catch(e){const p=(pending[id]||[]).find(p=>p.tmp===tmp);if(p)p.failed=true;toast(e.message||'Message not sent','error')}
-  sig='';messageCache.delete(id);
-  if(id===curId){await refresh(false,true)}
-  loadConvs(true,true);badge();
+  sig='';if(id===curId){await refresh(false,true)}
 }
 function submit(){
   if(rec){stopRec();return}
@@ -624,11 +1120,7 @@ async function sendFiles(blobs){
     }
     bar.style.width='100%';if(!blobs){clearFiles();inp.value='';grow()}
   }catch(e){toast(e.message||'Upload failed','error')}
-  finally{
-    sending=false;go.disabled=false;
-    setTimeout(()=>{up.classList.remove('show');bar.style.width='0'},300);
-    syncGo();sig='';messageCache.delete(id);refresh(false,true);loadConvs(true,true);badge();
-  }
+  finally{sending=false;go.disabled=false;setTimeout(()=>{up.classList.remove('show');bar.style.width='0'},300);syncGo();sig='';refresh(false,true)}
 }
 
 /* ---------- attachments ---------- */
@@ -694,8 +1186,8 @@ $('emoBtn').onclick=e=>{e.stopPropagation();$('emo').classList.toggle('show')};
 
 /* ---------- events ---------- */
 list.addEventListener('click',e=>{
-  const r=e.target.closest('.row');if(!r||r.classList.contains('loading'))return;
-  if(r.dataset.user)start(r.dataset.user,r);else if(r.dataset.id)open(r.dataset.id,true);
+  const r=e.target.closest('.row');if(!r)return;
+  if(r.dataset.user)start(r.dataset.user); else open(r.dataset.id,true);
 });
 document.addEventListener('click',e=>{if(!e.target.closest('#emo'))$('emo').classList.remove('show')});
 $('newChat').onclick=()=>{q.focus();q.select()};
@@ -729,10 +1221,25 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(docume
 
 /* keep state coherent when the window crosses the breakpoint (rotate, resize, split-screen) */
 function onLayoutChange(){
-  if(!narrow()){ // wide: chat and list share the screen
-    if(curId){app.classList.add('open');$('shell').classList.add('on');$('splash').style.display='none'}
-  }else if(curId&&!app.classList.contains('open')){ // narrow with nothing opened: show list
-    curId=null;$('shell').classList.remove('on');$('splash').style.display='';renderList();
+  if(narrow()){
+    if(curId){
+      app.classList.add('open');
+      $('shell').classList.add('on');
+      $('splash').style.display='none';
+    }else{
+      app.classList.remove('open');
+      $('shell').classList.remove('on');
+      $('splash').style.display='';
+    }
+  }else{
+    app.classList.remove('open');
+    if(curId){
+      $('shell').classList.add('on');
+      $('splash').style.display='none';
+    }else{
+      $('shell').classList.remove('on');
+      $('splash').style.display='';
+    }
   }
   requestAnimationFrame(()=>curId&&toBottom(false));
 }
@@ -741,22 +1248,11 @@ addEventListener('orientationchange',()=>setTimeout(onLayoutChange,200));
 /* ---------- polling ---------- */
 function poll(){
   polls.forEach(clearInterval);
-  const listPoll=setInterval(()=>{if(!document.hidden&&!sending)loadConvs(true,false)},20000);
-  const messagePoll=setInterval(()=>{if(!document.hidden&&curId&&!sending)refresh(false,false)},5000);
-  const badgePoll=setInterval(()=>{if(!document.hidden)badge()},30000);
-  polls=[listPoll,messagePoll,badgePoll];
+  polls=[setInterval(()=>{if(!document.hidden)loadConvs(true)},6000),
+         setInterval(()=>{if(!document.hidden&&curId&&!sending)refresh(false,false)},3000)];
 }
-function resumeMessaging(){
-  clearTimeout(resumeTimer);
-  resumeTimer=setTimeout(()=>{
-    if(document.hidden)return;
-    loadConvs(true,true);
-    if(curId&&!sending)refresh(false,false);
-    badge();
-  },350);
-}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)resumeMessaging()});
-addEventListener('focus',resumeMessaging);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){loadConvs(true);curId&&refresh(false,false)}});
+addEventListener('focus',()=>{loadConvs(true);curId&&refresh(false,false)});
 
 window.OG={open,close,refresh,cancelRec};
 window.OppoMessaging={openConversation:open,startConversation:start,openImage:u=>{$('viewerImg').src=u;$('viewer').classList.add('show')},removeFile:i=>{files.splice(i,1);drawPrev();syncGo()},shareFile:async(u,n)=>{try{navigator.share?await navigator.share({title:n,url:u}):(await navigator.clipboard.writeText(u),toast('Link copied','success'))}catch(_){}}};
