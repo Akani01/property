@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"About Us" }} – OppoGlobe{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ page_description|default:'Learn about OppoGlobe - your trusted platform for finding dream properties, connecting with owners, and accessing educational resources.' }}">
+    <meta name="keywords" content="about, oppoglobe, company, real estate, platform">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"About Us" }}</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-5 fw-bold mb-3">{{ page_title|default:"About OppoGlobe" }}</h1>
+            
+            {% if page.content %}
+                {{ page.content|safe }}
+            {% else %}
+                <p class="lead">{{ page_description|default:"Your trusted platform for finding dream properties, connecting with owners, and accessing educational resources." }}</p>
+                
+                <div class="row mt-4 g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                                <h5>Find Properties</h5>
+                                <p class="small text-muted">Browse thousands of properties for sale, rent, or booking</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-handshake fa-3x text-success mb-3"></i>
+                                <h5>Connect with Owners</h5>
+                                <p class="small text-muted">Directly message property owners and negotiate deals</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-graduation-cap fa-3x text-warning mb-3"></i>
+                                <h5>Educational Resources</h5>
+                                <p class="small text-muted">Access bursaries, schools, and educational content</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4>Our Mission</h4>
+                    <p>To create a seamless platform where people can find their dream properties, connect with verified owners, and access valuable educational resources to make informed decisions.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Only show edit link for superusers -->
+            {% if user.is_superuser %}
+            <div class="mt-4 p-3 bg-light rounded border border-warning">
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1 text-warning"></i> 
+                    <strong>Admin Access:</strong> You are viewing this as a superuser.
+                    <a href="/admin/hiring/staticpage/5/change/" class="text-primary ms-2">
+                        <i class="fas fa-edit me-1"></i> Edit this page
+                    </a>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,220 @@
+<!-- templates/notifications/preferences.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Preferences</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>
+                            Notification Preferences
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="preferencesContainer">
+                            <div class="loading text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading preferences...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Get CSRF token
+            function getCSRFToken() {
+                return $('meta[name="csrf-token"]').attr('content');
+            }
+            
+            // Load preferences
+            function loadPreferences() {
+                $.ajax({
+                    url: '/preferences/',
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            const prefs = response.data;
+                            let html = `
+                                <form id="preferencesForm">
+                                    <div class="mb-3">
+                                        <h6>Email Notifications</h6>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="email_notifications" 
+                                                   ${prefs.email_notifications ? 'checked' : ''}>
+                                            <label class="form-check-label">Enable email notifications</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="email_job_alerts" 
+                                                   ${prefs.email_job_alerts ? 'checked' : ''}>
+                                            <label class="form-check-label">Job alerts</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="email_property_updates" 
+                                                   ${prefs.email_property_updates ? 'checked' : ''}>
+                                            <label class="form-check-label">Property updates</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>In-App Notifications</h6>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="in_app_notifications" 
+                                                   ${prefs.in_app_notifications ? 'checked' : ''}>
+                                            <label class="form-check-label">Enable in-app notifications</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Push Notifications</h6>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="push_notifications" 
+                                                   ${prefs.push_notifications ? 'checked' : ''}>
+                                            <label class="form-check-label">Enable push notifications</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Sound Preferences</h6>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="sound_enabled" 
+                                                   ${prefs.sound_enabled ? 'checked' : ''}>
+                                            <label class="form-check-label">Enable notification sounds</label>
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="form-label">Volume: <span id="volumeValue">${prefs.sound_volume || 70}%</span></label>
+                                            <input type="range" class="form-range" name="sound_volume" 
+                                                   min="0" max="100" value="${prefs.sound_volume || 70}">
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="form-label">Sound type</label>
+                                            <select class="form-select" name="selected_sound">
+                                                <option value="default" ${prefs.selected_sound === 'default' ? 'selected' : ''}>Default</option>
+                                                <option value="gentle" ${prefs.selected_sound === 'gentle' ? 'selected' : ''}>Gentle</option>
+                                                <option value="pop" ${prefs.selected_sound === 'pop' ? 'selected' : ''}>Pop</option>
+                                                <option value="chime" ${prefs.selected_sound === 'chime' ? 'selected' : ''}>Chime</option>
+                                                <option value="bell" ${prefs.selected_sound === 'bell' ? 'selected' : ''}>Bell</option>
+                                                <option value="none" ${prefs.selected_sound === 'none' ? 'selected' : ''}>None</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Save Preferences
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary ms-2" id="resetDefaultsBtn">
+                                        <i class="fas fa-undo me-2"></i>Reset to Defaults
+                                    </button>
+                                </form>
+                            `;
+                            $('#preferencesContainer').html(html);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading preferences:', xhr.responseText);
+                        $('#preferencesContainer').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Error loading preferences. Please try again.
+                            </div>
+                        `);
+                    }
+                });
+            }
+            
+            // Save preferences
+            function savePreferences(data) {
+                $.ajax({
+                    url: '/preferences/',
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert('Preferences saved successfully!');
+                            loadPreferences();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error saving preferences:', xhr.responseText);
+                        alert('Error saving preferences. Please try again.');
+                    }
+                });
+            }
+            
+            // Reset to defaults
+            function resetDefaults() {
+                if (confirm('Are you sure you want to reset all preferences to defaults?')) {
+                    $.ajax({
+                        url: '/preferences/reset_defaults/',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert('Preferences reset to defaults!');
+                                loadPreferences();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error resetting preferences:', xhr.responseText);
+                            alert('Error resetting preferences. Please try again.');
+                        }
+                    });
+                }
+            }
+            
+            // Event handlers
+            $('#preferencesContainer').on('submit', '#preferencesForm', function(e) {
+                e.preventDefault();
+                const formData = $(this).serializeArray();
+                const data = {};
+                formData.forEach(item => {
+                    if (item.name === 'sound_volume') {
+                        data[item.name] = parseInt(item.value);
+                    } else {
+                        data[item.name] = item.value === 'on';
+                    }
+                });
+                savePreferences(data);
+            });
+            
+            $('#preferencesContainer').on('click', '#resetDefaultsBtn', function() {
+                resetDefaults();
+            });
+            
+            // Volume slider display
+            $('#preferencesContainer').on('input', 'input[name="sound_volume"]', function() {
+                $('#volumeValue').text($(this).val() + '%');
+            });
+            
+            // Initial load
+            loadPreferences();
+        });
+    </script>
+</body>
+</html>

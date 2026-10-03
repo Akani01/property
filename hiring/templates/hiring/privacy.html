@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Privacy Policy" }} – OppoGlobe{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ page_description|default:'Learn how OppoGlobe protects your privacy' }}">
+    <meta name="keywords" content="privacy, policy, data protection, oppoglobe">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Privacy Policy" }}</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-5 fw-bold mb-2">{{ page_title|default:"Privacy Policy" }}</h1>
+            <p class="text-muted">Last Updated: {{ page.last_updated|default:"April 2026" }}</p>
+            <hr class="mb-4">
+            
+            {% if page.sections %}
+                {% for section in page.sections %}
+                <div class="mb-4">
+                    <h4>{{ section.title }}</h4>
+                    <p>{{ section.content }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Default content if no sections provided -->
+                <div class="mb-4">
+                    <h4>1. Information We Collect</h4>
+                    <p>OppoGlobe collects information you provide directly, such as when you create an account, list a property, or contact us. This may include your name, email address, phone number, and property details.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>2. How We Use Your Information</h4>
+                    <p>We use your information to provide, maintain, and improve our services, to process transactions, to communicate with you, and to personalize your experience on OppoGlobe.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>3. Information Sharing</h4>
+                    <p>We do not sell your personal information. We may share your information with service providers who assist us in operating our platform, or as required by law.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>4. Your Rights</h4>
+                    <p>You have the right to access, correct, or delete your personal information. You may also opt out of marketing communications at any time.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>5. Contact Us</h4>
+                    <p>If you have questions about this Privacy Policy, please contact us at <a href="mailto:privacy@oppoglobe.com">privacy@oppoglobe.com</a>.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Only show edit link for superusers -->
+            {% if user.is_superuser %}
+            <div class="mt-4 p-3 bg-light rounded border border-warning">
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1 text-warning"></i> 
+                    <strong>Admin Access:</strong> You are viewing this as a superuser.
+                    <a href="/admin/hiring/staticpage/1/change/" class="text-primary ms-2">
+                        <i class="fas fa-edit me-1"></i> Edit this page
+                    </a>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

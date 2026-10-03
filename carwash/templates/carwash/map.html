@@ -1,0 +1,3082 @@
+{% load static %}
+
+
+
+<!doctype html>
+
+
+
+<html lang="en-ZA">
+
+
+
+<head>
+
+
+
+<meta charset="utf-8">
+
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+
+
+<title>OppoGlobe Wash</title>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+
+
+
+<style>
+
+:root{
+
+  --ink:#17221e;--muted:#6c7772;--paper:#f4f6f3;--surface:#fff;--line:#e3e8e4;
+
+  --jade:#1f6f5c;--jade2:#154f41;--wash:#e7f1ec;--coral:#ff6b4a;--gold:#e8a93b;
+
+  --danger:#d64545;--shadow:0 16px 42px rgba(23,34,30,.14);
+
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+
+}
+
+*{box-sizing:border-box}
+
+html,body{width:100%;height:100%;margin:0;overflow:hidden;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:#dfe6e2}
+
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+
+#map{position:fixed;inset:0;width:100%;height:100dvh;background:#dfe6e2;z-index:0}
+
+
+
+/* ---------- floating top bar ---------- */
+
+.topbar{position:fixed;left:14px;right:14px;top:calc(12px + var(--safe-top));z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;pointer-events:none}
+
+.brand,.top-actions,.role-nav,.mobile-bottom-nav,.mobile-more-tray{pointer-events:auto}
+
+.brand{height:52px;display:flex;align-items:center;gap:9px;padding:5px 13px 5px 6px;border:1px solid rgba(255,255,255,.82);border-radius:18px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 26px rgba(23,34,30,.13);text-decoration:none;color:var(--ink);font-family:Fraunces,serif;font-weight:700}
+
+.brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,var(--jade),var(--jade2));font-family:Inter,sans-serif}
+
+.top-actions{display:flex;gap:7px}
+
+.round{width:46px;height:46px;border-radius:15px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.92);color:var(--ink);box-shadow:0 7px 20px rgba(23,34,30,.1);display:grid;place-items:center;text-decoration:none}
+
+/* ---------- global message unread badge ---------- */
+.message-icon-link{position:relative!important;overflow:visible!important}
+.message-unread-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#e84d3c;
+  color:#fff;
+  border:2px solid #fff;
+  box-shadow:0 3px 10px rgba(190,42,29,.3);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  line-height:1;
+  font-weight:900;
+  font-family:Inter,system-ui,sans-serif;
+  z-index:5;
+  pointer-events:none;
+}
+.message-unread-badge.show{display:flex}
+.message-icon-link.has-unread{color:#fff!important;background:linear-gradient(135deg,var(--jade),var(--jade2))!important;border-color:transparent!important}
+.message-icon-link.has-unread i{animation:messagePulse 1.8s ease-in-out infinite}
+@keyframes messagePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media(prefers-reduced-motion:reduce){.message-icon-link.has-unread i{animation:none}}
+
+
+.round:active{transform:scale(.96)}
+
+
+
+/* ---------- desktop role nav ---------- */
+
+.role-nav{position:fixed;top:calc(74px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:55;display:flex;gap:4px;padding:5px;border:1px solid rgba(255,255,255,.82);border-radius:18px;background:rgba(255,255,255,.89);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 9px 28px rgba(23,34,30,.12);max-width:calc(100vw - 28px);overflow-x:auto;scrollbar-width:none}
+
+.role-nav::-webkit-scrollbar{display:none}
+
+.role-tab{border:0;background:transparent;border-radius:13px;padding:9px 12px;white-space:nowrap;color:var(--muted);font-size:11px;font-weight:800;transition:.18s ease}
+
+.role-tab i{margin-right:5px}
+
+.role-tab.active{background:var(--ink);color:#fff;box-shadow:0 5px 14px rgba(23,34,30,.16)}
+
+
+
+/* ---------- map workspace ---------- */
+
+.workspace{position:fixed;left:14px;right:14px;bottom:max(14px,var(--safe-bottom));z-index:35;display:flex;justify-content:center;pointer-events:none}
+
+.panel{display:none;width:min(760px,100%);max-height:min(72dvh,720px);overflow:auto;background:rgba(255,255,255,.955);border:1px solid rgba(255,255,255,.88);border-radius:26px;box-shadow:var(--shadow);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);pointer-events:auto;overscroll-behavior:contain}
+
+.panel.active{display:block;animation:panelIn .2s ease both}
+
+@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.panel-head{position:sticky;top:0;z-index:4;padding:18px 18px 13px;background:rgba(255,255,255,.965);border-bottom:1px solid var(--line)}
+
+.eyebrow{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--jade);font-weight:800}
+
+.panel-head h1,.panel-head h2{font-family:Fraunces,serif;margin:3px 0 2px;font-size:23px}.panel-head p{margin:0;color:var(--muted);font-size:12px}.panel-body{padding:16px 18px 20px}
+
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}.mode{padding:11px 12px;border-radius:15px;border:1px solid var(--line);background:#fff;text-align:left;color:var(--ink)}.mode strong,.mode span{display:block}.mode strong{font-size:12px}.mode span{font-size:10px;color:var(--muted);margin-top:2px}.mode.active{border-color:var(--jade);background:var(--wash)}
+
+.location{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:15px;background:var(--paper);margin-bottom:12px}.location>i{color:var(--coral)}.location div{min-width:0}.location strong,.location span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.location strong{font-size:12px}.location span{font-size:11px;color:var(--muted)}
+
+.providers{display:flex;gap:10px;overflow-x:auto;padding:2px 1px 11px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}.providers::-webkit-scrollbar{display:none}.provider{min-width:218px;scroll-snap-align:start;border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;cursor:pointer}.provider.active{border-color:var(--jade);box-shadow:0 8px 22px rgba(31,111,92,.14)}.provider-top{display:flex;justify-content:space-between;gap:8px}.provider h4{margin:0 0 2px;font-size:14px}.provider small{color:var(--muted)}.rating{font-size:11px;font-weight:800}.badge{display:inline-flex;margin-top:8px;padding:4px 8px;border-radius:999px;background:var(--wash);color:var(--jade2);font-size:10px;font-weight:800}
+
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:5px}.field label{display:block;font-size:10px;font-weight:800;color:var(--muted);margin:0 0 5px 2px;text-transform:uppercase;letter-spacing:.05em}.field input,.field select,.field textarea{width:100%;min-height:43px;border:1px solid var(--line);border-radius:13px;background:#fff;padding:9px 11px;color:var(--ink);outline:none}.field textarea{min-height:86px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--jade);box-shadow:0 0 0 3px rgba(31,111,92,.08)}.full{grid-column:1/-1}
+
+.price-box{display:none;margin-top:11px;border:1px solid var(--line);border-radius:16px;padding:11px 13px;background:#fff}.price-box.show{display:block}.price-line{display:flex;justify-content:space-between;padding:4px 0;font-size:12px}.price-line.total{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-weight:800}
+
+.cta,.btn{border:0;border-radius:14px;min-height:44px;padding:10px 15px;font-weight:800}.cta{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--jade),var(--jade2));color:#fff}.cta:disabled{opacity:.45;cursor:not-allowed}.btn{background:var(--ink);color:#fff}.btn.ghost{background:#fff;color:var(--jade2);border:1px solid var(--jade)}.btn.warm{background:var(--coral)}.btn.small{min-height:34px;padding:6px 10px;font-size:11px}.status{font-size:11px;color:var(--muted);margin-top:8px}.empty{padding:18px;border:1px dashed var(--line);border-radius:15px;color:var(--muted);font-size:12px;text-align:center;min-width:100%}
+
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stat{border:1px solid var(--line);border-radius:17px;background:#fff;padding:13px}.stat .n{font-size:22px;font-weight:800}.stat .l{font-size:10px;color:var(--muted);margin-top:2px}.list{display:flex;flex-direction:column;gap:9px}.list-card{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff}.list-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.list-card h4{margin:0;font-size:13px}.list-card p{margin:4px 0 0;color:var(--muted);font-size:11px}.status-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:var(--paper);font-size:9px;font-weight:800;text-transform:capitalize}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:15px 0 9px}.section-title h3{font-family:Fraunces,serif;margin:0;font-size:17px}.form-card{border:1px solid var(--line);border-radius:18px;padding:13px;background:#fff;margin-bottom:12px}.setup{background:linear-gradient(145deg,#fff,var(--wash));border-color:#cfe1d9}.address-search{position:relative}.address-search i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}.address-search input{padding-left:36px}.location-actions{display:flex;gap:8px;margin-top:9px}.location-map-note{font-size:10px;color:var(--muted);margin-top:7px}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hidden{display:none!important}
+
+
+
+/* ---------- mobile app navigation ---------- */
+
+.mobile-bottom-nav,.mobile-more-tray{display:none}
+
+
+
+@media (max-width:820px){
+
+  .topbar{left:8px;right:8px;top:calc(7px + var(--safe-top))}
+
+  .brand{height:48px;border-radius:16px;padding-right:10px}.brand-mark{width:37px;height:37px;border-radius:12px}.brand-word{font-size:16px}
+
+  .round{width:44px;height:44px;border-radius:14px}
+
+  .role-nav{display:none}
+
+  .workspace{left:8px;right:8px;bottom:calc(82px + var(--safe-bottom));align-items:flex-end}
+
+  .panel{width:100%;max-height:min(64dvh,650px);border-radius:24px}
+
+  .panel-head{padding:15px 14px 11px}.panel-head h1,.panel-head h2{font-size:21px}.panel-body{padding:13px 14px 17px}
+
+  .fields,.two{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.provider{min-width:min(78vw,300px)}
+
+
+
+  .mobile-bottom-nav{position:fixed;left:8px;right:8px;bottom:max(8px,var(--safe-bottom));z-index:70;height:66px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px;border:1px solid rgba(255,255,255,.88);border-radius:22px;background:rgba(255,255,255,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 12px 38px rgba(23,34,30,.18)}
+
+  .mobile-bottom-nav.customer-nav{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  .mobile-nav-btn{border:0;text-decoration:none;background:transparent;border-radius:16px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;font-size:9px;font-weight:800;padding:4px 2px}
+
+  .mobile-nav-btn i{font-size:17px}.mobile-nav-btn span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mobile-nav-btn.active{background:var(--ink);color:#fff}.mobile-nav-btn:active{transform:scale(.96)}
+
+
+
+  .mobile-more-tray{position:fixed;right:10px;bottom:calc(82px + var(--safe-bottom));z-index:75;width:min(310px,calc(100vw - 20px));grid-template-columns:repeat(3,1fr);gap:7px;padding:8px;border:1px solid rgba(255,255,255,.88);border-radius:20px;background:rgba(255,255,255,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 14px 42px rgba(23,34,30,.2);transform:translateY(8px) scale(.98);opacity:0;pointer-events:none;transition:.18s ease}
+
+  .mobile-more-tray.show{display:grid;transform:none;opacity:1;pointer-events:auto}
+
+  .mobile-more-tray .mobile-nav-btn{min-height:58px;background:rgba(244,246,243,.9)}
+
+  .mobile-more-tray .mobile-nav-btn.active{background:var(--ink);color:#fff}
+
+}
+
+
+
+@media (max-width:520px){
+
+  .brand-word{display:none}.brand{padding-right:6px}
+
+  .top-actions{gap:5px}.round{width:42px;height:42px}
+
+  .workspace{left:6px;right:6px;bottom:calc(78px + var(--safe-bottom))}
+
+  .panel{max-height:61dvh;border-radius:22px}.panel-head{padding:13px 13px 10px}.panel-head p{font-size:11px}.panel-body{padding:12px 13px 15px}
+
+  .modes{gap:6px}.mode{padding:10px}.mode span{font-size:9px}
+
+  .mobile-bottom-nav{left:6px;right:6px;height:64px;border-radius:20px;padding:5px}.mobile-nav-btn i{font-size:16px}.mobile-nav-btn{font-size:8.5px}
+
+  .mobile-more-tray{right:7px;bottom:calc(78px + var(--safe-bottom))}
+
+}
+
+
+
+@media (max-width:380px){
+
+  .grid{grid-template-columns:1fr}.provider{min-width:86vw}.mobile-nav-btn span{font-size:8px}.panel{max-height:59dvh}
+
+}
+
+
+
+@media (min-width:821px) and (max-height:760px){.panel{max-height:64dvh}}
+
+@media (prefers-reduced-motion:reduce){.panel.active,.mobile-more-tray,.role-tab,.mobile-nav-btn{animation:none;transition:none}}
+
+
+/* ============================================================
+   OPPOGLOBE WASH — RESPONSIVE BUSINESS HUB + CHECKOUT
+   ============================================================ */
+
+.business-tools{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-top:12px;
+}
+.business-tool{
+  min-height:90px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:#fff;
+  color:var(--ink);
+  padding:12px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:10px;
+  transition:.16s ease;
+}
+.business-tool:hover{
+  transform:translateY(-2px);
+  border-color:var(--jade);
+  box-shadow:0 8px 22px rgba(31,111,92,.10);
+}
+.business-tool i{
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:11px;
+  background:var(--wash);
+  color:var(--jade2);
+  font-size:14px;
+}
+.business-tool strong{font-size:12px}
+.business-tool span{display:block;color:var(--muted);font-size:9.5px;line-height:1.35}
+
+.dashboard-row{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:10px;
+  margin-top:12px;
+}
+.dashboard-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  padding:13px;
+}
+.dashboard-card h4{
+  margin:0;
+  font-family:Fraunces,serif;
+  font-size:15px;
+}
+.dashboard-card p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:10.5px;
+}
+.availability-wrap{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+.availability-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:#2f9e5b;
+  box-shadow:0 0 0 5px rgba(47,158,91,.10);
+  flex:0 0 9px;
+}
+.availability-dot.off{
+  background:var(--danger);
+  box-shadow:0 0 0 5px rgba(214,69,69,.10);
+}
+
+.payment-checkout{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  background:linear-gradient(145deg,#fff,var(--wash));
+  margin-bottom:14px;
+}
+.payment-checkout.hidden{display:none!important}
+.payment-checkout-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:12px;margin-bottom:11px
+}
+.payment-checkout-head h3{
+  font-family:Fraunces,serif;
+  margin:0;
+  font-size:18px
+}
+.payment-checkout-head p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:10.5px
+}
+.payment-total{
+  white-space:nowrap;
+  padding:6px 9px;
+  border-radius:999px;
+  background:var(--ink);
+  color:#fff;
+  font-size:11px;
+  font-weight:800
+}
+.payment-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px
+}
+.payment-option{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:15px;
+  padding:12px;
+  text-align:left;
+  min-height:82px;
+  transition:.16s ease
+}
+.payment-option:hover{
+  border-color:var(--jade);
+  transform:translateY(-1px)
+}
+.payment-option strong{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px
+}
+.payment-option span{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:9.5px;
+  line-height:1.4
+}
+.payment-option.yoco{
+  background:linear-gradient(145deg,#fff,#f1fbf7)
+}
+.payment-option.cash{
+  background:linear-gradient(145deg,#fff,#fff8eb)
+}
+.payment-option:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none
+}
+.pay-note{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:12px;
+  background:var(--paper);
+  color:var(--muted);
+  font-size:9.5px;
+  line-height:1.45
+}
+.payment-error{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:12px;
+  background:#fdeaea;
+  color:var(--danger);
+  font-size:10px;
+  font-weight:700
+}
+
+/* Keep the desktop business nav visible and usable even with many items */
+@media (min-width:821px){
+  .role-nav{
+    max-width:min(1040px,calc(100vw - 28px));
+    justify-content:flex-start;
+  }
+  .role-tab{
+    flex:0 0 auto;
+  }
+}
+
+/* Tablet/mobile: panel behaves like a map sheet and never hides nav */
+@media (max-width:820px){
+  .workspace{
+    bottom:calc(84px + var(--safe-bottom));
+  }
+  .panel{
+    max-height:min(69dvh,690px);
+    border-radius:23px;
+  }
+  .business-tools{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .dashboard-row{
+    grid-template-columns:1fr;
+  }
+  .mobile-bottom-nav{
+    z-index:90;
+  }
+  .mobile-more-tray{
+    z-index:95;
+  }
+}
+
+@media (max-width:520px){
+  .panel{
+    max-height:66dvh;
+  }
+  .business-tools{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+  .business-tool{
+    min-height:82px;
+    padding:10px;
+  }
+  .payment-options{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:360px){
+  .business-tools{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ============================================================
+   CARWASH MESSAGING
+   ============================================================ */
+.message-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:1px solid rgba(31,111,92,.18);
+  background:var(--wash);
+  color:var(--jade2);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:10.5px;
+  font-weight:800;
+  transition:.16s ease;
+}
+.message-btn:hover{
+  background:var(--jade);
+  color:#fff;
+  border-color:var(--jade);
+  transform:translateY(-1px);
+}
+.message-btn i{font-size:11px}
+.message-btn.dark{
+  background:var(--ink);
+  color:#fff;
+  border-color:var(--ink);
+}
+.message-btn.dark:hover{
+  background:var(--jade2);
+  border-color:var(--jade2);
+}
+.message-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+.chat-note{
+  margin-top:8px;
+  padding:9px 10px;
+  border-radius:12px;
+  background:#eef7f2;
+  color:var(--jade2);
+  font-size:9.5px;
+  line-height:1.4;
+}
+
+
+/* ============================================================
+   MONEY / PAYOUT DETAILS
+   ============================================================ */
+.money-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:14px;
+}
+.money-stat{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#fff;
+}
+.money-stat strong{
+  display:block;
+  font-family:Fraunces,serif;
+  font-size:18px;
+}
+.money-stat span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:9.5px;
+}
+.money-stat.due{
+  background:#fff7e8;
+}
+.money-stat.due strong{
+  color:#a66b00;
+}
+.payout-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(145deg,#fff,var(--wash));
+  padding:14px;
+  margin-bottom:14px;
+}
+.payout-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.payout-head h3{font-family:Fraunces,serif;margin:0;font-size:18px}
+.payout-head p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.45}
+.payout-badge{
+  padding:5px 8px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.payout-badge.ready{
+  background:#e7f5ec;
+  color:#247a45;
+  border-color:#ccebd6;
+}
+.payout-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.payout-field label{
+  display:block;
+  margin-bottom:5px;
+  color:var(--ink);
+  font-size:9.5px;
+  font-weight:800;
+}
+.payout-field input,.payout-field select{
+  width:100%;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  padding:0 11px;
+  color:var(--ink);
+  font-size:11px;
+  outline:none;
+}
+.payout-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.security-note{
+  padding:9px 10px;
+  border-radius:12px;
+  background:#fff8e8;
+  color:#725718;
+  font-size:9.5px;
+  line-height:1.4;
+  margin-top:10px;
+}
+.gateway-diagnostic{
+  padding:10px;
+  border-radius:13px;
+  background:#f4f6f4;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.5;
+}
+@media(max-width:560px){
+  .payout-grid,.money-summary-grid{grid-template-columns:1fr}
+}
+
+
+/* ---------- minimizable map panels ---------- */
+.panel-head{padding-right:64px}
+.panel-minimize-btn{position:absolute;right:14px;top:14px;width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:rgba(244,246,243,.96);color:var(--ink);display:grid;place-items:center;z-index:8;box-shadow:0 4px 14px rgba(23,34,30,.08);transition:.16s ease}
+.panel-minimize-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.panel.minimized{width:min(430px,100%);max-height:none;overflow:hidden;border-radius:20px}
+.panel.minimized .panel-body{display:none}
+.panel.minimized .panel-head{position:relative;border-bottom:0;padding-top:13px;padding-bottom:13px;padding-right:58px;cursor:pointer}
+.panel.minimized .panel-head p{display:none}
+.panel.minimized .panel-head h1,.panel.minimized .panel-head h2{font-size:17px;margin:2px 0 0}
+.panel.minimized .panel-minimize-btn i{transform:rotate(180deg)}
+@media(max-width:820px){.panel.minimized{width:min(360px,calc(100vw - 16px));margin-left:auto;margin-right:auto}.panel-minimize-btn{right:10px;top:10px;width:36px;height:36px}.panel-head{padding-right:56px}}
+
+/* ---------- customer catalogue cards ---------- */
+.booking-step{margin-top:12px}
+.booking-step-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:7px}
+.booking-step-head strong{font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.booking-step-head span{font-size:9.5px;color:var(--muted)}
+.choice-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:none}
+.choice-strip::-webkit-scrollbar{display:none}
+.vehicle-choice{flex:0 0 auto;min-width:104px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:11px 10px;text-align:left;color:var(--ink);transition:.16s ease}
+.vehicle-choice i{display:block;color:var(--jade);font-size:18px;margin-bottom:8px}
+.vehicle-choice strong{display:block;font-size:11px}.vehicle-choice small{display:block;margin-top:2px;color:var(--muted);font-size:8.5px}
+.vehicle-choice.active{border-color:var(--jade);background:var(--wash);box-shadow:0 7px 18px rgba(31,111,92,.12)}
+.service-choice-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.service-choice{border:1px solid var(--line);border-radius:16px;background:#fff;padding:11px;text-align:left;color:var(--ink);transition:.16s ease}
+.service-choice-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.service-choice strong{font-size:11px}.service-choice .service-price{font-weight:800;font-size:11px;white-space:nowrap;color:var(--jade2)}
+.service-choice p{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.35}.service-choice small{display:block;margin-top:6px;font-size:8.5px;color:var(--muted)}
+.service-choice.active{border-color:var(--jade);background:var(--wash);box-shadow:0 7px 18px rgba(31,111,92,.12)}
+.choice-placeholder{padding:13px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:10px;text-align:center;background:rgba(255,255,255,.55)}
+.booking-hidden-selects{display:none!important}
+.provider-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.provider-meta{font-size:9px;color:var(--muted);margin-top:5px}
+@media(max-width:520px){.service-choice-list{grid-template-columns:1fr}.vehicle-choice{min-width:96px}.provider{min-width:76vw}}
+
+
+/* ---------- service timer ---------- */
+.service-timer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.service-timer-main{display:flex;align-items:center;gap:9px;min-width:0}.service-timer-main i{color:var(--jade)}
+.service-timer-copy strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.service-timer-value{font-variant-numeric:tabular-nums;font-size:19px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.service-timer.done{background:#eef8f2}.service-timer.cancelled{background:#fff2ef}
+.btn.danger{background:var(--danger);color:#fff}.btn.success{background:var(--jade);color:#fff}
+
+
+/* ---------- customer history + brand marker colours ---------- */
+.customer-nav [data-panel="findWash"] i,
+#customerNav [data-panel="findWash"] i{color:var(--jade)!important}
+.customer-nav [data-panel="trackWash"] i,
+#customerNav [data-panel="trackWash"] i{color:var(--gold)!important}
+.customer-nav .mobile-nav-btn.active i,
+#customerNav .role-tab.active i{filter:none}
+
+.history-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:11px}
+.history-stat{border:1px solid var(--line);border-radius:15px;background:#fff;padding:11px;min-width:0}
+.history-stat strong{display:block;font-family:Fraunces,serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-stat span{display:block;margin-top:3px;color:var(--muted);font-size:9.5px}
+.history-filters{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.history-filters::-webkit-scrollbar{display:none}
+.history-filter{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);padding:7px 11px;font-size:10px;font-weight:800}
+.history-filter.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.wash-history-card{position:relative;overflow:hidden}
+.wash-history-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line)}
+.wash-history-card.status-completed::before{background:var(--jade)}
+.wash-history-card.status-cancelled::before,.wash-history-card.status-declined::before,.wash-history-card.status-expired::before{background:var(--danger)}
+.wash-history-card.status-washing::before,.wash-history-card.status-en_route::before,.wash-history-card.status-arrived::before{background:var(--gold)}
+.history-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.history-meta{border-radius:12px;background:var(--paper);padding:9px 10px;min-width:0}
+.history-meta span{display:block;color:var(--muted);font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.history-meta strong{display:block;margin-top:3px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.payment-state-paid{color:var(--jade2)!important}.payment-state-pending{color:#9a6a08!important}.payment-state-failed{color:var(--danger)!important}
+.history-date{margin-top:8px;color:var(--muted);font-size:9.5px}
+@media(max-width:520px){.history-summary{grid-template-columns:1fr 1fr}.history-stat:last-child{grid-column:1/-1}.history-meta-grid{grid-template-columns:1fr 1fr}}
+
+
+
+/* ---------- live Uber-style map markers ---------- */
+.og-map-marker{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;user-select:none;filter:drop-shadow(0 8px 16px rgba(22,36,31,.18));transition:filter .2s ease;z-index:2}
+.og-map-marker:hover{filter:drop-shadow(0 12px 22px rgba(22,36,31,.25));z-index:9}
+.og-marker-card{display:flex;align-items:center;gap:7px;padding:6px 9px 6px 6px;border-radius:16px;background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.95);box-shadow:0 4px 18px rgba(22,36,31,.14);white-space:nowrap;position:relative}
+.og-marker-card:after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+.og-marker-icon{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--jade);color:#fff;position:relative;overflow:visible}
+.og-marker-copy{display:flex;flex-direction:column;line-height:1.05}.og-marker-copy strong{font-size:10.5px;max-width:145px;overflow:hidden;text-overflow:ellipsis}.og-marker-copy span{font-size:8.5px;color:var(--muted);margin-top:3px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.og-map-marker.user .og-marker-icon{background:var(--coral)}.og-map-marker.user .og-marker-card{border-color:rgba(255,107,74,.32)}
+.og-map-marker.provider .og-marker-icon{background:var(--jade)}
+.og-map-marker.en_route .og-marker-icon{background:var(--gold);color:#30240c}
+.og-map-marker.arrived .og-marker-icon{background:var(--sky);color:#fff}
+.og-map-marker.washing .og-marker-icon{background:linear-gradient(135deg,var(--sky),var(--jade));animation:washPulse 1.15s ease-in-out infinite}
+.og-map-marker.business .og-marker-icon{background:var(--plum)}
+.og-map-marker.police .og-marker-icon{background:#3452a4}.og-map-marker.police .og-marker-card{border-color:#dce4ff}
+.og-map-marker.stale{opacity:.68;filter:grayscale(.2) drop-shadow(0 6px 14px rgba(22,36,31,.12))}
+.og-live-pulse{position:absolute;width:13px;height:13px;border-radius:50%;background:currentColor;opacity:.32;animation:ogPulse 1.55s ease-out infinite}
+.og-wash-bubble{position:absolute;width:7px;height:7px;border:1.5px solid #fff;border-radius:50%;opacity:0;animation:bubbleUp 1.8s ease-in infinite}.og-wash-bubble.b1{left:-4px;bottom:2px}.og-wash-bubble.b2{right:-3px;bottom:5px;animation-delay:.5s}.og-wash-bubble.b3{left:15px;bottom:2px;animation-delay:1s}
+@keyframes ogPulse{0%{transform:scale(.7);opacity:.4}100%{transform:scale(3.2);opacity:0}}
+@keyframes washPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes bubbleUp{0%{transform:translateY(4px) scale(.7);opacity:0}25%{opacity:.9}100%{transform:translateY(-28px) scale(1.35);opacity:0}}
+.map-live-banner{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:45;display:none;align-items:center;gap:8px;max-width:min(92vw,520px);padding:8px 12px;border-radius:999px;background:rgba(22,36,31,.9);color:#fff;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(22,36,31,.18);font-size:10.5px;font-weight:800}.map-live-banner.show{display:flex}.map-live-dot{width:8px;height:8px;border-radius:50%;background:#63e6a6;box-shadow:0 0 0 0 rgba(99,230,166,.6);animation:liveDot 1.5s infinite}@keyframes liveDot{70%{box-shadow:0 0 0 8px rgba(99,230,166,0)}100%{box-shadow:0 0 0 0 rgba(99,230,166,0)}}
+.map-float-stack{position:fixed;right:14px;bottom:92px;z-index:44;display:flex;flex-direction:column;gap:8px}.map-float-btn{width:44px;height:44px;border:1px solid rgba(255,255,255,.9);border-radius:15px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(22,36,31,.16);display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:16px;backdrop-filter:blur(14px)}.map-float-btn.safety{color:var(--danger)}
+.safety-modal{position:fixed;inset:0;z-index:5000;background:rgba(22,36,31,.48);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:14px}.safety-modal.show{display:flex}.safety-card{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.24)}.safety-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.safety-head h3{margin:0}.safety-close{border:0;background:var(--paper);width:34px;height:34px;border-radius:50%}.safety-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.safety-actions a,.safety-actions button{min-height:44px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:800;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:7px}.safety-actions .danger{background:var(--danger);border-color:var(--danger);color:#fff}.police-list{display:flex;flex-direction:column;gap:7px;margin:10px 0}.police-row{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}.police-row strong{font-size:12px}.police-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.report-form{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}.report-form select,.report-form textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:7px;font:inherit}.report-form textarea{min-height:80px}.report-confirm{font-size:10.5px;color:var(--muted);margin-top:8px}
+@media(max-width:820px){.map-live-banner{top:69px}.map-float-stack{right:10px;bottom:86px}.safety-card{border-radius:20px;padding:14px}.safety-actions{grid-template-columns:1fr 1fr}}
+
+</style>
+
+
+
+</head>
+
+
+
+<body data-auth="{% if user.is_authenticated %}1{% else %}0{% endif %}" data-business-role="{% if is_carwash_business_user %}1{% else %}0{% endif %}" data-business-id="{% if carwash_business %}{{ carwash_business.id }}{% endif %}" data-worker-id="{% if carwash_worker %}{{ carwash_worker.id }}{% endif %}" data-can-manage="{% if can_manage_carwash_business %}1{% else %}0{% endif %}" data-public-name="{{ carwash_public_name|default:''|escape }}">
+
+
+
+<div id="map"></div>
+
+
+
+
+
+
+
+<div class="topbar">
+
+
+
+  <a class="brand" href="/"><span class="brand-mark"><i class="fas fa-car-side"></i></span><span class="brand-word">OppoGlobe Wash</span></a>
+
+
+
+  <div class="top-actions">
+
+
+
+    <button class="round" type="button" onclick="focusCurrentRoleLocation()" aria-label="Use my location"><i class="fas fa-location-crosshairs"></i></button>
+
+    {% if user.is_authenticated %}
+    <a class="round message-icon-link" id="carwashMessageLink" href="/messaging/" style="display:grid;place-items:center;text-decoration:none" aria-label="Messages" title="Messages">
+      <i class="fas fa-comment-dots"></i>
+      <span class="message-unread-badge" id="carwashMessageBadge" aria-label="0 unread messages">0</span>
+    </a>
+    {% endif %}
+
+    <a class="round" href="/" style="display:grid;place-items:center;text-decoration:none" aria-label="Back to OppoGlobe"><i class="fas fa-house"></i></a>
+
+
+
+  </div>
+
+
+
+</div>
+
+
+
+
+
+
+
+{% if is_carwash_business_user %}
+
+<nav class="role-nav" id="businessNav" aria-label="Business car wash navigation">
+
+  <button class="role-tab active" data-panel="bizDashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></button>
+
+  <button class="role-tab" data-panel="bizRequests"><i class="fas fa-bell"></i><span>Requests</span></button>
+
+{% if can_manage_carwash_business %}
+
+  <button class="role-tab" data-panel="bizCatalog"><i class="fas fa-soap"></i><span>Catalog</span></button>
+
+  <button class="role-tab" data-panel="bizPricing"><i class="fas fa-tags"></i><span>Pricing</span></button>
+
+  <button class="role-tab" data-panel="bizTeam"><i class="fas fa-users"></i><span>Team</span></button>
+
+  <button class="role-tab" data-panel="bizLocation"><i class="fas fa-location-dot"></i><span>Location</span></button>
+
+  <button class="role-tab" data-panel="bizPayments"><i class="fas fa-wallet"></i><span>Payments</span></button>
+
+{% else %}
+
+  <button class="role-tab" data-panel="bizTeam"><i class="fas fa-location-arrow"></i><span>My status</span></button>
+
+{% endif %}
+
+</nav>
+
+
+
+<!-- Mobile: primary business functions stay one tap away -->
+
+<nav class="mobile-bottom-nav business-nav" aria-label="Business mobile navigation">
+
+  <button class="mobile-nav-btn role-tab active" data-panel="bizDashboard"><i class="fas fa-house"></i><span>Home</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizRequests"><i class="fas fa-bell"></i><span>Requests</span></button>
+
+{% if can_manage_carwash_business %}
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizCatalog"><i class="fas fa-soap"></i><span>Catalog</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizPayments"><i class="fas fa-wallet"></i><span>Money</span></button>
+
+  <button class="mobile-nav-btn" id="mobileMoreBtn" type="button" onclick="toggleMobileMore(event)"><i class="fas fa-ellipsis"></i><span>More</span></button>
+
+{% else %}
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizTeam"><i class="fas fa-location-arrow"></i><span>Status</span></button>
+
+  <button class="mobile-nav-btn" type="button" onclick="focusCurrentRoleLocation()"><i class="fas fa-location-crosshairs"></i><span>Location</span></button>
+
+  <a class="mobile-nav-btn" href="/"><i class="fas fa-globe"></i><span>OppoGlobe</span></a>
+
+{% endif %}
+
+</nav>
+
+
+
+{% if can_manage_carwash_business %}
+
+<div class="mobile-more-tray" id="mobileMoreTray" aria-label="More business tools">
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizPricing"><i class="fas fa-tags"></i><span>Pricing</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizTeam"><i class="fas fa-users"></i><span>Team</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="bizLocation"><i class="fas fa-location-dot"></i><span>Location</span></button>
+
+</div>
+
+{% endif %}
+
+
+
+{% else %}
+
+<nav class="role-nav" id="customerNav" aria-label="Customer car wash navigation">
+
+  <button class="role-tab active" data-panel="findWash"><i class="fas fa-magnifying-glass"></i><span>Find wash</span></button>
+
+  <button class="role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
+
+  <button class="role-tab" data-panel="trackWash"><i class="fas fa-route"></i><span>Track</span></button>
+
+  <button class="role-tab" data-panel="myPayments"><i class="fas fa-credit-card"></i><span>Payments</span></button>
+
+</nav>
+
+
+
+<nav class="mobile-bottom-nav customer-nav" aria-label="Customer mobile navigation">
+
+  <button class="mobile-nav-btn role-tab active" data-panel="findWash"><i class="fas fa-magnifying-glass"></i><span>Find</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="myWashes"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="trackWash"><i class="fas fa-route"></i><span>Track</span></button>
+
+  <button class="mobile-nav-btn role-tab" data-panel="myPayments"><i class="fas fa-credit-card"></i><span>Pay</span></button>
+
+</nav>
+
+{% endif %}
+
+
+
+<div class="workspace">
+
+
+
+{% if is_carwash_business_user %}
+
+
+
+  <section class="panel active" id="bizDashboard">
+
+
+
+    <div class="panel-head"><div class="eyebrow">Provider workspace</div><h1 id="businessTitle">{% if carwash_business %}{{ carwash_business.name }}{% else %}Set up your car wash{% endif %}</h1><p>Run your mobile or fixed-site car wash from the map.</p></div>
+
+
+
+    <div class="panel-body">
+
+
+
+      {% if not carwash_business %}
+
+
+
+      <form class="form-card setup" id="businessSetupForm">
+
+
+
+        <div class="section-title"><h3>Create your business profile</h3></div>
+
+
+
+        <div class="fields">
+
+
+
+          <div class="field"><label>Business name</label><input id="setupName" required placeholder="e.g. Sparkle Mobile Wash"></div>
+
+
+
+          <div class="field"><label>Phone</label><input id="setupPhone" placeholder="Business contact number"></div>
+
+
+
+          <div class="field"><label>Email</label><input id="setupEmail" type="email" placeholder="Business email"></div>
+
+
+
+          <div class="field"><label>How you operate</label><select id="setupMode"><option value="both">Mobile and on-site</option><option value="mobile">Mobile only</option><option value="onsite">On-site only</option></select></div>
+
+
+
+          <div class="field full"><label>Description</label><textarea id="setupDescription" placeholder="Tell customers what makes your wash special"></textarea></div>
+
+
+
+        </div>
+
+
+
+        <button class="cta" type="submit">Create car wash profile</button>
+
+
+
+        <div class="status" id="setupStatus">You can add your location, vehicles, services and pricing immediately after setup.</div>
+
+
+
+      </form>
+
+
+
+      {% else %}
+
+
+
+      <div class="grid">
+
+        <div class="stat">
+          <div class="n" id="statRequests">—</div>
+          <div class="l">Active requests</div>
+        </div>
+
+        <div class="stat">
+          <div class="n" id="statServices">—</div>
+          <div class="l">Services</div>
+        </div>
+
+        <div class="stat">
+          <div class="n" id="statVehicles">—</div>
+          <div class="l">Vehicle types</div>
+        </div>
+
+      </div>
+
+      <div class="dashboard-row">
+
+        <div class="dashboard-card">
+          <div class="availability-wrap">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0">
+              <span class="availability-dot" id="availabilityDot"></span>
+              <div>
+                <h4>Availability</h4>
+                <p id="availabilityText">Loading business status…</p>
+              </div>
+            </div>
+
+            <button class="btn small" id="availabilityBtn" type="button" onclick="toggleAvailability()">
+              Toggle
+            </button>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h4><i class="fas fa-building"></i> Business / office location</h4>
+          <p id="dashboardLocationText">
+            {% if carwash_business.formatted_address %}
+              {{ carwash_business.formatted_address }}
+            {% elif carwash_business.address %}
+              {{ carwash_business.address }}
+            {% else %}
+              Add your permanent business location so drive-in customers can find you.
+            {% endif %}
+          </p>
+          <button class="btn ghost small" type="button" style="margin-top:9px" onclick="openPanel('bizLocation')">
+            <i class="fas fa-location-dot"></i> Manage office address
+          </button>
+          <div style="height:1px;background:var(--line);margin:12px 0"></div>
+          <h4><i class="fas fa-location-arrow"></i> Current live location</h4>
+          <p id="liveWorkerAddress">Go live to detect this phone's current address.</p>
+          <p id="liveWorkerAccuracy" style="margin-top:5px;font-size:9px;color:var(--muted)"></p>
+        </div>
+
+      </div>
+
+      <div class="section-title">
+        <h3>Manage your car wash</h3>
+      </div>
+
+      <div class="business-tools">
+
+        <button class="business-tool" type="button" onclick="openPanel('bizRequests')">
+          <i class="fas fa-bell"></i>
+          <div>
+            <strong>Requests</strong>
+            <span>Accept jobs and update wash progress.</span>
+          </div>
+        </button>
+
+        <button class="business-tool" type="button" onclick="openPanel('bizCatalog')">
+          <i class="fas fa-soap"></i>
+          <div>
+            <strong>Vehicles & services</strong>
+            <span>Choose what customers can book.</span>
+          </div>
+        </button>
+
+        <button class="business-tool" type="button" onclick="openPanel('bizPricing')">
+          <i class="fas fa-tags"></i>
+          <div>
+            <strong>Pricing</strong>
+            <span>Set a price for every vehicle and service.</span>
+          </div>
+        </button>
+
+        <button class="business-tool" type="button" onclick="openPanel('bizTeam')">
+          <i class="fas fa-users"></i>
+          <div>
+            <strong>Team</strong>
+            <span>See workers, online status and availability.</span>
+          </div>
+        </button>
+
+        <button class="business-tool" type="button" onclick="openPanel('bizLocation')">
+          <i class="fas fa-location-dot"></i>
+          <div>
+            <strong>Location</strong>
+            <span>Search or detect your business address.</span>
+          </div>
+        </button>
+
+        <button class="business-tool" type="button" onclick="openPanel('bizPayments')">
+          <i class="fas fa-wallet"></i>
+          <div>
+            <strong>Payments</strong>
+            <span>Yoco, cash, commission and payment records.</span>
+          </div>
+        </button>
+
+      </div>
+
+
+
+      {% endif %}
+
+
+
+    </div>
+
+
+
+  </section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizRequests"><div class="panel-head"><div class="eyebrow">Live jobs</div><h2>Wash requests</h2><p>Accept jobs and move them through arrival, wash and completion.</p></div><div class="panel-body"><div id="businessRequests" class="list"><div class="empty">Loading requests…</div></div></div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizCatalog"><div class="panel-head"><div class="eyebrow">Dynamic choices</div><h2>Vehicles & services</h2><p>You decide what customers can choose.</p></div><div class="panel-body">
+
+
+
+    <form class="form-card" id="vehicleForm"><div class="section-title"><h3>Add vehicle type</h3></div><div class="two"><div class="field"><label>Name</label><input id="vehicleName" placeholder="SUV, Sedan, Taxi…" required></div><div class="field"><label>Icon</label><input id="vehicleIcon" value="fas fa-car"></div></div><button class="btn small" type="submit" style="margin-top:9px">Add vehicle</button></form>
+
+
+
+    <div id="vehicleList" class="list"></div>
+
+
+
+    <form class="form-card" id="serviceForm"><div class="section-title"><h3>Add wash service</h3></div><div class="fields"><div class="field"><label>Name</label><input id="serviceName" placeholder="Full wash" required></div><div class="field"><label>Estimated minutes</label><input id="serviceMinutes" type="number" min="1" value="30"></div><div class="field full"><label>Description</label><textarea id="serviceDescription"></textarea></div><div class="field"><label><input id="serviceMobile" type="checkbox" checked> Mobile available</label></div><div class="field"><label><input id="serviceOnsite" type="checkbox" checked> On-site available</label></div></div><button class="btn small" type="submit">Add service</button></form>
+
+
+
+    <div id="serviceList" class="list"></div>
+
+
+
+  </div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizPricing"><div class="panel-head"><div class="eyebrow">Your prices</div><h2>Vehicle × service pricing</h2><p>Customers only see combinations you price.</p></div><div class="panel-body"><form class="form-card" id="priceForm"><div class="fields"><div class="field"><label>Vehicle</label><select id="priceVehicle"></select></div><div class="field"><label>Service</label><select id="priceService"></select></div><div class="field"><label>Price (ZAR)</label><input id="priceAmount" type="number" min="0" step="0.01" required></div></div><button class="btn small" type="submit" style="margin-top:9px">Save price</button></form><div id="priceList" class="list"></div></div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizTeam"><div class="panel-head"><div class="eyebrow">People on the road</div><h2>Wash team</h2><p>Online workers can receive mobile wash requests and share live location.</p></div><div class="panel-body"><div id="workerList" class="list"><div class="empty">Loading workers…</div></div>{% if carwash_worker %}<button class="cta" id="workerOnlineBtn" onclick="toggleWorkerOnline()">Go online</button><div class="status" id="workerGpsStatus">When online, your phone shares location only for the service experience.</div>{% endif %}</div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizLocation"><div class="panel-head"><div class="eyebrow">Google Maps</div><h2>Business location</h2><p>No coordinates. Search normally or use your phone location.</p></div><div class="panel-body"><div class="form-card"><div class="field"><label>Search your business address</label><div class="address-search"><i class="fas fa-magnifying-glass"></i><input id="businessAddressSearch" placeholder="Start typing an address or place"></div></div><div class="location-actions"><button class="btn ghost" type="button" onclick="detectBusinessLocation()"><i class="fas fa-location-crosshairs"></i> Use my location</button></div><div class="location-map-note" id="businessLocationText">{% if carwash_business.formatted_address %}{{ carwash_business.formatted_address }}{% elif carwash_business.address %}{{ carwash_business.address }}{% else %}No business location saved yet.{% endif %}</div></div></div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="bizPayments">
+  <div class="panel-head">
+    <div class="eyebrow">Money</div>
+    <h2>Payments & commission</h2>
+    <p>Yoco, cash, OppoGlobe commission and provider payouts in one place.</p>
+  </div>
+
+  <div class="panel-body">
+
+    <div class="money-summary-grid">
+      <div class="money-stat">
+        <strong id="walletAvailable">R0.00</strong>
+        <span>Available digital balance</span>
+      </div>
+      <div class="money-stat due">
+        <strong id="walletCommissionDue">R0.00</strong>
+        <span>Cash commission owed</span>
+      </div>
+      <div class="money-stat">
+        <strong id="moneyPaidVolume">R0.00</strong>
+        <span>Total paid wash volume</span>
+      </div>
+      <div class="money-stat">
+        <strong id="moneyCommissionTotal">R0.00</strong>
+        <span>Total OppoGlobe commission</span>
+      </div>
+    </div>
+
+    <div class="payout-card">
+      <div class="payout-head">
+        <div>
+          <h3>Where should OppoGlobe pay you?</h3>
+          <p>Save the business bank account our admin team should use for payouts.</p>
+        </div>
+        <span class="payout-badge" id="payoutStatusBadge">Not set</span>
+      </div>
+
+      <form id="payoutForm">
+        <div class="payout-grid">
+          <div class="payout-field">
+            <label for="payoutBankName">Bank name</label>
+            <input id="payoutBankName" type="text" placeholder="e.g. FNB">
+          </div>
+
+          <div class="payout-field">
+            <label for="payoutAccountHolder">Account holder</label>
+            <input id="payoutAccountHolder" type="text" placeholder="Business / account holder name">
+          </div>
+
+          <div class="payout-field">
+            <label for="payoutAccountNumber">Account number</label>
+            <input id="payoutAccountNumber" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter account number">
+          </div>
+
+          <div class="payout-field">
+            <label for="payoutBranchCode">Branch code</label>
+            <input id="payoutBranchCode" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 250655">
+          </div>
+
+          <div class="payout-field">
+            <label for="payoutAccountType">Account type</label>
+            <select id="payoutAccountType">
+              <option value="cheque">Cheque / Current</option>
+              <option value="savings">Savings</option>
+              <option value="business">Business</option>
+              <option value="transmission">Transmission</option>
+            </select>
+          </div>
+
+          <div class="payout-field">
+            <label for="payoutReference">Payout reference</label>
+            <input id="payoutReference" type="text" placeholder="Your business name">
+          </div>
+        </div>
+
+        <div class="payout-actions">
+          <button class="btn warm" type="submit" id="savePayoutBtn">
+            <i class="fas fa-building-columns"></i> Save payout details
+          </button>
+          <span id="payoutMasked" style="font-size:10px;color:var(--muted)"></span>
+        </div>
+
+        <div class="security-note">
+          <i class="fas fa-shield-halved"></i>
+          Use your business bank account for payouts. Do not enter a debit or credit card number here.
+        </div>
+      </form>
+    </div>
+
+    <div class="section-title"><h3>Available gateways</h3></div>
+    <div id="gatewayList" class="list">
+      <div class="empty">Loading payment gateways…</div>
+    </div>
+
+    <div class="section-title"><h3>Recent payments</h3></div>
+    <div id="businessPayments" class="list">
+      <div class="empty">No payments loaded yet.</div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+{% else %}
+
+
+
+  <section class="panel active" id="findWash"><div class="panel-head"><div class="eyebrow">On-demand car care</div><h1>Wash your car, wherever you are.</h1><p>Choose mobile service or drive to a nearby wash.</p></div><div class="panel-body">
+
+
+
+    <div class="modes"><button class="mode active" id="mobileMode" type="button" onclick="setMode('mobile')"><strong><i class="fas fa-location-arrow"></i> Come to me</strong><span>Track a mobile washer approaching</span></button><button class="mode" id="onsiteMode" type="button" onclick="setMode('onsite')"><strong><i class="fas fa-shop"></i> I'll go there</strong><span>Find a nearby wash location</span></button></div>
+
+
+
+    <div class="location"><i class="fas fa-location-dot"></i><div><strong>Your wash location</strong><span id="addressText">Finding your location…</span></div></div>
+
+
+
+    <div id="providerList" class="providers"><div class="empty">Finding nearby car wash providers…</div></div>
+
+
+
+    <div class="booking-step">
+      <div class="booking-step-head"><strong>Vehicle</strong><span>Choose a vehicle added by this business</span></div>
+      <div id="vehicleChoices" class="choice-strip"><div class="choice-placeholder">Select a provider first</div></div>
+    </div>
+
+    <div class="booking-step">
+      <div class="booking-step-head"><strong>Service</strong><span>Only priced services for that vehicle are shown</span></div>
+      <div id="serviceChoices" class="service-choice-list"><div class="choice-placeholder">Select your vehicle first</div></div>
+    </div>
+
+    <div class="booking-hidden-selects" aria-hidden="true">
+      <select id="vehicleSelect" disabled><option value="">Select a provider first</option></select>
+      <select id="serviceSelect" disabled><option value="">Select your vehicle first</option></select>
+    </div>
+
+
+
+    <div class="price-box" id="priceBox"><div class="price-line"><span>Service</span><strong id="servicePrice">—</strong></div><div class="price-line"><span>Travel</span><strong id="travelPrice">—</strong></div><div class="price-line total"><span>Total</span><strong id="totalPrice">—</strong></div></div>
+
+
+
+    <button class="cta" id="requestBtn" disabled type="button" onclick="requestQuoteAndWash()">Request wash</button><div class="status" id="statusText">Choose a nearby provider to continue.</div>
+
+
+
+  </div></section>
+
+
+
+
+
+
+
+  <section class="panel" id="myWashes">
+    <div class="panel-head">
+      <div class="eyebrow">Your car-wash account</div>
+      <h2>Wash history</h2>
+      <p>See active, completed and cancelled washes together with what you paid.</p>
+    </div>
+    <div class="panel-body">
+      <div class="history-summary" id="washHistorySummary">
+        <div class="history-stat"><strong id="historyTotalCount">—</strong><span>All washes</span></div>
+        <div class="history-stat"><strong id="historyCompletedCount">—</strong><span>Completed</span></div>
+        <div class="history-stat"><strong id="historyPaidTotal">—</strong><span>Total paid</span></div>
+      </div>
+      <div class="history-filters" id="washHistoryFilters">
+        <button class="history-filter active" type="button" data-history-filter="all">All</button>
+        <button class="history-filter" type="button" data-history-filter="active">Active</button>
+        <button class="history-filter" type="button" data-history-filter="completed">Completed</button>
+        <button class="history-filter" type="button" data-history-filter="cancelled">Cancelled</button>
+      </div>
+      <div id="customerRequests" class="list"><div class="empty">Loading your wash history…</div></div>
+    </div>
+  </section>
+
+
+
+  <section class="panel" id="trackWash"><div class="panel-head"><div class="eyebrow">Live tracking</div><h2>Your active wash</h2><p>When a mobile washer is en route, watch them approach on the map.</p></div><div class="panel-body"><div id="trackContent" class="empty">No active wash selected yet.</div></div></section>
+
+
+
+  <section class="panel" id="myPayments">
+  <div class="panel-head">
+    <div class="eyebrow">Checkout</div>
+    <h2>My payments</h2>
+    <p>Pay with Yoco or cash, then keep every wash payment in one place.</p>
+  </div>
+
+  <div class="panel-body">
+
+    <div class="payment-checkout hidden" id="paymentCheckout">
+      <div class="payment-checkout-head">
+        <div>
+          <h3>Choose payment method</h3>
+          <p id="paymentCheckoutText">Select how you want to pay for this wash.</p>
+        </div>
+        <span class="payment-total" id="paymentCheckoutTotal">—</span>
+      </div>
+
+      <div class="payment-options" id="paymentGatewayOptions">
+        <div class="empty">Loading payment options…</div>
+      </div>
+
+      <div class="pay-note">
+        <i class="fas fa-lock"></i>
+        Card details are handled securely by Yoco. OppoGlobe does not store your card number.
+      </div>
+
+      <div id="paymentCheckoutError"></div>
+    </div>
+
+    <div class="section-title">
+      <h3>Payment history</h3>
+      <button class="btn ghost small" type="button" onclick="loadCustomerPayments()">
+        <i class="fas fa-rotate"></i> Refresh
+      </button>
+    </div>
+
+    <div id="customerPayments" class="list">
+      <div class="empty">Loading payments…</div>
+    </div>
+
+  </div>
+</section>
+
+
+
+{% endif %}
+
+
+
+</div>
+
+
+
+
+
+<audio id="globalCarwashAlertAudio" preload="auto" src="{% static 'hiring/audio/notification.mp3' %}"></audio>
+<div class="map-live-banner" id="mapLiveBanner"><span class="map-live-dot"></span><span id="mapLiveBannerText">Live map connected</span></div>
+<div class="map-float-stack">
+  <button class="map-float-btn" type="button" title="Recenter live map" onclick="recenterLiveMap()"><i class="fas fa-location-crosshairs"></i></button>
+  {% if user.is_authenticated %}<button class="map-float-btn safety" type="button" title="Safety" onclick="openSafetyCenter()"><i class="fas fa-shield-halved"></i></button>{% endif %}
+</div>
+
+<div class="safety-modal" id="carwashSafetyModal" role="dialog" aria-modal="true" aria-label="OppoGlobe safety center">
+  <div class="safety-card">
+    <div class="safety-head"><div><div class="eyebrow">OppoGlobe safety</div><h3>Safety centre</h3><p class="status">For immediate danger, contact emergency services. OppoGlobe reports are internal incident records and are not SAPS case numbers.</p></div><button class="safety-close" onclick="closeSafetyCenter()"><i class="fas fa-xmark"></i></button></div>
+    <div class="safety-actions">
+      <a class="danger" href="tel:10111"><i class="fas fa-phone"></i> SAPS 10111</a>
+      <a class="danger" href="tel:112"><i class="fas fa-mobile-screen"></i> Emergency 112</a>
+      <button type="button" onclick="copySafetyLocation()"><i class="fas fa-location-dot"></i> Copy my GPS</button>
+      <button type="button" onclick="findNearestPolice(true)"><i class="fas fa-building-shield"></i> Nearest police</button>
+    </div>
+    <div id="policeList" class="police-list"><div class="empty">Tap “Nearest police” to find nearby police stations.</div></div>
+    <div class="report-form">
+      <strong>Report this car-wash interaction to OppoGlobe</strong>
+      <select id="safetyCategory"><option value="safety">Safety concern</option><option value="harassment">Harassment / threat</option><option value="fraud">Suspected fraud / scam</option><option value="property">Vehicle / property incident</option><option value="no_show">No-show / location concern</option><option value="other">Other</option></select>
+      <textarea id="safetyDescription" placeholder="Tell OppoGlobe what happened. Do not include passwords or banking PINs."></textarea>
+      <button class="btn danger" type="button" style="width:100%;margin-top:9px" onclick="submitSafetyReport()"><i class="fas fa-shield-halved"></i> Submit safety report</button>
+      <div class="report-confirm" id="safetyReportStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+
+const IS_AUTH = document.body.dataset.auth === '1';
+
+
+
+const IS_BUSINESS = document.body.dataset.businessRole === '1';
+
+
+
+const CAN_MANAGE = document.body.dataset.canManage === '1';
+
+
+
+let BUSINESS_ID = document.body.dataset.businessId || '';
+
+
+
+let WORKER_ID = document.body.dataset.workerId || '';
+
+
+
+let map, userMarker, businessMarker, trackingMarker;
+let OppoMapMarker=null, customerWatchId=null, trackingPollTimer=null, workspaceRefreshTimer=null, paymentRefreshTimer=null;
+let trackingDirectionsService=null, trackingDirectionsRenderer=null, trackingFallbackLine=null, lastRoutePoint=null, lastRouteAt=0, mapUserMoved=false;
+let policeMarkers=[], nearestPolice=null, currentTrackingData=null;
+
+
+
+let userPos=null, mode='mobile', providers=[], selectedProvider=null, catalog=null, currentQuote=null, activeRequestId=null;
+
+
+
+let providerMarkers=[]; let businessData=null; let vehicles=[], services=[], prices=[], workers=[]; let workerWatchId=null;
+let availableGateways=[];
+let paymentRequestId=null;
+let paymentRequestTotal=null;
+let selectedPriceId=null;
+let lastLiveAddressLookup=0;
+let lastLiveAddressLat=null;
+let lastLiveAddressLng=null;
+
+function gpsCoordinate(value){
+  if(value===null||value===undefined||value==='')return null;
+  const n=Number(value);
+  if(!Number.isFinite(n))return null;
+  // Preserve high browser GPS precision. Backend/model accepts 16 decimal places.
+  return n.toFixed(16);
+}
+
+function distanceBetweenCoords(lat1,lng1,lat2,lng2){
+  if([lat1,lng1,lat2,lng2].some(v=>v===null||v===undefined||!Number.isFinite(Number(v))))return Infinity;
+  const R=6371000;
+  const toRad=d=>Number(d)*Math.PI/180;
+  const p1=toRad(lat1),p2=toRad(lat2);
+  const dp=toRad(Number(lat2)-Number(lat1));
+  const dl=toRad(Number(lng2)-Number(lng1));
+  const a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+async function updateLiveWorkerAddress(lat,lng,accuracy=null,force=false){
+  const now=Date.now();
+  const moved=distanceBetweenCoords(lastLiveAddressLat,lastLiveAddressLng,lat,lng);
+  if(!force && now-lastLiveAddressLookup<15000 && moved<25)return;
+  lastLiveAddressLookup=now;
+  try{
+    const data=await api(`/carwash/api/reverse-geocode/?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`);
+    const address=data.formatted_address||'Current live location';
+    const el=document.getElementById('liveWorkerAddress');
+    if(el)el.textContent=address;
+    const st=document.getElementById('workerGpsStatus');
+    if(st)st.innerHTML=`<strong style="color:var(--jade2)"><i class="fas fa-location-arrow"></i> Live now</strong><br>${escapeHtml(address)}`;
+    const acc=document.getElementById('liveWorkerAccuracy');
+    if(acc)acc.textContent=accuracy!=null?`GPS accuracy: about ${Math.round(Number(accuracy))} m`:'Live GPS active';
+    lastLiveAddressLat=Number(lat);
+    lastLiveAddressLng=Number(lng);
+  }catch(e){
+    const el=document.getElementById('liveWorkerAddress');
+    if(el)el.textContent=`${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
+  }
+}
+
+
+
+function getCookie(name){const row=document.cookie.split('; ').find(v=>v.startsWith(name+'='));return row?decodeURIComponent(row.split('=')[1]):''}
+
+
+
+function api(url,options={}){
+  const method=(options.method||'GET').toUpperCase();
+  options.headers={...(options.headers||{}),'Accept':'application/json'};
+  if(options.body&&!options.headers['Content-Type'])options.headers['Content-Type']='application/json';
+  if(method!=='GET')options.headers['X-CSRFToken']=getCookie('csrftoken');
+  if(method==='GET'){
+    const sep=url.includes('?')?'&':'?';
+    url=`${url}${sep}_live=${Date.now()}`;
+    options.cache='no-store';
+    options.headers['Cache-Control']='no-cache';
+  }
+  return fetch(url,options).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||d.detail||JSON.stringify(d)||'Request failed');return d});
+}
+
+
+
+function money(v,c='ZAR'){return new Intl.NumberFormat('en-ZA',{style:'currency',currency:c||'ZAR'}).format(Number(v||0))}
+
+
+
+function escapeHtml(v){const d=document.createElement('div');d.textContent=v??'';return d.innerHTML}
+
+
+
+function statusLabel(s){return({requested:'Finding a washer…',searching:'Finding a washer…',accepted:'Washer accepted your request',en_route:'Your washer is approaching',arrived:'Your washer has arrived',washing:'Your wash is in progress',completed:'Wash completed',cancelled:'Request cancelled',declined:'Request declined',expired:'Request expired'})[s]||s}
+
+let serviceTimerTicker=null;
+function formatServiceDuration(seconds){
+  seconds=Math.max(0,Math.floor(Number(seconds)||0));
+  const h=Math.floor(seconds/3600);
+  const m=Math.floor((seconds%3600)/60);
+  const sec=seconds%60;
+  return h>0
+    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function elapsedFromRequest(r){
+  if(!r?.started_at)return null;
+  const start=Date.parse(r.started_at);
+  if(!Number.isFinite(start))return null;
+  const endValue=r.completed_at||r.cancelled_at||null;
+  const end=endValue?Date.parse(endValue):Date.now();
+  return Math.max(0,Math.floor((end-start)/1000));
+}
+function serviceTimerHtml(r){
+  const elapsed=elapsedFromRequest(r);
+  if(elapsed===null)return '';
+  const live=r.status==='washing';
+  const cls=r.status==='completed'?'done':(r.status==='cancelled'?'cancelled':'');
+  const label=live?'Service running':(r.status==='completed'?'Service duration':'Time before cancellation');
+  const end=r.completed_at||r.cancelled_at||'';
+  return `<div class="service-timer ${cls}"><div class="service-timer-main"><i class="fas fa-stopwatch"></i><div class="service-timer-copy"><strong>${label}</strong><div class="service-timer-value" data-service-start="${escapeHtml(r.started_at)}" data-service-end="${escapeHtml(end)}">${formatServiceDuration(elapsed)}</div></div></div>${live?'<span class="status-pill">LIVE</span>':''}</div>`;
+}
+function refreshServiceTimers(){
+  document.querySelectorAll('[data-service-start]').forEach(el=>{
+    const start=Date.parse(el.dataset.serviceStart||'');
+    if(!Number.isFinite(start))return;
+    const endRaw=el.dataset.serviceEnd||'';
+    const end=endRaw?Date.parse(endRaw):Date.now();
+    el.textContent=formatServiceDuration(Math.max(0,(end-start)/1000));
+  });
+}
+function ensureServiceTimerTicker(){
+  if(serviceTimerTicker!==null)return;
+  refreshServiceTimers();
+  serviceTimerTicker=setInterval(refreshServiceTimers,1000);
+}
+function applyCarwashDeepLink(){
+  const params=new URLSearchParams(window.location.search);
+  const panel=params.get('panel');
+  const requestId=params.get('request');
+  if(panel&&document.getElementById(panel))openPanel(panel);
+  if(requestId&&!IS_BUSINESS){activeRequestId=requestId;openPanel('trackWash');startTracking(requestId,true)}
+  if(requestId&&IS_BUSINESS){openPanel('bizRequests');loadBusinessRequests()}
+}
+
+
+
+
+
+
+
+
+function ensureOppoMapMarkerClass(){
+  if(OppoMapMarker)return;
+  OppoMapMarker=class extends google.maps.OverlayView{
+    constructor({position,map,label='',subtitle='',state='provider',icon='fa-location-dot',heading=null,onClick=null}){
+      super();this.position=new google.maps.LatLng(position);this.label=label;this.subtitle=subtitle;this.state=state;this.icon=icon;this.heading=heading;this.onClick=onClick;this.div=null;this.setMap(map);
+    }
+    onAdd(){
+      this.div=document.createElement('div');this.div.className='og-map-marker';
+      this.div.addEventListener('click',e=>{e.stopPropagation();if(this.onClick)this.onClick();});
+      this.getPanes().overlayMouseTarget.appendChild(this.div);this.render();
+    }
+    draw(){if(!this.div)return;const p=this.getProjection().fromLatLngToDivPixel(this.position);this.div.style.left=`${p.x}px`;this.div.style.top=`${p.y}px`;}
+    onRemove(){this.div?.remove();this.div=null;}
+    render(){if(!this.div)return;const washing=this.state==='washing'?'<i class="og-wash-bubble b1"></i><i class="og-wash-bubble b2"></i><i class="og-wash-bubble b3"></i>':'';const pulse=['user','provider','en_route'].includes(this.state)?'<i class="og-live-pulse"></i>':'';this.div.className=`og-map-marker ${this.state}`;this.div.innerHTML=`<div class="og-marker-card"><div class="og-marker-icon">${pulse}<i class="fas ${this.icon}" style="${this.heading!=null?`transform:rotate(${Number(this.heading)}deg)`:''}"></i>${washing}</div><div class="og-marker-copy"><strong>${escapeHtml(this.label)}</strong><span>${escapeHtml(this.subtitle)}</span></div></div>`;}
+    setPosition(pos){this.position=new google.maps.LatLng(pos);this.draw();}
+    setData({label,subtitle,state,icon,heading}={}){if(label!==undefined)this.label=label;if(subtitle!==undefined)this.subtitle=subtitle;if(state!==undefined)this.state=state;if(icon!==undefined)this.icon=icon;if(heading!==undefined)this.heading=heading;this.render();this.draw();}
+    animateTo(pos,duration=1400){const start=this.position;const end=new google.maps.LatLng(pos);const started=performance.now();const step=now=>{const t=Math.min(1,(now-started)/duration);const eased=1-Math.pow(1-t,3);this.position=new google.maps.LatLng(start.lat()+(end.lat()-start.lat())*eased,start.lng()+(end.lng()-start.lng())*eased);this.draw();if(t<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+  };
+}
+
+function initWashMap(){
+  map=new google.maps.Map(document.getElementById('map'),{center:{lat:-26.2041,lng:28.0473},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false});
+  ensureOppoMapMarkerClass();
+  trackingDirectionsService=new google.maps.DirectionsService();
+  trackingDirectionsRenderer=new google.maps.DirectionsRenderer({map,suppressMarkers:true,preserveViewport:true,polylineOptions:{strokeColor:'#1f6f5c',strokeOpacity:.82,strokeWeight:5}});
+  map.addListener('dragstart',()=>{mapUserMoved=true});map.addListener('zoom_changed',()=>{if(mapUserMoved)return});
+  installPanelMinimizeControls();bindRoleNav();
+  if(IS_BUSINESS){initBusinessWorkspace()}else{initCustomerWorkspace();startCustomerLocationWatch()}
+  startWorkspaceRefreshEngine();
+  setMapLiveBanner('Live map connected',true);
+}
+
+
+
+function installPanelMinimizeControls(){
+  document.querySelectorAll('.panel').forEach(panel=>{
+    const head=panel.querySelector('.panel-head');
+    if(!head||head.querySelector('.panel-minimize-btn'))return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='panel-minimize-btn';
+    btn.setAttribute('aria-label','Minimize panel');
+    btn.title='Minimize panel';
+    btn.innerHTML='<i class="fas fa-chevron-down"></i>';
+    btn.addEventListener('click',e=>{e.stopPropagation();togglePanelMinimize(panel.id)});
+    head.appendChild(btn);
+    head.addEventListener('click',e=>{if(panel.classList.contains('minimized')&&!e.target.closest('.panel-minimize-btn'))togglePanelMinimize(panel.id,false)});
+  });
+}
+
+function togglePanelMinimize(id,force){
+  const panel=document.getElementById(id);
+  if(!panel)return;
+  const shouldMinimize=typeof force==='boolean'?force:!panel.classList.contains('minimized');
+  panel.classList.toggle('minimized',shouldMinimize);
+  const btn=panel.querySelector('.panel-minimize-btn');
+  if(btn){
+    btn.setAttribute('aria-label',shouldMinimize?'Restore panel':'Minimize panel');
+    btn.title=shouldMinimize?'Restore panel':'Minimize panel';
+  }
+}
+
+function bindRoleNav(){
+
+  document.querySelectorAll('.role-tab').forEach(btn=>btn.addEventListener('click',()=>activatePanel(btn.dataset.panel)));
+
+  document.addEventListener('click',e=>{
+
+    const tray=document.getElementById('mobileMoreTray');
+
+    if(!tray||!tray.classList.contains('show'))return;
+
+    if(!tray.contains(e.target)&&!e.target.closest('#mobileMoreBtn'))closeMobileMore();
+
+  });
+
+}
+
+
+
+function activatePanel(id){
+
+  if(!id)return;
+
+  document.querySelectorAll('.role-tab').forEach(b=>b.classList.toggle('active',b.dataset.panel===id));
+
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+
+  document.getElementById(id)?.classList.remove('minimized');
+
+  closeMobileMore();
+
+  onPanelOpen(id);
+
+}
+
+
+
+function toggleMobileMore(event){
+
+  if(event)event.stopPropagation();
+
+  const tray=document.getElementById('mobileMoreTray');
+
+  const btn=document.getElementById('mobileMoreBtn');
+
+  if(!tray)return;
+
+  const willOpen=!tray.classList.contains('show');
+
+  tray.classList.toggle('show',willOpen);
+
+  btn?.classList.toggle('active',willOpen);
+
+}
+
+
+
+function closeMobileMore(){
+
+  document.getElementById('mobileMoreTray')?.classList.remove('show');
+
+  document.getElementById('mobileMoreBtn')?.classList.remove('active');
+
+}
+
+
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMore()});
+
+window.addEventListener('resize',()=>{if(window.innerWidth>820)closeMobileMore()});
+
+
+
+function onPanelOpen(id){
+  if(IS_BUSINESS){
+    if(id==='bizDashboard'){
+      loadBusinessDashboard();
+      loadBusinessProfile();
+    }
+    if(id==='bizRequests')loadBusinessRequests();
+    if(id==='bizCatalog')loadCatalogManager();
+    if(id==='bizPricing')loadCatalogManager();
+    if(id==='bizTeam')loadWorkers();
+    if(id==='bizPayments')loadBusinessPayments();
+    if(id==='bizLocation')focusBusinessSavedLocation();
+  }else{
+    if(id==='myWashes')loadCustomerRequests();
+    if(id==='myPayments'){
+      loadCustomerPayments();
+      loadPaymentGateways();
+    }
+    if(id==='trackWash'&&activeRequestId)startTracking(activeRequestId,true);
+  }
+}
+
+
+
+function openPanel(id){activatePanel(id)}
+
+
+
+function focusCurrentRoleLocation(){IS_BUSINESS?detectBusinessLocation():locateMe()}
+
+
+
+
+
+
+
+/* CUSTOMER */
+
+
+
+function initCustomerWorkspace(){
+  locateMe();
+  document.querySelectorAll('#washHistoryFilters .history-filter').forEach(btn=>btn.addEventListener('click',()=>loadCustomerRequests(btn.dataset.historyFilter)));
+  if(IS_AUTH){loadCustomerRequests();loadCustomerPayments();loadPaymentGateways()}
+  setTimeout(applyCarwashDeepLink,0);
+}
+
+
+
+function locateMe(){const label=document.getElementById('addressText');if(!navigator.geolocation){if(label)label.textContent='Location services are unavailable';return}if(label)label.textContent='Finding your location…';navigator.geolocation.getCurrentPosition(async pos=>{userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};setUserMarker(userPos);map.panTo(userPos);map.setZoom(14);mapUserMoved=false;await reverseGeocode(userPos);loadNearby(true)},()=>{if(label)label.textContent='Allow location access to find nearby washers'},{enableHighAccuracy:true,timeout:12000,maximumAge:5000})}
+
+function currentPublicUserName(){return document.body.dataset.publicName||document.body.dataset.username||'You'}
+
+function setUserMarker(pos){
+  if(!OppoMapMarker)return;
+  if(!userMarker)userMarker=new OppoMapMarker({position:pos,map,label:currentPublicUserName(),subtitle:'You are here',state:'user',icon:'fa-user'});
+  else userMarker.animateTo(pos,650);
+}
+
+function startCustomerLocationWatch(){
+  if(IS_BUSINESS||!navigator.geolocation||customerWatchId!==null)return;
+  customerWatchId=navigator.geolocation.watchPosition(pos=>{const next={lat:pos.coords.latitude,lng:pos.coords.longitude};userPos=next;setUserMarker(next);},()=>{}, {enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+}
+
+
+
+async function reverseGeocode(pos){const label=document.getElementById('addressText');if(!label)return;try{const data=await api(`/carwash/api/reverse-geocode/?lat=${encodeURIComponent(pos.lat)}&lng=${encodeURIComponent(pos.lng)}`);label.textContent=data.formatted_address||'Current location';label.dataset.placeId=data.place_id||''}catch(e){const geocoder=new google.maps.Geocoder();geocoder.geocode({location:pos},(results,status)=>{if(status==='OK'&&results?.[0]){label.textContent=results[0].formatted_address;label.dataset.placeId=results[0].place_id||''}else label.textContent='Current location selected'})}}
+
+
+
+function setMode(next){mode=next;document.getElementById('mobileMode')?.classList.toggle('active',next==='mobile');document.getElementById('onsiteMode')?.classList.toggle('active',next==='onsite');selectedProvider=null;catalog=null;resetChoices();loadNearby()}
+
+
+
+function clearProviderMarkers(){providerMarkers.forEach(m=>m.setMap(null));providerMarkers=[]}
+
+
+
+async function loadNearby(silent=false){
+  if(!userPos)return;
+  const list=document.getElementById('providerList');
+  const selectedId=selectedProvider?.id?String(selectedProvider.id):null;
+  if(!silent||!providers.length)list.innerHTML='<div class="empty">Finding nearby car wash providers…</div>';
+  try{
+    const data=await api(`/carwash/api/nearby/?lat=${encodeURIComponent(userPos.lat)}&lng=${encodeURIComponent(userPos.lng)}&fulfilment=${encodeURIComponent(mode)}&radius=30`);
+    const nextProviders=data.providers||[];
+    providers=nextProviders;
+    if(selectedId){selectedProvider=providers.find(p=>String(p.id)===selectedId)||null;if(!selectedProvider){catalog=null;resetChoices();}}
+    if(!providers.length){clearProviderMarkers();list.innerHTML=`<div class="empty">No ${mode==='mobile'?'live mobile washers':'drive-in washes'} are available within 30 km right now.</div>`;document.getElementById('statusText').textContent=mode==='mobile'?'A provider must be online, available, accepting requests and sharing fresh live location.':'Try again later or switch to Come to me.';return;}
+    list.innerHTML=providers.map(p=>`
+      <article class="provider ${selectedProvider&&String(selectedProvider.id)===String(p.id)?'active':''}" data-id="${p.id}" onclick="selectProvider('${p.id}')">
+        <div class="provider-top"><div><h4>${escapeHtml(p.public_name||p.name)}</h4><small>${Number(p.distance_km||0).toFixed(1)} km away</small></div><div class="rating"><i class="fas fa-star" style="color:#e8a93b"></i> ${Number(p.average_rating||0).toFixed(1)}</div></div>
+        <div class="provider-meta">${mode==='mobile'&&p.available_worker_name?`Washer: ${escapeHtml(p.available_worker_name)} · `:''}${Number(p.available_options_count||p.prices?.length||0)} bookable option${Number(p.available_options_count||p.prices?.length||0)===1?'':'s'}</div>
+        <div class="provider-actions"><span class="badge">${mode==='mobile'?'Live now · mobile available':'Drive-in available'}</span>${IS_AUTH?`<button class="message-btn" type="button" onclick="event.stopPropagation();messageCarwashBusiness('${p.id}','${escapeHtml(p.public_name||p.name)}')"><i class="fas fa-comment-dots"></i> Message</button><button class="btn ghost small" type="button" onclick="event.stopPropagation();openSafetyCenter({businessId:'${p.id}',workerId:'${p.available_worker_id||''}',reportedName:'${escapeHtml(p.available_worker_name||p.public_name||p.name)}'})"><i class="fas fa-shield-halved"></i> Safety</button>`:''}</div>
+      </article>`).join('');
+
+    const existing=new Map(providerMarkers.map(m=>[String(m._providerId||''),m]));const nextMarkers=[];
+    providers.forEach(p=>{const key=String(p.id),pos={lat:Number(p.map_latitude),lng:Number(p.map_longitude)},workerLabel=p.available_worker_name||p.public_name||p.name||'Available washer',subtitle=`${p.public_name||p.name} · ${Number(p.distance_km||0).toFixed(1)} km`;let marker=existing.get(key);if(marker){marker.animateTo(pos,1200);marker.setData({label:workerLabel,subtitle,state:'provider',icon:'fa-person'});existing.delete(key)}else{marker=new OppoMapMarker({position:pos,map,label:workerLabel,subtitle,state:'provider',icon:'fa-person',onClick:()=>selectProvider(p.id)});marker._providerId=key}nextMarkers.push(marker)});
+    existing.forEach(marker=>marker.setMap(null));providerMarkers=nextMarkers;
+  }catch(e){if(!silent||!providers.length)list.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;}
+}
+
+async function selectProvider(id){
+  selectedProvider=providers.find(p=>String(p.id)===String(id));
+  if(!selectedProvider)return;
+  document.querySelectorAll('.provider').forEach(el=>el.classList.toggle('active',el.dataset.id===String(id)));
+  map.panTo({lat:Number(selectedProvider.map_latitude),lng:Number(selectedProvider.map_longitude)});
+  resetChoices();
+  const statusEl=document.getElementById('statusText');
+  statusEl.textContent='Loading this provider’s vehicles and services…';
+  try{
+    if(Array.isArray(selectedProvider.vehicles)&&Array.isArray(selectedProvider.services)&&Array.isArray(selectedProvider.prices)){
+      catalog={success:true,business:selectedProvider,vehicles:selectedProvider.vehicles,services:selectedProvider.services,prices:selectedProvider.prices};
+    }else{
+      catalog=await api(`/carwash/api/businesses/${id}/catalog/?fulfilment=${encodeURIComponent(mode)}`);
+    }
+    if(!catalog.vehicles?.length){
+      document.getElementById('vehicleChoices').innerHTML='<div class="choice-placeholder">This business has no priced vehicle options for this mode.</div>';
+      statusEl.textContent='This provider has no bookable vehicle/service combination yet.';
+      return;
+    }
+    renderVehicleChoices();
+    statusEl.textContent=`Choose a vehicle from ${selectedProvider.name}.`;
+  }catch(e){
+    catalog=null;
+    resetChoices();
+    statusEl.textContent=e.message;
+  }
+}
+
+function resetChoices(){
+  const v=document.getElementById('vehicleSelect');
+  const vc=document.getElementById('vehicleChoices');
+  if(v){v.disabled=true;v.innerHTML='<option value="">Select a provider first</option>'}
+  if(vc)vc.innerHTML='<div class="choice-placeholder">Select a provider first</div>';
+  resetService();
+  currentQuote=null;
+  selectedPriceId=null;
+  document.getElementById('priceBox')?.classList.remove('show');
+  if(document.getElementById('requestBtn'))document.getElementById('requestBtn').disabled=true;
+}
+
+function resetService(){
+  const s=document.getElementById('serviceSelect');
+  const sc=document.getElementById('serviceChoices');
+  if(s){s.disabled=true;s.innerHTML='<option value="">Select your vehicle first</option>'}
+  if(sc)sc.innerHTML='<div class="choice-placeholder">Select your vehicle first</div>';
+  selectedPriceId=null;
+  document.getElementById('priceBox')?.classList.remove('show');
+  const btn=document.getElementById('requestBtn');
+  if(btn){btn.disabled=true;btn.textContent='Request wash'}
+}
+
+function renderVehicleChoices(){
+  const container=document.getElementById('vehicleChoices');
+  const select=document.getElementById('vehicleSelect');
+  const rows=catalog?.vehicles||[];
+  if(!container||!select)return;
+  select.disabled=false;
+  select.innerHTML='<option value="">Choose vehicle</option>'+rows.map(v=>`<option value="${v.id}">${escapeHtml(v.name)}</option>`).join('');
+  container.innerHTML=rows.map(v=>`
+    <button type="button" class="vehicle-choice" data-vehicle-id="${v.id}" onclick="chooseVehicle('${v.id}')">
+      <i class="${escapeHtml(v.icon||'fas fa-car')}"></i>
+      <strong>${escapeHtml(v.name)}</strong>
+      <small>${escapeHtml(v.description||'Vehicle option')}</small>
+    </button>`).join('');
+}
+
+function chooseVehicle(vehicleId){
+  if(!catalog)return;
+  const select=document.getElementById('vehicleSelect');
+  select.value=vehicleId;
+  document.querySelectorAll('.vehicle-choice').forEach(btn=>btn.classList.toggle('active',String(btn.dataset.vehicleId)===String(vehicleId)));
+  renderServiceChoices(vehicleId);
+  document.getElementById('statusText').textContent='Now choose a service and price.';
+}
+
+function renderServiceChoices(vehicleId){
+  const container=document.getElementById('serviceChoices');
+  const select=document.getElementById('serviceSelect');
+  if(!container||!select||!catalog)return;
+  const priceRows=(catalog.prices||[]).filter(p=>String(p.vehicle_type)===String(vehicleId)&&p.is_active!==false);
+  const serviceById=new Map((catalog.services||[]).map(s=>[String(s.id),s]));
+  const rows=priceRows.map(price=>({price,service:serviceById.get(String(price.service))})).filter(x=>x.service&&(mode==='mobile'?x.service.mobile_available:x.service.onsite_available));
+  select.disabled=rows.length===0;
+  select.innerHTML='<option value="">Choose service</option>'+rows.map(({service})=>`<option value="${service.id}">${escapeHtml(service.name)}</option>`).join('');
+  if(!rows.length){
+    container.innerHTML='<div class="choice-placeholder">No priced services are available for this vehicle.</div>';
+    return;
+  }
+  container.innerHTML=rows.map(({service,price})=>`
+    <button type="button" class="service-choice" data-service-id="${service.id}" data-price-id="${price.id}" onclick="chooseService('${service.id}','${price.id}')">
+      <div class="service-choice-top"><strong>${escapeHtml(service.name)}</strong><span class="service-price">${money(price.price,price.currency)}</span></div>
+      ${service.description?`<p>${escapeHtml(service.description)}</p>`:''}
+      <small>${Number(service.estimated_minutes||0)>0?`${Number(service.estimated_minutes)} min · `:''}${mode==='mobile'?'Mobile wash':'At provider location'}</small>
+    </button>`).join('');
+}
+
+function chooseService(serviceId,priceId=''){
+  const select=document.getElementById('serviceSelect');
+  select.value=serviceId;
+
+  let matchedPriceId=priceId || '';
+  document.querySelectorAll('.service-choice').forEach(btn=>{
+    const active=String(btn.dataset.serviceId)===String(serviceId);
+    btn.classList.toggle('active',active);
+    if(active && !matchedPriceId) matchedPriceId=btn.dataset.priceId||'';
+  });
+
+  // Canonical booking choice = the exact business price row.
+  selectedPriceId=matchedPriceId;
+  previewLocalPrice();
+}
+
+document.getElementById('vehicleSelect')?.addEventListener('change',function(){if(this.value)chooseVehicle(this.value);else resetService()});
+document.getElementById('serviceSelect')?.addEventListener('change',function(){
+  if(!this.value)return;
+  const v=document.getElementById('vehicleSelect')?.value;
+  const row=(catalog?.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(this.value)&&p.is_active!==false);
+  chooseService(this.value,row?.id||'');
+});
+
+function previewLocalPrice(){
+  const v=document.getElementById('vehicleSelect')?.value;
+  const s=document.getElementById('serviceSelect')?.value;
+  if(!v||!s||!catalog){document.getElementById('priceBox')?.classList.remove('show');return}
+  const row=(catalog.prices||[]).find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s)&&p.is_active!==false);
+  if(!row){
+    selectedPriceId=null;
+    document.getElementById('requestBtn').disabled=true;
+    return;
+  }
+  selectedPriceId=row.id||null;
+  document.getElementById('servicePrice').textContent=money(row.price,row.currency);
+  document.getElementById('travelPrice').textContent=mode==='mobile'?'Calculated in quote':'R0.00';
+  document.getElementById('totalPrice').textContent=mode==='mobile'?'Final quote next':money(row.price,row.currency);
+  document.getElementById('priceBox').classList.add('show');
+  document.getElementById('requestBtn').disabled=false;
+  document.getElementById('requestBtn').textContent=`Request wash · ${money(row.price,row.currency)}${mode==='mobile'?' + travel':''}`;
+  document.getElementById('statusText').textContent='Ready to request this wash.';
+}
+
+async function requestQuoteAndWash(){
+  if(!IS_AUTH){
+    alert('Please sign in to request a wash.');
+    location.href='/';
+    return;
+  }
+
+  if(!selectedProvider||!userPos)return;
+
+  const btn=document.getElementById('requestBtn');
+  const status=document.getElementById('statusText');
+
+  btn.disabled=true;
+  status.textContent='Creating your quote…';
+
+  const vehicleId=document.getElementById('vehicleSelect')?.value||'';
+  const serviceId=document.getElementById('serviceSelect')?.value||'';
+  const priceRow=(catalog?.prices||[]).find(p=>
+    String(p.vehicle_type)===String(vehicleId) &&
+    String(p.service)===String(serviceId) &&
+    p.is_active!==false
+  );
+  const priceId=selectedPriceId || priceRow?.id || '';
+
+  if(!priceId){
+    status.textContent='Please choose the vehicle and service again.';
+    btn.disabled=false;
+    return;
+  }
+
+  const payload={
+    business_id:selectedProvider.id,
+    price_id:priceId,
+    fulfilment_mode:mode,
+    latitude:userPos.lat,
+    longitude:userPos.lng,
+    address:document.getElementById('addressText').textContent,
+    place_id:document.getElementById('addressText').dataset.placeId||'',
+    route_distance_km:selectedProvider.distance_km||0
+  };
+
+  try{
+    const q=await api('/carwash/api/quote/',{
+      method:'POST',
+      body:JSON.stringify(payload)
+    });
+
+    currentQuote=q.quote;
+
+    document.getElementById('servicePrice').textContent=
+      money(currentQuote.service_price,currentQuote.currency);
+
+    document.getElementById('travelPrice').textContent=
+      money(currentQuote.travel_fee,currentQuote.currency);
+
+    document.getElementById('totalPrice').textContent=
+      money(currentQuote.total,currentQuote.currency);
+
+    status.textContent='Quote ready. Sending your request…';
+
+    const r=await api('/carwash/api/requests/',{
+      method:'POST',
+      body:JSON.stringify({quote_id:currentQuote.id})
+    });
+
+    activeRequestId=r.request.id;
+    paymentRequestId=r.request.id;
+    paymentRequestTotal=currentQuote.total;
+
+    status.innerHTML='Request sent. <strong>Choose how you want to pay.</strong>';
+    btn.textContent='Wash requested';
+
+    await openPaymentCheckout(
+      activeRequestId,
+      currentQuote.total,
+      currentQuote.currency||'ZAR'
+    );
+
+  }catch(e){
+    status.textContent=e.message;
+    btn.disabled=false;
+  }
+}
+
+
+
+async function loadCustomerRequests(filterOverride=null){
+  if(!IS_AUTH)return;
+
+  const box=document.getElementById('customerRequests');
+  if(!box)return;
+
+  try{
+    const data=await api('/carwash/api/requests/');
+    const rows=Array.isArray(data)?data:(data.results||[]);
+    window.customerWashHistory=rows;
+
+    const completed=rows.filter(r=>r.status==='completed');
+    const paidTotal=rows.reduce((sum,r)=>{
+      const p=r.payment_summary;
+      return sum + (p?.status==='paid' ? Number(p.gross_amount||0) : 0);
+    },0);
+    const paidCurrency=rows.find(r=>r.payment_summary?.status==='paid')?.payment_summary?.currency || 'ZAR';
+
+    const totalEl=document.getElementById('historyTotalCount');
+    const completeEl=document.getElementById('historyCompletedCount');
+    const paidEl=document.getElementById('historyPaidTotal');
+    if(totalEl)totalEl.textContent=rows.length;
+    if(completeEl)completeEl.textContent=completed.length;
+    if(paidEl)paidEl.textContent=money(paidTotal,paidCurrency);
+
+    const activeButton=document.querySelector('#washHistoryFilters .history-filter.active');
+    const currentFilter=filterOverride || activeButton?.dataset.historyFilter || 'all';
+    document.querySelectorAll('#washHistoryFilters .history-filter').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.historyFilter===currentFilter);
+    });
+
+    const filtered=rows.filter(r=>{
+      if(currentFilter==='all')return true;
+      if(currentFilter==='active')return !['completed','cancelled','declined','expired'].includes(r.status);
+      if(currentFilter==='completed')return r.status==='completed';
+      if(currentFilter==='cancelled')return ['cancelled','declined','expired'].includes(r.status);
+      return true;
+    });
+
+    if(!filtered.length){
+      box.innerHTML=`<div class="empty">${rows.length?'No washes match this filter yet.':'You have no wash history yet.'}</div>`;
+      return;
+    }
+
+    box.innerHTML=filtered.map(r=>{
+      const finished=['completed','cancelled','declined','expired'].includes(r.status);
+      const payment=r.payment_summary;
+      const total=payment?.gross_amount ?? r.quote?.total ?? r.quote?.total_price ?? 0;
+      const currency=payment?.currency ?? r.quote?.currency ?? 'ZAR';
+      const paymentMethod=payment
+        ? (payment.payment_method==='cash' ? 'Cash' : (payment.gateway_name || payment.payment_method || 'Card'))
+        : 'Not selected';
+      const paymentStatus=payment?.status || 'unpaid';
+      const paymentClass=paymentStatus==='paid'?'payment-state-paid':(['failed','cancelled'].includes(paymentStatus)?'payment-state-failed':'payment-state-pending');
+      const durationSeconds=r.service_duration_seconds ?? elapsedFromRequest(r);
+      const duration=durationSeconds!=null ? formatServiceDuration(durationSeconds) : '—';
+      const eventDate=r.completed_at||r.cancelled_at||r.started_at||r.requested_at||r.created_at;
+      const dateLabel=eventDate ? new Intl.DateTimeFormat('en-ZA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(eventDate)) : '—';
+      const statusText=statusLabel(r.status);
+      const statusClass=`status-${String(r.status||'').replace(/[^a-z_]/g,'')}`;
+      const canPay=!payment && !['cancelled','declined','expired'].includes(r.status);
+      const canTrack=!finished || r.status==='completed';
+
+      return `
+        <article class="list-card wash-history-card ${statusClass}">
+          <div class="list-top">
+            <div>
+              <h4>${escapeHtml(r.quote?.business_name||'Car wash')}</h4>
+              <p>${escapeHtml(r.quote?.service_name||'Wash service')} · ${escapeHtml(r.quote?.vehicle_name||'Vehicle')}</p>
+            </div>
+            <span class="status-pill">${escapeHtml(statusText)}</span>
+          </div>
+
+          <div class="history-meta-grid">
+            <div class="history-meta"><span>Amount</span><strong>${money(total,currency)}</strong></div>
+            <div class="history-meta"><span>Payment</span><strong>${escapeHtml(paymentMethod)}</strong></div>
+            <div class="history-meta"><span>Payment status</span><strong class="${paymentClass}">${escapeHtml(paymentStatus)}</strong></div>
+            <div class="history-meta"><span>Service duration</span><strong>${escapeHtml(duration)}</strong></div>
+          </div>
+
+          <div class="history-date"><i class="far fa-clock"></i> ${escapeHtml(dateLabel)}</div>
+          ${r.quote?.service_address?`<div class="history-date"><i class="fas fa-location-dot"></i> ${escapeHtml(r.quote.service_address)}</div>`:''}
+
+          <div class="actions">
+            ${canTrack?`<button class="btn small" onclick="trackFromHistory('${r.id}')"><i class="fas fa-route"></i> ${finished?'View details':'Track / view'}</button>`:''}
+            <button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message provider</button>
+            ${canPay?`<button class="btn warm small" onclick="openPaymentCheckout('${r.id}','${escapeHtml(String(total))}','${escapeHtml(currency)}')"><i class="fas fa-credit-card"></i> Pay</button>`:''}
+          </div>
+        </article>`;
+    }).join('');
+
+  }catch(e){
+    box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
+  }
+}
+
+
+function trackFromHistory(id){activeRequestId=id;openPanel('trackWash');startTracking(id,true)}
+
+
+
+function trackingStateMeta(status){
+  if(status==='en_route')return{state:'en_route',icon:'fa-car-side',subtitle:'Moving toward you'};
+  if(status==='arrived')return{state:'arrived',icon:'fa-location-dot',subtitle:'Arrived'};
+  if(status==='washing')return{state:'washing',icon:'fa-car-side',subtitle:'Washing your car'};
+  return{state:'provider',icon:'fa-user',subtitle:'Live washer'};
+}
+
+function setMapLiveBanner(text,show=true){const el=document.getElementById('mapLiveBanner'),tx=document.getElementById('mapLiveBannerText');if(tx)tx.textContent=text;if(el)el.classList.toggle('show',show)}
+
+function clearTrackingRoute(){trackingDirectionsRenderer?.setDirections({routes:[]});trackingFallbackLine?.setMap(null);trackingFallbackLine=null;lastRoutePoint=null;lastRouteAt=0}
+
+function updateTrackingRoute(providerPos){
+  if(!userPos||!providerPos)return;
+  if(!trackingFallbackLine)trackingFallbackLine=new google.maps.Polyline({map,path:[providerPos,userPos],strokeColor:'#1f6f5c',strokeOpacity:.3,strokeWeight:4,geodesic:true});else trackingFallbackLine.setPath([providerPos,userPos]);
+  const moved=lastRoutePoint?distanceBetweenCoords(lastRoutePoint.lat,lastRoutePoint.lng,providerPos.lat,providerPos.lng):Infinity;
+  if(moved<150&&Date.now()-lastRouteAt<45000)return;
+  lastRoutePoint={...providerPos};lastRouteAt=Date.now();
+  trackingDirectionsService?.route({origin:providerPos,destination:userPos,travelMode:google.maps.TravelMode.DRIVING},(result,status)=>{if(status==='OK'&&result){trackingDirectionsRenderer.setDirections(result);trackingFallbackLine?.setMap(null);trackingFallbackLine=null;}});
+}
+
+async function refreshTrackingOnce(requestId,focus=false){
+  try{
+    const data=await api(`/carwash/api/requests/${requestId}/tracking/`);
+    currentTrackingData=data;
+    const r=data.request,loc=data.provider_location;
+    const box=document.getElementById('trackContent');
+    if(box){
+      const timer=serviceTimerHtml(r);
+      const customerCancel=!['completed','cancelled','declined','expired','washing'].includes(r.status)?`<button class="btn danger small" type="button" onclick="customerCancelWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel request</button>`:'';
+      const providerName=r.worker_name||r.worker?.public_name||r.worker?.display_name||r.business_name||r.quote?.business_name||'Provider';
+      const liveNote=data.provider_location_is_live?'Live GPS':(loc?'Last known location':'Waiting for live GPS');
+      box.innerHTML=`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(statusLabel(r.status))}</h4><p>${escapeHtml(r.business_name||r.quote?.business_name||'')} · ${escapeHtml(providerName)}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div><p>${escapeHtml(r.quote?.service_address||'')}</p><p><i class="fas fa-satellite-dish"></i> ${escapeHtml(liveNote)}</p>${timer}<div class="actions">${customerCancel}<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message ${escapeHtml(providerName)}</button><button class="btn ghost small" type="button" onclick="openSafetyCenter({requestId:'${r.id}',reportedName:'${escapeHtml(providerName)}'})"><i class="fas fa-shield-halved"></i> Safety</button>${['completed','cancelled','declined','expired'].includes(r.status)?`<button class="btn small" type="button" onclick="openPanel('myWashes')"><i class="fas fa-clock-rotate-left"></i> View history</button>`:''}</div></div>`;
+      ensureServiceTimerTicker();
+    }
+    if(loc){
+      const pos={lat:Number(loc.latitude),lng:Number(loc.longitude)};
+      const meta=trackingStateMeta(r.status);const live=!!data.provider_location_is_live;
+      const name=r.worker_name||loc.worker_name||r.worker?.public_name||r.business_name||'Washer';
+      if(!trackingMarker)trackingMarker=new OppoMapMarker({position:pos,map,label:name,subtitle:live?meta.subtitle:'Last known location',state:live?meta.state:'stale',icon:meta.icon,heading:loc.heading});
+      else{trackingMarker.animateTo(pos,1500);trackingMarker.setData({label:name,subtitle:live?meta.subtitle:'Last known location',state:live?meta.state:'stale',icon:meta.icon,heading:loc.heading});}
+      updateTrackingRoute(pos);
+      setMapLiveBanner(r.status==='washing'?`${name} is washing your car`:live?`${name} · ${meta.subtitle}`:`${name} · GPS reconnecting`,true);
+      if((focus||!mapUserMoved)&&userPos){const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend(pos);map.fitBounds(bounds,70);mapUserMoved=false;}
+    }
+    if(['completed','cancelled','declined','expired'].includes(r.status)){clearTrackingRoute();setMapLiveBanner(statusLabel(r.status),true);}
+    return data;
+  }catch(e){console.warn('Tracking refresh failed',e);return null;}
+}
+
+async function startTracking(requestId,focus=false){
+  activeRequestId=requestId;
+  if(trackingPollTimer){clearInterval(trackingPollTimer);trackingPollTimer=null;}
+  await refreshTrackingOnce(requestId,focus);
+  trackingPollTimer=setInterval(()=>{if(document.visibilityState==='visible'&&activeRequestId===requestId)refreshTrackingOnce(requestId,false)},4000);
+}
+
+async function customerCancelWash(id){
+  if(!confirm('Cancel this car wash request?'))return;
+  try{
+    await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status:'cancelled',note:'Customer cancelled request'})});
+    await loadCustomerRequests();
+    startTracking(id,false);
+  }catch(e){alert(e.message)}
+}
+
+
+async function loadCustomerPayments(){
+  if(!IS_AUTH)return;
+
+  const box=document.getElementById('customerPayments');
+
+  try{
+    const data=await api('/carwash/api/payments/');
+    const rows=Array.isArray(data)?data:(data.results||[]);
+
+    box.innerHTML=rows.length
+      ? rows.map(p=>`
+        <div class="list-card">
+          <div class="list-top">
+            <div>
+              <h4>${money(p.gross_amount,p.currency)}</h4>
+              <p>
+                ${escapeHtml(p.payment_method)}
+                ${p.gateway_name?' · '+escapeHtml(p.gateway_name):''}
+              </p>
+            </div>
+            <span class="status-pill">${escapeHtml(p.status)}</span>
+          </div>
+        </div>
+      `).join('')
+      : '<div class="empty">No payment records yet.</div>';
+
+  }catch(e){
+    box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
+  }
+}
+
+
+async function loadPaymentGateways(){
+  try{
+    const data=await api('/carwash/api/gateways/');
+    availableGateways=Array.isArray(data)?data:(data.results||[]);
+  }catch(e){
+    availableGateways=[];
+  }
+  return availableGateways;
+}
+
+
+async function openPaymentCheckout(requestId,total='',currency='ZAR'){
+  if(!IS_AUTH){
+    alert('Please sign in to pay.');
+    return;
+  }
+
+  paymentRequestId=requestId;
+  paymentRequestTotal=total||null;
+
+  openPanel('myPayments');
+
+  const checkout=document.getElementById('paymentCheckout');
+  const options=document.getElementById('paymentGatewayOptions');
+  const totalEl=document.getElementById('paymentCheckoutTotal');
+  const err=document.getElementById('paymentCheckoutError');
+
+  checkout?.classList.remove('hidden');
+
+  if(err)err.innerHTML='';
+  if(totalEl)totalEl.textContent=total?money(total,currency):'Ready to pay';
+
+  options.innerHTML='<div class="empty">Loading payment options…</div>';
+
+  const gateways=await loadPaymentGateways();
+  const choices=[];
+
+  choices.push(`
+    <button class="payment-option cash"
+            type="button"
+            onclick="startCarwashPayment('${requestId}','cash','')">
+      <strong>
+        <i class="fas fa-money-bill-wave"></i>
+        Pay cash
+      </strong>
+      <span>Pay the provider directly. OppoGlobe still records the payment.</span>
+    </button>
+  `);
+
+  gateways
+    .filter(g=>g.is_active!==false && g.supports_card)
+    .forEach(g=>{
+      choices.push(`
+        <button class="payment-option yoco"
+                type="button"
+                onclick="startCarwashPayment('${requestId}','card','${escapeHtml(g.code)}')">
+          <strong>
+            <i class="fas fa-credit-card"></i>
+            Pay with ${escapeHtml(g.name||g.code)}
+          </strong>
+          <span>
+            Secure card checkout${String(g.code).toLowerCase()==='yoco'?' powered by Yoco':''}.
+          </span>
+        </button>
+      `);
+    });
+
+  options.innerHTML=choices.join('');
+
+  if(!gateways.some(g=>g.is_active!==false && g.supports_card)){
+    options.insertAdjacentHTML(
+      'beforeend',
+      '<div class="empty">No online card gateway is active right now. Cash still works.</div>'
+    );
+  }
+}
+
+
+async function postPaymentRequest(requestId,payload){
+  const candidates=[
+    `/carwash/api/requests/${encodeURIComponent(requestId)}/payment/`,
+    `/carwash/api/requests/${encodeURIComponent(requestId)}/create-payment/`
+  ];
+
+  let lastError=null;
+
+  for(const url of candidates){
+    try{
+      return await api(url,{
+        method:'POST',
+        body:JSON.stringify(payload)
+      });
+    }catch(e){
+      lastError=e;
+
+      /*
+        Try the second route only when the first appears to be missing.
+        For genuine validation/payment errors, surface the real error.
+      */
+      if(!String(e.message||'').includes('404') &&
+         !String(e.message||'').toLowerCase().includes('not found')){
+        throw e;
+      }
+    }
+  }
+
+  throw lastError||new Error('Payment endpoint is not available.');
+}
+
+
+async function startCarwashPayment(requestId,paymentMethod,gatewayCode=''){
+  const options=document.getElementById('paymentGatewayOptions');
+  const err=document.getElementById('paymentCheckoutError');
+
+  if(err)err.innerHTML='';
+
+  options?.querySelectorAll('button').forEach(b=>b.disabled=true);
+
+  try{
+    const result=await postPaymentRequest(
+      requestId,
+      {
+        payment_method:paymentMethod,
+        gateway_code:gatewayCode||''
+      }
+    );
+
+    await loadCustomerPayments();
+
+    const redirectUrl=
+      result.checkout_url ||
+      result.redirect_url ||
+      result.payment_url ||
+      '';
+
+    if(redirectUrl){
+      window.location.href=redirectUrl;
+      return;
+    }
+
+    if(paymentMethod==='cash'){
+      if(err){
+        err.innerHTML=`
+          <div class="pay-note">
+            <i class="fas fa-circle-check"></i>
+            Cash selected. Pay the provider when the wash is completed.
+          </div>
+        `;
+      }
+
+      setTimeout(()=>{
+        openPanel('trackWash');
+        startTracking(requestId,true);
+      },650);
+
+      return;
+    }
+
+    throw new Error(
+      result.error ||
+      'The payment was created but no checkout URL was returned.'
+    );
+
+  }catch(e){
+    if(err){
+      err.innerHTML=`
+        <div class="payment-error">
+          <i class="fas fa-triangle-exclamation"></i>
+          ${escapeHtml(e.message)}
+        </div>
+      `;
+    }
+
+    options?.querySelectorAll('button').forEach(b=>b.disabled=false);
+  }
+}
+
+
+
+
+
+
+
+/* BUSINESS */
+
+
+
+async function initBusinessWorkspace(){if(CAN_MANAGE)initBusinessPlaces();if(BUSINESS_ID){await loadBusinessProfile();focusBusinessSavedLocation();if(CAN_MANAGE){loadBusinessDashboard();loadCatalogManager();loadBusinessPayments()}loadBusinessRequests();await loadWorkers()}}
+
+
+
+async function loadBusinessProfile(){
+  const d=CAN_MANAGE
+    ? await api('/carwash/api/businesses/me/')
+    : await api(`/carwash/api/businesses/${BUSINESS_ID}/`);
+
+  businessData=CAN_MANAGE?d.business:d;
+
+  if(businessData){
+    BUSINESS_ID=businessData.id;
+    document.body.dataset.businessId=BUSINESS_ID;
+
+    document.getElementById('businessTitle').textContent=businessData.name;
+
+    const accepting=!!businessData.is_accepting_jobs;
+
+    document.getElementById('availabilityText').textContent=
+      accepting?'Accepting new wash requests':'Paused — not accepting new requests';
+
+    document.getElementById('availabilityBtn').textContent=
+      accepting?'Pause requests':'Go live';
+
+    document.getElementById('availabilityDot')?.classList.toggle('off',!accepting);
+
+    const locationText=
+      businessData.formatted_address||
+      businessData.address||
+      'No business location saved yet.';
+
+    const locationEl=document.getElementById('businessLocationText');
+    const dashboardLocation=document.getElementById('dashboardLocationText');
+
+    if(locationEl)locationEl.textContent=locationText;
+    if(dashboardLocation)dashboardLocation.textContent=locationText;
+  }
+}
+
+
+
+async function loadBusinessDashboard(){if(!BUSINESS_ID)return;try{const [rq,v,s]=await Promise.all([api('/carwash/api/requests/'),api('/carwash/api/vehicles/'),api('/carwash/api/services/')]);const requests=Array.isArray(rq)?rq:(rq.results||[]),vv=Array.isArray(v)?v:(v.results||[]),ss=Array.isArray(s)?s:(s.results||[]);document.getElementById('statRequests').textContent=requests.filter(x=>!['completed','cancelled','declined','expired'].includes(x.status)).length;document.getElementById('statVehicles').textContent=vv.length;document.getElementById('statServices').textContent=ss.length}catch(e){}}
+
+
+
+document.getElementById('businessSetupForm')?.addEventListener('submit',async e=>{e.preventDefault();const st=document.getElementById('setupStatus');st.textContent='Creating your car wash profile…';try{const d=await api('/carwash/api/businesses/',{method:'POST',body:JSON.stringify({name:document.getElementById('setupName').value.trim(),phone:document.getElementById('setupPhone').value.trim(),email:document.getElementById('setupEmail').value.trim(),description:document.getElementById('setupDescription').value.trim(),fulfilment_mode:document.getElementById('setupMode').value,is_active:true,is_accepting_jobs:true})});BUSINESS_ID=d.id;location.reload()}catch(err){st.textContent=err.message}})
+
+
+
+async function toggleAvailability(){if(!businessData)return;const goingLive=!businessData.is_accepting_jobs;try{businessData=await api(`/carwash/api/businesses/${businessData.id}/`,{method:'PATCH',body:JSON.stringify({is_accepting_jobs:goingLive})});await loadBusinessProfile();if(WORKER_ID){if(goingLive){startWorkerLocationSharing();}else{stopWorkerLocationSharing();try{await api(`/carwash/api/workers/${WORKER_ID}/`,{method:'PATCH',body:JSON.stringify({is_online:false,is_available:false})})}catch(_){}}loadWorkers()}}catch(e){alert(e.message)}}
+
+
+
+async function loadBusinessRequests(){
+  if(!BUSINESS_ID)return;
+  const box=document.getElementById('businessRequests');
+  try{
+    const d=await api('/carwash/api/requests/');
+    const rows=Array.isArray(d)?d:(d.results||[]);
+    box.innerHTML=rows.length?rows.map(r=>{
+      const timer=serviceTimerHtml(r);
+      const cancellable=['requested','accepted','en_route','arrived','washing'].includes(r.status);
+      return `<article class="list-card"><div class="list-top"><div><h4>${escapeHtml(r.customer_name||'Customer')} · ${escapeHtml(r.quote?.service_name||'Wash request')}</h4><p>${escapeHtml(r.quote?.vehicle_name||'')} · ${escapeHtml(r.quote?.service_address||'')}</p></div><span class="status-pill">${escapeHtml(r.status)}</span></div>${timer}<div class="actions">
+<button class="message-btn" type="button" onclick="messageCarwashRequest('${r.id}')"><i class="fas fa-comment-dots"></i> Message ${escapeHtml(r.customer_name||'customer')}</button><button class="btn ghost small" type="button" onclick="openSafetyCenter({requestId:'${r.id}',reportedName:'${escapeHtml(r.customer_name||'Customer')}'})"><i class="fas fa-shield-halved"></i> Safety</button>
+${r.status==='requested'?`<button class="btn small" onclick="businessAccept('${r.id}')">Accept</button>`:''}
+${r.status==='accepted'?`<button class="btn small" onclick="businessSetStatus('${r.id}','en_route')">En route</button>`:''}
+${r.status==='en_route'?`<button class="btn small" onclick="businessSetStatus('${r.id}','arrived')">Arrived</button>`:''}
+${r.status==='arrived'?`<button class="btn success small" onclick="businessSetStatus('${r.id}','washing')"><i class="fas fa-play"></i> Start wash</button>`:''}
+${r.status==='washing'?`<button class="btn success small" onclick="finishWash('${r.id}')"><i class="fas fa-check"></i> Done</button>`:''}
+${cancellable?`<button class="btn danger small" onclick="cancelBusinessWash('${r.id}')"><i class="fas fa-xmark"></i> Cancel</button>`:''}
+</div></article>`;
+    }).join(''):'<div class="empty">No wash requests yet.</div>';
+    ensureServiceTimerTicker();
+  }catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}
+}
+
+
+async function businessAccept(id){try{await api(`/carwash/api/requests/${id}/accept/`,{method:'POST',body:'{}'});loadBusinessRequests()}catch(e){alert(e.message)}}
+
+
+
+async function businessSetStatus(id,status){try{await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status})});loadBusinessRequests()}catch(e){alert(e.message)}}
+
+async function finishWash(id){
+  if(!confirm('Mark this wash as done? The service timer will stop.'))return;
+  await businessSetStatus(id,'completed');
+}
+async function cancelBusinessWash(id){
+  const reason=prompt('Optional cancellation reason:','') ?? null;
+  if(reason===null)return;
+  try{
+    await api(`/carwash/api/requests/${id}/set-status/`,{method:'POST',body:JSON.stringify({status:'cancelled',note:reason||'Provider cancelled wash'})});
+    loadBusinessRequests();
+  }catch(e){alert(e.message)}
+}
+
+
+
+async function loadCatalogManager(){if(!BUSINESS_ID)return;try{const [v,s,p]=await Promise.all([api('/carwash/api/vehicles/'),api('/carwash/api/services/'),api('/carwash/api/prices/')]);vehicles=Array.isArray(v)?v:(v.results||[]);services=Array.isArray(s)?s:(s.results||[]);prices=Array.isArray(p)?p:(p.results||[]);renderCatalogManager()}catch(e){}}
+
+
+
+function renderCatalogManager(){const vl=document.getElementById('vehicleList'),sl=document.getElementById('serviceList'),pl=document.getElementById('priceList');if(vl)vl.innerHTML=vehicles.length?vehicles.map(v=>`<div class="list-card"><div class="list-top"><div><h4><i class="${escapeHtml(v.icon||'fas fa-car')}"></i> ${escapeHtml(v.name)}</h4><p>${escapeHtml(v.description||'Customer vehicle option')}</p></div><span class="status-pill">${v.is_active?'active':'hidden'}</span></div></div>`).join(''):'<div class="empty">Add your first vehicle type.</div>';if(sl)sl.innerHTML=services.length?services.map(s=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(s.name)}</h4><p>${Number(s.estimated_minutes)} min · ${s.mobile_available?'mobile ':''}${s.onsite_available?'on-site':''}</p></div><span class="status-pill">${s.is_active?'active':'hidden'}</span></div></div>`).join(''):'<div class="empty">Add your first wash service.</div>';const pv=document.getElementById('priceVehicle'),ps=document.getElementById('priceService');if(pv)pv.innerHTML='<option value="">Choose vehicle</option>'+vehicles.filter(x=>x.is_active).map(x=>`<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('');if(ps)ps.innerHTML='<option value="">Choose service</option>'+services.filter(x=>x.is_active).map(x=>`<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('');if(pl)pl.innerHTML=prices.length?prices.map(p=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(p.service_name)} · ${escapeHtml(p.vehicle_name)}</h4><p>${money(p.price,p.currency)}</p></div><span class="status-pill">${p.is_active?'active':'hidden'}</span></div></div>`).join(''):'<div class="empty">Add pricing so customers can book.</div>'}
+
+
+
+document.getElementById('vehicleForm')?.addEventListener('submit',async e=>{e.preventDefault();try{await api('/carwash/api/vehicles/',{method:'POST',body:JSON.stringify({name:document.getElementById('vehicleName').value.trim(),icon:document.getElementById('vehicleIcon').value.trim()||'fas fa-car',is_active:true})});e.target.reset();document.getElementById('vehicleIcon').value='fas fa-car';loadCatalogManager()}catch(err){alert(err.message)}})
+
+
+
+document.getElementById('serviceForm')?.addEventListener('submit',async e=>{e.preventDefault();try{await api('/carwash/api/services/',{method:'POST',body:JSON.stringify({name:document.getElementById('serviceName').value.trim(),description:document.getElementById('serviceDescription').value.trim(),estimated_minutes:Number(document.getElementById('serviceMinutes').value||30),mobile_available:document.getElementById('serviceMobile').checked,onsite_available:document.getElementById('serviceOnsite').checked,is_active:true})});e.target.reset();document.getElementById('serviceMinutes').value=30;document.getElementById('serviceMobile').checked=true;document.getElementById('serviceOnsite').checked=true;loadCatalogManager()}catch(err){alert(err.message)}})
+
+
+
+document.getElementById('priceForm')?.addEventListener('submit',async e=>{e.preventDefault();const v=document.getElementById('priceVehicle').value,s=document.getElementById('priceService').value,a=document.getElementById('priceAmount').value;if(!v||!s||!a)return;try{const existing=prices.find(p=>String(p.vehicle_type)===String(v)&&String(p.service)===String(s));if(existing)await api(`/carwash/api/prices/${existing.id}/`,{method:'PATCH',body:JSON.stringify({price:a,is_active:true})});else await api('/carwash/api/prices/',{method:'POST',body:JSON.stringify({vehicle_type:v,service:s,price:a,currency:'ZAR',is_active:true})});e.target.reset();loadCatalogManager()}catch(err){alert(err.message)}})
+
+
+
+async function loadWorkers(){if(!BUSINESS_ID)return;const box=document.getElementById('workerList');try{const d=await api('/carwash/api/workers/');workers=Array.isArray(d)?d:(d.results||[]);box.innerHTML=workers.length?workers.map(w=>`<div class="list-card"><div class="list-top"><div><h4>${escapeHtml(w.public_name||w.display_name||w.username)}</h4><p>${w.effective_online?'Live GPS':(w.is_online?'Reconnecting':'Offline')} · ${w.is_available?'Available':'Busy'}</p></div><span class="status-pill">${w.completed_washes} washes</span></div></div>`).join(''):'<div class="empty">No workers added yet. Your business owner can also be added as a worker profile.</div>';const mine=workers.find(x=>String(x.id)===String(WORKER_ID));const btn=document.getElementById('workerOnlineBtn');if(btn&&mine)btn.textContent=mine.is_online?'Go offline':'Go online';if(mine?.is_online&&businessData?.is_accepting_jobs){if(workerWatchId===null)startWorkerLocationSharing()}else stopWorkerLocationSharing()}catch(e){box.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+
+
+
+async function toggleWorkerOnline(){if(!WORKER_ID)return;const w=workers.find(x=>String(x.id)===String(WORKER_ID));if(!w)return;const goingOnline=!w.is_online;try{await api(`/carwash/api/workers/${WORKER_ID}/`,{method:'PATCH',body:JSON.stringify({is_online:goingOnline,is_available:goingOnline})});if(goingOnline){if(businessData&&!businessData.is_accepting_jobs){businessData=await api(`/carwash/api/businesses/${businessData.id}/`,{method:'PATCH',body:JSON.stringify({is_accepting_jobs:true})});await loadBusinessProfile()}startWorkerLocationSharing()}else stopWorkerLocationSharing();await loadWorkers()}catch(e){alert(e.message)}}
+
+
+
+function startWorkerLocationSharing(){
+  if(!navigator.geolocation){
+    const st=document.getElementById('workerGpsStatus');
+    if(st)st.textContent='Location services are unavailable on this device.';
+    return;
+  }
+  stopWorkerLocationSharing();
+  const st=document.getElementById('workerGpsStatus');
+  if(st)st.innerHTML='<i class="fas fa-spinner fa-spin"></i> Detecting your current live location…';
+
+  workerWatchId=navigator.geolocation.watchPosition(async pos=>{
+    const c=pos.coords;
+    const latitude=gpsCoordinate(c.latitude);
+    const longitude=gpsCoordinate(c.longitude);
+    if(latitude===null||longitude===null)return;
+    try{
+      await api('/carwash/api/provider/location/',{
+        method:'POST',
+        body:JSON.stringify({
+          latitude,
+          longitude,
+          heading:c.heading!=null?Number(c.heading).toFixed(6):null,
+          speed_kph:c.speed!=null?Number(c.speed*3.6).toFixed(6):null,
+          accuracy_m:c.accuracy!=null?Number(c.accuracy).toFixed(6):null,
+          is_available:true
+        })
+      });
+
+      // This is LIVE phone GPS only. Never overwrite the saved office address.
+      await updateLiveWorkerAddress(latitude,longitude,c.accuracy);
+
+      // Show the current phone position on the business map while live.
+      const livePos={lat:Number(latitude),lng:Number(longitude)};
+      setBusinessMarker(livePos);
+    }catch(e){
+      console.error('Live location update failed:',e);
+      if(st)st.textContent=e.message||'Could not update live location.';
+    }
+  },err=>{
+    console.error('GPS error:',err);
+    if(st){
+      st.textContent=err.code===1
+        ? 'Location permission is blocked. Allow precise location for OppoGlobe Wash.'
+        : err.code===2
+          ? 'Your phone could not determine its current position.'
+          : 'Location detection timed out. Trying again…';
+    }
+  },{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+}
+
+function stopWorkerLocationSharing(){if(workerWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(workerWatchId);workerWatchId=null}}
+
+
+
+function initBusinessPlaces(){const input=document.getElementById('businessAddressSearch');if(!input||!google.maps.places)return;const autocomplete=new google.maps.places.Autocomplete(input,{fields:['formatted_address','place_id','geometry','name']});autocomplete.addListener('place_changed',async()=>{const place=autocomplete.getPlace();if(!place.geometry?.location)return;const pos={lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};await saveBusinessLocation(pos,place.formatted_address||place.name||input.value,place.place_id||'')})}
+
+
+
+function detectBusinessLocation(){if(!navigator.geolocation){alert('Location services are unavailable on this device.');return}const out=document.getElementById('businessLocationText');out.textContent='Detecting your business location…';navigator.geolocation.getCurrentPosition(async pos=>{const point={lat:pos.coords.latitude,lng:pos.coords.longitude};let address='',placeId='';try{const g=await api(`/carwash/api/reverse-geocode/?lat=${point.lat}&lng=${point.lng}`);address=g.formatted_address||'';placeId=g.place_id||''}catch(e){}await saveBusinessLocation(point,address,placeId)},()=>{out.textContent='Location permission was denied. Search your address instead.'},{enableHighAccuracy:true,timeout:12000,maximumAge:30000})}
+
+
+
+async function saveBusinessLocation(pos,address,placeId){if(!BUSINESS_ID){alert('Create your car wash profile first.');return}try{const d=await api('/carwash/api/business/location/',{method:'POST',body:JSON.stringify({latitude:pos.lat,longitude:pos.lng,formatted_address:address,place_id:placeId})});businessData=d.business;document.getElementById('businessLocationText').textContent=businessData.formatted_address||businessData.address||'Location saved';setBusinessMarker({lat:Number(businessData.latitude),lng:Number(businessData.longitude)});map.panTo(pos);map.setZoom(15)}catch(e){alert(e.message)}}
+
+
+
+function setBusinessMarker(pos){if(!OppoMapMarker)return;if(!businessMarker)businessMarker=new OppoMapMarker({position:pos,map,label:businessData?.public_name||businessData?.name||'Your car wash',subtitle:'Business location',state:'business',icon:'fa-building'});else businessMarker.animateTo(pos,650)}
+
+
+
+function focusBusinessSavedLocation(){if(!businessData||businessData.latitude==null||businessData.longitude==null)return;const pos={lat:Number(businessData.latitude),lng:Number(businessData.longitude)};setBusinessMarker(pos);map.panTo(pos);map.setZoom(14)}
+
+
+
+async function loadBusinessPayments(){
+  if(!BUSINESS_ID)return;
+
+  const g=document.getElementById('gatewayList');
+  const p=document.getElementById('businessPayments');
+
+  try{
+    const [gd,pd,md]=await Promise.all([
+      api('/carwash/api/gateways/'),
+      api('/carwash/api/payments/'),
+      api('/carwash/api/money-summary/')
+    ]);
+
+    const gs=Array.isArray(gd)?gd:(gd.results||[]);
+    const ps=Array.isArray(pd)?pd:(pd.results||[]);
+    const wallet=md.wallet||{};
+    const totals=md.totals||{};
+
+    document.getElementById('walletAvailable').textContent=
+      money(wallet.available_balance||0,'ZAR');
+
+    document.getElementById('walletCommissionDue').textContent=
+      money(wallet.commission_due||0,'ZAR');
+
+    document.getElementById('moneyPaidVolume').textContent=
+      money(totals.paid_volume||0,'ZAR');
+
+    document.getElementById('moneyCommissionTotal').textContent=
+      money(totals.oppoglobe_commission||0,'ZAR');
+
+    if(gs.length){
+      g.innerHTML=gs.map(x=>`
+        <div class="list-card">
+          <div class="list-top">
+            <div>
+              <h4>${escapeHtml(x.name||x.code||'Gateway')}</h4>
+              <p>
+                ${
+                  [
+                    x.supports_card?'Card':'',
+                    x.supports_eft?'EFT':'',
+                    x.supports_wallet?'Wallet':''
+                  ].filter(Boolean).join(' · ') || 'Digital gateway'
+                }
+              </p>
+            </div>
+            <span class="status-pill">${x.is_active===false?'disabled':'available'}</span>
+          </div>
+        </div>
+      `).join('');
+    }else{
+      g.innerHTML=`
+        <div class="gateway-diagnostic">
+          <strong>No digital gateway returned by Django.</strong><br>
+          If Yoco test keys are configured as <code>YOCO_PUBLIC_KEY</code> and
+          <code>YOCO_SECRET_KEY</code>, restart Django and refresh this panel.
+          Cash payments continue to work and OppoGlobe commission is still tracked.
+        </div>
+      `;
+    }
+
+    p.innerHTML=ps.length
+      ? ps.map(x=>`
+        <div class="list-card">
+          <div class="list-top">
+            <div>
+              <h4>${money(x.gross_amount,x.currency)}</h4>
+              <p>
+                ${escapeHtml(x.payment_method||'payment')}
+                ${x.gateway_name?' · '+escapeHtml(x.gateway_name):''}<br>
+                Provider ${money(x.provider_amount,x.currency)}
+                · OppoGlobe ${money(x.platform_commission,x.currency)}
+              </p>
+            </div>
+            <span class="status-pill">${escapeHtml(x.status)}</span>
+          </div>
+        </div>
+      `).join('')
+      : '<div class="empty">No payment records yet. A record appears when a customer selects Cash or starts a Yoco checkout.</div>';
+
+  }catch(e){
+    g.innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`;
+  }
+
+  await loadPayoutDetails();
+}
+
+
+async function loadPayoutDetails(){
+  const badge=document.getElementById('payoutStatusBadge');
+  const masked=document.getElementById('payoutMasked');
+
+  try{
+    const data=await api('/carwash/api/payout-details/');
+    const row=data.payout||{};
+
+    document.getElementById('payoutBankName').value=row.bank_name||'';
+    document.getElementById('payoutAccountHolder').value=row.account_holder||'';
+    document.getElementById('payoutBranchCode').value=row.branch_code||'';
+    document.getElementById('payoutAccountType').value=row.account_type||'cheque';
+    document.getElementById('payoutReference').value=row.payout_reference||'';
+
+    if(row.account_number_masked){
+      document.getElementById('payoutAccountNumber').placeholder=row.account_number_masked;
+      masked.textContent=`Saved account: ${row.account_number_masked}`;
+    }else{
+      masked.textContent='';
+    }
+
+    badge.textContent=row.is_complete?'Ready for payout':'Incomplete';
+    badge.classList.toggle('ready',!!row.is_complete);
+
+  }catch(e){
+    badge.textContent='Unavailable';
+    badge.classList.remove('ready');
+  }
+}
+
+
+document.getElementById('payoutForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  const btn=document.getElementById('savePayoutBtn');
+  const original=btn.innerHTML;
+
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+  const payload={
+    bank_name:document.getElementById('payoutBankName').value.trim(),
+    account_holder:document.getElementById('payoutAccountHolder').value.trim(),
+    branch_code:document.getElementById('payoutBranchCode').value.trim(),
+    account_type:document.getElementById('payoutAccountType').value,
+    payout_reference:document.getElementById('payoutReference').value.trim()
+  };
+
+  const account=document.getElementById('payoutAccountNumber').value.trim();
+  if(account)payload.account_number=account;
+
+  try{
+    await api('/carwash/api/payout-details/',{
+      method:'POST',
+      body:JSON.stringify(payload)
+    });
+
+    document.getElementById('payoutAccountNumber').value='';
+    await loadPayoutDetails();
+    alert('Payout details saved.');
+
+  }catch(err){
+    alert(err.message);
+
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML=original;
+  }
+});
+
+
+
+</script>
+
+
+
+
+
+function recenterLiveMap(){mapUserMoved=false;if(currentTrackingData?.provider_location&&userPos){const p=currentTrackingData.provider_location;const bounds=new google.maps.LatLngBounds();bounds.extend(userPos);bounds.extend({lat:Number(p.latitude),lng:Number(p.longitude)});map.fitBounds(bounds,70)}else if(userPos){map.panTo(userPos);map.setZoom(14)}else if(IS_BUSINESS){focusCurrentRoleLocation()}}
+
+function startWorkspaceRefreshEngine(){
+  if(workspaceRefreshTimer)clearInterval(workspaceRefreshTimer);if(paymentRefreshTimer)clearInterval(paymentRefreshTimer);
+  const sync=()=>{if(document.visibilityState!=='visible'||!navigator.onLine)return;if(IS_BUSINESS){loadBusinessRequests();loadWorkers();if(CAN_MANAGE)loadBusinessDashboard();}else{if(userPos)loadNearby(true);if(IS_AUTH)loadCustomerRequests();}};
+  workspaceRefreshTimer=setInterval(sync,IS_BUSINESS?7000:9000);
+  paymentRefreshTimer=setInterval(()=>{if(document.visibilityState!=='visible'||!navigator.onLine)return;IS_BUSINESS&&CAN_MANAGE?loadBusinessPayments():IS_AUTH&&loadCustomerPayments();},30000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync();});window.addEventListener('focus',sync);window.addEventListener('online',()=>{setMapLiveBanner('Back online · syncing',true);sync();});window.addEventListener('offline',()=>setMapLiveBanner('Offline · showing last known activity',true));
+}
+
+function clearPoliceMarkers(){policeMarkers.forEach(m=>m.setMap(null));policeMarkers=[]}
+function openSafetyCenter(context={}){window._carwashSafetyContext={...context};document.getElementById('carwashSafetyModal')?.classList.add('show');if(userPos)findNearestPolice(false)}
+function closeSafetyCenter(){document.getElementById('carwashSafetyModal')?.classList.remove('show');clearPoliceMarkers()}
+async function copySafetyLocation(){if(!userPos){locateMe();document.getElementById('safetyReportStatus').textContent='Finding your location…';return}const value=`${userPos.lat.toFixed(6)}, ${userPos.lng.toFixed(6)}`;try{await navigator.clipboard.writeText(value);document.getElementById('safetyReportStatus').textContent=`Location copied: ${value}`}catch(_){document.getElementById('safetyReportStatus').textContent=value}}
+function policeDistance(place){const loc=place.geometry?.location;if(!loc||!userPos)return Infinity;return distanceBetweenCoords(userPos.lat,userPos.lng,loc.lat(),loc.lng())}
+function findNearestPolice(showStatus=true){
+  const box=document.getElementById('policeList');if(!userPos){if(box)box.innerHTML='<div class="empty">Allow location access first so we can find police near you.</div>';locateMe();return}
+  if(!google.maps.places){if(box)box.innerHTML='<div class="empty">Google Places is unavailable.</div>';return}
+  if(showStatus&&box)box.innerHTML='<div class="empty"><i class="fas fa-spinner fa-spin"></i> Finding nearby police…</div>';
+  new google.maps.places.PlacesService(map).nearbySearch({location:userPos,radius:15000,type:'police'},(results,status)=>{
+    if(status!==google.maps.places.PlacesServiceStatus.OK||!results?.length){if(box)box.innerHTML='<div class="empty">No police stations were returned nearby. In an emergency call 10111 or 112.</div>';return}
+    const sorted=[...results].sort((a,b)=>policeDistance(a)-policeDistance(b)).slice(0,5);nearestPolice=sorted[0];clearPoliceMarkers();
+    sorted.forEach((p,i)=>{const pos={lat:p.geometry.location.lat(),lng:p.geometry.location.lng()};policeMarkers.push(new OppoMapMarker({position:pos,map,label:p.name||'Police station',subtitle:i===0?'Nearest police':'Police station',state:'police',icon:'fa-building-shield'}));});
+    if(box)box.innerHTML=sorted.map((p,i)=>{const lat=p.geometry.location.lat(),lng=p.geometry.location.lng();return `<div class="police-row"><div><strong>${escapeHtml(p.name||'Police station')}</strong><span>${(policeDistance(p)/1000).toFixed(1)} km away${i===0?' · nearest':''}</span></div><a class="btn small" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}"><i class="fas fa-route"></i> Navigate</a></div>`}).join('');
+  });
+}
+async function submitSafetyReport(){
+  if(!IS_AUTH)return;const ctx=window._carwashSafetyContext||{};const status=document.getElementById('safetyReportStatus');status.textContent='Submitting safety report…';
+  const providerLoc=currentTrackingData?.provider_location||null;const payload={request_id:ctx.requestId||activeRequestId||null,business_id:ctx.businessId||selectedProvider?.id||null,worker_id:ctx.workerId||selectedProvider?.available_worker_id||null,category:document.getElementById('safetyCategory').value,description:document.getElementById('safetyDescription').value.trim(),reporter_latitude:userPos?.lat??null,reporter_longitude:userPos?.lng??null,reported_latitude:providerLoc?.latitude??selectedProvider?.map_latitude??null,reported_longitude:providerLoc?.longitude??selectedProvider?.map_longitude??null,nearest_police_name:nearestPolice?.name||'',nearest_police_address:nearestPolice?.vicinity||'',nearest_police_place_id:nearestPolice?.place_id||''};
+  try{const data=await api('/carwash/api/safety/report/',{method:'POST',body:JSON.stringify(payload)});status.textContent=`Recorded. Reference: ${data.report?.id||'saved'}`;document.getElementById('safetyDescription').value='';}catch(e){status.textContent=e.message||'Could not submit the report.'}
+}
+
+
+
+let carwashKnownAlertIds=new Set(),carwashAlertsReady=false,carwashAlertTimer=null,carwashAudioUnlocked=false;
+function carwashAlertRows(data){if(Array.isArray(data))return data;for(const key of ['alerts','results','data','notifications'])if(Array.isArray(data?.[key]))return data[key];return[]}
+function carwashAlertId(a){return a?.id??a?.alert_id??a?.pk??null}
+function unlockCarwashAudio(){if(carwashAudioUnlocked)return;const a=document.getElementById('globalCarwashAlertAudio');if(!a)return;const p=a.play();if(p&&typeof p.then==='function')p.then(()=>{a.pause();a.currentTime=0;carwashAudioUnlocked=true}).catch(()=>{});}
+['pointerdown','touchstart','keydown'].forEach(evt=>document.addEventListener(evt,unlockCarwashAudio,{once:false,passive:true}));
+function playCarwashAlertSound(){const a=document.getElementById('globalCarwashAlertAudio');if(!a)return;try{a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(_){}}
+async function pollCarwashAlerts(){
+  if(!IS_AUTH||!navigator.onLine)return;
+  try{const data=await api('/api/alerts/');const rows=carwashAlertRows(data);const ids=rows.map(carwashAlertId).filter(v=>v!=null).map(String);if(!carwashAlertsReady){carwashKnownAlertIds=new Set(ids);carwashAlertsReady=true;return}const fresh=rows.filter(a=>{const id=carwashAlertId(a);return id!=null&&!carwashKnownAlertIds.has(String(id))});carwashKnownAlertIds=new Set(ids);if(fresh.length){playCarwashAlertSound();setMapLiveBanner(fresh.length===1?'New OppoGlobe notification':`${fresh.length} new OppoGlobe notifications`,true);}}
+  catch(_){/* never expose notification transport errors to the user */}
+}
+function startCarwashAlertListener(){if(!IS_AUTH)return;pollCarwashAlerts();if(carwashAlertTimer)clearInterval(carwashAlertTimer);carwashAlertTimer=setInterval(pollCarwashAlerts,15000)}
+document.addEventListener('DOMContentLoaded',startCarwashAlertListener);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pollCarwashAlerts()});window.addEventListener('focus',pollCarwashAlerts);
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initWashMap" async defer></script>
+
+<script>
+/* ============================================================
+   GLOBAL OPPOGLOBE MESSAGE BADGE
+   Same unread-count source used by the home page.
+   ============================================================ */
+let carwashMessageCountTimer = null;
+
+function setCarwashMessageBadge(count){
+  const badge=document.getElementById('carwashMessageBadge');
+  const link=document.getElementById('carwashMessageLink');
+  if(!badge || !link)return;
+
+  const n=Math.max(0,Number(count)||0);
+  if(n>0){
+    badge.textContent=n>99?'99+':String(n);
+    badge.setAttribute('aria-label',`${n} unread ${n===1?'message':'messages'}`);
+    badge.classList.add('show');
+    link.classList.add('has-unread');
+    link.title=`Messages · ${n} unread`;
+  }else{
+    badge.textContent='0';
+    badge.setAttribute('aria-label','0 unread messages');
+    badge.classList.remove('show');
+    link.classList.remove('has-unread');
+    link.title='Messages';
+  }
+}
+
+async function loadCarwashMessageCount(){
+  const badge=document.getElementById('carwashMessageBadge');
+  if(!badge || !IS_AUTH)return;
+
+  try{
+    const response=await fetch('/api/conversations/unread-count/',{
+      method:'GET',
+      headers:{'Accept':'application/json'},
+      credentials:'same-origin',
+      cache:'no-store'
+    });
+
+    if(!response.ok)throw new Error(`Message count failed (${response.status})`);
+    const data=await response.json();
+
+    const count=
+      data?.unread_count ??
+      data?.count ??
+      data?.unread ??
+      data?.data?.unread_count ??
+      0;
+
+    setCarwashMessageBadge(count);
+  }catch(error){
+    console.warn('Could not load unread message count:',error);
+    // Keep the last known value instead of flashing the badge off.
+  }
+}
+
+function startCarwashMessageBadge(){
+  if(!IS_AUTH)return;
+  loadCarwashMessageCount();
+  if(carwashMessageCountTimer)clearInterval(carwashMessageCountTimer);
+  carwashMessageCountTimer=setInterval(loadCarwashMessageCount,15000);
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')loadCarwashMessageCount();
+});
+window.addEventListener('focus',loadCarwashMessageCount);
+
+/* ============================================================
+   CARWASH → MAIN OPPOGLOBE MESSAGING
+   Uses hiring.Conversation / Message / MessageRecipient
+   through the carwash messaging endpoints.
+   ============================================================ */
+
+async function postCarwashMessageEndpoint(url, initialMessage=''){
+  if(!IS_AUTH){
+    alert('Please sign in to message this user.');
+    window.location.href='/';
+    return null;
+  }
+
+  try{
+    const data=await api(url,{
+      method:'POST',
+      body:JSON.stringify({
+        message:initialMessage || ''
+      })
+    });
+
+    if(!data || data.success===false){
+      throw new Error(data?.error || 'Could not open conversation.');
+    }
+
+    const conversationId=
+      data.conversation_id ||
+      data.conversation?.id ||
+      '';
+
+    const recipientId=
+      data.recipient?.id ||
+      data.user_id ||
+      data.recipient_id ||
+      '';
+
+    const recipientName=
+      data.recipient?.name ||
+      data.recipient?.username ||
+      data.business?.name ||
+      'Car wash user';
+
+    /*
+      IMPORTANT:
+      The global OppoGlobe messaging page already auto-starts/selects chats
+      from ?user_id=... (this is the same behaviour used by properties).
+
+      We still include ?conversation=... as context/fallback, but user_id is
+      placed first so the existing messaging page knows exactly who to open.
+    */
+    const params=new URLSearchParams();
+
+    if(recipientId){
+      params.set('user_id',recipientId);
+    }
+
+    if(conversationId){
+      params.set('conversation',conversationId);
+    }
+
+    params.set('source','carwash');
+    params.set('name',recipientName);
+
+    const messagingUrl=`/messaging/?${params.toString()}`;
+
+    window.location.href=messagingUrl;
+    return data;
+
+  }catch(e){
+    alert(e.message || 'Could not start the conversation.');
+    return null;
+  }
+}
+
+
+async function messageCarwashBusiness(businessId,businessName=''){
+  if(!businessId){
+    alert('Car wash business could not be identified.');
+    return;
+  }
+
+  await postCarwashMessageEndpoint(
+    `/carwash/api/businesses/${encodeURIComponent(businessId)}/message/`,
+    ''
+  );
+}
+
+
+async function messageSelectedProvider(){
+  if(!selectedProvider || !selectedProvider.id){
+    alert('Choose a car wash provider first.');
+    return;
+  }
+
+  await messageCarwashBusiness(
+    selectedProvider.id,
+    selectedProvider.name || 'Car wash'
+  );
+}
+
+
+async function messageCarwashRequest(requestId){
+  if(!requestId){
+    alert('Wash request could not be identified.');
+    return;
+  }
+
+  await postCarwashMessageEndpoint(
+    `/carwash/api/requests/${encodeURIComponent(requestId)}/message/`,
+    ''
+  );
+}
+
+
+async function messageActiveCarwashRequest(){
+  if(!activeRequestId){
+    alert('No active wash request is selected.');
+    return;
+  }
+
+  await messageCarwashRequest(activeRequestId);
+}
+
+
+
+// Keep the header message badge live while the Car Wash workspace is open.
+startCarwashMessageBadge();
+</script>
+
+
+
+</body>
+
+
+
+</html>

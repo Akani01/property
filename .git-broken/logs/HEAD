@@ -1,0 +1,131 @@
+3656a318419670ba3a653c3defcc1d17de272ce4 55779282573853c3a50d802cbd6340405e50a472 Akani01 <akaniivinmiyen@gmail.com> 1783608230 +0200	commit: updated
+55779282573853c3a50d802cbd6340405e50a472 55779282573853c3a50d802cbd6340405e50a472 Akani01 <akaniivinmiyen@gmail.com> 1783791486 +0200	checkout: moving from main to master1
+55779282573853c3a50d802cbd6340405e50a472 b4eda90393eac6e8f1225f40b12562421b2766e4 Akani01 <akaniivinmiyen@gmail.com> 1783791658 +0200	commit: new fix
+b4eda90393eac6e8f1225f40b12562421b2766e4 15fbb0578c73d242f11a2783082890e70031d52f Akani01 <akaniivinmiyen@gmail.com> 1783836815 +0200	commit: black theme
+15fbb0578c73d242f11a2783082890e70031d52f 359ae32f4941515d63a720802de76d92522bae9b Akani01 <akaniivinmiyen@gmail.com> 1783865776 +0200	commit: removed theme
+359ae32f4941515d63a720802de76d92522bae9b 3cad456f8203a827e74390027c6f64ba3e691942 Akani01 <akaniivinmiyen@gmail.com> 1784631361 +0200	commit: updates
+3cad456f8203a827e74390027c6f64ba3e691942 3cad456f8203a827e74390027c6f64ba3e691942 Akani01 <akaniivinmiyen@gmail.com> 1784631457 +0200	checkout: moving from master1 to master2
+3cad456f8203a827e74390027c6f64ba3e691942 b455dddc4bd6a2a1a2cb3eb38f9db261d59ae175 Akani01 <akaniivinmiyen@gmail.com> 1784632090 +0200	commit (amend): updates
+b455dddc4bd6a2a1a2cb3eb38f9db261d59ae175 fcd793632e34b6cdbc907d00780d42dda61e58f4 Akani01 <akaniivinmiyen@gmail.com> 1784656920 +0200	commit: updates
+fcd793632e34b6cdbc907d00780d42dda61e58f4 dbf982ac4764741e0585c8150d753b29ba460595 Akani01 <akaniivinmiyen@gmail.com> 1784657338 +0200	commit: new addition
+dbf982ac4764741e0585c8150d753b29ba460595 afc58f1f92be3d7e7973a638c98bb7f0101937b1 Akani01 <akaniivinmiyen@gmail.com> 1785023813 +0200	commit: updates
+afc58f1f92be3d7e7973a638c98bb7f0101937b1 5de9aa7165e4d4cb113cfcd8ba2b1777b6833723 Akani01 <akaniivinmiyen@gmail.com> 1785034467 +0200	commit: updates
+5de9aa7165e4d4cb113cfcd8ba2b1777b6833723 d47e912d87b8be12422d1013d39074acc6a60852 Akani01 <akaniivinmiyen@gmail.com> 1785056083 +0200	commit: updates
+d47e912d87b8be12422d1013d39074acc6a60852 3530a707fe42b9bae93d006e649147accd934844 Akani01 <akaniivinmiyen@gmail.com> 1785081078 +0200	commit: notification
+3530a707fe42b9bae93d006e649147accd934844 036d4469135bae2fa449b5d41dfce79ed7fb43a4 Akani01 <akaniivinmiyen@gmail.com> 1785082349 +0200	commit: notification
+036d4469135bae2fa449b5d41dfce79ed7fb43a4 f9ba82aa2953b428a47470c359e726e2906253af Akani01 <akaniivinmiyen@gmail.com> 1785083860 +0200	commit: notification
+f9ba82aa2953b428a47470c359e726e2906253af 15a39e99ed578e45246133e40a8320a8d9f36d1c Akani01 <akaniivinmiyen@gmail.com> 1785128564 +0200	commit: comment updates
+15a39e99ed578e45246133e40a8320a8d9f36d1c 15a39e99ed578e45246133e40a8320a8d9f36d1c Akani01 <akaniivinmiyen@gmail.com> 1785213777 +0200	checkout: moving from master2 to master3
+15a39e99ed578e45246133e40a8320a8d9f36d1c b2a77153ab1c1b285e452ce91506903ff72af8a8 Akani01 <akaniivinmiyen@gmail.com> 1785213819 +0200	commit: pwa
+b2a77153ab1c1b285e452ce91506903ff72af8a8 6d1401ed861a74d903fb9539fe7b15670362d012 Akani01 <akaniivinmiyen@gmail.com> 1785214424 +0200	commit: updates
+6d1401ed861a74d903fb9539fe7b15670362d012 c0bba6a4e423096cf2f66fc861917cce8d51714d Akani01 <akaniivinmiyen@gmail.com> 1785215445 +0200	commit: Fix static files for PWA - added missing icons and images
+c0bba6a4e423096cf2f66fc861917cce8d51714d 89284a07d06b536c406076b281bfad595091e791 Akani01 <akaniivinmiyen@gmail.com> 1785217245 +0200	commit: Fix PWA with retry logic for 429 errors
+89284a07d06b536c406076b281bfad595091e791 d64dd52a60a83583890ee12cab37f1295ffe9bf1 Akani01 <akaniivinmiyen@gmail.com> 1785217652 +0200	commit: updates
+d64dd52a60a83583890ee12cab37f1295ffe9bf1 053172f0d1325a1d8af0c5fe91ae7fa8e291b960 Akani01 <akaniivinmiyen@gmail.com> 1785527480 +0200	commit: updates
+053172f0d1325a1d8af0c5fe91ae7fa8e291b960 f2824a9af60c9c07ebd83e1da36aa9561664dde1 Akani01 <akaniivinmiyen@gmail.com> 1785598455 +0200	commit: updates
+f2824a9af60c9c07ebd83e1da36aa9561664dde1 f2824a9af60c9c07ebd83e1da36aa9561664dde1 Akani01 <akaniivinmiyen@gmail.com> 1785598507 +0200	checkout: moving from master3 to master4
+f2824a9af60c9c07ebd83e1da36aa9561664dde1 f2824a9af60c9c07ebd83e1da36aa9561664dde1 Akani01 <akaniivinmiyen@gmail.com> 1785631667 +0200	checkout: moving from master4 to master5
+f2824a9af60c9c07ebd83e1da36aa9561664dde1 f504d3f6ac110587b2cf63445a289971b4458492 Akani01 <akaniivinmiyen@gmail.com> 1785631712 +0200	commit: new content
+f504d3f6ac110587b2cf63445a289971b4458492 095462ea476e373bc68d8bd38467037c7d886685 Akani01 <akaniivinmiyen@gmail.com> 1785700418 +0200	commit: google
+095462ea476e373bc68d8bd38467037c7d886685 224d05fd9890189f7ad906560ff6bbbbbcf6f7fd Akani01 <akaniivinmiyen@gmail.com> 1785928484 +0200	commit: updates
+224d05fd9890189f7ad906560ff6bbbbbcf6f7fd 2a9c0619dc34ae5da9b50d225a38add0664494bb Akani01 <akaniivinmiyen@gmail.com> 1785950895 +0200	commit: host added
+2a9c0619dc34ae5da9b50d225a38add0664494bb eff8fe35c0cf35615aa72fd3d3916c7ebe8d92f1 Akani01 <akaniivinmiyen@gmail.com> 1786044911 +0200	commit: fast app
+eff8fe35c0cf35615aa72fd3d3916c7ebe8d92f1 22d512c9da2dd148e93a8cfebf7bf65635346d41 Akani01 <akaniivinmiyen@gmail.com> 1786045362 +0200	commit: fast app
+22d512c9da2dd148e93a8cfebf7bf65635346d41 2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 Akani01 <akaniivinmiyen@gmail.com> 1786186285 +0200	commit: working cards
+2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 c509af6ac68916633ffc8b0b192521ec7819c264 Akani01 <akaniivinmiyen@gmail.com> 1786220826 +0200	commit: new updates
+c509af6ac68916633ffc8b0b192521ec7819c264 2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 Akani01 <akaniivinmiyen@gmail.com> 1786220883 +0200	checkout: moving from master5 to master6
+2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 Akani01 <akaniivinmiyen@gmail.com> 1786221225 +0200	reset: moving to HEAD
+2b745fc3f7df2a9c642c0322a284e8c00ac19fe7 862f54b3a1f53e5c2e95548d6ebd45f53a888238 Akani01 <akaniivinmiyen@gmail.com> 1786222639 +0200	commit: education interface edition
+862f54b3a1f53e5c2e95548d6ebd45f53a888238 964bc024f7f0c69e542d5ba43a318ee694b6391c Akani01 <akaniivinmiyen@gmail.com> 1786223015 +0200	commit: updates
+964bc024f7f0c69e542d5ba43a318ee694b6391c 416531b9d88a5f1f0271946a0c09bf681b2bfc07 Akani01 <akaniivinmiyen@gmail.com> 1786223406 +0200	commit: details update
+416531b9d88a5f1f0271946a0c09bf681b2bfc07 7589387292bcb3d883583dc45cd1002d1a4c4648 Akani01 <akaniivinmiyen@gmail.com> 1786223772 +0200	commit: new updates
+7589387292bcb3d883583dc45cd1002d1a4c4648 046b9c44e4aca7c3b35d2bdb73671c0129356a01 Akani01 <akaniivinmiyen@gmail.com> 1786255144 +0200	commit: software added
+046b9c44e4aca7c3b35d2bdb73671c0129356a01 31a9958ea2d745e661f1767b2324aa0615b0f070 Akani01 <akaniivinmiyen@gmail.com> 1786266598 +0200	commit: udpates
+31a9958ea2d745e661f1767b2324aa0615b0f070 cf43b5d161631ec07e0cad9343077251a65f620f Akani01 <akaniivinmiyen@gmail.com> 1786267959 +0200	commit: new data
+cf43b5d161631ec07e0cad9343077251a65f620f 8fd9f7bdcaed8e1b1c104113193784e2a2f6ff7f Akani01 <akaniivinmiyen@gmail.com> 1786308413 +0200	commit: updated geo code
+8fd9f7bdcaed8e1b1c104113193784e2a2f6ff7f 4708ed55b5b5cf7d46aff3b963b64117c97b88c3 Akani01 <akaniivinmiyen@gmail.com> 1786345166 +0200	commit: Fresh deploy after disconnect
+4708ed55b5b5cf7d46aff3b963b64117c97b88c3 bfa3d93e8a961d4bf703e11b9a8faaaafa433670 Akani01 <akaniivinmiyen@gmail.com> 1786356256 +0200	commit: changes
+bfa3d93e8a961d4bf703e11b9a8faaaafa433670 bfa3d93e8a961d4bf703e11b9a8faaaafa433670 Akani01 <akaniivinmiyen@gmail.com> 1786377753 +0200	checkout: moving from master6 to master7
+bfa3d93e8a961d4bf703e11b9a8faaaafa433670 bd38ebd9d71e6e57ebe1ccfb0c3936883bbda4a1 Akani01 <akaniivinmiyen@gmail.com> 1786377783 +0200	commit: updates
+bd38ebd9d71e6e57ebe1ccfb0c3936883bbda4a1 ffdff5580d1986b34e3abe40de2e4fa83e969115 Akani01 <akaniivinmiyen@gmail.com> 1786378803 +0200	commit: updates
+ffdff5580d1986b34e3abe40de2e4fa83e969115 ffdff5580d1986b34e3abe40de2e4fa83e969115 Akani01 <akaniivinmiyen@gmail.com> 1786778283 +0200	checkout: moving from master7 to master8
+ffdff5580d1986b34e3abe40de2e4fa83e969115 5d47c963aaa7bbed87a41053a206f6a0c256e76b Akani01 <akaniivinmiyen@gmail.com> 1786778298 +0200	commit: updates
+5d47c963aaa7bbed87a41053a206f6a0c256e76b 8a4cb359b47dd250e9b7d209564ddc5aade77d40 Akani01 <akaniivinmiyen@gmail.com> 1786784963 +0200	commit: updates
+8a4cb359b47dd250e9b7d209564ddc5aade77d40 38689b0e92624dc6828db653baba6fcad9805c64 Akani01 <akaniivinmiyen@gmail.com> 1786907383 +0200	commit: interface
+38689b0e92624dc6828db653baba6fcad9805c64 b73c67a945d0e77d3b3b8683145887ae4375a54f Akani01 <akaniivinmiyen@gmail.com> 1786911469 +0200	commit: google
+b73c67a945d0e77d3b3b8683145887ae4375a54f b2add31b1016de61ca62bb544b53146927d8ec50 Akani01 <akaniivinmiyen@gmail.com> 1786911645 +0200	commit: new
+b2add31b1016de61ca62bb544b53146927d8ec50 043e7190ca84c9b3d4a096f9d3cd0b9d14d89853 Akani01 <akaniivinmiyen@gmail.com> 1786990529 +0200	commit: updates notification
+043e7190ca84c9b3d4a096f9d3cd0b9d14d89853 7480d222f7b8ae67f09f00f391f180295811ca90 Akani01 <akaniivinmiyen@gmail.com> 1787083372 +0200	commit: updates for education
+7480d222f7b8ae67f09f00f391f180295811ca90 54bc4b0bdea63b2e463ae88caa20b58f8264b525 Akani01 <akaniivinmiyen@gmail.com> 1787138503 +0200	commit: updates
+54bc4b0bdea63b2e463ae88caa20b58f8264b525 3ed32b99b0101a03d7a89aaef87cb1ebeb71a464 Akani01 <akaniivinmiyen@gmail.com> 1787398654 +0200	commit: pro-ready
+3ed32b99b0101a03d7a89aaef87cb1ebeb71a464 c51dcdcf7cb291ae2ad99a7d36d75fb9077fb5fb Akani01 <akaniivinmiyen@gmail.com> 1787408277 +0200	commit: updates
+c51dcdcf7cb291ae2ad99a7d36d75fb9077fb5fb ec593ab8ce44243205553be45fcd07d79548a11b Akani01 <akaniivinmiyen@gmail.com> 1787408774 +0200	commit: updates
+ec593ab8ce44243205553be45fcd07d79548a11b d82d75195ecda5a9e74c2512dbf7b87334131f35 Akani01 <akaniivinmiyen@gmail.com> 1787409683 +0200	commit: updates bursaries
+d82d75195ecda5a9e74c2512dbf7b87334131f35 e594a81be21c30cc25174cd47e0a416f946e958b Akani01 <akaniivinmiyen@gmail.com> 1787421458 +0200	commit: update icon
+e594a81be21c30cc25174cd47e0a416f946e958b e2d07f2c6c62aa8b208583e9b94a0c96e88ad05e Akani01 <akaniivinmiyen@gmail.com> 1787422609 +0200	commit: app updates
+e2d07f2c6c62aa8b208583e9b94a0c96e88ad05e 43b4d5d7d6eea896086678470b725211f51b47b1 Akani01 <akaniivinmiyen@gmail.com> 1787471132 +0200	commit: changes
+43b4d5d7d6eea896086678470b725211f51b47b1 422977cf14851d13d9783e29228ba585aadca232 Akani01 <akaniivinmiyen@gmail.com> 1787491342 +0200	commit: updates
+422977cf14851d13d9783e29228ba585aadca232 8f2faf06b9d01d46b26b49b7a5a59222cdde2ce2 Akani01 <akaniivinmiyen@gmail.com> 1787495227 +0200	commit: forgot password link
+8f2faf06b9d01d46b26b49b7a5a59222cdde2ce2 35d245ce21554a72ec829dc6f80f81d81705ee5d Akani01 <akaniivinmiyen@gmail.com> 1787495984 +0200	commit: updates for google
+35d245ce21554a72ec829dc6f80f81d81705ee5d 63a61a9a21fda82e263cfd5f3745557384e47f5c Akani01 <akaniivinmiyen@gmail.com> 1787501652 +0200	commit: google
+63a61a9a21fda82e263cfd5f3745557384e47f5c 7e028323629abe5abe558cce07a66762785d9a0e Akani01 <akaniivinmiyen@gmail.com> 1787592993 +0200	commit: updates business
+7e028323629abe5abe558cce07a66762785d9a0e c691ba21c360137fba9dcd29a2a6767b16cc9b88 Akani01 <akaniivinmiyen@gmail.com> 1787594480 +0200	commit: password fix
+c691ba21c360137fba9dcd29a2a6767b16cc9b88 ef9839616bc4cf4ac3696e177ab2328d6842ef90 Akani01 <akaniivinmiyen@gmail.com> 1787633868 +0200	commit: reset password
+ef9839616bc4cf4ac3696e177ab2328d6842ef90 7921d4a6b1c87cab968fec43cd149e3dea29d28c Akani01 <akaniivinmiyen@gmail.com> 1787852214 +0200	commit: fixing video function
+7921d4a6b1c87cab968fec43cd149e3dea29d28c 5f897f906d463c1f8df18c6b41b974caca844538 Akani01 <akaniivinmiyen@gmail.com> 1787941559 +0200	commit: fixed video function
+5f897f906d463c1f8df18c6b41b974caca844538 4b6acde694b368a72ce2838c7e1bc731ff995c17 Akani01 <akaniivinmiyen@gmail.com> 1787982707 +0200	commit: update video
+4b6acde694b368a72ce2838c7e1bc731ff995c17 d82e3894a7e635038431841277ca9a3366035d4a Akani01 <akaniivinmiyen@gmail.com> 1787994597 +0200	commit: update school
+d82e3894a7e635038431841277ca9a3366035d4a 3795b2984f7421c778496d8ccbc10c18e4d5f2c8 Akani01 <akaniivinmiyen@gmail.com> 1788010580 +0200	commit: updates for like post
+3795b2984f7421c778496d8ccbc10c18e4d5f2c8 04e8b9319b732215c625dc35652fc1986256d71d Akani01 <akaniivinmiyen@gmail.com> 1788022346 +0200	commit: updated my application
+04e8b9319b732215c625dc35652fc1986256d71d a82a48f7d161c164de6e47c761662042150594ec Akani01 <akaniivinmiyen@gmail.com> 1788054483 +0200	commit: updates
+a82a48f7d161c164de6e47c761662042150594ec bf907a1d17d25e17fa5a9972b4cdfcd688a6b4d0 Akani01 <akaniivinmiyen@gmail.com> 1788073013 +0200	commit: finally
+bf907a1d17d25e17fa5a9972b4cdfcd688a6b4d0 c72f431d90c419424b07ab127ad87197e7294fb4 Akani01 <akaniivinmiyen@gmail.com> 1788074688 +0200	commit: google business error
+c72f431d90c419424b07ab127ad87197e7294fb4 c92b28100843ccf49eb854dafcd22e3e68964331 Akani01 <akaniivinmiyen@gmail.com> 1788259724 +0200	commit: updated
+c92b28100843ccf49eb854dafcd22e3e68964331 406de6c77c3884cd589abc5c3c8d88b295e52396 Akani01 <akaniivinmiyen@gmail.com> 1788317432 +0200	commit: app updates
+406de6c77c3884cd589abc5c3c8d88b295e52396 406de6c77c3884cd589abc5c3c8d88b295e52396 Akani01 <akaniivinmiyen@gmail.com> 1788636872 +0200	checkout: moving from master8 to master9
+406de6c77c3884cd589abc5c3c8d88b295e52396 0584c583f1c083edf060f0be892c0ddf499635f0 Akani01 <akaniivinmiyen@gmail.com> 1788636899 +0200	commit: cleaning
+0584c583f1c083edf060f0be892c0ddf499635f0 ce8936cbdfbf030e05e53afae9074cf38aff054b Akani01 <akaniivinmiyen@gmail.com> 1788642375 +0200	commit: new design
+ce8936cbdfbf030e05e53afae9074cf38aff054b 6cbfff18b6626e7b6c3a005b97449b27283b00cb Akani01 <akaniivinmiyen@gmail.com> 1788664247 +0200	commit: interface function
+6cbfff18b6626e7b6c3a005b97449b27283b00cb 60b291d6986a9b0a56a01cc171f6e138022f1291 Akani01 <akaniivinmiyen@gmail.com> 1788668884 +0200	commit: updates
+60b291d6986a9b0a56a01cc171f6e138022f1291 c6f8135f2727448418c5f17ce39e01e97936f216 Akani01 <akaniivinmiyen@gmail.com> 1788672114 +0200	commit: updates
+c6f8135f2727448418c5f17ce39e01e97936f216 6a68da8c737cde7ea69f39b658d7629627f30c0a Akani01 <akaniivinmiyen@gmail.com> 1788673033 +0200	commit: updates
+6a68da8c737cde7ea69f39b658d7629627f30c0a 4f4229b1ffda784d82a36057b62f5619541829ae Akani01 <akaniivinmiyen@gmail.com> 1788674777 +0200	commit: improved
+4f4229b1ffda784d82a36057b62f5619541829ae 3a16f26603c0a817e5bbc15730baf521f9afa038 Akani01 <akaniivinmiyen@gmail.com> 1788685155 +0200	commit: updated content field
+3a16f26603c0a817e5bbc15730baf521f9afa038 bbec3f9049314dea1fb81928eccccdb06bc5f6b1 Akani01 <akaniivinmiyen@gmail.com> 1788686988 +0200	commit: scroll updated
+bbec3f9049314dea1fb81928eccccdb06bc5f6b1 92baeb6fd5d8888a420f97b9814a4d0fed80f757 Akani01 <akaniivinmiyen@gmail.com> 1788708122 +0200	commit: updates
+92baeb6fd5d8888a420f97b9814a4d0fed80f757 95de9810d3d1675bbf2fa26783672c934207594d Akani01 <akaniivinmiyen@gmail.com> 1788825292 +0200	commit: best design
+95de9810d3d1675bbf2fa26783672c934207594d 0a3145b2482693db72da74de25ddc19aa5a04549 Akani01 <akaniivinmiyen@gmail.com> 1788891967 +0200	commit: changes
+0a3145b2482693db72da74de25ddc19aa5a04549 e3ca84bd08a49b781adf1b33b21f444d5cf62d16 Akani01 <akaniivinmiyen@gmail.com> 1788980434 +0200	commit: updates
+e3ca84bd08a49b781adf1b33b21f444d5cf62d16 7a95559a6edeed98cac4f1b76eefd72256c6479c Akani01 <akaniivinmiyen@gmail.com> 1788981912 +0200	commit: updates
+7a95559a6edeed98cac4f1b76eefd72256c6479c 3fc11c4b1dec69cbc2783432e608944feaf986bc Akani01 <akaniivinmiyen@gmail.com> 1789084630 +0200	commit: changes
+3fc11c4b1dec69cbc2783432e608944feaf986bc 1d596651d3a538465fe928bae67b27dbbc8e08b6 Akani01 <akaniivinmiyen@gmail.com> 1789153065 +0200	commit: changes
+1d596651d3a538465fe928bae67b27dbbc8e08b6 2b6b327b7ca8012e2bdaed1b1fa6878a802d8229 Akani01 <akaniivinmiyen@gmail.com> 1789175930 +0200	commit: clean
+2b6b327b7ca8012e2bdaed1b1fa6878a802d8229 162bda0debe43b446aabd4d5bb60fa96d0466366 Akani01 <akaniivinmiyen@gmail.com> 1789178257 +0200	commit: updates
+162bda0debe43b446aabd4d5bb60fa96d0466366 b6ad9b9e6a929bf8a60e861302b5129954acf76f Akani01 <akaniivinmiyen@gmail.com> 1789287547 +0200	commit: updates
+b6ad9b9e6a929bf8a60e861302b5129954acf76f 628b7d1b8bfd0d3683cab6e8adc3fe6ac95c1989 Akani01 <akaniivinmiyen@gmail.com> 1789294403 +0200	commit: updates
+628b7d1b8bfd0d3683cab6e8adc3fe6ac95c1989 686811d49235d6559698e379c31c9d4090086cc1 Akani01 <akaniivinmiyen@gmail.com> 1789296333 +0200	commit: bubblewrap
+686811d49235d6559698e379c31c9d4090086cc1 a7b02a40eeea89617de0ab7d2a700f4f91d3b99b Akani01 <akaniivinmiyen@gmail.com> 1789300326 +0200	commit: changes
+a7b02a40eeea89617de0ab7d2a700f4f91d3b99b c5989a92f8099b2713a647e8d6a42492f5bf8393 Akani01 <akaniivinmiyen@gmail.com> 1789300488 +0200	commit: added changes
+c5989a92f8099b2713a647e8d6a42492f5bf8393 d05b9246667da94989582b06741a244db0c3519a Akani01 <akaniivinmiyen@gmail.com> 1789321454 +0200	commit: changes
+d05b9246667da94989582b06741a244db0c3519a ae8cecb1b353ffda5cc8001719fc12f61db19be3 Akani01 <akaniivinmiyen@gmail.com> 1789345249 +0200	commit: updates
+ae8cecb1b353ffda5cc8001719fc12f61db19be3 e291b6a96417c654db3491e99553a649c64d142a Akani01 <akaniivinmiyen@gmail.com> 1790194069 +0200	commit: updates
+e291b6a96417c654db3491e99553a649c64d142a f35e5f3fc059c428b58b64578ac023b55ef18913 Akani01 <akaniivinmiyen@gmail.com> 1790424697 +0200	commit: added fix map
+f35e5f3fc059c428b58b64578ac023b55ef18913 bcd6de28f411dc72296ca068547903222c126bce Akani01 <akaniivinmiyen@gmail.com> 1790425819 +0200	commit: changes
+bcd6de28f411dc72296ca068547903222c126bce 4859dc119dd32a71c3ca06671a1b90a94f7af835 Akani01 <akaniivinmiyen@gmail.com> 1790427131 +0200	commit: updates
+4859dc119dd32a71c3ca06671a1b90a94f7af835 2ac54fe714e35894ced06ec582ebf8708f2e012f Akani01 <akaniivinmiyen@gmail.com> 1790428318 +0200	commit: changes
+2ac54fe714e35894ced06ec582ebf8708f2e012f 830770abc71d100344db3bf6f7a7b9fabd3295e2 Akani01 <akaniivinmiyen@gmail.com> 1790437484 +0200	commit: added carwash
+830770abc71d100344db3bf6f7a7b9fabd3295e2 0ce970132146b8ff937993415ad443ecdb4f8974 Akani01 <akaniivinmiyen@gmail.com> 1790477910 +0200	commit: carwash and message
+0ce970132146b8ff937993415ad443ecdb4f8974 d68c96da48387ad3969be12e91cae7fe218e8a52 Akani01 <akaniivinmiyen@gmail.com> 1790481870 +0200	commit: updated map
+d68c96da48387ad3969be12e91cae7fe218e8a52 415215beb08526001dcc1612a31316a5a2ea6d1f Akani01 <akaniivinmiyen@gmail.com> 1790483027 +0200	commit: master9
+415215beb08526001dcc1612a31316a5a2ea6d1f 7bfd3c8d5b350d45186b0a2573f4d8d5e15a086b Akani01 <akaniivinmiyen@gmail.com> 1790485157 +0200	commit: car wash fix
+7bfd3c8d5b350d45186b0a2573f4d8d5e15a086b 30107a396f9b833c48d136e8d7751610c8614be5 Akani01 <akaniivinmiyen@gmail.com> 1790487642 +0200	commit: changes
+30107a396f9b833c48d136e8d7751610c8614be5 8c86cf1ed79fb919fee6f85e3e6702740b4ab1e0 Akani01 <akaniivinmiyen@gmail.com> 1790489835 +0200	commit: changed function
+8c86cf1ed79fb919fee6f85e3e6702740b4ab1e0 87261db168507e9e0ca6ca51fbca05fa7b891d84 Akani01 <akaniivinmiyen@gmail.com> 1790493053 +0200	commit: update home
+87261db168507e9e0ca6ca51fbca05fa7b891d84 be493f56411e20662b508fa1c91c750fb3aa5cfc Akani01 <akaniivinmiyen@gmail.com> 1790514230 +0200	commit: sound card and notification
+be493f56411e20662b508fa1c91c750fb3aa5cfc b6d6fb3f3d6ff72cdf3cdcb883b4bf3a76ea927d Akani01 <akaniivinmiyen@gmail.com> 1790531714 +0200	commit: changes
+b6d6fb3f3d6ff72cdf3cdcb883b4bf3a76ea927d 4fa070f564fc90e2dd876331d2b8e4615c2a0dfa Akani01 <akaniivinmiyen@gmail.com> 1790534261 +0200	commit: updates
+4fa070f564fc90e2dd876331d2b8e4615c2a0dfa 576f76c2568342f6266624d6101225cd031d0ff3 Akani01 <akaniivinmiyen@gmail.com> 1790535782 +0200	commit: master9
+576f76c2568342f6266624d6101225cd031d0ff3 c54f2b4147ccbed364b30bd9cfd58378a361be0e Akani01 <akaniivinmiyen@gmail.com> 1790536255 +0200	commit: changes for icons
+c54f2b4147ccbed364b30bd9cfd58378a361be0e c54f2b4147ccbed364b30bd9cfd58378a361be0e Akani01 <akaniivinmiyen@gmail.com> 1790639576 +0200	checkout: moving from master9 to master10
+c54f2b4147ccbed364b30bd9cfd58378a361be0e 62c9297afc4b180c8b1b9063fcc126f69f9e830f Akani01 <akaniivinmiyen@gmail.com> 1790642047 +0200	commit: carwash
+62c9297afc4b180c8b1b9063fcc126f69f9e830f 62c9297afc4b180c8b1b9063fcc126f69f9e830f Akani01 <akaniivinmiyen@gmail.com> 1790899954 +0200	checkout: moving from master10 to master11

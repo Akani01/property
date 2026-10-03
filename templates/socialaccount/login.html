@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+
+{% block title %}Sign In | OppoGlobe{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<div class="row justify-content-center">
+
+    <div class="col-12 col-md-8 col-lg-5">
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+            <div class="card-body p-4 p-md-5">
+
+                <!-- ==================================================
+                     HEADER
+                ================================================== -->
+
+                <div class="text-center mb-4">
+
+                    <h1 class="fw-bold mb-2">
+                        Welcome back
+                    </h1>
+
+                    <p class="text-muted mb-0">
+                        Sign in to continue to OppoGlobe
+                    </p>
+
+                </div>
+
+
+                <!-- ==================================================
+                     MESSAGES
+                ================================================== -->
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="alert alert-{{ message.tags }} rounded-3">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                <!-- ==================================================
+                     FORM ERRORS
+                ================================================== -->
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger rounded-3">
+
+                        {% for error in form.non_field_errors %}
+
+                            <div>
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ==================================================
+                     LOGIN FORM
+                ================================================== -->
+
+                <form
+                    method="post"
+                    action="{% url 'account_login' %}"
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- EMAIL / USERNAME -->
+
+                    <div class="mb-3">
+
+                        <label
+                            for="{{ form.login.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Email or Username
+                        </label>
+
+                        {{ form.login }}
+
+                        {% for error in form.login.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="mb-3">
+
+                        <label
+                            for="{{ form.password.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Password
+                        </label>
+
+                        {{ form.password }}
+
+                        {% for error in form.password.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- REMEMBER + FORGOT PASSWORD -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+                        {% if form.remember %}
+
+                            <div class="form-check">
+
+                                {{ form.remember }}
+
+                                <label
+                                    class="form-check-label"
+                                    for="{{ form.remember.id_for_label }}"
+                                >
+                                    Remember Me
+                                </label>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <a
+                            href="{% url 'account_reset_password' %}"
+                            class="text-decoration-none"
+                        >
+                            Forgot your password?
+                        </a>
+
+                    </div>
+
+
+                    <!-- SIGN IN -->
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger w-100 py-3 rounded-3 fw-semibold"
+                    >
+                        Sign In
+                    </button>
+
+                </form>
+
+
+                <!-- ==================================================
+                     DIVIDER
+                ================================================== -->
+
+                <div class="my-4 d-flex align-items-center">
+
+                    <hr class="flex-grow-1">
+
+                    <span class="px-3 text-muted small">
+                        OR
+                    </span>
+
+                    <hr class="flex-grow-1">
+
+                </div>
+
+
+                <!-- ==================================================
+                     GOOGLE LOGIN
+                ================================================== -->
+
+                <a
+                    href="{% provider_login_url 'google' process='login' %}"
+                    class="btn btn-outline-dark w-100 py-3 rounded-3 fw-semibold"
+                >
+                    <i class="bi bi-google me-2"></i>
+                    Continue with Google
+                </a>
+
+
+                <!-- ==================================================
+                     SIGN UP
+                ================================================== -->
+
+                <div class="text-center mt-4">
+
+                    <span class="text-muted">
+                        Don't have an account?
+                    </span>
+
+                    <a
+                        href="{% url 'account_signup' %}"
+                        class="fw-semibold text-decoration-none ms-1"
+                    >
+                        Sign Up
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

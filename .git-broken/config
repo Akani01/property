@@ -1,0 +1,52 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/Akani01/property.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+[branch "master1"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/master1
+[branch "master2"]
+	vscode-merge-base = origin/master1
+	remote = origin
+	merge = refs/heads/master2
+[branch "master3"]
+	vscode-merge-base = origin/master2
+	remote = origin
+	merge = refs/heads/master3
+[branch "master4"]
+	vscode-merge-base = origin/master3
+[branch "master5"]
+	remote = origin
+	merge = refs/heads/master5
+[branch "master6"]
+	vscode-merge-base = origin/master5
+	remote = origin
+	merge = refs/heads/master6
+[branch "master7"]
+	vscode-merge-base = origin/master6
+	remote = origin
+	merge = refs/heads/master7
+[branch "master8"]
+	remote = origin
+	vscode-merge-base = origin/master7
+	merge = refs/heads/master8
+[branch "master9"]
+	vscode-merge-base = origin/master8
+	remote = origin
+	merge = refs/heads/master9
+[branch "master10"]
+	vscode-merge-base = origin/master9
+	remote = origin
+	merge = refs/heads/master10
+[branch "master11"]
+	vscode-merge-base = origin/master10

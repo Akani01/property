@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Cookies Policy" }} – OppoGlobe{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ page_description|default:'Learn how OppoGlobe uses cookies to improve your experience' }}">
+    <meta name="keywords" content="cookies, policy, tracking, privacy, oppoglobe">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Cookies Policy" }}</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-5 fw-bold mb-2">{{ page_title|default:"Cookies Policy" }}</h1>
+            <p class="text-muted">Last Updated: {{ page.last_updated|default:"April 2026" }}</p>
+            <hr class="mb-4">
+            
+            {% if page.sections %}
+                {% for section in page.sections %}
+                <div class="mb-4">
+                    <h4>{{ section.title }}</h4>
+                    <p>{{ section.content }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Default content if no sections provided -->
+                <div class="mb-4">
+                    <h4>What Are Cookies?</h4>
+                    <p>Cookies are small text files that are stored on your device when you visit a website. They help us provide you with a better experience by remembering your preferences and understanding how you use our site.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>How We Use Cookies</h4>
+                    <p>We use cookies to:</p>
+                    <ul>
+                        <li>Keep you signed in to your account</li>
+                        <li>Remember your preferences and settings</li>
+                        <li>Understand how you interact with our platform</li>
+                        <li>Improve our services and user experience</li>
+                    </ul>
+                </div>
+                <div class="mb-4">
+                    <h4>Types of Cookies We Use</h4>
+                    <p><strong>Essential Cookies:</strong> Required for the platform to function properly.</p>
+                    <p><strong>Preference Cookies:</strong> Remember your settings and preferences.</p>
+                    <p><strong>Analytics Cookies:</strong> Help us understand how users interact with OppoGlobe.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>Managing Cookies</h4>
+                    <p>You can control and manage cookies in your browser settings. However, disabling certain cookies may affect your experience on OppoGlobe.</p>
+                </div>
+                <div class="mb-4">
+                    <h4>Contact Us</h4>
+                    <p>If you have questions about our use of cookies, please contact us at <a href="mailto:privacy@oppoglobe.com">privacy@oppoglobe.com</a>.</p>
+                </div>
+            {% endif %}
+            
+            <div class="mt-4 p-3 bg-light rounded">
+                <button class="btn btn-primary" onclick="document.cookie='cookie_consent=accepted; max-age=31536000; path=/'; showToast('Cookie preferences saved!', 'success');">
+                    <i class="fas fa-check me-1"></i> Accept Cookies
+                </button>
+                <button class="btn btn-outline-secondary ms-2" onclick="document.cookie='cookie_consent=rejected; max-age=31536000; path=/'; showToast('Cookie preferences saved.', 'info');">
+                    <i class="fas fa-times me-1"></i> Decline
+                </button>
+            </div>
+            
+            <!-- Only show edit link for superusers -->
+            {% if user.is_superuser %}
+            <div class="mt-4 p-3 bg-light rounded border border-warning">
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1 text-warning"></i> 
+                    <strong>Admin Access:</strong> You are viewing this as a superuser.
+                    <a href="/admin/hiring/staticpage/3/change/" class="text-primary ms-2">
+                        <i class="fas fa-edit me-1"></i> Edit this page
+                    </a>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Contact Us - OppoGlobe{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-content">
+        <h1 class="text-center">Contact Us</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5><i class="fas fa-envelope" style="color:var(--primary-color);"></i> Email</h5>
+                <p><a href="mailto:support@oppoglobe.com">support@oppoglobe.com</a></p>
+                <h5><i class="fas fa-phone" style="color:var(--primary-color);"></i> Phone</h5>
+                <p>+27 12 345 6789</p>
+                <h5><i class="fas fa-map-marker-alt" style="color:var(--primary-color);"></i> Address</h5>
+                <p>123 Main Street, Sandton, Johannesburg, 2196</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Send a Message</h5>
+                <form method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <inp
+                        
+                        ut type="email" name="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" name="subject" class="form-control" placeholder="Subject">
+                    </div>
+                    <div class="mb-3">
+                        <textarea name="message" class="form-control" rows="4" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
