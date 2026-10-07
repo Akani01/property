@@ -720,66 +720,29 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .pill-btn.discuss:hover{background:var(--coral); color:#fff;}
 
 /* ============================================================
-   NATIVE ADVERTISING — YouTube/Facebook-inspired, OppoGlobe styled
+   NATIVE ADVERTISING — responsive swipe carousel
    ============================================================ */
-.sponsored-discovery{
-  margin:14px 0 18px; padding:13px; border:1px solid var(--line); border-radius:20px;
-  background:radial-gradient(circle at 96% 0%,rgba(31,111,92,.10),transparent 32%),var(--surface);
-  box-shadow:var(--shadow-sm); overflow:hidden;
-}
+.sponsored-discovery{margin:14px 0 18px;padding:13px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 96% 0%,rgba(31,111,92,.10),transparent 32%),var(--surface);box-shadow:var(--shadow-sm);overflow:hidden;}
 .sponsored-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:11px;}
 .sponsored-eyebrow{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:8.5px;line-height:1;font-weight:800;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);}
 .sponsored-eyebrow i{color:var(--jade);}
 .sponsored-head h2{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--ink);}
 .sponsored-info-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
 .sponsored-info-btn:hover{background:var(--jade-wash);color:var(--jade-deep);}
-.sponsored-scroll{display:flex;gap:11px;overflow-x:auto;overflow-y:hidden;padding:1px 1px 7px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.sponsored-carousel{position:relative;min-width:0;}
+.sponsored-scroll{display:flex;gap:10px;width:100%;overflow-x:auto;overflow-y:hidden;padding:1px 1px 5px;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y;}
 .sponsored-scroll::-webkit-scrollbar{display:none;}
-.sponsored-loading{min-width:100%;padding:18px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:var(--ink-faint);}
-
-.ad-card{
-  position:relative; flex:0 0 260px; width:260px; min-width:0; scroll-snap-align:start; background:var(--surface);
-  border:1px solid var(--line); border-radius:17px; overflow:hidden; box-shadow:0 4px 14px rgba(22,36,31,.055);
-  transition:transform .2s var(--ease),box-shadow .2s ease,border-color .2s ease;
-}
-.ad-card:hover{transform:translateY(-3px);border-color:#d6ddd8;box-shadow:0 12px 30px rgba(22,36,31,.11);}
-.ad-img{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#e9eeeb;cursor:pointer;}
-.ad-img img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease;}
-.ad-card:hover .ad-img img{transform:scale(1.035);}
-.ad-flag{position:absolute;top:8px;left:8px;z-index:10;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:rgba(13,18,16,.72);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
-.ad-flag i{font-size:7px;}
-.ad-cta-overlay{position:absolute;inset:auto 0 0 0;display:flex;justify-content:flex-end;padding:34px 9px 9px;background:linear-gradient(transparent,rgba(0,0,0,.58));}
-.ad-cta-overlay button{min-height:31px;padding:6px 12px;border:0;border-radius:999px;background:#fff;color:#111;font-size:10px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.15);}
-.ad-advertiser{display:flex;align-items:center;gap:8px;padding:10px 11px 0;}
-.ad-advertiser-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--jade),var(--jade-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
-.ad-advertiser-copy{min-width:0;display:flex;flex-direction:column;}
-.ad-advertiser-name{font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ad-sponsored-copy{display:flex;align-items:center;gap:4px;margin-top:1px;font-size:8.5px;color:var(--ink-faint);}
-.ad-body{padding:8px 11px 7px;}
-.ad-title{font-family:var(--font-display);font-size:13.5px;font-weight:700;line-height:1.25;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.ad-desc{margin-top:4px;font-size:10.5px;line-height:1.42;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.ad-price{display:inline-flex;margin-top:7px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--jade-deep);}
-.ad-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 11px 11px;}
-.ad-footer .tag{min-width:0;display:flex;align-items:center;gap:4px;font-size:8.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ad-footer .btn-ad{border:0;min-height:31px;padding:6px 13px;border-radius:999px;background:var(--jade);color:#fff;font-size:9.5px;font-weight:800;cursor:pointer;white-space:nowrap;}
-.ad-footer .btn-ad:hover{background:var(--jade-deep);}
-.feed-sponsored-wrap{margin:4px 0 14px;}
-.feed-sponsored-wrap .ad-card{width:100%;max-width:none;flex:none;border-radius:18px;}
-.feed-sponsored-wrap .ad-img{aspect-ratio:16/7;}
-.feed-sponsored-label{display:flex;align-items:center;gap:6px;margin:0 2px 7px;color:var(--ink-faint);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
-.feed-sponsored-label i{color:var(--jade);}
-@media(max-width:576px){
-  .sponsored-discovery{margin:12px 0 15px;padding:11px 10px;border-radius:17px;}
-  .sponsored-head{margin-bottom:9px;}
-  .sponsored-head h2{font-size:15px;}
-  .sponsored-scroll{gap:8px;}
-  .ad-card{flex:0 0 78vw;width:78vw;max-width:300px;border-radius:15px;}
-  .ad-body{padding:8px 10px 6px;}
-  .ad-footer{padding:6px 10px 10px;}
-  .feed-sponsored-wrap .ad-card{width:100%;max-width:none;}
-  .feed-sponsored-wrap .ad-img{aspect-ratio:16/9;}
-}
-@media(max-width:360px){.ad-card{flex-basis:82vw;width:82vw;}.feed-sponsored-wrap .ad-card{width:100%;}}
+.sponsored-loading{flex:0 0 100%;min-width:100%;padding:22px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:var(--ink-faint);}
+.sponsored-nav{position:absolute;top:50%;z-index:20;width:36px;height:36px;border:1px solid rgba(255,255,255,.72);border-radius:50%;background:rgba(22,36,31,.80);color:#fff;display:none;align-items:center;justify-content:center;transform:translateY(-50%);box-shadow:0 7px 20px rgba(22,36,31,.20);backdrop-filter:blur(10px);cursor:pointer;}
+.sponsored-prev{left:7px;}.sponsored-next{right:7px;}.sponsored-nav:disabled{opacity:.28;cursor:default;}.sponsored-carousel.has-many .sponsored-nav{display:flex;}
+.sponsored-dots{display:none;align-items:center;justify-content:center;gap:6px;margin-top:9px;min-height:8px;}.sponsored-dots.show{display:flex;}.sponsored-dot{width:6px;height:6px;padding:0;border:0;border-radius:999px;background:var(--line);cursor:pointer;transition:width .18s ease,background .18s ease;}.sponsored-dot.active{width:18px;background:var(--jade);}
+.ad-card{position:relative;flex:0 0 calc((100% - 10px)/2);width:calc((100% - 10px)/2);min-width:0;scroll-snap-align:start;scroll-snap-stop:always;background:var(--surface);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 4px 14px rgba(22,36,31,.055);transition:transform .2s var(--ease),box-shadow .2s ease,border-color .2s ease;}
+.ad-card:hover{transform:translateY(-2px);border-color:#d6ddd8;box-shadow:0 12px 30px rgba(22,36,31,.11);}.ad-img{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,var(--jade-wash),var(--paper));cursor:pointer;}.ad-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease;}.ad-card:hover .ad-img img{transform:scale(1.025);}
+.ad-flag{position:absolute;top:8px;left:8px;z-index:10;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:rgba(13,18,16,.72);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}.ad-flag i{font-size:7px;}.ad-cta-overlay{position:absolute;inset:auto 0 0 0;display:flex;justify-content:flex-end;padding:34px 9px 9px;background:linear-gradient(transparent,rgba(0,0,0,.58));}.ad-cta-overlay button{min-height:31px;padding:6px 12px;border:0;border-radius:999px;background:#fff;color:#111;font-size:10px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.15);}
+.ad-advertiser{display:flex;align-items:center;gap:8px;padding:10px 11px 0;}.ad-advertiser-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--jade),var(--jade-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}.ad-advertiser-copy{min-width:0;display:flex;flex-direction:column;}.ad-advertiser-name{font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.ad-sponsored-copy{display:flex;align-items:center;gap:4px;margin-top:1px;font-size:8.5px;color:var(--ink-faint);}.ad-body{padding:8px 11px 7px;}.ad-title{font-family:var(--font-display);font-size:13.5px;font-weight:700;line-height:1.25;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}.ad-desc{margin-top:4px;font-size:10.5px;line-height:1.42;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}.ad-price{display:inline-flex;margin-top:7px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--jade-deep);}.ad-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 11px 11px;}.ad-footer .tag{min-width:0;display:flex;align-items:center;gap:4px;font-size:8.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.ad-footer .btn-ad{border:0;min-height:31px;padding:6px 13px;border-radius:999px;background:var(--jade);color:#fff;font-size:9.5px;font-weight:800;cursor:pointer;white-space:nowrap;}.ad-footer .btn-ad:hover{background:var(--jade-deep);}
+.feed-sponsored-wrap{margin:4px 0 14px;}.feed-sponsored-wrap .ad-card{width:100%;max-width:none;flex:none;border-radius:18px;}.feed-sponsored-wrap .ad-img{aspect-ratio:16/8;}.feed-sponsored-label{display:flex;align-items:center;gap:6px;margin:0 2px 7px;color:var(--ink-faint);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}.feed-sponsored-label i{color:var(--jade);}
+@media(max-width:700px){.sponsored-discovery{margin:12px 0 15px;padding:10px;border-radius:17px;}.sponsored-head{margin-bottom:9px;}.sponsored-head h2{font-size:15px;}.sponsored-scroll{gap:0;padding-bottom:2px;}.ad-card{flex:0 0 100%;width:100%;max-width:none;border-radius:15px;}.ad-img{aspect-ratio:16/10;}.ad-advertiser{padding:9px 10px 0;}.ad-body{padding:7px 10px 6px;}.ad-footer{padding:6px 10px 10px;}.sponsored-nav{display:none!important;}.sponsored-dots.show{display:flex;}.feed-sponsored-wrap .ad-card{width:100%;}.feed-sponsored-wrap .ad-img{aspect-ratio:16/9;}}
+@media(min-width:1000px){.ad-card{flex-basis:calc((100% - 20px)/3);width:calc((100% - 20px)/3);}}
 
 /* ============================================================
    REELS TAB
@@ -2368,9 +2331,15 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
           <i class="fas fa-circle-info"></i>
         </button>
       </div>
-      <div class="sponsored-scroll" id="sponsoredAdsScroll">
-        <div class="sponsored-loading"><span class="spin"></span> Finding recommendations…</div>
+
+      <div class="sponsored-carousel" id="sponsoredCarousel">
+        <button class="sponsored-nav sponsored-prev" id="sponsoredPrev" type="button" aria-label="Previous advertisement"><i class="fas fa-chevron-left"></i></button>
+        <div class="sponsored-scroll" id="sponsoredAdsScroll">
+          <div class="sponsored-loading"><span class="spin"></span> Finding recommendations…</div>
+        </div>
+        <button class="sponsored-nav sponsored-next" id="sponsoredNext" type="button" aria-label="Next advertisement"><i class="fas fa-chevron-right"></i></button>
       </div>
+      <div class="sponsored-dots" id="sponsoredDots" aria-label="Advertisement pages"></div>
     </section>
 
     <!-- Reels strip -->
@@ -3456,11 +3425,32 @@ function getNextAd(){
   return ad;
 }
 
+function resolveAdImage(ad){
+  if (!ad || typeof ad !== 'object') return '';
+  const candidates = [ad.image_url,ad.image,ad.image_file,ad.banner_url,ad.banner,ad.photo_url,ad.photo,ad.thumbnail_url,ad.thumbnail,ad.media_url,ad.media,ad.creative_url,ad.creative];
+  let value = candidates.find(v=>{
+    if (!v) return false;
+    if (typeof v === 'string') return v.trim().length > 0;
+    if (typeof v === 'object') return Boolean(v.url || v.src || v.path);
+    return false;
+  });
+  if (value && typeof value === 'object') value = value.url || value.src || value.path || '';
+  value = String(value || '').trim();
+  if (!value) return '';
+  if (/^(https?:)?\/\//i.test(value) || value.startsWith('data:') || value.startsWith('blob:')) return value;
+  if (value.startsWith('/')) return value;
+  if (value.startsWith('media/')) return '/' + value;
+  return '/media/' + value.replace(/^\.?\//,'');
+}
+function getAdFallbackImage(){
+  return 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&h=600&fit=crop';
+}
+
 function renderAdCard(ad=null, options={}){
   ad = ad || getNextAd();
   if (!ad) return '';
 
-  const image = ad.image_url || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&h=600&fit=crop';
+  const image = resolveAdImage(ad) || getAdFallbackImage();
   const advertiser = ad.advertiser_name || 'OppoGlobe Partner';
   const initial = advertiser.charAt(0).toUpperCase() || 'O';
   const title = ad.title || 'Recommended for you';
@@ -3474,7 +3464,7 @@ function renderAdCard(ad=null, options={}){
   return `<article class="ad-card" data-ad-id="${escapeHtml(adId)}">
     <span class="ad-flag"><i class="fas fa-bullhorn"></i> Sponsored</span>
     <div class="ad-img" onclick="handleAdAction('${escapeHtml(adId)}')">
-      <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&h=600&fit=crop';">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src=getAdFallbackImage();">
       <div class="ad-cta-overlay"><button type="button" onclick="event.stopPropagation();handleAdAction('${escapeHtml(adId)}')">${escapeHtml(cta)} <i class="fas fa-arrow-right"></i></button></div>
     </div>
     <div class="ad-advertiser">
@@ -3500,20 +3490,59 @@ async function loadSponsoredDiscovery(){
   const container = document.getElementById('sponsoredAdsScroll');
   const section = document.getElementById('sponsoredDiscovery');
   if (!container) return;
-
   container.innerHTML = `<div class="sponsored-loading"><span class="spin"></span> Finding recommendations…</div>`;
   try{
-    const ads = await loadAds('feed', 8);
+    const ads = await loadAds('feed', 12);
     const usable = Array.isArray(ads) && ads.length ? ads : getFallbackAds();
     if (!usable.length){ if (section) section.style.display='none'; return; }
-    container.innerHTML = usable.slice(0,8).map(ad=>renderAdCard(ad,{track:false})).join('');
-    usable.slice(0,8).forEach(ad=>{ if (ad.id && !isFallbackAd(ad)) trackAdImpression(ad.id); });
+    allAds = usable;
+    container.innerHTML = usable.slice(0,12).map(ad=>renderAdCard(ad,{track:false})).join('');
+    usable.slice(0,12).forEach(ad=>{ if (ad.id && !isFallbackAd(ad)) trackAdImpression(ad.id); });
+    initSponsoredCarousel();
   }catch(err){
     console.warn('Sponsored discovery failed.', err);
     const fallback = getFallbackAds();
     allAds = fallback;
     container.innerHTML = fallback.map(ad=>renderAdCard(ad,{track:false})).join('');
+    initSponsoredCarousel();
   }
+}
+
+function initSponsoredCarousel(){
+  const track = document.getElementById('sponsoredAdsScroll');
+  const shell = document.getElementById('sponsoredCarousel');
+  const prev = document.getElementById('sponsoredPrev');
+  const next = document.getElementById('sponsoredNext');
+  const dots = document.getElementById('sponsoredDots');
+  if (!track || !shell || !prev || !next || !dots) return;
+  const cards = [...track.querySelectorAll('.ad-card')];
+  const count = cards.length;
+  shell.classList.toggle('has-many', count > 1);
+  dots.classList.toggle('show', count > 1);
+  dots.innerHTML = count > 1 ? cards.map((_,i)=>`<button type="button" class="sponsored-dot${i===0?' active':''}" aria-label="Go to advertisement ${i+1}" data-index="${i}"></button>`).join('') : '';
+  const getClosestIndex = ()=>{
+    const left = track.scrollLeft;
+    let best=0,bestDist=Infinity;
+    cards.forEach((card,i)=>{ const dist=Math.abs(card.offsetLeft-track.offsetLeft-left); if(dist<bestDist){bestDist=dist;best=i;} });
+    return best;
+  };
+  const update = ()=>{
+    const index=getClosestIndex();
+    dots.querySelectorAll('.sponsored-dot').forEach((dot,i)=>dot.classList.toggle('active',i===index));
+    prev.disabled=index<=0; next.disabled=index>=count-1;
+  };
+  const goTo=index=>{
+    if(!cards.length) return;
+    index=Math.max(0,Math.min(count-1,index));
+    track.scrollTo({left:cards[index].offsetLeft-track.offsetLeft,behavior:'smooth'});
+  };
+  prev.onclick=()=>goTo(getClosestIndex()-1);
+  next.onclick=()=>goTo(getClosestIndex()+1);
+  dots.querySelectorAll('.sponsored-dot').forEach(dot=>dot.onclick=()=>goTo(Number(dot.dataset.index||0)));
+  let timer=null;
+  track.addEventListener('scroll',()=>{clearTimeout(timer);timer=setTimeout(update,70);},{passive:true});
+  window.addEventListener('resize',update,{passive:true});
+  update();
 }
 
 function handleAdAction(adId){
