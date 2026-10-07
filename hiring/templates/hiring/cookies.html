@@ -8,20 +8,59 @@
     <meta name="keywords" content="cookies, policy, tracking, privacy, oppoglobe">
 {% endblock %}
 
+
+<style>
+:root{
+  --og-ink:#16241F;--og-soft:#5B6660;--og-faint:#8B958F;--og-paper:#F6F7F5;
+  --og-surface:#FFFFFF;--og-line:#E4E7E2;--og-jade:#1F6F5C;--og-jade-deep:#154F41;
+  --og-jade-wash:#E7F1EC;--og-coral:#FF6B4A;--og-coral-wash:#FFEAE3;
+  --og-gold:#E8A93B;--og-gold-wash:#FBF0DA;--og-shadow:0 16px 42px rgba(22,36,31,.08);
+}
+.og-page{max-width:1180px;margin:0 auto;padding:clamp(22px,5vw,64px) 14px 90px;color:var(--og-ink)}
+.og-hero{position:relative;overflow:hidden;padding:clamp(22px,5vw,48px);margin-bottom:22px;border:1px solid var(--og-line);border-radius:26px;background:radial-gradient(circle at 92% 5%,rgba(31,111,92,.14),transparent 30%),radial-gradient(circle at 4% 100%,rgba(255,107,74,.08),transparent 27%),#fff;box-shadow:0 2px 8px rgba(22,36,31,.04)}
+.og-kicker{display:inline-flex;align-items:center;gap:7px;margin-bottom:9px;color:var(--og-jade-deep);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.og-hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(30px,6vw,54px);line-height:1.02;letter-spacing:-.035em;margin:0 0 10px}
+.og-hero p{max-width:680px;margin:0;color:var(--og-soft);font-size:14px;line-height:1.7}
+.og-card{background:#fff;border:1px solid var(--og-line);border-radius:20px;box-shadow:0 2px 8px rgba(22,36,31,.04)}
+.og-pad{padding:clamp(18px,3vw,28px)}
+.og-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.og-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.og-section{margin-top:22px}
+.og-section-title{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:700;margin:0 0 12px}
+.og-muted{color:var(--og-soft)}
+.og-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--og-jade-wash);color:var(--og-jade-deep);font-size:17px;margin-bottom:13px}
+.og-btn,.btn-primary{border:0!important;border-radius:999px!important;background:linear-gradient(135deg,var(--og-jade),var(--og-jade-deep))!important;color:#fff!important;font-weight:750!important;padding:10px 17px!important;box-shadow:none!important}
+.og-btn:hover,.btn-primary:hover{transform:translateY(-1px);filter:brightness(.98)}
+.btn-outline-secondary,.btn-secondary{border:1px solid var(--og-line)!important;border-radius:999px!important;background:#fff!important;color:var(--og-ink)!important}
+.form-control,.form-select{border:1px solid var(--og-line)!important;border-radius:13px!important;background:#fff!important;min-height:46px;padding:11px 13px!important;box-shadow:none!important}
+textarea.form-control{min-height:120px}
+.form-control:focus,.form-select:focus{border-color:var(--og-jade)!important;box-shadow:0 0 0 3px rgba(31,111,92,.08)!important}
+.og-info-row{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #EEF0ED}
+.og-info-row:last-child{border-bottom:0}
+.og-info-row i{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--og-jade-wash);color:var(--og-jade-deep)}
+.og-info-row strong{display:block;font-size:12px;margin-bottom:2px}.og-info-row span,.og-info-row a{font-size:13px;color:var(--og-soft)}
+.og-legal{padding:clamp(20px,4vw,38px)}.og-legal h4{font-family:'Fraunces',Georgia,serif;font-size:20px;margin-top:26px}.og-legal h4:first-child{margin-top:0}.og-legal p,.og-legal li{color:var(--og-soft);line-height:1.75;font-size:14px}
+.og-breadcrumb{display:flex;gap:7px;align-items:center;margin-bottom:12px;color:var(--og-faint);font-size:11px;font-weight:700}.og-breadcrumb a{color:var(--og-jade-deep);text-decoration:none}
+.og-admin{margin-top:18px;padding:13px 15px;border:1px solid #efd7a6;border-radius:14px;background:var(--og-gold-wash);font-size:12px}
+.og-empty{text-align:center;padding:52px 20px}.og-empty i{font-size:28px;color:var(--og-jade);margin-bottom:10px}
+.table-responsive{border:1px solid var(--og-line);border-radius:18px;background:#fff;overflow:auto;box-shadow:0 2px 8px rgba(22,36,31,.04)}
+.table{margin:0!important}.table thead th{background:var(--og-paper);border:0!important;color:var(--og-soft);font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:13px!important}.table td{padding:13px!important;border-color:#EEF0ED!important;font-size:12.5px;vertical-align:middle}
+.badge{border-radius:999px!important;padding:6px 9px!important}
+.og-faq-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px}.og-categories{position:sticky;top:82px;padding:10px}.og-category-link{display:flex;justify-content:space-between;gap:8px;padding:10px 11px;border-radius:11px;color:var(--og-soft);text-decoration:none;font-size:12px;font-weight:700}.og-category-link:hover{background:var(--og-jade-wash);color:var(--og-jade-deep)}
+.og-faq{padding:18px;margin-bottom:10px}.og-faq h5{font-family:'Fraunces',Georgia,serif;font-size:17px;margin:0}.og-faq p{color:var(--og-soft);line-height:1.65;margin:10px 0 0;font-size:13.5px}
+.og-career-card{padding:20px;height:100%}.og-career-card h5{font-family:'Fraunces',Georgia,serif;font-size:21px}.og-meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--og-faint);font-size:11px;margin:7px 0 12px}.og-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--og-jade-wash);color:var(--og-jade-deep);font-size:10px;font-weight:800}
+.modal-content{border:1px solid var(--og-line)!important;border-radius:22px!important;box-shadow:var(--og-shadow)!important}.modal-header,.modal-footer{border-color:#EEF0ED!important}
+@media(max-width:760px){.og-page{padding:14px 10px 88px}.og-hero{border-radius:20px;padding:20px}.og-grid,.og-grid-3{grid-template-columns:1fr}.og-faq-layout{grid-template-columns:1fr}.og-categories{position:static;display:flex;overflow-x:auto;gap:5px}.og-category-link{flex:0 0 auto;background:#fff;border:1px solid var(--og-line)}.og-legal{padding:18px}.table{min-width:760px}}
+</style>
+
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Cookies Policy" }}</li>
-                </ol>
-            </nav>
+<div class="og-page">
+    <section class="og-hero"><div class="og-kicker"><i class="fas fa-cookie-bite"></i> Trust & transparency</div><h1>{{ page_title|default:"Cookies Policy" }}</h1><p>Understand how cookies help OppoGlobe work reliably and remember your preferences.</p></section><div class="og-card og-legal">
             
-            <h1 class="display-5 fw-bold mb-2">{{ page_title|default:"Cookies Policy" }}</h1>
+            
+            
             <p class="text-muted">Last Updated: {{ page.last_updated|default:"April 2026" }}</p>
-            <hr class="mb-4">
+            
             
             {% if page.sections %}
                 {% for section in page.sections %}
@@ -62,7 +101,7 @@
                 </div>
             {% endif %}
             
-            <div class="mt-4 p-3 bg-light rounded">
+            <div class="og-admin">
                 <button class="btn btn-primary" onclick="document.cookie='cookie_consent=accepted; max-age=31536000; path=/'; showToast('Cookie preferences saved!', 'success');">
                     <i class="fas fa-check me-1"></i> Accept Cookies
                 </button>
@@ -73,7 +112,7 @@
             
             <!-- Only show edit link for superusers -->
             {% if user.is_superuser %}
-            <div class="mt-4 p-3 bg-light rounded border border-warning">
+            <div class="og-admin">
                 <small class="text-muted">
                     <i class="fas fa-shield-alt me-1 text-warning"></i> 
                     <strong>Admin Access:</strong> You are viewing this as a superuser.
@@ -83,7 +122,6 @@
                 </small>
             </div>
             {% endif %}
-        </div>
-    </div>
+</div>
 </div>
 {% endblock %}
