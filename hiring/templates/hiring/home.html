@@ -206,8 +206,10 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
 /* ============================================================
    LAYOUT
-   Below 1000px use the off-canvas drawer without reserving rail space.
-   Desktop grid columns reserve space for viewport-fixed sidebars.
+   Phones keep the existing off-canvas rail.
+   Tablet/iPad + desktop keep the side cards visible while the
+   centre column scrolls. Sticky is used instead of fixed so the
+   rails remain inside the grid and can never cover the content.
    ============================================================ */
 .shell{
   max-width:1400px;margin:0 auto;
@@ -219,7 +221,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .main{min-width:0;max-width:720px;width:100%;margin:0 auto;}
 @media (min-width:1000px){
   .shell{grid-template-columns:236px minmax(0,1fr);gap:16px;padding-bottom:24px;}
-  .rail-left{min-width:0;}
+  .rail-left{position:sticky;top:calc(var(--header-h) + 14px);align-self:start;max-height:calc(100dvh - var(--header-h) - 28px);z-index:20;}
   .rail-left .rail-body{position:static;left:auto;top:auto;width:100%;height:auto;max-height:calc(100dvh - var(--header-h) - 28px);padding:0 4px 4px 0;overflow-y:auto;overflow-x:hidden;background:transparent;box-shadow:none;transition:none;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable;}
   .rail-left .rail-body::-webkit-scrollbar{width:5px;}
   .rail-left .rail-body::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px;}
@@ -228,7 +230,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 @media (min-width:1260px){
   .shell{grid-template-columns:236px minmax(0,1fr) 264px;}
   .main{margin:0;}
-  .rail-right{display:block;min-width:0;}
+  .rail-right{display:block;position:sticky;top:calc(var(--header-h) + 14px);align-self:start;max-height:calc(100dvh - var(--header-h) - 28px);overflow-y:auto;overflow-x:hidden;padding-right:4px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable;z-index:20;}
   .rail-right::-webkit-scrollbar{width:5px;}
   .rail-right::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px;}
 }
@@ -255,18 +257,17 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .rail-toggle i{color:var(--coral);}
 @media (min-width:1000px){.rail-toggle{display:none;}}
 
-.rail-overlay{position:fixed; inset:0; background:rgba(22,36,31,.4); z-index:3400; display:none;}
+.rail-overlay{position:fixed; inset:0; background:rgba(22,36,31,.4); z-index:1400; display:none;}
 .rail-overlay.active{display:block;}
 
 .rail-body{display:flex; flex-direction:column; gap:12px;}
 @media (max-width:999px){
   .rail-body{
-    position:fixed; top:0; left:-290px; width:min(272px,84vw); height:100dvh; z-index:3500;
+    position:fixed; top:0; left:-290px; width:min(272px,84vw); height:100vh; z-index:1500;
     background:var(--surface); padding:16px; overflow-y:auto; transition:left .25s var(--ease);
     box-shadow:6px 0 40px rgba(0,0,0,.15);
   }
   .rail-body.open{left:0;}
-  .rail-left{position:static;max-height:none;}
 }
 
 .quick-btn{
@@ -546,13 +547,6 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .adv-panel{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
 .adv-panel label{font-size:11px; color:var(--ink-faint); font-weight:600; display:block; margin-bottom:3px;}
 .adv-panel .form-control{font-size:13px; border-radius:var(--radius-xs); border-color:var(--line);}
-
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 1000) closeRail();
-});
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') closeRail();
-});
 
 /* ============================================================
    TABS
@@ -2211,92 +2205,6 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 @media (prefers-reduced-motion:reduce){
   .brand,.icon-btn,.avatar-btn,.dropdown-panel a,.dropdown-panel button{transition:none !important;}
 }
-
-/* OPPOGLOBE DESKTOP VIEWPORT RAILS — single authoritative rule set.
-   The grid reserves columns; the rails are attached to the viewport. */
-@media (min-width:1000px){
-  .shell{position:static !important;}
-  .shell > .rail-left{
-    display:block !important;
-    position:fixed !important;
-    inset:auto !important;
-    top:calc(var(--header-h) + 14px) !important;
-    left:max(10px, calc((100vw - min(100vw, 1400px))/2 + clamp(10px, 2.5vw, 20px))) !important;
-    width:236px !important;
-    height:calc(100vh - var(--header-h) - 28px) !important;
-    height:calc(100dvh - var(--header-h) - 28px) !important;
-    max-height:none !important;
-    margin:0 !important;
-    transform:none !important;
-    overflow:visible !important;
-    z-index:110;
-  }
-  .shell > .rail-left > .rail-body{
-    position:static !important;
-    display:flex !important;
-    flex-direction:column;
-    left:auto !important;
-    top:auto !important;
-    width:100% !important;
-    height:100% !important;
-    max-height:100% !important;
-    padding:0 4px 4px 0 !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
-    transition:none !important;
-    background:transparent !important;
-    box-shadow:none !important;
-    scrollbar-width:thin;
-    overscroll-behavior:contain;
-  }
-  .shell > .rail-left > .rail-toggle,.rail-overlay{display:none !important;}
-}
-@media (min-width:1260px){
-  .shell > .rail-right{
-    display:block !important;
-    position:fixed !important;
-    inset:auto !important;
-    top:calc(var(--header-h) + 14px) !important;
-    right:max(10px, calc((100vw - min(100vw, 1400px))/2 + clamp(10px, 2.5vw, 20px))) !important;
-    width:264px !important;
-    height:calc(100vh - var(--header-h) - 28px) !important;
-    height:calc(100dvh - var(--header-h) - 28px) !important;
-    max-height:none !important;
-    margin:0 !important;
-    transform:none !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
-    scrollbar-width:thin;
-    overscroll-behavior:contain;
-    z-index:110;
-  }
-}
-@media (max-width:999px){
-  .shell > .rail-left{position:static !important;inset:auto !important;width:auto !important;height:auto !important;max-height:none !important;}
-  .shell > .rail-right{display:none !important;}
-}
-
-
-/* OppoGlobe original education editorial hub */
-.og-edu-hub{margin:24px 0 30px;color:var(--ink,#202c35)}
-.og-edu-intro{padding:24px;border:1px solid var(--line,#e2e7e9);border-radius:22px;background:var(--paper,#fff)}
-.og-edu-intro h2{font-size:clamp(1.35rem,2.5vw,1.9rem);margin:7px 0 10px}
-.og-edu-intro p,.og-edu-guide p,.og-edu-guide li{line-height:1.7}
-.og-edu-kicker{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:#477965}
-.og-edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:15px;margin-top:16px}
-.og-edu-guide{border:1px solid var(--line,#e2e7e9);border-radius:20px;padding:22px;background:var(--paper,#fff);min-width:0}
-.og-edu-guide h3{font-size:1.13rem;margin:0 0 12px;line-height:1.35}
-.og-edu-guide h4{font-size:.95rem;margin:17px 0 6px}
-.og-edu-guide p{margin:0 0 12px;color:var(--muted,#56616c)}
-.og-edu-guide ul,.og-edu-guide ol{padding-left:20px;margin:8px 0 14px}
-.og-edu-guide li{margin-bottom:7px;color:var(--muted,#56616c)}
-.og-edu-guide a{color:#187456;text-decoration:underline;text-underline-offset:3px}
-.og-edu-guide .og-edu-tag{display:inline-block;margin-bottom:12px;padding:5px 10px;border-radius:99px;background:#e9f4ed;color:#245d43;font-size:.72rem;font-weight:750}
-.og-edu-guide details{border-top:1px solid var(--line,#e2e7e9);padding:11px 0}
-.og-edu-guide summary{cursor:pointer;font-weight:700}
-.og-edu-guide details p{margin:8px 0 0}
-@media(max-width:600px){.og-edu-intro,.og-edu-guide{padding:17px}.og-edu-grid{gap:11px}}
-
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2580,36 +2488,6 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
       <div id="educationContainer" style="margin-top:14px;">
         <div class="loading-line"><span class="spin"></span> Loading education content…</div>
       </div>
-
-      <!-- Education editorial hub: substantive, crawlable, learner-first content -->
-      <section class="og-edu-hub" aria-labelledby="og-edu-hub-title">
-        <div class="og-edu-intro">
-          <div class="og-edu-kicker">OppoGlobe learning hub · South Africa</div>
-          <h2 id="og-edu-hub-title">Education guides for learners, students and first-time applicants</h2>
-          <p>Finding a school, preparing for matric, choosing a qualification and applying for funding are different decisions, but they often happen together. This guide explains the steps in plain language so you can plan carefully, compare options and avoid common application mistakes. The listings above are opportunities shared on OppoGlobe; the guidance below is general information, not a guarantee of admission or funding.</p>
-          <p>Start with your current stage: school subjects and exam preparation, post-school study options, bursary applications or career planning. Check the official institution or funding provider before submitting documents, paying fees or relying on deadlines.</p>
-        </div>
-        <div class="og-edu-grid">
-          <article class="og-edu-guide"><span class="og-edu-tag">Matric &amp; school</span><h3>1. Build a realistic matric study plan</h3><p>A useful study timetable is based on what you need to practise, not just how many hours you can sit with a book. List your subjects, mark the topics you struggle with and put your hardest work in periods when you can concentrate.</p><h4>Try this weekly method</h4><ol><li>Choose two priority topics per subject and set a specific outcome, such as solving ten equations without notes.</li><li>Review a short explanation, then answer questions without looking at the worked solution.</li><li>Mark your answers, record why you lost marks and revisit those mistakes after a few days.</li><li>Reserve time for rest, sleep and a weekly progress review.</li></ol><p>Past papers are especially useful when you work under timed conditions and compare your reasoning with the official memorandum. Don't memorise answers without understanding the method.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Subject choices</span><h3>2. Choose subjects with future options in mind</h3><p>Subject choices can affect eligibility for later programmes. Begin with careers or fields you are curious about, then check the subject and performance requirements of several institutions. Requirements can differ even when programmes have similar names.</p><p>For example, some science and engineering programmes specify Mathematics and Physical Sciences. Other programmes may accept different combinations. Mathematics and Mathematical Literacy are not interchangeable for every qualification.</p><h4>Questions to ask</h4><ul><li>Which subjects are compulsory for the courses I might apply for?</li><li>What results do I need, and what happens if I narrowly miss them?</li><li>Are there bridging, extended-curriculum or alternative routes?</li><li>Can my school provide career counselling or subject-change advice?</li></ul></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Applications</span><h3>3. Understand university, college and TVET routes</h3><p>Universities, universities of technology and TVET colleges offer different kinds of learning pathways. Compare the qualification, accreditation, entry requirements, practical training and likely next steps rather than choosing only by the institution's name.</p><p>Before applying, read the official programme page. Look for the qualification level, campus, duration, mode of study, application fee, closing date and required documents. Keep a record of your application reference number.</p><h4>Application checklist</h4><ul><li>Verify the institution and programme using official sources.</li><li>Check minimum entry requirements and any additional selection process.</li><li>Prepare readable identity and academic documents.</li><li>Apply through the institution's official application channel.</li><li>Monitor your application status and respond to requests promptly.</li></ul></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Funding</span><h3>4. Apply for bursaries without missing key details</h3><p>A bursary may consider academic performance, financial circumstances, field of study, residence or other criteria. Some awards cover tuition only; others may contribute to accommodation, meals, books or transport. Never assume that every expense is included.</p><h4>Build a reusable document folder</h4><ul><li>Identification and contact information.</li><li>Most recent academic results or proof of registration.</li><li>Proof of household income or supporting declarations where required.</li><li>A short personal statement explaining your goals and circumstances.</li><li>References and certified copies only when the provider specifically requests them.</li></ul><p>Read the funding conditions, renewal rules and any work-back obligations. Submit only through verified channels and be cautious of anyone promising guaranteed funding for an upfront payment.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Student finance</span><h3>5. Budget for the real cost of studying</h3><p>Tuition is only one part of a study budget. Transport, data, printing, food, accommodation and equipment can make a programme more expensive than it first appears. Draft a monthly budget before accepting an offer.</p><h4>Simple budgeting approach</h4><ol><li>List once-off costs such as registration and equipment.</li><li>Estimate recurring monthly costs, including travel and connectivity.</li><li>Separate confirmed funding from funding you have only applied for.</li><li>Leave a small contingency for unexpected expenses.</li></ol><p>If you are considering student financial assistance, consult the official <a href="https://www.nsfas.org.za/" target="_blank" rel="noopener noreferrer">NSFAS website</a> for current eligibility, processes and dates. OppoGlobe does not determine NSFAS outcomes.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Learning resources</span><h3>6. Use past papers as a learning tool</h3><p>Past examination papers help you recognise the style of questions, manage time and identify weak topics. They work best after you have learned the underlying concepts and can explain your steps.</p><h4>Four-pass paper practice</h4><ol><li>Scan the paper and group questions by topic.</li><li>Complete a topic set without notes.</li><li>Mark using a trusted memorandum and identify errors.</li><li>Repeat a comparable question a few days later to check retention.</li></ol><p>For official school curriculum and examination information, consult the <a href="https://www.education.gov.za/" target="_blank" rel="noopener noreferrer">Department of Basic Education</a>. Check that a paper matches your grade, subject and curriculum before using it.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Careers</span><h3>7. Connect your studies to a career path</h3><p>A career choice becomes easier when you explore the work itself. Look beyond job titles: find out what people do each day, what tools they use, which qualifications are common and how they enter the field.</p><p>Compare several routes into the same industry, including university qualifications, TVET programmes, apprenticeships and workplace learning where available. Ask about accreditation, practical experience and professional registration when relevant.</p><h4>Make a career comparison sheet</h4><ul><li>What work would I actually perform?</li><li>Which subjects, skills or qualifications are needed?</li><li>What would training cost and how long would it take?</li><li>Could I try a short project, job shadowing or volunteering first?</li></ul></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Digital skills</span><h3>8. Learn practical skills with a small portfolio</h3><p>Digital literacy supports studying, job applications and everyday work. Start with safe internet research, professional email, document formatting, spreadsheets and protecting your accounts.</p><p>If you are interested in technology, build a small project that demonstrates a skill: a simple website, a spreadsheet budget, a data chart or a written research summary. Document what you made, which problem it solves and what you learned.</p><h4>Protect your work and identity</h4><ul><li>Use unique passwords and enable two-factor authentication where available.</li><li>Keep backups of important assignments and application documents.</li><li>Check sources before sharing claims or submitting personal information.</li><li>Do not publish identity numbers or private documents in public portfolios.</li></ul></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Student wellbeing</span><h3>9. Study consistently without burning out</h3><p>Long hours do not always produce better learning. Short focused sessions, regular breaks, adequate sleep and realistic goals can help you sustain effort over a term. If a study method is not working, change the method rather than simply adding more hours.</p><p>When you're stuck, write down the exact step you cannot understand and ask a teacher, tutor or study group to explain it. Teaching a concept back to someone else can also reveal gaps in understanding.</p><p>Plan for the basics: safe travel, access to learning materials, meals and a quiet place to work when possible. Seek support from your school or institution when these are barriers.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Safety &amp; verification</span><h3>10. Recognise suspicious education offers</h3><p>Not every opportunity shared online is genuine. Be especially careful with messages that promise guaranteed admission, demand urgent payment into a personal account or ask for passwords and one-time verification codes.</p><h4>Before you apply</h4><ul><li>Find the organisation's official website independently.</li><li>Confirm the programme, contact details and application process.</li><li>Compare advertised fees and deadlines with official information.</li><li>Keep copies of correspondence and receipts.</li><li>Report suspicious listings rather than forwarding them.</li></ul><p>An opportunity appearing in a community feed should be treated as a starting point for research, not as independent verification.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Planning</span><h3>11. Your 30-day application preparation plan</h3><p><strong>Week 1:</strong> Shortlist institutions or funding programmes and verify their requirements. <strong>Week 2:</strong> Gather documents, check names and contact details, and prepare your motivation statement. <strong>Week 3:</strong> Complete applications carefully, reviewing every uploaded document. <strong>Week 4:</strong> Track references, check email regularly and prepare for possible interviews or assessments.</p><p>Use a simple table with columns for organisation, programme, official link, requirements, deadline, submitted date and current status. Update it whenever you receive a response. Do not rely on a single application.</p></article>
-          <article class="og-edu-guide"><span class="og-edu-tag">Frequently asked questions</span><h3>12. Common questions about studying in South Africa</h3><details><summary>Can I apply before my final matric results?</summary><p>Some institutions consider applications using earlier results and later require final results. Always follow the rules for the particular programme and application year.</p></details><details><summary>Does meeting minimum requirements guarantee admission?</summary><p>No. Competitive programmes may have limited spaces or additional selection requirements.</p></details><details><summary>Is every bursary fully funded?</summary><p>No. Funding amounts, covered costs, renewal conditions and obligations vary by provider.</p></details><details><summary>Where should I check deadlines?</summary><p>Use the official institution or funder's current application page. Dates shown on community listings may become outdated.</p></details><details><summary>What if I do not qualify for my first choice?</summary><p>Consider related programmes, approved alternative pathways, improving relevant results or applying in a later cycle. Verify the requirements before paying for any programme.</p></details></article>
-        </div>
-        <div class="og-edu-intro" style="margin-top:16px">
-          <h2>Where to verify education information</h2>
-          <p>For current public education information, consult the <a href="https://www.education.gov.za/" target="_blank" rel="noopener noreferrer">Department of Basic Education</a>, the <a href="https://www.dhet.gov.za/" target="_blank" rel="noopener noreferrer">Department of Higher Education and Training</a> and <a href="https://www.nsfas.org.za/" target="_blank" rel="noopener noreferrer">NSFAS</a>. These are reference points, not endorsements of individual OppoGlobe listings. Programme details, deadlines and eligibility rules should always be checked with the relevant provider.</p>
-          <p><strong>Editorial note:</strong> These guides are general educational information. They do not represent personalised admissions, financial or career advice. Listings are supplied separately and should be verified before applying.</p>
-        </div>
-      </section>
-
     </div>
 
     <div id="maintenanceTab" class="tab-content" style="margin-top:14px;">
@@ -3216,9 +3094,8 @@ document.addEventListener('keydown', function(e){
    LEFT RAIL
    ============================================================ */
 function toggleRail(){
-  if (window.matchMedia('(min-width:1000px)').matches) return;
-  const open = document.getElementById('railBody').classList.toggle('open');
-  document.getElementById('railOverlay').classList.toggle('active', open);
+  document.getElementById('railBody').classList.toggle('open');
+  document.getElementById('railOverlay').classList.toggle('active');
 }
 function closeRail(){
   document.getElementById('railBody').classList.remove('open');
@@ -3562,47 +3439,25 @@ function getNextAd(){
 
 function resolveAdImage(ad){
   if (!ad || typeof ad !== 'object') return '';
-  // Support common Django serializer fields and nested image objects.
-  const candidates = [
-    ad.image_url, ad.image, ad.image_file, ad.image_path,
-    ad.banner_url, ad.banner, ad.banner_image, ad.banner_image_url,
-    ad.photo_url, ad.photo, ad.thumbnail_url, ad.thumbnail,
-    ad.media_url, ad.media, ad.creative_url, ad.creative,
-    ad.creative_image, ad.creative_image_url, ad.file_url,
-    ad.ad_image, ad.ad_image_url, ad.picture, ad.picture_url
-  ];
-  let value = candidates.find(item => {
-    if (typeof item === 'string') return item.trim().length > 0;
-    return item && typeof item === 'object' && Boolean(item.url || item.src || item.path || item.file);
+  const candidates = [ad.image_url,ad.image,ad.image_file,ad.banner_url,ad.banner,ad.photo_url,ad.photo,ad.thumbnail_url,ad.thumbnail,ad.media_url,ad.media,ad.creative_url,ad.creative];
+  let value = candidates.find(v=>{
+    if (!v) return false;
+    if (typeof v === 'string') return v.trim().length > 0;
+    if (typeof v === 'object') return Boolean(v.url || v.src || v.path);
+    return false;
   });
-  if (value && typeof value === 'object') value = value.url || value.src || value.path || value.file;
+  if (value && typeof value === 'object') value = value.url || value.src || value.path || '';
   value = String(value || '').trim();
-  if (!value || /^(none|null|undefined)$/i.test(value)) return '';
-  if (/^(https?:)?\/\//i.test(value) || /^(data:image\/|blob:)/i.test(value)) return value;
+  if (!value) return '';
+  if (/^(https?:)?\/\//i.test(value) || value.startsWith('data:') || value.startsWith('blob:')) return value;
   if (value.startsWith('/')) return value;
-  if (value.startsWith('./')) value = value.slice(2);
   if (value.startsWith('media/')) return '/' + value;
-  if (value.startsWith('static/')) return '/' + value;
-  // Django ImageField often serializes as a bare file name/path.
-  return '/media/' + value;
+  return '/media/' + value.replace(/^\.?\//,'');
 }
 function getAdFallbackImage(){
-  // Neutral fallback: never impersonate an advertiser with another ad's photo.
-  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">' +
-    '<rect width="1000" height="600" fill="#e8f0ec"/>' +
-    '<circle cx="500" cy="255" r="65" fill="none" stroke="#779b89" stroke-width="12"/>' +
-    '<path d="M440 280l35-35 28 28 48-52 50 59" fill="none" stroke="#779b89" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<text x="500" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" fill="#496d5b">OppoGlobe Sponsored</text>' +
-    '</svg>'
-  );
+  return 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&h=600&fit=crop';
 }
-function handleAdImageError(img){
-  if (!img) return;
-  console.warn('Advertisement image failed to load:', img.dataset.adId || '(unknown)', img.currentSrc || img.src);
-  img.onerror = null;
-  img.src = getAdFallbackImage();
-}
+
 function renderAdCard(ad=null, options={}){
   ad = ad || getNextAd();
   if (!ad) return '';
@@ -3621,7 +3476,7 @@ function renderAdCard(ad=null, options={}){
   return `<article class="ad-card" data-ad-id="${escapeHtml(adId)}">
     <span class="ad-flag"><i class="fas fa-bullhorn"></i> Sponsored</span>
     <div class="ad-img" onclick="handleAdAction('${escapeHtml(adId)}')">
-      <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" data-ad-id="${escapeHtml(adId)}" onerror="handleAdImageError(this);">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src=getAdFallbackImage();">
       <div class="ad-cta-overlay"><button type="button" onclick="event.stopPropagation();handleAdAction('${escapeHtml(adId)}')">${escapeHtml(cta)} <i class="fas fa-arrow-right"></i></button></div>
     </div>
     <div class="ad-advertiser">
