@@ -248,6 +248,25 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
 .stack{display:flex; flex-direction:column; gap:12px;}
 
+/* OppoGlobe social-app desktop rail: compact, visual, tappable, without changing shell */
+.rail-story-heading{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.rail-story-heading .rail-head-icon{width:35px;height:35px;flex:0 0 35px;border-radius:12px;display:grid;place-items:center;background:var(--jade-wash);color:var(--jade-deep);font-size:15px}
+.rail-story-heading .rail-head-icon.orange{background:var(--coral-wash);color:var(--coral-deep)}
+.rail-story-heading .rail-head-icon.gold{background:var(--gold-wash);color:#8b6516}
+.rail-story-heading .rail-head-copy{min-width:0}.rail-story-heading strong{display:block;font-size:13px;color:var(--ink);line-height:1.25}.rail-story-heading small{display:block;font-size:10.5px;color:var(--ink-faint);margin-top:3px;line-height:1.3}
+.rail-story-link{display:flex;align-items:center;gap:10px;width:100%;padding:9px 8px;background:transparent;border:0;border-radius:12px;text-align:left;color:var(--ink);text-decoration:none;cursor:pointer;transition:background .16s,transform .16s}
+.rail-story-link:hover,.rail-story-link:focus-visible{background:var(--paper);transform:translateX(2px);color:var(--ink)}
+.rail-story-link .rail-story-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:13px;background:var(--jade-wash);color:var(--jade-deep);font-size:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.025)}
+.rail-story-link .rail-story-icon.coral{background:var(--coral-wash);color:var(--coral-deep)}.rail-story-link .rail-story-icon.gold{background:var(--gold-wash);color:#8b6516}.rail-story-link .rail-story-icon.sky{background:#eaf3ff;color:#3768b6}
+.rail-story-link .rail-story-text{flex:1;min-width:0}.rail-story-link .rail-story-text strong{display:block;font-size:12px;font-weight:700;line-height:1.25}.rail-story-link .rail-story-text small{display:block;color:var(--ink-faint);font-size:10px;line-height:1.4;margin-top:3px}.rail-story-link .rail-story-arrow{color:var(--ink-faint);font-size:10px}
+.rail-story-link.rail-story-primary{background:var(--jade-wash)}.rail-story-link.rail-story-primary .rail-story-icon{background:var(--jade);color:#fff}
+.rail-metric{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft)}.rail-metric:last-child{border-bottom:0}.rail-metric-icon{width:33px;height:33px;flex:0 0 33px;border-radius:11px;background:var(--jade-wash);color:var(--jade-deep);display:grid;place-items:center;font-size:13px}.rail-metric-icon.gold{background:var(--gold-wash);color:#8b6516}.rail-metric-icon.coral{background:var(--coral-wash);color:var(--coral-deep)}.rail-metric-copy{flex:1;min-width:0}.rail-metric-copy strong{display:block;font-size:11px}.rail-metric-copy small{display:block;font-size:9.5px;color:var(--ink-faint);margin-top:2px}.rail-metric .stat-val{font-size:13px}
+.rail-feed-person{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-soft)}.rail-feed-person:last-child{border:0}.rail-feed-avatar{display:grid;place-items:center;flex:0 0 33px;width:33px;height:33px;border-radius:50%;background:var(--jade-wash);color:var(--jade-deep);font-size:12px}.rail-feed-person strong{font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rail-feed-person small{font-size:9.5px;color:var(--ink-faint)}.rail-feed-person>div{min-width:0}
+.rail-empty{display:flex;gap:9px;align-items:center;padding:9px;border-radius:12px;background:var(--paper);font-size:10.5px;color:var(--ink-faint);line-height:1.4}.rail-empty i{font-size:17px;color:var(--jade);flex:0 0 20px;text-align:center}
+.rail-right .app-explain-icon{width:38px;height:38px;flex-basis:38px;font-size:15px;border-radius:13px}.rail-right .app-explain-item{align-items:center;gap:10px}.rail-right .app-explain-copy strong{font-size:12px}.rail-right .app-explain-copy span{font-size:10.5px}.rail-right button.app-explain-item{cursor:pointer}.rail-right button.app-explain-item:hover,.rail-right a.app-explain-item:hover{background:var(--paper);border-radius:10px;text-decoration:none}
+.social-row a{transition:transform .18s,background .18s}.social-row a:hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.rail-story-link,.social-row a{transition:none}}
+
 /* Sidebar quick actions */
 .rail-toggle{
   display:flex; align-items:center; gap:8px; width:100%; padding:11px 14px; margin-bottom:10px;
@@ -1929,6 +1948,32 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 .footer-bottom a{color:#9aa89f;}
 .footer-bottom a:hover{color:var(--coral);}
 
+
+/* Launch-ready payment information */
+.payment-trust{max-width:1200px;margin:26px auto 0;padding:20px 22px;border:1px solid rgba(255,255,255,.15);border-radius:18px;background:linear-gradient(120deg,rgba(31,111,92,.28),rgba(255,255,255,.035));display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.payment-trust h6{color:#fff;font:600 17px var(--font-display);margin:0 0 6px}.payment-trust p{color:#b9c9bf;font-size:12px;line-height:1.65;margin:0;max-width:550px}
+.payment-brands{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.payment-brand{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 13px;border-radius:10px;background:#fff;color:#16241f;font-size:13px;font-weight:800;letter-spacing:-.02em;gap:7px}.payment-brand i{font-size:21px}.payment-brand.yoco{font-size:19px;letter-spacing:-.065em}.payment-note{width:100%;color:#9fb3a7;font-size:10.5px}
+.welcome-payment-note{margin:13px auto 0;padding:12px 14px;max-width:340px;border:1px solid #d4e7dd;border-radius:13px;background:#eff8f2;text-align:left;color:#215743;font-size:11.5px;line-height:1.6}.welcome-payment-note strong{display:block;font-size:12px;margin-bottom:3px}
+@media(max-width:640px){.payment-trust{padding:16px;margin-top:22px}.payment-brand{min-height:36px;padding:7px 10px;font-size:11px}.payment-brand i{font-size:18px}}
+
+
+/* OppoGlobe people-first editorial scenes — scoped, responsive and nonintrusive */
+.og-story{position:relative;isolation:isolate;min-height:164px;overflow:hidden;border-radius:20px;margin:0 0 15px;background:#1b493b;color:#fff;display:flex;align-items:flex-end;box-shadow:0 12px 28px rgba(22,36,31,.10)}
+.og-story img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 48%;z-index:-2;transition:transform .45s ease}
+.og-story:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,37,30,.89),rgba(12,37,30,.48) 53%,rgba(12,37,30,.04));z-index:-1}
+.og-story-content{padding:22px 24px;max-width:590px}.og-story-kicker{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#c5ebd3;margin-bottom:6px}
+.og-story h3{font-family:var(--font-display);font-size:clamp(19px,2.3vw,27px);line-height:1.13;margin:0 0 6px;color:#fff}.og-story p{font-size:12px;line-height:1.6;color:#edf5ee;margin:0;max-width:410px}
+.og-story--education:after{background:linear-gradient(90deg,rgba(23,34,58,.88),rgba(23,34,58,.48) 55%,transparent)}
+.og-story--maintenance:after{background:linear-gradient(90deg,rgba(31,47,39,.88),rgba(31,47,39,.43) 58%,transparent)}
+.og-story--carwash:after{background:linear-gradient(90deg,rgba(8,53,43,.91),rgba(8,53,43,.4) 57%,transparent)}
+.og-story:hover img{transform:scale(1.025)}
+.welcome-illustration.og-welcome-photo{width:min(100%,350px);height:152px;min-height:152px;border-radius:19px;margin:0 auto 12px;overflow:hidden;position:relative;background:#d9e8df;box-shadow:0 10px 24px rgba(16,43,31,.10)}
+.welcome-illustration.og-welcome-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.welcome-illustration.og-welcome-photo .welcome-badge{position:absolute;bottom:9px;right:10px;top:auto;left:auto;z-index:1}
+#carWashQuickWidget .og-wash-avatar{width:43px;height:43px;flex:0 0 43px;border-radius:13px;object-fit:cover;border:2px solid rgba(255,255,255,.8)}
+@media(max-width:640px){.og-story{min-height:144px;border-radius:16px;margin-bottom:12px}.og-story-content{padding:17px}.og-story h3{font-size:19px}.og-story p{font-size:11px}.welcome-illustration.og-welcome-photo{height:122px;min-height:122px}#carWashQuickWidget .og-wash-avatar{width:38px;height:38px;flex-basis:38px}}
+@media(prefers-reduced-motion:reduce){.og-story img{transition:none}}
+
 /* misc */
 .form-check-input:checked{background-color:var(--jade); border-color:var(--jade);}
 .btn-primary{background:var(--jade); border-color:var(--jade);}
@@ -2291,31 +2336,32 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
     <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Browse OppoGlobe</button>
     <div class="rail-body" id="railBody">
       <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-bolt"></i>Get moving</div>
-        <div class="stack" style="gap:6px;">
-          <button class="quick-btn solid" onclick="showPostModal()"><i class="fas fa-circle-plus"></i>Share something</button>
-          <button class="quick-btn" onclick="switchTab('properties')"><i class="fas fa-house"></i>Properties</button>
-          <button class="quick-btn" onclick="switchTab('reels')"><i class="fas fa-video"></i>Reels</button>
-          <button class="quick-btn" onclick="switchTab('maintenance')"><i class="fas fa-screwdriver-wrench"></i>Maintenance</button>
-          <button class="quick-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i>Jobs</button>
-          <button class="quick-btn" onclick="switchTab('feed')"><i class="fas fa-newspaper"></i>Community feed</button>
-          <button class="quick-btn" onclick="switchTab('education')"><i class="fas fa-book-open-reader"></i>Education</button>
-          <a href="/properties/add/" class="quick-btn warm"><i class="fas fa-circle-plus"></i>List a property</a>
+        <div class="rail-story-heading"><span class="rail-head-icon"><i class="fas fa-compass"></i></span><span class="rail-head-copy"><strong>Explore OppoGlobe</strong><small>Your neighbourhood, one tap away</small></span></div>
+        <div class="stack" style="gap:3px;">
+          <button class="rail-story-link rail-story-primary" onclick="showPostModal()"><span class="rail-story-icon"><i class="fas fa-circle-plus"></i></span><span class="rail-story-text"><strong>Share something</strong><small>Tell your neighbourhood what's new</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('properties')"><span class="rail-story-icon sky"><i class="fas fa-house"></i></span><span class="rail-story-text"><strong>Properties</strong><small>Homes, rentals &amp; places to stay</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('reels')"><span class="rail-story-icon coral"><i class="fas fa-play"></i></span><span class="rail-story-text"><strong>Reels</strong><small>Watch what's happening around you</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('maintenance')"><span class="rail-story-icon gold"><i class="fas fa-screwdriver-wrench"></i></span><span class="rail-story-text"><strong>Maintenance</strong><small>Find help and report a repair</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('jobs')"><span class="rail-story-icon sky"><i class="fas fa-briefcase"></i></span><span class="rail-story-text"><strong>Jobs</strong><small>Find work and new opportunities</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('feed')"><span class="rail-story-icon coral"><i class="fas fa-users"></i></span><span class="rail-story-text"><strong>Community feed</strong><small>Catch up with local people</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <button class="rail-story-link" onclick="switchTab('education')"><span class="rail-story-icon gold"><i class="fas fa-graduation-cap"></i></span><span class="rail-story-text"><strong>Education</strong><small>Bursaries, study &amp; campus life</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>
+          <a href="/carwash/" class="rail-story-link"><span class="rail-story-icon"><i class="fas fa-car-side"></i></span><span class="rail-story-text"><strong>Car Wash</strong><small>Mobile washers and wash stations</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></a>
+          <a href="/properties/add/" class="rail-story-link"><span class="rail-story-icon gold"><i class="fas fa-key"></i></span><span class="rail-story-text"><strong>List a property</strong><small>Put your space on the map</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></a>
         </div>
       </div>
       <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-chart-line"></i>Property pulse</div>
-        <div class="stat-row"><span>Listed</span><span class="stat-val" id="totalProperties">0</span></div>
-        <div class="stat-row"><span>Available now</span><span class="stat-val jade" id="availableProperties">0</span></div>
-        <div class="stat-row"><span>Booked today</span><span class="stat-val gold" id="todayBookings">0</span></div>
+        <div class="rail-story-heading"><span class="rail-head-icon orange"><i class="fas fa-house-circle-check"></i></span><span class="rail-head-copy"><strong>Property pulse</strong><small>What's happening with homes</small></span></div>
+        <div class="rail-metric"><span class="rail-metric-icon"><i class="fas fa-building"></i></span><span class="rail-metric-copy"><strong>Listed</strong><small>Homes on OppoGlobe</small></span><span class="stat-val" id="totalProperties">0</span></div>
+        <div class="rail-metric"><span class="rail-metric-icon coral"><i class="fas fa-door-open"></i></span><span class="rail-metric-copy"><strong>Available now</strong><small>Ready to explore</small></span><span class="stat-val jade" id="availableProperties">0</span></div>
+        <div class="rail-metric"><span class="rail-metric-icon gold"><i class="fas fa-calendar-check"></i></span><span class="rail-metric-copy"><strong>Booked today</strong><small>New bookings</small></span><span class="stat-val gold" id="todayBookings">0</span></div>
       </div>
       <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-fire"></i>Jobs on the rise</div>
-        <div id="trendingJobs" class="text-muted small">Loading…</div>
+        <div class="rail-story-heading"><span class="rail-head-icon gold"><i class="fas fa-fire"></i></span><span class="rail-head-copy"><strong>Jobs on the rise</strong><small>Opportunities worth a look</small></span></div>
+        <div id="trendingJobs" class="text-muted small"><div class="rail-empty"><i class="fas fa-spinner fa-spin"></i><span>Finding opportunities…</span></div></div>
       </div>
       <div class="card card-pad">
-        <div class="card-title"><i class="fas fa-users"></i>Top neighbours</div>
-        <div id="topCreators" class="text-muted small">Loading…</div>
+        <div class="rail-story-heading"><span class="rail-head-icon"><i class="fas fa-user-group"></i></span><span class="rail-head-copy"><strong>Top neighbours</strong><small>People sharing in your area</small></span></div>
+        <div id="topCreators" class="text-muted small"><div class="rail-empty"><i class="fas fa-spinner fa-spin"></i><span>Finding your neighbours…</span></div></div>
       </div>
     </div>
   </div>
@@ -2435,6 +2481,7 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
           <button onclick="dismissPropertyHint()" style="background:none; border:none; color:var(--ink-faint); font-size:14px; cursor:pointer; flex-shrink:0;"><i class="fas fa-times"></i></button>
         </div>
       </div>
+      <div class="og-story og-story--property"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Contemporary residential home" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Find your place</div><h3>A home for your next chapter</h3><p>Explore real homes, discover neighbourhoods and connect directly with property owners.</p></div></div>
       <div id="propertiesContainer"></div>
     </div>
 
@@ -2456,6 +2503,7 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
     </div>
 
     <div id="educationTab" class="tab-content" style="margin-top:14px;">
+      <div class="og-story og-story--graduate"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduates celebrating their achievement" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Learn • Grow • Graduate</div><h3>Big dreams start close to home</h3><p>Discover bursaries, universities, schools and learning opportunities that move you forward.</p></div></div>
       <div id="eduUploadZone" class="edu-upload-strip hidden">
         <span class="label"><i class="fas fa-book-open-reader"></i><span id="eduBusinessLabel">Manage education content</span></span>
         <div class="actions">
@@ -2491,6 +2539,7 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
     </div>
 
     <div id="maintenanceTab" class="tab-content" style="margin-top:14px;">
+      <div class="og-story og-story--maintenance"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance professional at work" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">People who get it done</div><h3>Every home deserves good care</h3><p>From repairs to everyday upkeep, share what needs attention and track the progress.</p></div></div>
       <div class="maint-hero">
         <div class="maint-hero-top">
           <div>
@@ -2571,9 +2620,9 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
     <div class="stack">
       <div class="card card-pad">
         <div class="card-title"><i class="fas fa-gauge-high"></i>Quick stats</div>
-        <div class="stat-row"><span>Total properties</span><span class="stat-val" id="totalPropertiesCount">0</span></div>
-        <div class="stat-row"><span>Active jobs</span><span class="stat-val" id="activeJobsCount">0</span></div>
-        <div class="stat-row"><span>Applications</span><span class="stat-val" id="totalApplications">0</span></div>
+        <div class="rail-metric"><span class="rail-metric-icon"><i class="fas fa-house"></i></span><span class="rail-metric-copy"><strong>Total properties</strong><small>Homes on the platform</small></span><span class="stat-val" id="totalPropertiesCount">0</span></div>
+        <div class="rail-metric"><span class="rail-metric-icon"><i class="fas fa-briefcase"></i></span><span class="rail-metric-copy"><strong>Active jobs</strong><small>Open opportunities</small></span><span class="stat-val" id="activeJobsCount">0</span></div>
+        <div class="rail-metric"><span class="rail-metric-icon"><i class="fas fa-file-circle-check"></i></span><span class="rail-metric-copy"><strong>Applications</strong><small>Applications made</small></span><span class="stat-val" id="totalApplications">0</span></div>
       </div>
       <div class="card card-pad app-explain-card">
         <div class="card-title"><i class="fas fa-compass"></i>What you can do here</div>
@@ -2699,50 +2748,36 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 
       <!-- Slide 1: Welcome -->
       <div class="welcome-slide active">
-        <div class="welcome-illustration">
-          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><path d="M156 96 Q176 88 178 68" stroke="#E8A93B" stroke-width="6" fill="none" stroke-linecap="round"/></svg>
-          <div class="welcome-badge" style="background:#1F6F5C;">👋</div>
-        </div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
         <h4>Welcome to OppoGlobe!</h4>
         <p>Your neighbourhood's home for houses, jobs and the people next door. Got 30 seconds for a quick look around?</p>
+        <div class="welcome-payment-note"><strong><i class="fas fa-shield-halved me-1" aria-hidden="true"></i> Pay with confidence</strong>For eligible card payments, OppoGlobe sends you to Yoco’s secure hosted checkout. You enter your card details with Yoco, not into an OppoGlobe card form. Available payment methods are shown at checkout.</div>
       </div>
 
       <!-- Slide 2: Properties -->
       <div class="welcome-slide">
-        <div class="welcome-illustration">
-          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="76" cy="111" r="4" fill="#16241F"/><circle cx="124" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 130 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
-          <div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div>
-        </div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Property on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
         <h4>Find your next place</h4>
         <p>Browse listings grouped by area. Tap the heart to like, the star to rate, and the share icon to send a place to a friend.</p>
       </div>
 
       <!-- Slide 3: Messaging -->
       <div class="welcome-slide">
-        <div class="welcome-illustration">
-          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
-          <div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div>
-        </div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
         <h4>Talk to your neighbours</h4>
         <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed. You can also message whoever posted a maintenance request, job, bursary or university listing.</p>
       </div>
 
       <!-- Slide 4: Maintenance -->
       <div class="welcome-slide">
-        <div class="welcome-illustration">
-          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
-          <div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div>
-        </div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
         <h4>Get things fixed</h4>
         <p>Type what needs fixing in the Maintenance tab — tag how urgent it is, add a photo, and you're done.</p>
       </div>
 
       <!-- Slide 5: Jobs & Education -->
       <div class="welcome-slide">
-        <div class="welcome-illustration">
-          <svg viewBox="0 0 200 200"><polygon points="30,78 100,28 170,78" fill="#FF6B4A"/><rect x="42" y="78" width="116" height="98" rx="22" fill="#1F6F5C"/><rect x="88" y="132" width="24" height="42" rx="6" fill="#fff" opacity=".92"/><circle cx="80" cy="110" r="8" fill="#fff"/><circle cx="120" cy="110" r="8" fill="#fff"/><circle cx="80" cy="111" r="4" fill="#16241F"/><circle cx="120" cy="111" r="4" fill="#16241F"/><path d="M83 123 Q100 133 117 123" stroke="#16241F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="66" cy="120" r="6" fill="#FF6B4A" opacity=".45"/><circle cx="134" cy="120" r="6" fill="#FF6B4A" opacity=".45"/></svg>
-          <div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div>
-        </div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduate on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
         <h4>Jobs & bursaries too</h4>
         <p>Explore local jobs, bursaries and schools, right alongside your neighbourhood feed. That's the tour — enjoy!</p>
       </div>
@@ -2858,10 +2893,7 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 
 <!-- ===== CAR WASH QUICK ACCESS ===== -->
 <a id="carWashQuickWidget" href="/carwash/" aria-label="Open OppoGlobe Car Wash">
-  <span class="carwash-widget-icon" aria-hidden="true">
-    <i class="fas fa-car-side"></i>
-    <span class="wash-drop"><i class="fas fa-droplet"></i></span>
-  </span>
+  <img class="og-wash-avatar" src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1400&q=82" alt="" loading="lazy" decoding="async">
   <span class="carwash-widget-copy">
     <span class="carwash-widget-title"><span class="live-dot"></span> Car Wash</span>
     <span class="carwash-widget-intro">Mobile wash or find a nearby drive-in.</span>
@@ -2920,11 +2952,9 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
     <div>
       <h5 class="footer-h">OppoGlobe</h5>
       <p class="footer-p">Homes to book or buy, jobs worth applying for, bursaries worth chasing, and neighbours who show up. All in one place.</p>
-      <div class="social-row">
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      <div class="social-row" aria-label="OppoGlobe official social media">
+        <a href="https://www.facebook.com/profile.php?id=61594009663782" target="_blank" rel="noopener noreferrer" aria-label="OppoGlobe on Facebook" title="Follow us on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+        <a href="https://www.tiktok.com/@oppglobe?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener noreferrer" aria-label="OppoGlobe on TikTok" title="Follow us on TikTok"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
       </div>
     </div>
     <div>
@@ -2941,6 +2971,19 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
       <form class="nl-form" id="newsletterForm"><input type="email" placeholder="Your email" required><button type="submit">Subscribe</button></form>
     </div>
   </div>
+  <section class="payment-trust" aria-label="Payment methods and security">
+    <div>
+      <h6><i class="fas fa-shield-halved me-2" aria-hidden="true"></i>Secure payments, powered by Yoco</h6>
+      <p>Pay for eligible bookings using Yoco's hosted card checkout. Your card details are entered on Yoco's secure payment page, not stored in OppoGlobe's booking form. Payment availability depends on the provider and checkout.</p>
+    </div>
+    <div class="payment-brands" aria-label="Yoco and supported card networks">
+      <span class="payment-brand yoco" aria-label="Yoco payment gateway">yoco</span>
+      <span class="payment-brand"><i class="fab fa-cc-visa" aria-hidden="true"></i>Visa</span>
+      <span class="payment-brand"><i class="fab fa-cc-mastercard" aria-hidden="true"></i>Mastercard</span>
+      <span class="payment-brand"><i class="fas fa-credit-card" aria-hidden="true"></i>Debit &amp; credit</span>
+    </div>
+    <p class="payment-note">Card logos indicate networks supported through the payment provider, not a guarantee that every card or payment will be accepted. Cash may be available where offered.</p>
+  </section>
   <div class="footer-bottom">
     <span>© 2026 OppoGlobe. All rights reserved.</span>
     <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/cookies/">Cookies</a></div>
@@ -3875,8 +3918,8 @@ function loadTopCreators(){
     const d = map.get(ownerName); d.properties++; d.engagement += (p.likes_count||0)+(p.comments_count||0);
   });
   let creators = [...map.values()].sort((a,b)=>b.engagement-a.engagement).slice(0,5);
-  if (!creators.length) container.innerHTML = `<div class="text-muted small">No activity yet — be the first to list.</div>`;
-  else container.innerHTML = creators.map(c=>`<div class="stat-row"><span>${escapeHtml(c.name)}</span><span style="color:var(--ink-faint);">${c.properties} listed</span></div>`).join('');
+  if (!creators.length) container.innerHTML = `<div class="rail-empty"><i class="fas fa-user-group"></i><span>No neighbours to show yet. Be the first to share a property!</span></div>`;
+  else container.innerHTML = creators.map(c=>`<div class="rail-feed-person"><span class="rail-feed-avatar"><i class="fas fa-user"></i></span><div><strong>${escapeHtml(c.name)}</strong><small>${c.properties} ${c.properties===1?'property':'properties'} shared</small></div></div>`).join('');
 }
 function viewProperty(id){ window.location.href = `/properties/${id}/`; }
 function propertyPurpose(p){ return String(p?.property_purpose || '').toLowerCase(); }
@@ -4332,8 +4375,8 @@ function renderJobs(jobs){
 }
 function renderTrendingJobs(jobs){
   const container = document.getElementById('trendingJobs'); if (!container) return;
-  if (!jobs?.length){ container.innerHTML = `<div class="text-muted small">No trending jobs yet</div>`; return; }
-  container.innerHTML = jobs.map(j=>`<div style="margin-bottom:6px; padding:7px 9px; background:var(--paper); border-radius:8px;"><strong style="font-size:11.5px;">${escapeHtml(j.title||'Untitled')}</strong><div class="small text-muted" style="font-size:10.5px;">${escapeHtml(j.company_name||'Unknown')}</div><button class="link-btn" onclick="viewJob('${j.id}')" style="padding:2px 0;">View →</button></div>`).join('');
+  if (!jobs?.length){ container.innerHTML = `<div class="rail-empty"><i class="fas fa-briefcase"></i><span>No jobs posted yet. Check back for new opportunities.</span></div>`; return; }
+  container.innerHTML = jobs.slice(0,5).map(j=>`<button class="rail-story-link" onclick="viewJob('${j.id}')"><span class="rail-story-icon sky"><i class="fas fa-briefcase"></i></span><span class="rail-story-text"><strong>${escapeHtml(j.title||'Job opportunity')}</strong><small>${escapeHtml(j.company_name||'Employer')}</small></span><i class="fas fa-chevron-right rail-story-arrow"></i></button>`).join('');
 }
 function viewJob(id){ window.location.href = `/jobs/${id}/`; }
 function applyForJob(id, btn){
