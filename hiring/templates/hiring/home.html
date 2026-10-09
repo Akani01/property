@@ -2250,6 +2250,31 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 @media (prefers-reduced-motion:reduce){
   .brand,.icon-btn,.avatar-btn,.dropdown-panel a,.dropdown-panel button{transition:none !important;}
 }
+
+/* OppoGlobe Car Wash floating widget — branded green, high-contrast */
+#carWashQuickWidget{
+  background:linear-gradient(135deg,#1F6F5C 0%,#154F41 100%) !important;
+  border:1px solid #0F4538 !important;
+  color:#FFFFFF !important;
+  box-shadow:0 14px 34px rgba(13,66,52,.30),0 2px 8px rgba(0,0,0,.12) !important;
+}
+#carWashQuickWidget:hover,#carWashQuickWidget:focus-visible{
+  background:linear-gradient(135deg,#25846B 0%,#154F41 100%) !important;
+  border-color:#E8A93B !important;
+  box-shadow:0 18px 40px rgba(13,66,52,.36) !important;
+}
+#carWashQuickWidget .carwash-widget-title{color:#FFFFFF !important;}
+#carWashQuickWidget .carwash-widget-intro{color:#E7F1EC !important;}
+#carWashQuickWidget .carwash-widget-title .live-dot{
+  background:#E8A93B !important;
+  box-shadow:0 0 0 3px rgba(232,169,59,.23) !important;
+}
+#carWashQuickWidget .carwash-widget-arrow{
+  background:#E8A93B !important;
+  color:#154F41 !important;
+}
+#carWashQuickWidget .og-wash-avatar{border:2px solid rgba(255,255,255,.84) !important;}
+#carWashQuickWidget:focus-visible{outline:3px solid #E8A93B;outline-offset:3px;}
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
