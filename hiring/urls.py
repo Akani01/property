@@ -34,7 +34,7 @@ urlpatterns = [
     #====================== VIDEOS AND FEE ========================
 
     path('videos/', views.video_feed_page, name='video_feed'),
-    path("", views.help_center, name="help_center"),
+    path('help/', views.help_center, name="help_center"),
     # ===================== HOME & MAIN PAGES =====================
 
     path('', views.home_page, name='home'),
