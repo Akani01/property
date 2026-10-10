@@ -564,3 +564,8 @@ admin.site.register(UserStatus, UserStatusAdmin)
 admin.site.site_header = "Hiring Portal Platform Administration"
 admin.site.site_title = "System Admin"
 admin.site.index_title = "Welcome to Hiring Portal Platform Administration"
+
+@admin.register(HelpCenterPage)
+class HelpCenterPageAdmin(admin.ModelAdmin):
+    list_display = ("title", "updated_at")
+    search_fields = ("title", "description")

@@ -22,7 +22,7 @@ message_urlpatterns = [
     # Users
     path('users/', message_views.UserViewSet.as_view({'get': 'list'}), name='user-list'),
     path('users/search/', message_views.UserViewSet.as_view({'get': 'search'}), name='user-search'),
-
+    
     # User status
     path('user-status/update/', message_views.update_user_status, name='update-user-status'),
     path('user-status/<str:user_id>/', message_views.get_user_status, name='get-user-status'),
@@ -34,7 +34,7 @@ urlpatterns = [
     #====================== VIDEOS AND FEE ========================
 
     path('videos/', views.video_feed_page, name='video_feed'),
-
+    path("", views.help_center, name="help_center"),
     # ===================== HOME & MAIN PAGES =====================
 
     path('', views.home_page, name='home'),

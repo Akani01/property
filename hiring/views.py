@@ -12081,3 +12081,13 @@ self.addEventListener('notificationclick', function(event) {
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return response
 
+def help_center(request):
+    page = HelpCenterPage.objects.order_by("pk").first()
+    return render(request, "hiring/help_center.html", {
+        "page": page,
+        "page_title": page.title if page else "Help Center",
+        "page_description": (
+            page.description if page else
+            "Explore OppoGlobe help guides, troubleshooting and contact options."
+        ),
+    })

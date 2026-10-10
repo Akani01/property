@@ -1271,3 +1271,21 @@ class StaticPage(models.Model):
         if not self.sections:
             self.sections = []
         super().save(*args, **kwargs)
+
+
+class HelpCenterPage(models.Model):
+    """Editable content displayed below the built-in Help Center guides."""
+    title = models.CharField(max_length=160, default="Help Center")
+    description = models.CharField(
+        max_length=300,
+        default="Find practical guides and answers about using OppoGlobe.",
+    )
+    content = models.TextField(blank=True, help_text="Optional HTML for additional help information.")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Help Center page"
+        verbose_name_plural = "Help Center pages"
+
+    def __str__(self):
+        return self.title
