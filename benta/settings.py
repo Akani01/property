@@ -506,7 +506,7 @@ PWA_APP_SHORT_NAME = 'OppoGlobe'
 
 PWA_APP_DESCRIPTION = 'Property rental, sales, and job platform'
 
-PWA_APP_THEME_COLOR = '#c62828'
+PWA_APP_THEME_COLOR = "#ffffff"
 
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 
