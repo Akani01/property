@@ -2275,6 +2275,16 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 }
 #carWashQuickWidget .og-wash-avatar{border:2px solid rgba(255,255,255,.84) !important;}
 #carWashQuickWidget:focus-visible{outline:3px solid #E8A93B;outline-offset:3px;}
+
+/* Home feed scroll performance: avoid costly image repaints and layout jumps */
+img { max-width:100%; }
+.og-story img, .og-welcome-photo img, .post-image, .prop-card img, .ad-card img, .edu-card img { backface-visibility:hidden; }
+@media (hover:none), (max-width:767px) {
+  .ad-card, .prop-card, .post-card, .edu-card { transition:box-shadow .15s ease, border-color .15s ease !important; }
+  .ad-card:hover, .prop-card:hover, .edu-card:hover { transform:none !important; }
+  .sponsored-nav, .ad-flag { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+}
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto !important; } }
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -4821,14 +4831,22 @@ function loadNotificationCount(){
 /* ============================================================
    BOTTOM NAV AUTO-HIDE
    ============================================================ */
-let lastScrollY = window.scrollY, isNavHidden = false;
+let lastScrollY = Math.max(0, window.scrollY), isNavHidden = false;
+let navScrollFrame = 0;
 window.addEventListener('scroll', function(){
-  const nav = document.getElementById('mobileBottomNav'); if (!nav) return;
-  const y = window.scrollY;
-  if (y <= 0){ nav.classList.remove('hide'); isNavHidden = false; }
-  else if (y > lastScrollY + 10 && !isNavHidden){ nav.classList.add('hide'); isNavHidden = true; }
-  else if (y < lastScrollY - 10 && isNavHidden){ nav.classList.remove('hide'); isNavHidden = false; }
-  lastScrollY = y;
+  if (navScrollFrame) return;
+  navScrollFrame = requestAnimationFrame(function(){
+    navScrollFrame = 0;
+    const nav = document.getElementById('mobileBottomNav'); if (!nav) return;
+    const y = Math.max(0, window.scrollY);
+    const delta = y - lastScrollY;
+    if (y < 48 || (delta < -5 && isNavHidden)) {
+      nav.classList.remove('hide'); isNavHidden = false;
+    } else if (delta > 7 && y > 120 && !isNavHidden) {
+      nav.classList.add('hide'); isNavHidden = true;
+    }
+    lastScrollY = y;
+  });
 }, { passive:true });
 
 /* ============================================================
@@ -5033,6 +5051,28 @@ document.addEventListener('DOMContentLoaded', function(){
   // popping the cartoon welcome tour in front of a first-time visitor.
   setTimeout(maybeAutoShowWelcomeTour, 900);
 });
+
+/* Keep feed images from decoding synchronously during upward scroll. */
+(function(){
+  function prepareImage(img){
+    if (img.dataset.ogImagePrepared) return;
+    img.dataset.ogImagePrepared = '1';
+    img.decoding = 'async';
+    if (!img.hasAttribute('loading') && !img.closest('.modal.show, .welcome-modal.show')) img.loading = 'lazy';
+    if (!img.hasAttribute('fetchpriority')) img.setAttribute('fetchpriority', 'low');
+  }
+  function scan(root){
+    if (root.nodeType !== 1) return;
+    if (root.matches && root.matches('img')) prepareImage(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(prepareImage);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ()=>scan(document.body), {once:true});
+  else scan(document.body);
+  const observer = new MutationObserver(records=>{
+    for (const record of records) for (const node of record.addedNodes) scan(node);
+  });
+  observer.observe(document.body, {childList:true,subtree:true});
+})();
 </script>
 </body>
 </html>
