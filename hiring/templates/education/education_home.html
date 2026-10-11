@@ -522,6 +522,84 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
 .spin{display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-1px;} @keyframes sp{to{transform:rotate(360deg);}}
 
+
+/* ===== Education Hub independent design system ===== */
+.edu-img-wrap.image-unavailable{background:linear-gradient(135deg,#e9f3ee,#e8eef3)}
+.edu-img-wrap.image-unavailable::after{content:"Education • OppoGlobe";position:absolute;inset:0;display:grid;place-items:center;color:#246c57;font:700 14px var(--font-body);letter-spacing:.02em}
+:root{--paper:#f6f8f6;--line:#e3e9e5;--jade:#176b57;--jade-deep:#104e40;--coral:#f16d4f;--font-display:'Fraunces',Georgia,serif}
+body{background:var(--paper)}
+.shell{max-width:1440px;grid-template-columns:minmax(0,1fr);gap:24px;padding-top:28px}
+@media(min-width:1060px){.shell{grid-template-columns:226px minmax(0,1fr);gap:28px}}
+.rail-body>.card{border-radius:20px;padding:18px 12px;box-shadow:none}
+.rail-body .quick-btn{min-height:42px;border-radius:11px;font-size:13px}
+.rail-body .quick-btn.active{background:var(--jade-wash);color:var(--jade-deep);font-weight:700}
+.rail-body .quick-btn.active i{color:var(--jade)}
+.sidebar-title{font-family:var(--font-body);font-size:10px;letter-spacing:.11em;padding-left:12px}
+.page-header{align-items:flex-start;gap:18px;margin-bottom:22px}
+.page-heading{min-width:0}
+.eyebrow{font:700 10px var(--font-body);letter-spacing:.16em;color:var(--jade);text-transform:uppercase}
+.page-header h1{font-size:clamp(26px,3vw,37px);line-height:1.16;letter-spacing:-.035em;margin:6px 0}
+.heading-dot{color:var(--coral)}
+.page-heading p{margin:6px 0 0;font-size:13px;color:var(--ink-soft);max-width:580px}
+.header-actions{position:relative;align-items:center;flex-wrap:wrap;justify-content:flex-start;gap:8px}
+.header-actions .btn-pill{min-height:41px;padding:10px 15px;white-space:nowrap}
+.publish-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:200;display:none;min-width:205px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:var(--shadow-lg)}
+.publish-menu.open{display:grid;gap:2px}
+.publish-menu button{display:flex;align-items:center;gap:10px;padding:11px 12px;text-align:left;background:none;border:0;border-radius:9px;font-size:13px;color:var(--ink)}
+.publish-menu button:hover{background:var(--jade-wash)}
+.publish-menu i{color:var(--jade);width:18px}
+.discover-hero{position:relative;isolation:isolate;overflow:hidden;min-height:260px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(180px,.6fr);background:linear-gradient(120deg,#124b40,#1d745e 72%,#287b68);border-radius:24px;color:#fff;padding:clamp(23px,4vw,42px);margin-bottom:28px}
+.hero-copy{position:relative;z-index:2}
+.hero-kicker{font-size:10px;font-weight:800;letter-spacing:.16em;color:#b7e7d5}
+.hero-copy h2{font-size:clamp(29px,4vw,46px);line-height:1.1;letter-spacing:-.035em;margin:16px 0 12px}
+.hero-copy h2 em{color:#ffd7b6;font-style:normal}
+.hero-copy p{font-size:13px;color:#e3f1eb;max-width:420px;margin:0 0 20px}
+.hero-link{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#155b49;padding:10px 17px;border-radius:99px;font-size:12px;font-weight:800}
+.hero-art{position:relative;display:flex;align-items:center;justify-content:center;min-height:180px}
+.hero-art>i{font-size:clamp(90px,13vw,160px);color:#fce7ca;filter:drop-shadow(0 16px 22px rgba(0,0,0,.16));transform:rotate(-10deg)}
+.hero-orbit{position:absolute;border:1px solid rgba(255,255,255,.22);border-radius:50%;width:210px;height:210px}
+.orbit-two{width:290px;height:290px}
+.hero-art-note{position:absolute;bottom:5px;right:5px;font-size:9px;letter-spacing:.2em;color:#c7e6d9}
+.section-intro{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px}
+.section-intro h2{font-size:clamp(21px,2.5vw,27px);margin:4px 0 0}
+.section-intro>p{font-size:12px;color:var(--ink-soft);margin:0 0 4px}
+.category-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:24px}
+.category-tile{display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;min-width:0;color:var(--ink);transition:border-color .15s,box-shadow .15s,transform .15s}
+.category-tile:hover{border-color:#b8d4c7;transform:translateY(-2px)}
+.category-tile.active{border-color:var(--jade);box-shadow:0 0 0 2px rgba(23,107,87,.08)}
+.category-tile>span:last-child{min-width:0;font-weight:700;font-size:13px;line-height:1.3}
+.category-tile small{display:block;font-size:10px;font-weight:500;color:var(--ink-soft);margin-top:4px}
+.category-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#e9f4ef;color:var(--jade)}
+.category-icon.bursary{background:#fff1da;color:#a16c1a}.category-icon.university{background:#e8f2ff;color:#2770ad}.category-icon.school{background:#e9f4ef;color:#17725b}.category-icon.paper{background:#ffede8;color:#cb634c}.category-icon.news{background:#f0eaf9;color:#7656a3}
+.stats-banner{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:24px}
+.stat-card{padding:12px 8px;border-radius:13px;box-shadow:none}
+.stat-card .emoji{font-size:16px}.stat-number{font-size:17px}.stat-label{font-size:10px}
+.filter-card{border-radius:18px;box-shadow:none;margin-bottom:24px}
+.filter-card.card-pad{padding:18px}
+.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+.filter-grid .field{min-width:0}
+.filter-grid .search-field{grid-column:1/-1}
+.search-input-wrap{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:0 14px;min-width:0;min-height:49px}
+.search-input-wrap:focus-within{border-color:var(--jade);box-shadow:0 0 0 3px rgba(23,107,87,.09)}
+.search-input-wrap>i{color:var(--jade);font-size:15px;flex-shrink:0}
+.filter-grid .search-input-wrap input{border:0;outline:0;box-shadow:none;min-width:0;width:100%;height:47px;background:transparent;padding:8px 0;font-size:15px}
+.filter-grid .field label{font-size:10px;margin-bottom:7px}
+.filter-grid select{height:44px;min-width:0;border-radius:10px;background:#fff}
+.filter-grid .btn-filter{height:44px;border-radius:10px}
+.results-heading{scroll-margin-top:86px;margin-top:4px}
+.results-count{font-size:12px;color:var(--ink-soft);font-weight:600}
+.edu-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.edu-card{border-radius:17px;box-shadow:none}
+.edu-card-wrapper[hidden],.empty-state[hidden],.edu-badge[hidden]{display:none!important}
+.edu-img-wrap,.edu-no-image-panel{height:160px;min-height:160px}
+.edu-body{padding:15px}.edu-title{font-size:16px;line-height:1.3}
+.edu-foot{padding:12px 15px}.edu-card-wrapper{min-width:0}
+@media(max-width:1240px){.edu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:959px){.shell{padding-top:15px}.rail-left{min-height:0}.rail-toggle{margin-bottom:0}}
+@media(max-width:760px){.discover-hero{grid-template-columns:1fr;padding:26px}.hero-art{display:none}.category-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-banner{grid-template-columns:repeat(3,minmax(0,1fr))}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-grid .search-field{grid-column:1/-1}.section-intro>p{display:none}}
+@media(max-width:540px){.page-header{gap:14px}.page-header h1{font-size:27px}.header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.header-actions .btn-pill{justify-content:center;padding:9px 10px;font-size:11px}.publish-menu{right:0;left:0}.category-strip{gap:8px}.category-tile{padding:11px 9px;gap:8px;border-radius:12px}.category-icon{width:36px;height:36px;border-radius:10px}.category-tile>span:last-child{font-size:11px}.category-tile small{font-size:9px}.stats-banner{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat-card{padding:10px 4px}.stat-number{font-size:16px}.stat-label{font-size:9px}.filter-card.card-pad{padding:12px}.filter-grid{gap:9px;grid-template-columns:repeat(2,minmax(0,1fr))}.filter-grid .search-field{grid-column:1/-1}.filter-grid .filter-action{grid-column:1/-1}.filter-grid select{font-size:12px;padding:8px}.edu-grid{grid-template-columns:1fr}.hero-copy h2{font-size:31px}.discover-hero{border-radius:18px;margin-bottom:23px}.section-intro h2{font-size:22px}}
+@media(max-width:350px){.category-strip{grid-template-columns:1fr 1fr}.category-tile small{display:none}.filter-grid{grid-template-columns:1fr}.filter-grid .search-field,.filter-grid .filter-action{grid-column:1}}
+
 </style>
 
 </head>
@@ -712,21 +790,21 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
     <div class="page-header">
 
-      <h1><i class="fas fa-graduation-cap"></i>Education hub</h1>
+      <div class="page-heading"><span class="eyebrow">OPPOGLOBE / LEARNING & OPPORTUNITIES</span><h1>Discover your next opportunity<span class="heading-dot">.</span></h1><p>Explore bursaries, institutions, past papers and education updates in one place.</p></div>
 
       <div class="header-actions">
 
-        <a href="/" class="btn-pill btn-white"><i class="fas fa-arrow-left"></i>Back</a>
+        
 
         <a href="{% url 'education_apply_selection' %}" class="btn-pill btn-coral"><i class="fas fa-pen"></i>Apply now</a>
 
-        <a href="{% url 'education_my_applications' %}" class="btn-pill btn-outline"><i class="fas fa-file-lines"></i>My applications</a>
+        <a href="{% url 'education_my_applications' %}" class="btn-pill btn-outline"><i class="fas fa-file-lines"></i><span>My applications</span></a>
 
         {% if user.user_type == 'admin' or user.is_superuser %}
 
-        <a href="{% url 'education_business_applications' %}" class="btn-pill btn-plum"><i class="fas fa-users"></i>Business apps</a>
+        
 
-        <button class="btn-pill btn-ink" onclick="openContentModal('bursary')"><i class="fas fa-plus"></i>Add content</button>
+        <button class="btn-pill btn-ink" onclick="togglePublishMenu(event)" aria-expanded="false" aria-controls="publishMenu"><i class="fas fa-plus"></i> Publish <i class="fas fa-chevron-down"></i></button><div class="publish-menu" id="publishMenu"><button onclick="openContentModal('bursary');closePublishMenu()"><i class="fas fa-hand-holding-heart"></i> Bursary</button><button onclick="openContentModal('university');closePublishMenu()"><i class="fas fa-building-columns"></i> University</button><button onclick="openContentModal('school');closePublishMenu()"><i class="fas fa-school"></i> School</button><button onclick="openContentModal('paper');closePublishMenu()"><i class="fas fa-file-pdf"></i> Question paper</button><button onclick="openContentModal('news');closePublishMenu()"><i class="fas fa-newspaper"></i> News</button></div>
 
         {% endif %}
 
@@ -760,7 +838,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
       <div class="filter-grid">
 
-        <div class="field"><label>Search</label><input type="text" id="eduSearch" placeholder="Search…" onkeyup="filterContent()"></div>
+        <div class="field search-field"><label for="eduSearch">Search opportunities</label><div class="search-input-wrap"><i class="fas fa-magnifying-glass"></i><input type="search" id="eduSearch" placeholder="Search bursaries, schools, papers…" oninput="filterContent()" autocomplete="off"></div></div>
 
         <div class="field"><label>Grade</label>
 
@@ -798,7 +876,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
         </div>
 
-        <div class="field"><button class="btn-filter" onclick="filterContent()"><i class="fas fa-filter me-1"></i>Apply filters</button></div>
+        <div class="field filter-action"><button class="btn-filter" onclick="filterContent()"><i class="fas fa-filter"></i> Apply filters</button></div>
 
       </div>
 
@@ -814,7 +892,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
       {% for bursary in bursaries %}
 
-      <div class="edu-card-wrapper" data-type="bursary" data-title="{{ bursary.title|lower }}" data-field="{{ bursary.field_of_study }}" data-level="{{ bursary.level }}" data-url="{% url 'education_bursary_detail' bursary.id %}">
+      <div class="edu-card-wrapper" data-type="bursary" data-item-id="{{ bursary.id }}" data-title="{{ bursary.title|lower }}" data-field="{{ bursary.field_of_study }}" data-level="{{ bursary.level }}" data-url="{% url 'education_bursary_detail' bursary.id %}">
 
         <div class="edu-card">
 
@@ -822,13 +900,13 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
           <div class="edu-img-wrap">
 
-            <img src="{{ bursary.provider_logo.url }}" alt="{{ bursary.title }}" loading="lazy">
+            <img src="{{ bursary.provider_logo.url }}" alt="{{ bursary.title }}" loading="lazy" onerror="this.onerror=null;this.closest('.edu-img-wrap').classList.add('image-unavailable');this.style.display='none';">
 
             <span class="edu-badge bursary">🎓 Bursary</span>
 
             {% if bursary.is_featured %}<span class="edu-badge featured">⭐ Featured</span>{% endif %}
 
-            {% if bursary.closing_date %}<span class="edu-badge closing">📅 Applications open</span>{% endif %}
+            {% if bursary.closing_date %}<span class="edu-badge closing" data-closing="{{ bursary.closing_date|date:'Y-m-d' }}" hidden>Closing soon</span>{% endif %}
 
           </div>
 
@@ -928,7 +1006,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
           <div class="edu-img-wrap">
 
-            <img src="{{ uni.logo.url }}" alt="{{ uni.name }}" loading="lazy">
+            <img src="{{ uni.logo.url }}" alt="{{ uni.name }}" loading="lazy" onerror="this.onerror=null;this.closest('.edu-img-wrap').classList.add('image-unavailable');this.style.display='none';">
 
             <span class="edu-badge university">🏛️ University</span>
 
@@ -996,7 +1074,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
           <div class="edu-img-wrap">
 
-            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy" onerror="this.onerror=null;this.closest('.edu-img-wrap').classList.add('image-unavailable');this.style.display='none';">
 
             <span class="edu-badge school">🏫 School</span>
 
@@ -1056,7 +1134,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
       {% for paper in papers %}
 
-      <div class="edu-card-wrapper" data-type="paper" data-title="{{ paper.title|lower }}" data-field="{{ paper.subject.name|lower }}" data-url="{% url 'education_paper_detail' paper.id %}">
+      <div class="edu-card-wrapper" data-type="paper" data-grade="{{ paper.grade.id }}" data-title="{{ paper.title|lower }}" data-field="{{ paper.subject.name|lower }}" data-url="{% url 'education_paper_detail' paper.id %}">
 
         <div class="edu-card">
 
@@ -1136,7 +1214,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
           <div class="edu-img-wrap">
 
-            <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy" onerror="this.onerror=null;this.closest('.edu-img-wrap').classList.add('image-unavailable');this.style.display='none';">
 
             <span class="edu-badge news">📰 News</span>
 
@@ -1425,37 +1503,44 @@ function fallbackCopy(text){
 
    ============================================================ */
 
-function filterContent(){
-
-  const search = document.getElementById('eduSearch').value.toLowerCase();
-
-  const fieldFilter = document.getElementById('eduFieldFilter').value;
-
-  const levelFilter = document.getElementById('eduLevelFilter').value;
-
-  const cards = document.querySelectorAll('#gridAll .edu-card-wrapper');
-
-  cards.forEach(card=>{
-
-    const title = card.dataset.title || '', field = card.dataset.field || '', level = card.dataset.level || '';
-
-    let show = true;
-
-    if (search && !title.includes(search)) show = false;
-
-    if (fieldFilter && field !== fieldFilter) show = false;
-
-    if (levelFilter && level !== levelFilter) show = false;
-
-    card.style.display = show ? '' : 'none';
-
-  });
-
-  const visibleBursaries = document.querySelectorAll('#gridAll .edu-card-wrapper[data-type="bursary"]:not([style*="display: none"])').length;
-
-  const statEl = document.getElementById('statBursaries'); if (statEl) statEl.textContent = visibleBursaries;
-
+let activeCategory = 'all';
+function setCategory(category, button){
+  activeCategory = category;
+  document.querySelectorAll('.category-tile').forEach(el=>{el.classList.toggle('active',el===button);el.setAttribute('aria-pressed',String(el===button));});
+  const labels={all:'All education listings',bursary:'Bursaries',university:'Universities',school:'Schools',paper:'Past papers',news:'Education news'};
+  document.getElementById('resultsTitle').textContent=labels[category]||labels.all;
+  filterContent();
+  document.querySelector('.results-heading')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function filterContent(){
+  const search=(document.getElementById('eduSearch')?.value||'').trim().toLocaleLowerCase();
+  const grade=document.getElementById('eduGradeFilter')?.value||'';
+  const field=document.getElementById('eduFieldFilter')?.value||'';
+  const level=document.getElementById('eduLevelFilter')?.value||'';
+  let count=0,bursaryCount=0;
+  document.querySelectorAll('#gridAll .edu-card-wrapper').forEach(card=>{
+    const type=card.dataset.type||'';
+    const searchable=(card.innerText||'').toLocaleLowerCase();
+    const matchesCategory=activeCategory==='all'||type===activeCategory;
+    const matchesSearch=!search||searchable.includes(search);
+    const matchesGrade=!grade||type!=='paper'||card.dataset.grade===grade;
+    const matchesField=!field||type!=='bursary'||card.dataset.field===field;
+    const matchesLevel=!level||type!=='bursary'||card.dataset.level===level;
+    const show=matchesCategory&&matchesSearch&&matchesGrade&&matchesField&&matchesLevel;
+    card.hidden=!show;
+    if(show){count++;if(type==='bursary')bursaryCount++;}
+  });
+  const countEl=document.getElementById('resultsCount');
+  if(countEl)countEl.textContent=`${count} ${count===1?'result':'results'}`;
+  const stat=document.getElementById('statBursaries');if(stat)stat.textContent=bursaryCount;
+  document.querySelectorAll('#gridAll .empty-state').forEach(el=>{el.hidden=activeCategory!=='all';});
+  let empty=document.getElementById('filteredEmpty');
+  if(!empty){empty=document.createElement('div');empty.id='filteredEmpty';empty.className='empty-state';empty.innerHTML='<i class="fas fa-magnifying-glass"></i><h3>No matching results</h3><p>Try another search or adjust your filters.</p>';document.getElementById('gridAll').appendChild(empty);}
+  empty.hidden=count!==0;
+}
+function togglePublishMenu(event){event.stopPropagation();document.getElementById('publishMenu')?.classList.toggle('open');}
+function closePublishMenu(){document.getElementById('publishMenu')?.classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.publish-menu')&&!e.target.closest('[aria-controls="publishMenu"]'))closePublishMenu();});
 
 
 
@@ -1543,9 +1628,9 @@ function openContentModal(type){
 
     <div class="field wide"><label>Paper title *</label><input type="text" name="title" required placeholder="Question paper title"></div>
 
-    <div class="field"><label>Grade *</label><select name="grade_id" required><option value="">Select grade</option>{% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>Grade *</label><select name="grade" required><option value="">Select grade</option>{% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}</select></div>
 
-    <div class="field"><label>Subject *</label><select name="subject_id" required><option value="">Select subject</option>{% for subject in subjects %}<option value="{{ subject.id }}">{{ subject.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>Subject *</label><select name="subject" required><option value="">Select subject</option>{% for subject in subjects %}<option value="{{ subject.id }}">{{ subject.name }}</option>{% endfor %}</select></div>
 
     <div class="field"><label>Year *</label><input type="number" name="year" required min="2000" max="2026" value="2026"></div>
 
@@ -1603,9 +1688,9 @@ document.getElementById('eduForm').addEventListener('submit', function(e){
 
       btn.innerHTML = original; btn.disabled = false;
 
-      if (data.id || data.success){ closeModal('eduModal'); showToast('Saved successfully','success'); setTimeout(()=>location.reload(), 1200); }
+      if (ok && (data.id || data.success)){ closeModal('eduModal'); showToast('Saved successfully','success'); setTimeout(()=>location.reload(), 1200); }
 
-      else showToast('Error: ' + (data.error || 'Unknown error'), 'error');
+      else showToast('Error: ' + (data.error || data.detail || Object.entries(data).map(([k,v])=>`${k}: ${Array.isArray(v)?v.join(', '):v}`).join('; ') || 'Unknown error'), 'error');
 
     }).catch(err=>{ btn.innerHTML = original; btn.disabled = false; showToast('Unable to save: ' + err.message,'error'); });
 
@@ -1620,6 +1705,7 @@ document.getElementById('eduForm').addEventListener('submit', function(e){
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function(){
+ document.querySelectorAll('[data-closing]').forEach(b=>{const d=new Date(b.dataset.closing+'T23:59:59');const days=(d-new Date())/86400000;if(days>=0&&days<=14)b.hidden=false;});
 
   filterContent();
 
