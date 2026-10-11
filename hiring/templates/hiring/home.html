@@ -5330,21 +5330,8 @@ function ogOpenNewsComposer(){
  document.getElementById('ogNewsTitle')?.focus();
 }
 function ogCloseNewsComposer(){document.getElementById('ogNewsComposer')?.classList.remove('open')}
-document.getElementById('ogNewsForm')?.addEventListener('submit',async function(event){
- event.preventDefault();
- if(document.body.dataset.canPublishEducation!=='true')return;
- const feedback=document.getElementById('ogNewsFormFeedback');
- const submit=this.querySelector('[type=submit]');
- submit.disabled=true;feedback.textContent='Publishing your article…';
- try{
-   const response=await fetch('/api/education/news/',{method:'POST',credentials:'same-origin',headers:{'X-CSRFToken':getCSRFToken()},body:new FormData(this)});
-   const data=await response.json().catch(()=>({}));
-   if(!response.ok)throw Error(data.detail||data.error||'Publishing endpoint returned '+response.status+'. Ensure the education news API supports business/admin publishing.');
-   feedback.textContent='Article submitted successfully.';
-   this.reset();ogCloseNewsComposer();ogLoadEducationHub();
- }catch(err){feedback.textContent=err.message||'Could not publish news. Please try again.'}
- finally{submit.disabled=false}
-});
+// News form submit handler is installed after the form exists in the DOM.
+
 
 /* ===== Education mega-menu and live homepage hub ===== */
 function ogCloseEducationMenu(){const menu=document.getElementById('ogEducationMenu'),trigger=document.getElementById('ogEducationTrigger');if(menu)menu.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false')}
@@ -5464,6 +5451,59 @@ function ogEducationImageFallback(img){
   img.onerror=function(){this.classList.add('og-edu-photo-failed');this.removeAttribute('alt');};
   img.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=700&q=78';
 }
+</script>
+<script>
+/* Bind after the news form exists: prevent the browser's default GET submission. */
+(function () {
+  'use strict';
+  const form = document.getElementById('ogNewsForm');
+  if (!form) return;
+  form.setAttribute('method', 'post');
+  form.setAttribute('action', '/api/education/news/');
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const feedback = document.getElementById('ogNewsFormFeedback');
+    const submit = form.querySelector('[type="submit"]');
+    if (form.dataset.submitting === 'true') return;
+    if (document.body.dataset.canPublishEducation !== 'true') {
+      feedback.textContent = 'Only an authorised publisher can post education news.';
+      return;
+    }
+    form.dataset.submitting = 'true';
+    submit.disabled = true;
+    feedback.textContent = 'Publishing your article…';
+    try {
+      const payload = new FormData(form);
+      // The EducationNews model/serializer provided does not declare source_url.
+      // Do not send an unsupported field to the API.
+      payload.delete('source_url');
+      payload.set('is_published', 'true');
+      const csrf = typeof getCSRFToken === 'function' ? getCSRFToken() :
+        (document.cookie.match(/(?:^|; )csrftoken=([^;]*)/) || [])[1] || '';
+      const response = await fetch('/api/education/news/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'X-CSRFToken': decodeURIComponent(csrf), 'Accept': 'application/json'},
+        body: payload
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = data.detail || data.error || Object.entries(data).map(([k,v])=>k+': '+v).join('; ');
+        throw new Error(detail || 'News publishing failed (HTTP ' + response.status + ')');
+      }
+      feedback.textContent = 'News published successfully.';
+      form.reset();
+      if (typeof ogCloseNewsComposer === 'function') ogCloseNewsComposer();
+      if (typeof ogLoadEducationHub === 'function') ogLoadEducationHub();
+    } catch (error) {
+      feedback.textContent = error.message || 'Could not publish this article.';
+    } finally {
+      submit.disabled = false;
+      delete form.dataset.submitting;
+    }
+  });
+})();
 </script>
 </body>
 </html>

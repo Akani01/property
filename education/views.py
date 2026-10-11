@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Q
 from datetime import datetime
 from django.contrib.auth import get_user_model
@@ -352,15 +352,39 @@ class SchoolApplicationViewSet(viewsets.ModelViewSet):
         serializer.save(applicant=self.request.user)
 
 
+class CanPublishEducationNews(permissions.BasePermission):
+    """Only site staff and administrators can create or change news."""
+
+    def has_permission(self, request, view):
+        user = request.user
+        return bool(user.is_authenticated and (
+            user.is_staff or user.is_superuser or
+            getattr(user, 'user_type', '') == 'admin'
+        ))
+
+
 class EducationNewsViewSet(viewsets.ModelViewSet):
-    queryset = EducationNews.objects.filter(is_published=True)
     serializer_class = EducationNewsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_permissions(self):
+        if self.action in ('list', 'retrieve'):
+            return [permissions.AllowAny()]
+        return [CanPublishEducationNews()]
+
     def get_queryset(self):
-        if self.request.user.is_superuser or self.request.user.user_type == 'admin':
-            return EducationNews.objects.all()
-        return self.queryset
+        qs = EducationNews.objects.all()
+        user = self.request.user
+        is_editor = user.is_authenticated and (
+            user.is_staff or user.is_superuser or
+            getattr(user, 'user_type', '') == 'admin'
+        )
+        if not is_editor:
+            qs = qs.filter(is_published=True)
+        return qs.order_by('-published_at', '-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, is_published=True)
 
 
 # ============================================
