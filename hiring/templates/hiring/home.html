@@ -2407,6 +2407,43 @@ img { max-width:100%; }
 .ad-image-empty{width:100%;height:100%;min-height:140px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--jade);font-size:13px;font-weight:700}.ad-image-empty i{font-size:30px}.ad-img.ad-no-photo:before{content:'Advertisement image unavailable';position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--ink-soft)}
 @media(max-width:576px){.og-edu-grid{grid-template-columns:1fr}.og-edu-item{padding:16px}}
 
+
+/* Search drawer layering fix: keep the active drawer above the dimmer and all navbars. */
+@media (max-width:999px) {
+  .rail-overlay.active { z-index:8900!important; background:rgba(15,32,25,.35); }
+  .rail-left.og-search-drawer-open { position:relative!important; z-index:9000!important; isolation:isolate; }
+  .rail-left.og-search-drawer-open .rail-body.open {
+    position:fixed!important; top:0!important; bottom:0!important; left:0!important;
+    height:100dvh!important; max-height:100dvh!important;
+    z-index:9002!important; width:min(350px,92vw)!important;
+    background:var(--surface,#fff)!important; opacity:1!important;
+    visibility:visible!important; filter:none!important;
+    box-shadow:8px 0 42px rgba(0,0,0,.22)!important;
+    overflow-y:auto!important; overscroll-behavior:contain;
+    padding-top:max(18px,env(safe-area-inset-top))!important;
+    padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
+  }
+  .rail-left.og-search-drawer-open .og-home-search {
+    position:relative!important; z-index:9003!important; opacity:1!important;
+    background:var(--surface,#fff)!important;
+  }
+  .rail-left.og-search-drawer-open .rail-body.open input,
+  .rail-left.og-search-drawer-open .rail-body.open button { pointer-events:auto!important; }
+}
+
+/* Homepage education is substantive content, not navigation-only cards. */
+.og-edu-guides-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:12px 0 22px}
+.og-edu-guide{min-width:0;background:var(--surface,#fff);border:1px solid var(--line,#e0e7e3);border-radius:17px;padding:20px;display:flex;flex-direction:column;gap:11px}
+.og-edu-guide-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#eef5f1;color:var(--jade,#1f6f5c);font-size:18px}
+.og-edu-guide h4{font-size:17px;line-height:1.3;margin:0;color:var(--ink,#16241f)}
+.og-edu-guide p{font-size:13px;line-height:1.7;color:var(--ink-soft,#56665d);margin:0;flex:1}
+.og-edu-guide a{font-size:12px;font-weight:750;color:var(--jade,#1f6f5c);text-decoration:none}
+.og-edu-story-photo{background:linear-gradient(130deg,#1b594b,#3d8773)!important;min-width:0}
+.og-edu-story-photo img{max-width:100%;max-height:100%;object-fit:cover}
+.og-edu-story-photo img.og-edu-photo-failed{opacity:0!important}
+.og-edu-story-photo:has(img.og-edu-photo-failed)::before{content:'Education';position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:16px;font-weight:800;letter-spacing:.06em}
+@media(max-width:650px){.og-edu-guides-grid{grid-template-columns:1fr}.og-edu-guide{padding:16px}.og-edu-story-photo img{height:100%;width:100%}}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2429,24 +2466,24 @@ img { max-width:100%; }
         <div class="og-edu-mega" id="ogEducationMenu" hidden>
           <div class="og-edu-mega-head"><div><strong>Explore Education</strong><p>Learn, discover opportunities and apply.</p></div><button type="button" class="og-edu-trigger" onclick="ogCloseEducationMenu()" aria-label="Close education menu"><i class="fas fa-xmark"></i></button></div>
           <div class="og-edu-menu-grid og-edu-story-grid">
-            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('papers')" aria-label="Explore learning resources"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for learning resources" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-book-open"></i> Learning resources</span></button><p class="og-edu-story-desc">Explore past papers, subjects and study guides</p><div class="og-edu-story-links">
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('papers')" aria-label="Explore learning resources"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for learning resources" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-book-open"></i> Learning resources</span></button><p class="og-edu-story-desc">Explore past papers, subjects and study guides</p><div class="og-edu-story-links">
 <button type="button" onclick="ogEducationGo('papers')"><i class="fas fa-file-pdf" aria-hidden="true"></i><span>Past papers & memorandums</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('grades')"><i class="fas fa-book-open" aria-hidden="true"></i><span>Grades 8–12 & subjects</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('guides')"><i class="fas fa-lightbulb" aria-hidden="true"></i><span>Study tips & guides</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 </div></section>
-            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('bursary')" aria-label="Explore opportunities"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for opportunities" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-graduation-cap"></i> Opportunities</span></button><p class="og-edu-story-desc">Discover funding and your next place to study</p><div class="og-edu-story-links">
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('bursary')" aria-label="Explore opportunities"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for opportunities" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-graduation-cap"></i> Opportunities</span></button><p class="og-edu-story-desc">Discover funding and your next place to study</p><div class="og-edu-story-links">
 <button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-hand-holding-dollar" aria-hidden="true"></i><span>Bursaries — apply</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('school')"><i class="fas fa-school" aria-hidden="true"></i><span>Schools — apply</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('university')"><i class="fas fa-building-columns" aria-hidden="true"></i><span>Universities & TVET</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('nsfas')"><i class="fas fa-wallet" aria-hidden="true"></i><span>NSFAS information</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 </div></section>
-            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('aps')" aria-label="Explore education tools"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for education tools" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-calculator"></i> Education tools</span></button><p class="og-edu-story-desc">Plan your path with practical study tools</p><div class="og-edu-story-links">
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('aps')" aria-label="Explore education tools"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for education tools" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-calculator"></i> Education tools</span></button><p class="og-edu-story-desc">Plan your path with practical study tools</p><div class="og-edu-story-links">
 <button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>APS calculator</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Bursary finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('school')"><i class="fas fa-location-dot" aria-hidden="true"></i><span>School finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('careers')"><i class="fas fa-compass" aria-hidden="true"></i><span>Career guidance</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 </div></section>
-            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('news')" aria-label="Explore news & community"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for news & community" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-newspaper"></i> News & community</span></button><p class="og-edu-story-desc">Read stories and share education resources</p><div class="og-edu-story-links">
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('news')" aria-label="Explore news & community"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for news & community" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-newspaper"></i> News & community</span></button><p class="og-edu-story-desc">Read stories and share education resources</p><div class="og-edu-story-links">
 <button type="button" onclick="ogEducationGo('news')"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Education news</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationCreate('bursary')"><i class="fas fa-circle-plus" aria-hidden="true"></i><span>Add education content</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square" aria-hidden="true"></i><span>My content</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
@@ -2700,6 +2737,14 @@ img { max-width:100%; }
         <div class="og-edu-live-grid" id="ogEduInstitutionCards"><div class="og-edu-empty">Loading schools and universities…</div></div>
         <div class="og-edu-heading"><div><h3>Popular education searches</h3><p>Quick links to grades, subjects, funding and career resources.</p></div></div>
         <div class="og-edu-quicklinks" id="ogEduQuicklinks"></div>
+        <!-- Server-rendered education guidance remains readable even if API requests are slow. -->
+        <div class="og-edu-heading" id="ogEducationGuides"><div><h3>Education guides for learners and families</h3><p>Practical starting points for researching opportunities and preparing applications.</p></div><a class="og-edu-trigger" href="/education/">Explore Education Hub <i class="fas fa-arrow-right"></i></a></div>
+        <div class="og-edu-guides-grid">
+          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-hand-holding-dollar"></i></span><h4>How to prepare a bursary application</h4><p>Start with the eligibility criteria: study field, academic performance, financial requirements and citizenship or residency rules. Prepare your academic results, identity document and any supporting evidence requested by the provider. Check the closing date and use the provider's official application instructions before submitting.</p><a href="/education/">Browse bursaries <i class="fas fa-arrow-right"></i></a></article>
+          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-building-columns"></i></span><h4>Choosing a university or college</h4><p>Compare courses by entry requirements, accreditation, location, tuition and available student support. Check whether a qualification fits your career goals and verify the current admission rules on the institution's official website. Apply early enough to resolve missing documents.</p><a href="/education/">Explore institutions <i class="fas fa-arrow-right"></i></a></article>
+          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-file-lines"></i></span><h4>Using past papers to study</h4><p>Practise with a timed paper before checking the memorandum. Mark your answers, identify the topics where you lost marks and revisit those concepts in your notes or textbook. Repeat with a different paper to check whether your understanding has improved.</p><a href="/education/">Find learning resources <i class="fas fa-arrow-right"></i></a></article>
+          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-graduation-cap"></i></span><h4>Planning for Grade 12 and beyond</h4><p>Keep track of subject requirements for your preferred programmes and understand how your results contribute to admission points. Make a shortlist of realistic options, including alternative routes, and record application deadlines. Ask institutions directly when requirements are unclear.</p><a href="/education/">Plan your studies <i class="fas fa-arrow-right"></i></a></article>
+        </div>
         <div class="og-edu-heading"><div><h3>Share education content</h3><p>Help learners discover opportunities. Sign in to contribute.</p></div></div>
         <div class="og-edu-inline-actions"><button onclick="ogEducationCreate('bursary')"><i class="fas fa-plus"></i> Add education content</button><button class="secondary" onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square"></i> Manage my content</button></div>
       </section>
@@ -3361,10 +3406,12 @@ document.addEventListener('keydown', function(e){
 function toggleRail(){
   document.getElementById('railBody').classList.toggle('open');
   document.getElementById('railOverlay').classList.toggle('active');
+  document.querySelector('.rail-left')?.classList.toggle('og-search-drawer-open', document.getElementById('railBody').classList.contains('open'));
 }
 function closeRail(){
   document.getElementById('railBody').classList.remove('open');
   document.getElementById('railOverlay').classList.remove('active');
+  document.querySelector('.rail-left')?.classList.remove('og-search-drawer-open');
 }
 
 /* ============================================================
@@ -5304,6 +5351,7 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
     if (isMobile()) {
       $('railBody')?.classList.add('open');
       $('railOverlay')?.classList.add('active');
+      document.querySelector('.rail-left')?.classList.add('og-search-drawer-open');
     }
   }
   window.ogToggleMoreNavigation = function () {
@@ -5359,6 +5407,19 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
     if (isMobile() && e.target.closest('#railBody .rail-story-link') && typeof window.closeRail === 'function') window.closeRail();
   });
 })();
+</script>
+
+<script>
+/* Fallback is intentionally scoped to Education menu photos; no navigation changes. */
+function ogEducationImageFallback(img){
+  if(!img || img.dataset.fallbackTried === '1'){
+    if(img){img.classList.add('og-edu-photo-failed');img.removeAttribute('alt');}
+    return;
+  }
+  img.dataset.fallbackTried='1';
+  img.onerror=function(){this.classList.add('og-edu-photo-failed');this.removeAttribute('alt');};
+  img.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=700&q=78';
+}
 </script>
 </body>
 </html>
