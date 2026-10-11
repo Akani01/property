@@ -567,6 +567,44 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .adv-panel label{font-size:11px; color:var(--ink-faint); font-weight:600; display:block; margin-bottom:3px;}
 .adv-panel .form-control{font-size:13px; border-radius:var(--radius-xs); border-color:var(--line);}
 
+
+// Filter the EXISTING homepage sidebar links, preserving their original actions.
+function filterHomeNavigation(value, source){
+  const term = (value || '').trim().toLocaleLowerCase();
+  const primary = document.getElementById('ogHomeNavSearch');
+  const drawer = document.getElementById('ogRailNavSearch');
+  if(source === 'drawer' && primary && primary.value !== value) primary.value = value;
+  if(source !== 'drawer' && drawer && drawer.value !== value) drawer.value = value;
+  const links = Array.from(document.querySelectorAll('#railBody .rail-story-link'));
+  let matches = 0;
+  links.forEach(link => {
+    const found = !term || (link.textContent || '').toLocaleLowerCase().includes(term);
+    link.hidden = !found;
+    if(found) matches++;
+  });
+  const empty = document.getElementById('ogNavNoResults');
+  if(empty) empty.hidden = !term || matches > 0;
+  const extras = document.querySelectorAll('#railBody .card:not(:first-of-type)');
+  extras.forEach(card => {card.style.display = term ? 'none' : '';});
+  if(term && window.matchMedia('(max-width:999px)').matches) openHomeSearch();
+}
+function openHomeSearch(){
+  if(!window.matchMedia('(max-width:999px)').matches) return;
+  document.getElementById('railBody')?.classList.add('open');
+  document.getElementById('railOverlay')?.classList.add('active');
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeRail();
+  if(e.key === 'Enter' && e.target?.id === 'ogHomeNavSearch') {
+    const visible = Array.from(document.querySelectorAll('#railBody .rail-story-link')).find(el => !el.hidden);
+    if(visible){e.preventDefault();visible.click();closeRail();}
+  }
+});
+document.addEventListener('click', e => {
+  const link = e.target.closest?.('#railBody .rail-story-link');
+  if(link && window.matchMedia('(max-width:999px)').matches) closeRail();
+});
+
 /* ============================================================
    TABS
    ============================================================ */
@@ -2305,6 +2343,42 @@ img { max-width:100%; }
 #propertiesTab .og-edu-heading h2{font-size:clamp(18px,2.5vw,23px)}
 #propertiesTab .og-edu-heading p{line-height:1.55}
 @media(max-width:640px){#propertiesTab .og-edu-toolgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#propertiesTab .og-edu-tool{min-height:145px;padding:10px}#propertiesTab .og-edu-live-card>img{height:125px}}
+
+/* Education navbar: photographic editorial story cards */
+.og-edu-mega{width:min(900px,calc(100vw - 24px));max-height:min(82dvh,790px);}
+.og-edu-story-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:stretch;}
+.og-edu-story-group{min-width:0;background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;display:flex;flex-direction:column;}
+.og-edu-story-photo{position:relative;display:block;width:100%;height:116px;border:0;padding:0;overflow:hidden;cursor:pointer;text-align:left;background:var(--jade-wash);}
+.og-edu-story-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease;}
+.og-edu-story-photo:hover img{transform:scale(1.06);}
+.og-edu-story-photo::after{content:'';position:absolute;inset:30% 0 0;background:linear-gradient(transparent,rgba(10,31,22,.86));pointer-events:none;}
+.og-edu-story-overlay{position:absolute;z-index:1;bottom:10px;left:10px;right:7px;color:#fff;font-size:12px;font-weight:800;line-height:1.2;text-shadow:0 1px 5px #0008;}
+.og-edu-story-overlay i{margin-right:5px;}
+.og-edu-story-desc{font-size:10.5px;line-height:1.5;color:var(--ink-soft);padding:10px 10px 4px;margin:0;min-height:48px;}
+.og-edu-story-links{padding:4px 6px 9px;display:flex;flex-direction:column;gap:2px;flex:1;}
+.og-edu-story-links button{display:flex;align-items:center;gap:7px;border:0;background:transparent;text-align:left;width:100%;padding:8px 6px;border-radius:9px;color:var(--ink);font-size:10.5px;line-height:1.35;cursor:pointer;}
+.og-edu-story-links button:hover{background:var(--jade-wash);}
+.og-edu-story-links button>i:first-child{color:var(--jade);width:14px;text-align:center;flex:none;}
+.og-edu-story-links button span{flex:1;}
+.og-edu-link-arrow{color:var(--ink-faint);font-size:9px;}
+@media(max-width:900px){.og-edu-story-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.og-edu-mega{max-height:calc(100dvh - var(--header-h,64px) - var(--bottom-nav-h,74px) - 24px);}}
+@media(max-width:480px){.og-edu-mega{padding:12px;}.og-edu-story-grid{gap:8px;}.og-edu-story-photo{height:102px;}.og-edu-story-desc{min-height:0;font-size:10px;padding:8px 8px 2px;}.og-edu-story-links{padding:4px 4px 7px;}.og-edu-story-links button{font-size:10px;padding:7px 4px;gap:5px;}.og-edu-story-overlay{font-size:11px;left:7px;bottom:8px;}}
+
+
+/* OppoGlobe homepage: searchable navigation */
+.og-home-search,.og-rail-inner-search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:9px 12px;color:var(--jade-deep);box-shadow:var(--shadow-sm);min-width:0}
+.og-home-search{margin-bottom:12px}
+.og-home-search:focus-within,.og-rail-inner-search:focus-within{border-color:var(--jade);box-shadow:0 0 0 3px var(--jade-wash)}
+.og-home-search input,.og-rail-inner-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:13px}
+.og-home-search input::placeholder,.og-rail-inner-search input::placeholder{color:var(--ink-faint)}
+.og-search-menu,.og-rail-mobile-head button{border:0;background:var(--jade-wash);color:var(--jade-deep);width:33px;height:33px;border-radius:10px;cursor:pointer;flex-shrink:0}
+.og-rail-mobile-head{display:none;align-items:center;justify-content:space-between;font-size:14px}
+.og-rail-inner-search{margin:2px 0 10px}
+.og-nav-no-results{font-size:12px;color:var(--ink-faint);padding:8px 10px}
+.rail-story-link[hidden]{display:none!important}
+@media(min-width:1000px){.og-rail-inner-search{display:none}}
+@media(max-width:999px){.og-home-search{position:relative;z-index:1}.og-rail-mobile-head{display:flex}.rail-body{width:min(340px,90vw);left:-380px;padding:18px;gap:10px}.rail-body .rail-story-link{padding:8px 9px}.rail-body .rail-story-link .rail-story-icon{width:33px;height:33px;flex-basis:33px}.rail-body .rail-story-link .rail-story-text small{display:none}.rail-body .card{padding:12px}.rail-body .rail-story-heading{margin-bottom:8px}}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2326,11 +2400,29 @@ img { max-width:100%; }
         <button type="button" class="og-edu-trigger" id="ogEducationTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="ogEducationMenu" onclick="ogToggleEducationMenu(event)"><i class="fas fa-graduation-cap"></i><span class="og-edu-nav-text">Education</span><i class="fas fa-chevron-down" style="font-size:10px"></i></button>
         <div class="og-edu-mega" id="ogEducationMenu" hidden>
           <div class="og-edu-mega-head"><div><strong>Explore Education</strong><p>Learn, discover opportunities and apply.</p></div><button type="button" class="og-edu-trigger" onclick="ogCloseEducationMenu()" aria-label="Close education menu"><i class="fas fa-xmark"></i></button></div>
-          <div class="og-edu-menu-grid">
-            <section class="og-edu-menu-group"><h4>Learning resources</h4><button onclick="ogEducationGo('papers')"><i class="fas fa-file-pdf"></i> Past papers & memorandums</button><button onclick="ogEducationGo('grades')"><i class="fas fa-book-open"></i> Grades 8–12 & subjects</button><button onclick="ogEducationGo('guides')"><i class="fas fa-lightbulb"></i> Study tips & guides</button></section>
-            <section class="og-edu-menu-group"><h4>Opportunities</h4><button onclick="ogEducationGo('bursary')"><i class="fas fa-hand-holding-dollar"></i> Bursaries — apply</button><button onclick="ogEducationGo('school')"><i class="fas fa-school"></i> Schools — apply</button><button onclick="ogEducationGo('university')"><i class="fas fa-building-columns"></i> Universities & TVET</button><button onclick="ogEducationGo('nsfas')"><i class="fas fa-wallet"></i> NSFAS information</button></section>
-            <section class="og-edu-menu-group"><h4>Education tools</h4><button onclick="ogEducationGo('aps')"><i class="fas fa-calculator"></i> APS calculator</button><button onclick="ogEducationGo('bursary')"><i class="fas fa-magnifying-glass"></i> Bursary finder</button><button onclick="ogEducationGo('school')"><i class="fas fa-location-dot"></i> School finder</button><button onclick="ogEducationGo('careers')"><i class="fas fa-compass"></i> Career guidance</button></section>
-            <section class="og-edu-menu-group"><h4>News & community</h4><button onclick="ogEducationGo('news')"><i class="fas fa-newspaper"></i> Education news</button><button onclick="ogEducationCreate('bursary')"><i class="fas fa-circle-plus"></i> Add education content</button><button onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square"></i> My content</button></section>
+          <div class="og-edu-menu-grid og-edu-story-grid">
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('papers')" aria-label="Explore learning resources"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for learning resources" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-book-open"></i> Learning resources</span></button><p class="og-edu-story-desc">Explore past papers, subjects and study guides</p><div class="og-edu-story-links">
+<button type="button" onclick="ogEducationGo('papers')"><i class="fas fa-file-pdf" aria-hidden="true"></i><span>Past papers & memorandums</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('grades')"><i class="fas fa-book-open" aria-hidden="true"></i><span>Grades 8–12 & subjects</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('guides')"><i class="fas fa-lightbulb" aria-hidden="true"></i><span>Study tips & guides</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+</div></section>
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('bursary')" aria-label="Explore opportunities"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for opportunities" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-graduation-cap"></i> Opportunities</span></button><p class="og-edu-story-desc">Discover funding and your next place to study</p><div class="og-edu-story-links">
+<button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-hand-holding-dollar" aria-hidden="true"></i><span>Bursaries — apply</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('school')"><i class="fas fa-school" aria-hidden="true"></i><span>Schools — apply</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('university')"><i class="fas fa-building-columns" aria-hidden="true"></i><span>Universities & TVET</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('nsfas')"><i class="fas fa-wallet" aria-hidden="true"></i><span>NSFAS information</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+</div></section>
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('aps')" aria-label="Explore education tools"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for education tools" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-calculator"></i> Education tools</span></button><p class="og-edu-story-desc">Plan your path with practical study tools</p><div class="og-edu-story-links">
+<button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>APS calculator</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Bursary finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('school')"><i class="fas fa-location-dot" aria-hidden="true"></i><span>School finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('careers')"><i class="fas fa-compass" aria-hidden="true"></i><span>Career guidance</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+</div></section>
+            <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('news')" aria-label="Explore news & community"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for news & community" loading="lazy" decoding="async"><span class="og-edu-story-overlay"><i class="fas fa-newspaper"></i> News & community</span></button><p class="og-edu-story-desc">Read stories and share education resources</p><div class="og-edu-story-links">
+<button type="button" onclick="ogEducationGo('news')"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Education news</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationCreate('bursary')"><i class="fas fa-circle-plus" aria-hidden="true"></i><span>Add education content</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square" aria-hidden="true"></i><span>My content</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+</div></section>
           </div>
           <div class="og-edu-menu-foot"><button onclick="ogEducationGo('all')"><i class="fas fa-arrow-right"></i> Explore education</button><button class="secondary" onclick="ogEducationCreate('bursary')"><i class="fas fa-plus"></i> Add content</button></div>
         </div>
@@ -2402,8 +2494,15 @@ img { max-width:100%; }
 
   <!-- ===== LEFT RAIL ===== -->
   <div class="rail-left">
-    <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Browse OppoGlobe</button>
+    <div class="og-home-search" role="search" aria-label="Search OppoGlobe navigation">
+      <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+      <input id="ogHomeNavSearch" type="search" autocomplete="off" placeholder="Search OppoGlobe…" aria-label="Search homepage sections" oninput="filterHomeNavigation(this.value)" onfocus="openHomeSearch()">
+      <button type="button" class="og-search-menu" onclick="toggleRail()" aria-label="Open all homepage navigation"><i class="fas fa-sliders"></i></button>
+    </div>
     <div class="rail-body" id="railBody">
+      <div class="og-rail-mobile-head"><strong>Explore OppoGlobe</strong><button type="button" onclick="closeRail()" aria-label="Close navigation"><i class="fas fa-xmark"></i></button></div>
+      <div class="og-rail-inner-search"><i class="fas fa-magnifying-glass"></i><input type="search" id="ogRailNavSearch" placeholder="Find a page or feature…" aria-label="Filter sidebar links" oninput="filterHomeNavigation(this.value, 'drawer')"></div>
+      <p class="og-nav-no-results" id="ogNavNoResults" hidden>No matching pages. Try a different word.</p>
       <div class="card card-pad">
         <div class="rail-story-heading"><span class="rail-head-icon"><i class="fas fa-compass"></i></span><span class="rail-head-copy"><strong>Explore OppoGlobe</strong><small>Your neighbourhood, one tap away</small></span></div>
         <div class="stack" style="gap:3px;">

@@ -5,32 +5,32 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Education Hub - OppoGlobe</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https\://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<link rel="preconnect" href="https\://fonts.googleapis.com" />
+<link href="https\://fonts.googleapis.com/css2?family=Fraunces:opsz,wght\@9..144,500;9..144,600;9..144,700&family=Inter:wght\@400;500;600;700;800&family=JetBrains+Mono:wght\@500;600&display=swap" rel="stylesheet" />
 
 <style>
 /* ============================================================
-   DESIGN TOKENS — identical to the OppoGlobe home/profile pages
-   ============================================================ */
+   DESIGN TOKENS — identical to the OppoGlobe home/profile pages
+   ============================================================ */
 :root{
-  --ink:#16241F; --ink-soft:#5B6660; --ink-faint:#8B958F;
-  --paper:#F6F7F5; --surface:#FFFFFF; --line:#E4E7E2; --line-soft:#EEF0ED;
-  --jade:#1F6F5C; --jade-deep:#154F41; --jade-wash:#E7F1EC;
-  --coral:#FF6B4A; --coral-deep:#E24E2F; --coral-wash:#FFEAE3;
-  --gold:#E8A93B; --gold-wash:#FBF0DA;
-  --plum:#7A5AA3; --plum-wash:#F1EBF9;
-  --sky:#2E8BC0; --sky-wash:#E7F3FA;
-  --danger:#D64545; --success:#2C9A5B;
-  --radius-xs:8px; --radius-sm:12px; --radius-md:16px; --radius-lg:22px; --radius-pill:999px;
-  --shadow-sm:0 1px 3px rgba(22,36,31,.06), 0 1px 2px rgba(22,36,31,.04);
-  --shadow-md:0 8px 24px rgba(22,36,31,.08);
-  --shadow-lg:0 20px 48px rgba(22,36,31,.14);
-  --font-display:'Fraunces', Georgia, serif;
-  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono:'JetBrains Mono', 'SF Mono', monospace;
-  --ease:cubic-bezier(.34,1.2,.4,1);
-  --header-h:64px; --bottom-nav-h:66px; --safe-b:env(safe-area-inset-bottom, 0px);
+  --ink:#16241F; --ink-soft:#5B6660; --ink-faint:#8B958F;
+  --paper:#F6F7F5; --surface:#FFFFFF; --line:#E4E7E2; --line-soft:#EEF0ED;
+  --jade:#1F6F5C; --jade-deep:#154F41; --jade-wash:#E7F1EC;
+  --coral:#FF6B4A; --coral-deep:#E24E2F; --coral-wash:#FFEAE3;
+  --gold:#E8A93B; --gold-wash:#FBF0DA;
+  --plum:#7A5AA3; --plum-wash:#F1EBF9;
+  --sky:#2E8BC0; --sky-wash:#E7F3FA;
+  --danger:#D64545; --success:#2C9A5B;
+  --radius-xs:8px; --radius-sm:12px; --radius-md:16px; --radius-lg:22px; --radius-pill:999px;
+  --shadow-sm:0 1px 3px rgba(22,36,31,.06), 0 1px 2px rgba(22,36,31,.04);
+  --shadow-md:0 8px 24px rgba(22,36,31,.08);
+  --shadow-lg:0 20px 48px rgba(22,36,31,.14);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:'JetBrains Mono', 'SF Mono', monospace;
+  --ease:cubic-bezier(.34,1.2,.4,1);
+  --header-h:64px; --bottom-nav-h:66px; --safe-b:env(safe-area-inset-bottom, 0px);
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; overflow-x:hidden; width:100%;}
@@ -43,8 +43,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .hidden{display:none !important;}
 
 /* ============================================================
-   HEADER (identical to home/profile)
-   ============================================================ */
+   HEADER (identical to home/profile)
+   ============================================================ */
 .header-area{position:fixed; inset:0 0 auto 0; height:var(--header-h); background:var(--surface); border-bottom:1px solid var(--line); z-index:3000; display:flex; align-items:center; overflow:visible;}
 .header-inner{width:100%; max-width:1400px; margin:0 auto; min-width:0; padding:0 clamp(10px,3vw,24px); display:flex; align-items:center; justify-content:space-between; gap:clamp(4px,1.5vw,10px); position:relative; z-index:3001;}
 .brand{display:flex; align-items:center; gap:9px; flex-shrink:0; min-width:0;}
@@ -69,8 +69,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 @media (max-width:420px){ .brand-word{display:none;} .nav-icons{gap:0;} .icon-btn{width:32px; height:32px; font-size:14px;} .dropdown-panel{width:min(220px,calc(100vw - 16px)); max-width:calc(100vw - 16px);} }
 
 /* ============================================================
-   LAYOUT
-   ============================================================ */
+   LAYOUT
+   ============================================================ */
 .shell{max-width:1280px; margin:0 auto; padding:16px clamp(10px,2.5vw,20px) calc(var(--bottom-nav-h) + 24px); display:grid; grid-template-columns:1fr; gap:16px;}
 @media (min-width:960px){ .shell{grid-template-columns:220px minmax(0,1fr); padding-bottom:24px;} }
 .rail-left{min-width:0;}
@@ -87,8 +87,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .rail-overlay.active{display:block;}
 .rail-body{display:flex; flex-direction:column; gap:12px;}
 @media (max-width:959px){
-  .rail-body{position:fixed; top:0; left:-290px; width:min(272px,84vw); height:100vh; z-index:1500; background:var(--surface); padding:16px; overflow-y:auto; transition:left .25s var(--ease); box-shadow:6px 0 40px rgba(0,0,0,.15);}
-  .rail-body.open{left:0;}
+  .rail-body{position:fixed; top:0; left:-290px; width:min(272px,84vw); height:100vh; z-index:1500; background:var(--surface); padding:16px; overflow-y:auto; transition:left .25s var(--ease); box-shadow:6px 0 40px rgba(0,0,0,.15);}
+  .rail-body.open{left:0;}
 }
 .sidebar-title{font-family:var(--font-display); font-size:11px; font-weight:700; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; padding:0 4px; margin-bottom:6px;}
 .rail-body .quick-btn{display:flex; align-items:center; gap:10px; width:100%; padding:9px 12px; border:none; border-radius:var(--radius-sm); background:transparent; color:var(--ink-soft); font-weight:500; font-size:13px; cursor:pointer; text-align:left; transition:background .15s;}
@@ -98,8 +98,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .rail-divider{height:1px; background:var(--line-soft); margin:10px 0;}
 
 /* ============================================================
-   PAGE HEADER + BUTTONS
-   ============================================================ */
+   PAGE HEADER + BUTTONS
+   ============================================================ */
 .page-header{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
 @media (min-width:720px){ .page-header{flex-direction:row; justify-content:space-between; align-items:center;} }
 .page-header h1{font-size:clamp(20px,3vw,26px); font-weight:600; display:flex; align-items:center; gap:10px;}
@@ -121,8 +121,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .btn-ink:hover{background:#233830;}
 
 /* ============================================================
-   STATS BANNER
-   ============================================================ */
+   STATS BANNER
+   ============================================================ */
 .stats-banner{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:16px;}
 @media (max-width:768px){ .stats-banner{grid-template-columns:repeat(3,1fr);} }
 @media (max-width:420px){ .stats-banner{grid-template-columns:repeat(2,1fr); gap:8px;} }
@@ -133,8 +133,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .stat-label{font-size:9.5px; color:var(--ink-faint); text-transform:uppercase; font-weight:700; letter-spacing:.04em;}
 
 /* ============================================================
-   FILTER BAR
-   ============================================================ */
+   FILTER BAR
+   ============================================================ */
 .filter-card{margin-bottom:18px;}
 .filter-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; align-items:end;}
 .filter-grid .field label{display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--ink-faint); margin-bottom:5px;}
@@ -144,8 +144,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .filter-grid .btn-filter:hover{background:#233830;}
 
 /* ============================================================
-   EDUCATION GRID + CARDS — FIXED with no-image panels
-   ============================================================ */
+   EDUCATION GRID + CARDS — FIXED with no-image panels
+   ============================================================ */
 .edu-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;}
 @media (max-width:520px){ .edu-grid{grid-template-columns:1fr;} }
 .edu-card-wrapper{cursor:pointer; transition:transform .18s var(--ease);}
@@ -214,8 +214,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .biz-banner .acts a:hover{background:rgba(255,255,255,.26);}
 
 /* ============================================================
-   MODALS
-   ============================================================ */
+   MODALS
+   ============================================================ */
 .modal-veil{position:fixed; inset:0; background:rgba(22,36,31,.45); display:none; align-items:center; justify-content:center; z-index:4000; padding:16px; backdrop-filter:blur(3px);}
 .modal-veil.show{display:flex;}
 .modal-box{background:var(--surface); border-radius:var(--radius-md); width:100%; max-width:640px; max-height:88vh; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); overflow:hidden;}
@@ -235,24 +235,24 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--jade);}
 .field textarea{resize:vertical; min-height:70px;}
 @media (max-width:640px){
-  .modal-veil{padding:8px; align-items:center;}
-  .modal-box{width:100%; max-height:92vh; height:92vh; border-radius:var(--radius-sm);}
-  .form-grid{grid-template-columns:1fr; gap:12px;}
-  .modal-box-body{padding:15px;}
-  .modal-box-foot .btn-pill{flex:1;}
+  .modal-veil{padding:8px; align-items:center;}
+  .modal-box{width:100%; max-height:92vh; height:92vh; border-radius:var(--radius-sm);}
+  .form-grid{grid-template-columns:1fr; gap:12px;}
+  .modal-box-body{padding:15px;}
+  .modal-box-foot .btn-pill{flex:1;}
 }
 
 /* ============================================================
-   TOAST
-   ============================================================ */
+   TOAST
+   ============================================================ */
 .toast-stack{position:fixed; top:calc(var(--header-h) + 8px); right:12px; z-index:5000; max-width:calc(100vw - 24px); display:flex; flex-direction:column; gap:6px;}
 .toast-item{min-width:220px; max-width:340px; padding:11px 13px; border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); color:#fff; font-size:12.5px; display:flex; align-items:center; gap:9px; animation:slidein .2s var(--ease);}
 @keyframes slidein{from{transform:translateX(30px); opacity:0;} to{transform:translateX(0); opacity:1;}}
 .toast-item button{background:none; border:none; color:rgba(255,255,255,.8); margin-left:auto; cursor:pointer;}
 
 /* ============================================================
-   MOBILE BOTTOM NAV
-   ============================================================ */
+   MOBILE BOTTOM NAV
+   ============================================================ */
 .bottom-nav{position:fixed; left:10px; right:10px; bottom:calc(8px + var(--safe-b)); height:var(--bottom-nav-h); z-index:1300; background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow-lg); display:grid; grid-template-columns:repeat(4,1fr); align-items:center;}
 @media (min-width:960px){ .bottom-nav{display:none;} }
 .bn-item{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--ink-faint); font-size:9.5px; height:100%; font-weight:600;}
@@ -260,397 +260,409 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .bn-item.active{color:var(--jade-deep);}
 
 .spin{display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-1px;} @keyframes sp{to{transform:rotate(360deg);}}
+
+/* OppoGlobe editorial refresh — photos first, restrained jade/coral accents */
+.edu-story-hero{position:relative;min-height:290px;border-radius:var(--radius-lg);overflow:hidden;display:flex;align-items:end;margin-bottom:22px;background:var(--jade-deep);isolation:isolate}
+.edu-story-photo,.edu-story-shade{position:absolute;inset:0;z-index:-1}
+.edu-story-photo img{width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.edu-story-shade{background:linear-gradient(90deg,rgba(15,35,28,.9),rgba(15,35,28,.56) 60%,rgba(15,35,28,.1))}
+.edu-story-copy{padding:clamp(20px,4vw,40px);color:#fff;max-width:650px}
+.edu-eyebrow,.edu-overline{font:700 10px var(--font-body);letter-spacing:.13em}
+.edu-eyebrow{color:#d3f0e3}.edu-story-copy h2{font-size:clamp(27px,4vw,43px);line-height:1.12;margin:9px 0 12px;max-width:520px}
+.edu-story-copy p{font-size:clamp(12px,1.7vw,15px);line-height:1.65;max-width:490px;color:#f1f6f3}
+.edu-story-action{display:inline-flex;align-items:center;gap:10px;margin-top:18px;background:#fff;color:var(--jade-deep);border-radius:99px;padding:10px 17px;font-weight:700;font-size:12px}
+.edu-section-heading{margin:4px 0 14px}.edu-section-heading h2,.edu-filter-heading h2{font-size:clamp(19px,2.4vw,25px);margin:4px 0}
+.edu-section-heading p{font-size:12.5px;color:var(--ink-soft)}.edu-overline{color:var(--jade)}
+.edu-story-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0 24px}
+.edu-story-categories a{position:relative;display:flex;align-items:end;min-height:132px;overflow:hidden;border-radius:var(--radius-md);background:var(--jade-deep);isolation:isolate;border:2px solid transparent;transition:transform .2s,border-color .2s}
+.edu-story-categories a:hover{transform:translateY(-3px)}.edu-story-categories a.selected{border-color:var(--coral)}
+.edu-story-categories a:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(10,24,19,.82),rgba(10,24,19,.06) 80%)}
+.edu-story-categories img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .3s}
+.edu-story-categories a:hover img{transform:scale(1.05)}.edu-story-categories span{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;padding:12px;color:#fff;font-size:12px;font-weight:700;line-height:1.25}
+.edu-story-categories i{font-size:10px}.edu-filter-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;gap:10px}
+.stats-banner{gap:9px}.stat-card{display:flex;align-items:center;gap:10px;text-align:left;padding:12px 13px;min-width:0}.stat-icon{width:33px;height:33px;flex:none;border-radius:10px;display:grid;place-items:center;background:var(--jade-wash);color:var(--jade-deep);font-size:14px}.stat-number{font-size:18px}.stat-label{font-size:9px}
+.edu-grid{grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:14px}.edu-card-wrapper{min-width:0}.edu-card{border-radius:var(--radius-md)}
+.edu-img-wrap{height:175px}.edu-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s}.edu-card-wrapper:hover .edu-img-wrap img{transform:scale(1.035)}
+.edu-badge{top:11px;left:11px;right:auto;background:rgba(255,255,255,.96)!important;color:var(--ink)!important;box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:10px;text-transform:none;letter-spacing:0}
+.edu-badge.featured{left:auto;right:10px;top:10px}.edu-badge.closing{left:auto;right:10px;top:42px}
+.edu-photo-credit{position:absolute;bottom:8px;right:9px;background:rgba(0,0,0,.48);color:#fff;font-size:9px;padding:3px 7px;border-radius:99px}
+.edu-title{font-size:16px;line-height:1.35}.edu-body{padding:15px}.edu-foot{padding:12px 15px}.edu-desc{line-height:1.5}
+.page-header h1 i{font-size:18px}.page-header h1{font-size:clamp(20px,3vw,25px)}
+@media(max-width:1000px){.edu-story-categories{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.edu-story-hero{min-height:290px}.edu-story-shade{background:linear-gradient(0deg,rgba(15,35,28,.92),rgba(15,35,28,.12))}.edu-story-copy{padding:22px}.edu-story-categories{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.edu-story-categories a{min-height:115px}.edu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.edu-img-wrap{height:122px}.edu-body{padding:10px}.edu-title{font-size:13px}.edu-meta,.edu-desc{font-size:11px}.edu-foot{padding:9px 10px}.edu-badge{font-size:9px}.stat-card{padding:9px;gap:7px}.stat-icon{width:26px;height:26px;font-size:12px}.stat-number{font-size:15px}}
+@media(max-width:360px){.edu-grid{grid-template-columns:1fr}.edu-img-wrap{height:180px}}
+
 </style>
 </head>
 <body>
 
 <!-- ===== HEADER ===== -->
 <header class="header-area">
-  <div class="header-inner">
-    <a href="/" class="brand"><span class="brand-mark">O</span><span class="brand-word">OppoGlobe</span></a>
-    <ul class="nav-icons">
-      <li><a href="/" class="icon-btn"><i class="fas fa-house"></i></a></li>
-      <li><a href="/#job-listings" class="icon-btn"><i class="fas fa-magnifying-glass"></i></a></li>
-      {% if user.is_authenticated %}
-        {% if user.user_type == 'admin' or user.is_superuser %}
-          <li><span class="role-chip biz"><i class="fas fa-building me-1"></i>Business</span></li>
-        {% else %}
-          <li><span class="role-chip"><i class="fas fa-user me-1"></i>You</span></li>
-        {% endif %}
-        <li><a href="/dashboard" class="icon-btn"><i class="fas fa-table-cells-large"></i></a></li>
-        <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i></a></li>
-        <li class="rel">
-          <button class="avatar-btn" onclick="toggleDropdown('profileMenu')">{{ user.username|first|upper }}<span class="status-dot"></span></button>
-          <div class="dropdown-panel" id="profileMenu">
-            <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
-            {% if user.user_type == 'applicant' %}
-              <a href="/applications/"><i class="fas fa-file-lines"></i> Applications</a>
-              <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
-            {% else %}
-              <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Manage jobs</a>
-              <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
-            {% endif %}
-            <div class="dropdown-divider"></div>
-            <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
-            <a href="/preferences/"><i class="fas fa-gear"></i> Preferences</a>
-            <div class="dropdown-divider"></div>
-            <a href="/logout/"><i class="fas fa-arrow-right-from-bracket"></i> Log out</a>
-          </div>
-        </li>
-        <li class="rel">
-          <button class="icon-btn" onclick="toggleDropdown('threeDotMenu')"><i class="fas fa-ellipsis-vertical"></i></button>
-          <div class="dropdown-panel" id="threeDotMenu">
-            {% if user.user_type == 'applicant' %}
-              <a href="/profile/skills/"><i class="fas fa-gears"></i> Skills</a>
-              <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
-              <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
-              <a href="/profile/documents/"><i class="fas fa-file-arrow-up"></i> Documents</a>
-            {% else %}
-              <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
-              <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
-              <a href="/admin-portal/analytics/"><i class="fas fa-chart-column"></i> Analytics</a>
-            {% endif %}
-          </div>
-        </li>
-      {% else %}
-        <li><button class="btn-pill btn-outline" onclick="showLogin()">Sign in</button></li>
-        <li><button class="btn-pill btn-jade" onclick="showSignup()">Join free</button></li>
-      {% endif %}
-    </ul>
-  </div>
+  <div class="header-inner">
+    <a href="/" class="brand"><span class="brand-mark">O</span><span class="brand-word">OppoGlobe</span></a>
+    <ul class="nav-icons">
+      <li><a href="/" class="icon-btn"><i class="fas fa-house"></i></a></li>
+      <li><a href="/#job-listings" class="icon-btn"><i class="fas fa-magnifying-glass"></i></a></li>
+      {% if user.is_authenticated %}
+        {% if user.user_type == 'admin' or user.is_superuser %}
+          <li><span class="role-chip biz"><i class="fas fa-building me-1"></i>Business</span></li>
+        {% else %}
+          <li><span class="role-chip"><i class="fas fa-user me-1"></i>You</span></li>
+        {% endif %}
+        <li><a href="/dashboard" class="icon-btn"><i class="fas fa-table-cells-large"></i></a></li>
+        <li><a href="/messaging/" class="icon-btn"><i class="fas fa-comment-dots"></i></a></li>
+        <li class="rel">
+          <button class="avatar-btn" onclick="toggleDropdown('profileMenu')">{{ user.username|first|upper }}<span class="status-dot"></span></button>
+          <div class="dropdown-panel" id="profileMenu">
+            <a href="/profile/"><i class="fas fa-user"></i> Profile</a>
+            {% if user.user_type == 'applicant' %}
+              <a href="/applications/"><i class="fas fa-file-lines"></i> Applications</a>
+              <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+            {% else %}
+              <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Manage jobs</a>
+              <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+            <a href="/api/alerts/"><i class="fas fa-bell"></i> Alerts</a>
+            <a href="/preferences/"><i class="fas fa-gear"></i> Preferences</a>
+            <div class="dropdown-divider"></div>
+            <a href="/logout/"><i class="fas fa-arrow-right-from-bracket"></i> Log out</a>
+          </div>
+        </li>
+        <li class="rel">
+          <button class="icon-btn" onclick="toggleDropdown('threeDotMenu')"><i class="fas fa-ellipsis-vertical"></i></button>
+          <div class="dropdown-panel" id="threeDotMenu">
+            {% if user.user_type == 'applicant' %}
+              <a href="/profile/skills/"><i class="fas fa-gears"></i> Skills</a>
+              <a href="/profile/employment/"><i class="fas fa-briefcase"></i> Employment</a>
+              <a href="/profile/education/"><i class="fas fa-graduation-cap"></i> Education</a>
+              <a href="/profile/documents/"><i class="fas fa-file-arrow-up"></i> Documents</a>
+            {% else %}
+              <a href="/admin-portal/jobs/"><i class="fas fa-briefcase"></i> Jobs</a>
+              <a href="/admin-portal/applications/"><i class="fas fa-users"></i> Applications</a>
+              <a href="/admin-portal/analytics/"><i class="fas fa-chart-column"></i> Analytics</a>
+            {% endif %}
+          </div>
+        </li>
+      {% else %}
+        <li><button class="btn-pill btn-outline" onclick="showLogin()">Sign in</button></li>
+        <li><button class="btn-pill btn-jade" onclick="showSignup()">Join free</button></li>
+      {% endif %}
+    </ul>
+  </div>
 </header>
 
 <div class="rail-overlay" id="railOverlay" onclick="closeRail()"></div>
 
 <div class="shell">
-  <!-- ===== LEFT RAIL ===== -->
-  <div class="rail-left">
-    <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Education menu</button>
-    <div class="rail-body" id="railBody">
-      <div class="card card-pad">
-        <div class="sidebar-title">Profile</div>
-        <a href="/profile/" class="quick-btn"><i class="fas fa-user"></i>My profile</a>
-        <a href="/applications/" class="quick-btn"><i class="fas fa-file-lines"></i>Applications</a>
+  <!-- ===== LEFT RAIL ===== -->
+  <div class="rail-left">
+    <button class="rail-toggle" onclick="toggleRail()"><i class="fas fa-bars"></i> Education menu</button>
+    <div class="rail-body" id="railBody">
+      <div class="card card-pad">
+        <div class="sidebar-title">Profile</div>
+        <a href="/profile/" class="quick-btn"><i class="fas fa-user"></i>My profile</a>
+        <a href="/applications/" class="quick-btn"><i class="fas fa-file-lines"></i>Applications</a>
 
-        <div class="rail-divider"></div>
-        <div class="sidebar-title">Education</div>
-        <a href="#" class="quick-btn active"><i class="fas fa-graduation-cap"></i>Education hub</a>
-        <a href="/profile/education/" class="quick-btn"><i class="fas fa-user-graduate"></i>My education</a>
-        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-        <a href="{% url 'education_business_applications' %}" class="quick-btn"><i class="fas fa-users"></i>Business applications</a>
-        <a href="{% url 'education_business_applications' %}?type=bursary" class="quick-btn"><i class="fas fa-hand-holding-heart"></i>Bursary apps</a>
-        <a href="{% url 'education_business_applications' %}?type=university" class="quick-btn"><i class="fas fa-university"></i>University apps</a>
-        <a href="{% url 'education_business_applications' %}?type=school" class="quick-btn"><i class="fas fa-school"></i>School apps</a>
-        {% endif %}
+        <div class="rail-divider"></div>
+        <div class="sidebar-title">Education</div>
+        <a href="#" class="quick-btn active"><i class="fas fa-graduation-cap"></i>Education hub</a>
+        <a href="/profile/education/" class="quick-btn"><i class="fas fa-user-graduate"></i>My education</a>
+        {% if user.is_authenticated %}{% if user.user_type == 'admin' or user.is_superuser %}
+        <a href="{% url 'education_business_applications' %}" class="quick-btn"><i class="fas fa-users"></i>Business applications</a>
+        <a href="{% url 'education_business_applications' %}?type=bursary" class="quick-btn"><i class="fas fa-hand-holding-heart"></i>Bursary apps</a>
+        <a href="{% url 'education_business_applications' %}?type=university" class="quick-btn"><i class="fas fa-university"></i>University apps</a>
+        <a href="{% url 'education_business_applications' %}?type=school" class="quick-btn"><i class="fas fa-school"></i>School apps</a>
+        {% endif %}{% endif %}
 
-        <div class="rail-divider"></div>
-        <div class="sidebar-title">Quick links</div>
-        <a href="/profile/skills/" class="quick-btn"><i class="fas fa-gears"></i>Skills</a>
-        <a href="/profile/employment/" class="quick-btn"><i class="fas fa-briefcase"></i>Employment</a>
-        <a href="/profile/documents/" class="quick-btn"><i class="fas fa-file-arrow-up"></i>Documents</a>
-      </div>
-    </div>
-  </div>
+        <div class="rail-divider"></div>
+        <div class="sidebar-title">Quick links</div>
+        <a href="/profile/skills/" class="quick-btn"><i class="fas fa-gears"></i>Skills</a>
+        <a href="/profile/employment/" class="quick-btn"><i class="fas fa-briefcase"></i>Employment</a>
+        <a href="/profile/documents/" class="quick-btn"><i class="fas fa-file-arrow-up"></i>Documents</a>
+      </div>
+    </div>
+  </div>
 
-  <!-- ===== MAIN ===== -->
-  <div class="main">
-    <div class="page-header">
-      <h1><i class="fas fa-graduation-cap"></i>Education hub</h1>
-      <div class="header-actions">
-        <a href="/" class="btn-pill btn-white"><i class="fas fa-arrow-left"></i>Back</a>
-        <a href="/api/education/apply/" class="btn-pill btn-coral"><i class="fas fa-pen"></i>Apply now</a>
-        <a href="/api/education/my-applications/" class="btn-pill btn-outline"><i class="fas fa-file-lines"></i>My applications</a>
-        {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-        <a href="{% url 'education_business_applications' %}" class="btn-pill btn-plum"><i class="fas fa-users"></i>Business apps</a>
-        <button class="btn-pill btn-ink" onclick="openContentModal('bursary')"><i class="fas fa-plus"></i>Add content</button>
-        {% endif %}
-      </div>
-    </div>
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+    <div class="page-header">
+      <h1><i class="fas fa-graduation-cap"></i>Education hub</h1>
+      <div class="header-actions">
+        <a href="/" class="btn-pill btn-white"><i class="fas fa-arrow-left"></i>Back</a>
+        <a href="/api/education/apply/" class="btn-pill btn-coral"><i class="fas fa-pen"></i>Apply now</a>
+        <a href="/api/education/my-applications/" class="btn-pill btn-outline"><i class="fas fa-file-lines"></i>My applications</a>
+        {% if user.is_authenticated %}{% if user.user_type == 'admin' or user.is_superuser %}
+        <a href="{% url 'education_business_applications' %}" class="btn-pill btn-plum"><i class="fas fa-users"></i>Business apps</a>
+        <button class="btn-pill btn-ink" onclick="openContentModal('bursary')"><i class="fas fa-plus"></i>Add content</button>
+        {% endif %}{% endif %}
+      </div>
+    </div>
 
-    <!-- Stats -->
-    <div class="stats-banner">
-      <div class="stat-card"><span class="emoji">🎓</span><div class="stat-number" id="statBursaries">{{ bursaries|length }}</div><div class="stat-label">Bursaries</div></div>
-      <div class="stat-card"><span class="emoji">🏛️</span><div class="stat-number">{{ universities|length }}</div><div class="stat-label">Universities</div></div>
-      <div class="stat-card"><span class="emoji">🏫</span><div class="stat-number">{{ schools|length }}</div><div class="stat-label">Schools</div></div>
-      <div class="stat-card"><span class="emoji">📄</span><div class="stat-number">{{ papers|length }}</div><div class="stat-label">Papers</div></div>
-      <div class="stat-card"><span class="emoji">📰</span><div class="stat-number">{{ news|length }}</div><div class="stat-label">News</div></div>
-    </div>
+    <!-- Editorial education introduction, styled like the OppoGlobe home feed -->
+<section class="edu-story-hero" aria-labelledby="eduStoryTitle">
+  <div class="edu-story-photo"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&amp;fit=crop&amp;w=1600&amp;q=85" alt="Students collaborating during a study session" fetchpriority="high"></div>
+  <div class="edu-story-shade"></div>
+  <div class="edu-story-copy"><span class="edu-eyebrow">OPPOGLOBE / EDUCATION</span><h2 id="eduStoryTitle">Your next chapter starts here.</h2><p>Discover study funding, explore schools and universities, prepare for exams and read the latest education stories.</p><a href="#gridAll" class="edu-story-action">Explore opportunities <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+</section>
+<div class="edu-section-heading"><div><span class="edu-overline">EXPLORE WHAT MATTERS</span><h2>Find your opportunity</h2><p>Real listings and learning resources from the OppoGlobe community.</p></div></div>
+<!-- Stats -->
+    <div class="stats-banner">
+      <div class="stat-card"><span class="stat-icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span><div class="stat-number" id="statBursaries">{{ bursaries|length }}</div><div class="stat-label">Bursaries</div></div>
+      <div class="stat-card"><span class="stat-icon"><i class="fa-solid fa-building-columns" aria-hidden="true"></i></span><div class="stat-number">{{ universities|length }}</div><div class="stat-label">Universities</div></div>
+      <div class="stat-card"><span class="stat-icon"><i class="fa-solid fa-school" aria-hidden="true"></i></span><div class="stat-number">{{ schools|length }}</div><div class="stat-label">Schools</div></div>
+      <div class="stat-card"><span class="stat-icon"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></span><div class="stat-number">{{ papers|length }}</div><div class="stat-label">Papers</div></div>
+      <div class="stat-card"><span class="stat-icon"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></span><div class="stat-number">{{ news|length }}</div><div class="stat-label">News</div></div>
+    </div>
 
-    <!-- Filters -->
-    <div class="card card-pad filter-card">
-      <div class="filter-grid">
-        <div class="field"><label>Search</label><input type="text" id="eduSearch" placeholder="Search…" onkeyup="filterContent()"></div>
-        <div class="field"><label>Grade</label>
-          <select id="eduGradeFilter" onchange="filterContent()">
-            <option value="">All grades</option>
-            {% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}
-          </select>
-        </div>
-        <div class="field"><label>Field</label>
-          <select id="eduFieldFilter" onchange="filterContent()">
-            <option value="">All fields</option>
-            {% for field in available_fields %}<option value="{{ field }}">{{ field }}</option>{% endfor %}
-          </select>
-        </div>
-        <div class="field"><label>Level</label>
-          <select id="eduLevelFilter" onchange="filterContent()">
-            <option value="">All levels</option>
-            {% for level in available_levels %}<option value="{{ level }}">{{ level }}</option>{% endfor %}
-          </select>
-        </div>
-        <div class="field"><button class="btn-filter" onclick="filterContent()"><i class="fas fa-filter me-1"></i>Apply filters</button></div>
-      </div>
-    </div>
+    <nav class="edu-story-categories" aria-label="Browse education categories">
+  <a href="#gridAll" data-edu-category="bursary"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&amp;fit=crop&amp;w=600&amp;q=78" alt="" loading="lazy"><span>Bursaries <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a href="#gridAll" data-edu-category="university"><img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&amp;fit=crop&amp;w=600&amp;q=78" alt="" loading="lazy"><span>Universities <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a href="#gridAll" data-edu-category="school"><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&amp;fit=crop&amp;w=600&amp;q=78" alt="" loading="lazy"><span>Schools <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a href="#gridAll" data-edu-category="paper"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=600&amp;q=78" alt="" loading="lazy"><span>Past papers <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a href="#gridAll" data-edu-category="news"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&amp;fit=crop&amp;w=600&amp;q=78" alt="" loading="lazy"><span>Education news <i class="fa-solid fa-arrow-right"></i></span></a>
+</nav>
+<div class="edu-filter-heading"><h2>Browse latest listings</h2><button type="button" id="eduResetCategory" class="btn-pill btn-white" hidden>Show all <i class="fa-solid fa-xmark"></i></button></div>
+<!-- Filters -->
+    <div class="card card-pad filter-card">
+      <div class="filter-grid">
+        <div class="field"><label>Search</label><input type="text" id="eduSearch" placeholder="Search…" onkeyup="filterContent()"></div>
+        <div class="field"><label>Grade</label>
+          <select id="eduGradeFilter" onchange="filterContent()">
+            <option value="">All grades</option>
+            {% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field"><label>Field</label>
+          <select id="eduFieldFilter" onchange="filterContent()">
+            <option value="">All fields</option>
+            {% for field in available_fields %}<option value="{{ field }}">{{ field }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field"><label>Level</label>
+          <select id="eduLevelFilter" onchange="filterContent()">
+            <option value="">All levels</option>
+            {% for level in available_levels %}<option value="{{ level }}">{{ level }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field"><button class="btn-filter" onclick="filterContent()"><i class="fas fa-filter me-1"></i>Apply filters</button></div>
+      </div>
+    </div>
 
-    <!-- Grid -->
-    <div class="edu-grid" id="gridAll">
-      <!-- ===== BURSARIES ===== -->
-      {% for bursary in bursaries %}
-      <div class="edu-card-wrapper" data-type="bursary" data-title="{{ bursary.title|lower }}" data-field="{{ bursary.field_of_study }}" data-level="{{ bursary.level }}" data-url="/api/education/bursary/{{ bursary.id }}/">
-        <div class="edu-card">
-          {% if bursary.provider_logo %}
-          <div class="edu-img-wrap">
-            <img src="{{ bursary.provider_logo.url }}" alt="{{ bursary.title }}" loading="lazy">
-            <span class="edu-badge bursary">🎓 Bursary</span>
-            {% if bursary.is_featured %}<span class="edu-badge featured">⭐ Featured</span>{% endif %}
-            {% if bursary.days_until_closing and bursary.days_until_closing < 14 %}<span class="edu-badge closing">🔥 Closing soon</span>{% endif %}
-          </div>
-          {% else %}
-          <div class="edu-no-image-panel">
-            <div class="edu-no-image-top">
-              <span class="edu-no-image-icon"><i class="fas fa-hand-holding-heart"></i></span>
-              <span class="edu-no-image-type">Bursary</span>
+    <!-- Grid -->
+    <div class="edu-grid" id="gridAll">
+      <!-- ===== BURSARIES ===== -->
+      {% for bursary in bursaries %}
+      <div class="edu-card-wrapper" data-type="bursary" data-title="{{ bursary.title|lower }}" data-field="{{ bursary.field_of_study }}" data-level="{{ bursary.level }}" data-url="/api/education/bursary/{{ bursary.id }}/">
+        <div class="edu-card">
+          {% if bursary.provider_logo %}
+          <div class="edu-img-wrap">
+            <img src="{{ bursary.provider_logo.url }}" alt="{{ bursary.title }}" loading="lazy">
+            <span class="edu-badge bursary">Bursary</span>
+            {% if bursary.is_featured %}<span class="edu-badge featured">Featured</span>{% endif %}
+            {% if bursary.days_until_closing and bursary.days_until_closing *<* 14 %}<span class="edu-badge closing">Closing soon</span>{% endif %}
+          </div>
+          {% else %}
+            <div class="edu-img-wrap edu-editorial-image">
+              <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Students studying together — illustrative education photograph" loading="lazy" decoding="async">
+              <span class="edu-badge bursary">Bursary</span>
+              <span class="edu-photo-credit">Illustrative photo</span>
             </div>
-            <div class="edu-no-image-copy">
-              <h4>{{ bursary.title }}</h4>
-              <p>{{ bursary.description|truncatewords:20|default:"Opportunity available. Click to learn more." }}</p>
-              <span class="edu-no-image-prompt"><i class="fas fa-arrow-up-right-from-square"></i> Apply now</span>
-            </div>
-          </div>
-          {% endif %}
-          <div class="edu-body">
-            <div class="edu-title">{{ bursary.title }}</div>
-            <div class="edu-meta"><i class="fas fa-building"></i>{{ bursary.provider }}</div>
-            <div class="edu-meta"><i class="fas fa-calendar-days"></i>Closes {{ bursary.closing_date|date:"M d, Y" }}</div>
-            <div>
-              <span class="edu-tag">{{ bursary.get_field_of_study_display }}</span>
-              <span class="edu-tag">{{ bursary.get_level_display }}</span>
-              {% if bursary.amount %}<span class="edu-tag">R{{ bursary.amount|floatformat:0 }}</span>{% endif %}
-            </div>
-            <div class="edu-desc">{{ bursary.description|truncatewords:12 }}</div>
-          </div>
-          <div class="edu-foot">
-            <span class="view-details">View <i class="fas fa-arrow-right"></i></span>
-            <div class="share-dropdown">
-              <button class="btn-share-card" onclick="event.stopPropagation();toggleShareDropdown(this)"><i class="fas fa-share-nodes"></i></button>
-              <div class="share-dropdown-content">
-                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
-                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','facebook')"><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook</a>
-                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','twitter')"><i class="fab fa-twitter"></i> Twitter/X</a>
-                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','copy')"><i class="fas fa-link"></i> Copy link</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="empty-state"><i class="fas fa-hand-holding-heart"></i><h3>No bursaries available</h3><p>Check back later for new opportunities.</p></div>
-      {% endfor %}
+          {% endif %}
+          <div class="edu-body">
+            <div class="edu-title">{{ bursary.title }}</div>
+            <div class="edu-meta"><i class="fas fa-building"></i>{{ bursary.provider }}</div>
+            <div class="edu-meta"><i class="fas fa-calendar-days"></i>Closes {{ bursary.closing_date|date:"M d, Y" }}</div>
+            <div>
+              <span class="edu-tag">{{ bursary.get_field_of_study_display }}</span>
+              <span class="edu-tag">{{ bursary.get_level_display }}</span>
+              {% if bursary.amount %}<span class="edu-tag">R{{ bursary.amount|floatformat:0 }}</span>{% endif %}
+            </div>
+            <div class="edu-desc">{{ bursary.description|truncatewords:12 }}</div>
+          </div>
+          <div class="edu-foot">
+            <span class="view-details">View <i class="fas fa-arrow-right"></i></span>
+            <div class="share-dropdown">
+              <button class="btn-share-card" onclick="event.stopPropagation();toggleShareDropdown(this)"><i class="fas fa-share-nodes"></i></button>
+              <div class="share-dropdown-content">
+                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
+                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','facebook')"><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook</a>
+                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','twitter')"><i class="fab fa-twitter"></i> Twitter/X</a>
+                <a href="#" onclick="event.stopPropagation();shareContent('bursary','{{ bursary.id }}','{{ bursary.title|escapejs }}','copy')"><i class="fas fa-link"></i> Copy link</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-hand-holding-heart"></i><h3>No bursaries available</h3><p>Check back later for new opportunities.</p></div>
+      {% endfor %}
 
-      <!-- ===== UNIVERSITIES ===== -->
-      {% for uni in universities %}
-      <div class="edu-card-wrapper" data-type="university" data-title="{{ uni.name|lower }}" data-field="{{ uni.province }}" data-url="/api/education/university/{{ uni.id }}/">
-        <div class="edu-card">
-          {% if uni.logo %}
-          <div class="edu-img-wrap">
-            <img src="{{ uni.logo.url }}" alt="{{ uni.name }}" loading="lazy">
-            <span class="edu-badge university">🏛️ University</span>
-          </div>
-          {% else %}
-          <div class="edu-no-image-panel">
-            <div class="edu-no-image-top">
-              <span class="edu-no-image-icon"><i class="fas fa-university"></i></span>
-              <span class="edu-no-image-type">Institution</span>
+      <!-- ===== UNIVERSITIES ===== -->
+      {% for uni in universities %}
+      <div class="edu-card-wrapper" data-type="university" data-title="{{ uni.name|lower }}" data-field="{{ uni.province }}" data-url="/api/education/university/{{ uni.id }}/">
+        <div class="edu-card">
+          {% if uni.logo %}
+          <div class="edu-img-wrap">
+            <img src="{{ uni.logo.url }}" alt="{{ uni.name }}" loading="lazy">
+            <span class="edu-badge university">University</span>
+          </div>
+          {% else %}
+            <div class="edu-img-wrap edu-editorial-image">
+              <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="University campus — illustrative education photograph" loading="lazy" decoding="async">
+              <span class="edu-badge university">University</span>
+              <span class="edu-photo-credit">Illustrative photo</span>
             </div>
-            <div class="edu-no-image-copy">
-              <h4>{{ uni.name }}</h4>
-              <p>{{ uni.description|truncatewords:20|default:"Higher education institution. Click to explore." }}</p>
-              <span class="edu-no-image-prompt"><i class="fas fa-arrow-up-right-from-square"></i> View details</span>
-            </div>
-          </div>
-          {% endif %}
-          <div class="edu-body">
-            <div class="edu-title">{{ uni.name }}</div>
-            <div class="edu-meta"><i class="fas fa-location-dot"></i>{{ uni.city }}, {{ uni.province }}</div>
-            <div class="edu-desc">{{ uni.description|truncatewords:12 }}</div>
-          </div>
-          <div class="edu-foot"><span class="edu-tag">{{ uni.province }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="empty-state"><i class="fas fa-university"></i><h3>No universities listed</h3><p>Universities will appear here when added.</p></div>
-      {% endfor %}
+          {% endif %}
+          <div class="edu-body">
+            <div class="edu-title">{{ uni.name }}</div>
+            <div class="edu-meta"><i class="fas fa-location-dot"></i>{{ uni.city }}, {{ uni.province }}</div>
+            <div class="edu-desc">{{ uni.description|truncatewords:12 }}</div>
+          </div>
+          <div class="edu-foot"><span class="edu-tag">{{ uni.province }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-university"></i><h3>No universities listed</h3><p>Universities will appear here when added.</p></div>
+      {% endfor %}
 
-      <!-- ===== SCHOOLS ===== -->
-      {% for school in schools %}
-      <div class="edu-card-wrapper" data-type="school" data-title="{{ school.name|lower }}" data-field="{{ school.province }}" data-url="/api/education/school/{{ school.id }}/">
-        <div class="edu-card">
-          {% if school.logo %}
-          <div class="edu-img-wrap">
-            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
-            <span class="edu-badge school">🏫 School</span>
-          </div>
-          {% else %}
-          <div class="edu-no-image-panel">
-            <div class="edu-no-image-top">
-              <span class="edu-no-image-icon"><i class="fas fa-school"></i></span>
-              <span class="edu-no-image-type">School</span>
+      <!-- ===== SCHOOLS ===== -->
+      {% for school in schools %}
+      <div class="edu-card-wrapper" data-type="school" data-title="{{ school.name|lower }}" data-field="{{ school.province }}" data-url="/api/education/school/{{ school.id }}/">
+        <div class="edu-card">
+          {% if school.logo %}
+          <div class="edu-img-wrap">
+            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+            <span class="edu-badge school">School</span>
+          </div>
+          {% else %}
+            <div class="edu-img-wrap edu-editorial-image">
+              <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Classroom learning — illustrative education photograph" loading="lazy" decoding="async">
+              <span class="edu-badge school">School</span>
+              <span class="edu-photo-credit">Illustrative photo</span>
             </div>
-            <div class="edu-no-image-copy">
-              <h4>{{ school.name }}</h4>
-              <p>{{ school.description|truncatewords:20|default:"Educational institution. Click to learn more." }}</p>
-              <span class="edu-no-image-prompt"><i class="fas fa-arrow-up-right-from-square"></i> View details</span>
-            </div>
-          </div>
-          {% endif %}
-          <div class="edu-body">
-            <div class="edu-title">{{ school.name }}</div>
-            <div class="edu-meta"><i class="fas fa-location-dot"></i>{{ school.city }}, {{ school.province }}</div>
-            <div><span class="edu-tag">{{ school.get_school_type_display }}</span>{% if school.emis_number %}<span class="edu-tag">EMIS {{ school.emis_number }}</span>{% endif %}</div>
-          </div>
-          <div class="edu-foot"><span class="edu-tag">{{ school.province }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="empty-state"><i class="fas fa-school"></i><h3>No schools listed</h3><p>Schools will appear here when added.</p></div>
-      {% endfor %}
+          {% endif %}
+          <div class="edu-body">
+            <div class="edu-title">{{ school.name }}</div>
+            <div class="edu-meta"><i class="fas fa-location-dot"></i>{{ school.city }}, {{ school.province }}</div>
+            <div><span class="edu-tag">{{ school.get_school_type_display }}</span>{% if school.emis_number %}<span class="edu-tag">EMIS {{ school.emis_number }}</span>{% endif %}</div>
+          </div>
+          <div class="edu-foot"><span class="edu-tag">{{ school.province }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-school"></i><h3>No schools listed</h3><p>Schools will appear here when added.</p></div>
+      {% endfor %}
 
-      <!-- ===== PAPERS ===== -->
-      {% for paper in papers %}
-      <div class="edu-card-wrapper" data-type="paper" data-title="{{ paper.title|lower }}" data-field="{{ paper.subject.name|lower }}" data-url="/api/education/paper/{{ paper.id }}/">
-        <div class="edu-card">
-          {% if paper.file %}
-          <div class="edu-img-wrap" style="background:var(--coral-wash);">
-            <div class="edu-img-placeholder" style="background:var(--coral-wash);">
-              <i class="fas fa-file-pdf" style="color:var(--coral); font-size:42px;"></i>
+      <!-- ===== PAPERS ===== -->
+      {% for paper in papers %}
+      <div class="edu-card-wrapper" data-type="paper" data-grade="{{ paper.grade.id }}" data-title="{{ paper.title|lower }}" data-field="{{ paper.subject.name|lower }}" data-url="/api/education/paper/{{ paper.id }}/">
+        <div class="edu-card">
+          {% if paper.file %}
+          <div class="edu-img-wrap edu-editorial-image"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Books and exam preparation — illustrative photo" loading="lazy"><span class="edu-badge paper">Past paper</span><span class="edu-photo-credit">Illustrative photo</span></div>
+          {% else %}
+            <div class="edu-img-wrap edu-editorial-image">
+              <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Books and study notes — illustrative education photograph" loading="lazy" decoding="async">
+              <span class="edu-badge paper">Past paper</span>
+              <span class="edu-photo-credit">Illustrative photo</span>
             </div>
-            <span class="edu-badge paper">📄 Paper</span>
-          </div>
-          {% else %}
-          <div class="edu-no-image-panel" style="background:radial-gradient(circle at 88% 18%, rgba(255,107,74,.14), transparent 30%), radial-gradient(circle at 10% 90%, rgba(232,169,59,.10), transparent 34%), linear-gradient(135deg, var(--paper), var(--surface));">
-            <div class="edu-no-image-top">
-              <span class="edu-no-image-icon" style="background:linear-gradient(135deg, rgba(255,107,74,.14), rgba(232,169,59,.10)); border-color:rgba(255,107,74,.2); color:var(--coral-deep);"><i class="fas fa-file-pdf"></i></span>
-              <span class="edu-no-image-type">Paper</span>
-            </div>
-            <div class="edu-no-image-copy">
-              <h4>{{ paper.title }}</h4>
-              <p>{{ paper.grade.name }} · {{ paper.subject.name }}</p>
-              <span class="edu-no-image-prompt"><i class="fas fa-download"></i> Download</span>
-            </div>
-          </div>
-          {% endif %}
-          <div class="edu-body">
-            <div class="edu-title">{{ paper.title }}</div>
-            <div class="edu-meta"><i class="fas fa-graduation-cap"></i>{{ paper.grade.name }} <i class="fas fa-book" style="margin-left:8px;"></i>{{ paper.subject.name }} <i class="fas fa-calendar" style="margin-left:8px;"></i>{{ paper.year }}</div>
-            <div>{% if paper.term %}<span class="edu-tag">{{ paper.term }}</span>{% endif %}{% if paper.paper_number %}<span class="edu-tag">Paper {{ paper.paper_number }}</span>{% endif %}<span class="edu-tag"><i class="fas fa-download"></i> {{ paper.download_count }}</span></div>
-          </div>
-          <div class="edu-foot"><span class="edu-tag">{{ paper.year }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="empty-state"><i class="fas fa-file-pdf"></i><h3>No question papers</h3><p>Question papers will appear here when uploaded.</p></div>
-      {% endfor %}
+          {% endif %}
+          <div class="edu-body">
+            <div class="edu-title">{{ paper.title }}</div>
+            <div class="edu-meta"><i class="fas fa-graduation-cap"></i>{{ paper.grade.name }} <i class="fas fa-book" style="margin-left:8px;"></i>{{ paper.subject.name }} <i class="fas fa-calendar" style="margin-left:8px;"></i>{{ paper.year }}</div>
+            <div>{% if paper.term %}<span class="edu-tag">{{ paper.term }}</span>{% endif %}{% if paper.paper_number %}<span class="edu-tag">Paper {{ paper.paper_number }}</span>{% endif %}<span class="edu-tag"><i class="fas fa-download"></i> {{ paper.download_count }}</span></div>
+          </div>
+          <div class="edu-foot"><span class="edu-tag">{{ paper.year }}</span><span class="view-details">View <i class="fas fa-arrow-right"></i></span></div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-file-pdf"></i><h3>No question papers</h3><p>Question papers will appear here when uploaded.</p></div>
+      {% endfor %}
 
-      <!-- ===== NEWS ===== -->
-      {% for item in news %}
-      <div class="edu-card-wrapper" data-type="news" data-title="{{ item.title|lower }}" data-url="/api/education/news/{{ item.id }}/">
-        <div class="edu-card">
-          {% if item.image %}
-          <div class="edu-img-wrap">
-            <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
-            <span class="edu-badge news">📰 News</span>
-          </div>
-          {% else %}
-          <div class="edu-no-image-panel" style="background:radial-gradient(circle at 88% 18%, rgba(122,90,163,.14), transparent 30%), radial-gradient(circle at 10% 90%, rgba(46,139,192,.10), transparent 34%), linear-gradient(135deg, var(--paper), var(--surface));">
-            <div class="edu-no-image-top">
-              <span class="edu-no-image-icon" style="background:linear-gradient(135deg, rgba(122,90,163,.14), rgba(46,139,192,.10)); border-color:rgba(122,90,163,.2); color:var(--plum);"><i class="fas fa-newspaper"></i></span>
-              <span class="edu-no-image-type">News</span>
+      <!-- ===== NEWS ===== -->
+      {% for item in news %}
+      <div class="edu-card-wrapper" data-type="news" data-title="{{ item.title|lower }}" data-url="/api/education/news/{{ item.id }}/">
+        <div class="edu-card">
+          {% if item.image %}
+          <div class="edu-img-wrap">
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+            <span class="edu-badge news">News</span>
+          </div>
+          {% else %}
+            <div class="edu-img-wrap edu-editorial-image">
+              <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Education reading and research — illustrative education photograph" loading="lazy" decoding="async">
+              <span class="edu-badge news">News</span>
+              <span class="edu-photo-credit">Illustrative photo</span>
             </div>
-            <div class="edu-no-image-copy">
-              <h4>{{ item.title }}</h4>
-              <p>{{ item.summary|default:item.content|truncatewords:20 }}</p>
-              <span class="edu-no-image-prompt"><i class="fas fa-arrow-up-right-from-square"></i> Read more</span>
-            </div>
-          </div>
-          {% endif %}
-          <div class="edu-body">
-            <div class="edu-title">{{ item.title }}</div>
-            <div class="edu-meta"><i class="fas fa-user"></i>{{ item.author.username|default:"Admin" }} <i class="fas fa-calendar-days" style="margin-left:8px;"></i>{{ item.published_at|date:"M d, Y" }}</div>
-            <div class="edu-desc">{{ item.summary|default:item.content|truncatewords:20 }}</div>
-          </div>
-          <div class="edu-foot"><span class="edu-tag">{{ item.published_at|date:"Y" }}</span><span class="view-details">Read more <i class="fas fa-arrow-right"></i></span></div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="empty-state"><i class="fas fa-newspaper"></i><h3>No news updates</h3><p>Stay tuned for education news.</p></div>
-      {% endfor %}
-    </div>
+          {% endif %}
+          <div class="edu-body">
+            <div class="edu-title">{{ item.title }}</div>
+            <div class="edu-meta"><i class="fas fa-user"></i>{{ item.author.username|default:"Admin" }} <i class="fas fa-calendar-days" style="margin-left:8px;"></i>{{ item.published_at|date:"M d, Y" }}</div>
+            <div class="edu-desc">{{ item.summary|default:item.content|truncatewords:20 }}</div>
+          </div>
+          <div class="edu-foot"><span class="edu-tag">{{ item.published_at|date:"Y" }}</span><span class="view-details">Read more <i class="fas fa-arrow-right"></i></span></div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-newspaper"></i><h3>No news updates</h3><p>Stay tuned for education news.</p></div>
+      {% endfor %}
+    </div>
 
-    <!-- Business dashboard quick access -->
-    {% if user.is_authenticated and user.user_type == 'admin' or user.is_superuser %}
-    <div class="biz-banner">
-      <div>
-        <h5><i class="fas fa-users"></i>Business dashboard</h5>
-        <p>Manage all education applications, review submissions, and update applicant statuses.</p>
-      </div>
-      <div class="acts">
-        <a href="{% url 'education_business_applications' %}"><i class="fas fa-list me-1"></i>All applications</a>
-        <a href="{% url 'education_business_applications' %}?status=submitted"><i class="fas fa-clock me-1"></i>Pending review</a>
-        <a href="{% url 'education_business_applications' %}?status=shortlisted"><i class="fas fa-star me-1"></i>Shortlisted</a>
-      </div>
-    </div>
-    {% endif %}
-  </div>
+    <!-- Business dashboard quick access -->
+    {% if user.is_authenticated %}{% if user.user_type == 'admin' or user.is_superuser %}
+    <div class="biz-banner">
+      <div>
+        <h5><i class="fas fa-users"></i>Business dashboard</h5>
+        <p>Manage all education applications, review submissions, and update applicant statuses.</p>
+      </div>
+      <div class="acts">
+        <a href="{% url 'education_business_applications' %}"><i class="fas fa-list me-1"></i>All applications</a>
+        <a href="{% url 'education_business_applications' %}?status=submitted"><i class="fas fa-clock me-1"></i>Pending review</a>
+        <a href="{% url 'education_business_applications' %}?status=shortlisted"><i class="fas fa-star me-1"></i>Shortlisted</a>
+      </div>
+    </div>
+    {% endif %}{% endif %}
+  </div>
 </div>
 
 <!-- ===== MOBILE BOTTOM NAV ===== -->
 <nav class="bottom-nav">
-  <a href="/" class="bn-item"><i class="fas fa-house"></i><span>Home</span></a>
-  <a href="/dashboard" class="bn-item"><i class="fas fa-gauge"></i><span>Dashboard</span></a>
-  <a href="#" class="bn-item active"><i class="fas fa-graduation-cap"></i><span>Edu</span></a>
-  <a href="/profile/" class="bn-item"><i class="fas fa-user"></i><span>Profile</span></a>
+  <a href="/" class="bn-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="/dashboard" class="bn-item"><i class="fas fa-gauge"></i><span>Dashboard</span></a>
+  <a href="#" class="bn-item active"><i class="fas fa-graduation-cap"></i><span>Edu</span></a>
+  <a href="/profile/" class="bn-item"><i class="fas fa-user"></i><span>Profile</span></a>
 </nav>
 
 <div class="toast-stack" id="toastStack"></div>
 
 <!-- ===== ADD CONTENT MODAL (business only) ===== -->
 <div class="modal-veil" id="eduModal">
-  <div class="modal-box">
-    <div class="modal-box-head"><h5 id="modalTitle"><i class="fas fa-circle-plus"></i>Add education content</h5><button class="x-close" onclick="closeModal('eduModal')">&times;</button></div>
-    <form id="eduForm" enctype="multipart/form-data">
-      <div class="modal-box-body"><div class="form-grid" id="modalBody"></div></div>
-      <div class="modal-box-foot"><button type="button" class="btn-pill btn-outline" onclick="closeModal('eduModal')">Cancel</button><button type="submit" class="btn-pill btn-jade" id="modalSubmitBtn"><i class="fas fa-floppy-disk me-1"></i>Save</button></div>
-    </form>
-  </div>
+  <div class="modal-box">
+    <div class="modal-box-head"><h5 id="modalTitle"><i class="fas fa-circle-plus"></i>Add education content</h5><button class="x-close" onclick="closeModal('eduModal')">&times;</button></div>
+    <form id="eduForm" enctype="multipart/form-data">
+      <div class="modal-box-body"><div class="form-grid" id="modalBody"></div></div>
+      <div class="modal-box-foot"><button type="button" class="btn-pill btn-outline" onclick="closeModal('eduModal')">Cancel</button><button type="submit" class="btn-pill btn-jade" id="modalSubmitBtn"><i class="fas fa-floppy-disk me-1"></i>Save</button></div>
+    </form>
+  </div>
 </div>
 
 <script>
 /* ============================================================
-   CORE UTILITIES
-   ============================================================ */
+   CORE UTILITIES
+   ============================================================ */
 function getCSRFToken(){
-  const cookies = document.cookie.split(';');
-  for (let c of cookies){ const [name, value] = c.trim().split('='); if (name === 'csrftoken') return decodeURIComponent(value); }
-  return '';
+  const cookies = document.cookie.split(';');
+  for (let c of cookies){ const [name, value] = c.trim().split('='); if (name === 'csrftoken') return decodeURIComponent(value); }
+  return '';
 }
 function escapeHtml(str){ if (!str) return ''; const div = document.createElement('div'); div.textContent = String(str); return div.innerHTML; }
 const TOAST_COLORS = { success:'#1F6F5C', error:'#D64545', info:'#2E8BC0', warning:'#E8A93B' };
 const TOAST_ICONS = { success:'fa-circle-check', error:'fa-circle-exclamation', info:'fa-circle-info', warning:'fa-triangle-exclamation' };
 function showToast(message, type='success'){
-  const stack = document.getElementById('toastStack'); if (!stack) return;
-  const el = document.createElement('div'); el.className = 'toast-item'; el.style.background = TOAST_COLORS[type] || TOAST_COLORS.info;
-  el.innerHTML = `<i class="fas ${TOAST_ICONS[type]||TOAST_ICONS.info}"></i><span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
-  stack.appendChild(el); setTimeout(()=>el.remove(), 4500);
+  const stack = document.getElementById('toastStack'); if (!stack) return;
+  const el = document.createElement('div'); el.className = 'toast-item'; el.style.background = TOAST_COLORS[type] || TOAST_COLORS.info;
+  el.innerHTML = `<i class="fas ${TOAST_ICONS[type]||TOAST_ICONS.info}"></i><span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+  stack.appendChild(el); setTimeout(()=>el.remove(), 4500);
 }
 function openModal(id){ document.getElementById(id)?.classList.add('show'); document.body.style.overflow='hidden'; }
 function closeModal(id){ document.getElementById(id)?.classList.remove('show'); document.body.style.overflow=''; }
@@ -658,10 +670,10 @@ document.querySelectorAll('.modal-veil').forEach(v=>v.addEventListener('click', 
 document.addEventListener('keydown', e=>{ if (e.key==='Escape') document.querySelectorAll('.modal-veil.show').forEach(v=>closeModal(v.id)); });
 
 function toggleDropdown(id){
-  const menu = document.getElementById(id); if (!menu) return;
-  const open = !menu.classList.contains('show');
-  document.querySelectorAll('.dropdown-panel').forEach(m=>m.classList.remove('show'));
-  if (open) menu.classList.add('show');
+  const menu = document.getElementById(id); if (!menu) return;
+  const open = !menu.classList.contains('show');
+  document.querySelectorAll('.dropdown-panel').forEach(m=>m.classList.remove('show'));
+  if (open) menu.classList.add('show');
 }
 document.addEventListener('click', e=>{ if (!e.target.closest('.rel')) document.querySelectorAll('.dropdown-panel').forEach(m=>m.classList.remove('show')); });
 
@@ -672,150 +684,166 @@ function showLogin(){ showToast('Please sign in to continue','info'); window.loc
 function showSignup(){ showToast('Create an account to get started','info'); window.location.href = '/signup/'; }
 
 /* ============================================================
-   CARD CLICK + SHARE
-   ============================================================ */
+   CARD CLICK + SHARE
+   ============================================================ */
 document.addEventListener('click', function(e){
-  const wrapper = e.target.closest('.edu-card-wrapper');
-  if (wrapper && !e.target.closest('.share-dropdown')){
-    const url = wrapper.dataset.url; if (url) window.location.href = url;
-  }
+  const wrapper = e.target.closest('.edu-card-wrapper');
+  if (wrapper && !e.target.closest('.share-dropdown')){
+    const url = wrapper.dataset.url; if (url) window.location.href = url;
+  }
 });
 function toggleShareDropdown(btn){
-  const dropdown = btn.parentElement.querySelector('.share-dropdown-content');
-  document.querySelectorAll('.share-dropdown-content.show').forEach(d=>{ if (d!==dropdown) d.classList.remove('show'); });
-  dropdown.classList.toggle('show');
+  const dropdown = btn.parentElement.querySelector('.share-dropdown-content');
+  document.querySelectorAll('.share-dropdown-content.show').forEach(d=>{ if (d!==dropdown) d.classList.remove('show'); });
+  dropdown.classList.toggle('show');
 }
 document.addEventListener('click', function(e){ if (!e.target.closest('.share-dropdown')) document.querySelectorAll('.share-dropdown-content').forEach(d=>d.classList.remove('show')); });
 function shareContent(type, id, title, platform){
-  const url = `${window.location.origin}/api/education/${type}/${id}/`;
-  const text = `${title} - ${url}`;
-  let shareUrl = '';
-  if (platform==='whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-  else if (platform==='facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-  else if (platform==='twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-  else if (platform==='copy'){
-    if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success')).catch(()=>fallbackCopy(text));
-    else fallbackCopy(text);
-    document.querySelectorAll('.share-dropdown-content').forEach(d=>d.classList.remove('show'));
-    return;
-  }
-  if (shareUrl) window.open(shareUrl, '_blank');
-  document.querySelectorAll('.share-dropdown-content').forEach(d=>d.classList.remove('show'));
-  showToast('Shared successfully','success');
+  const url = `${window.location.origin}/api/education/${type}/${id}/`;
+  const text = `${title} - ${url}`;
+  let shareUrl = '';
+  if (platform==='whatsapp') shareUrl = `https\://wa.me/?text=${encodeURIComponent(text)}`;
+  else if (platform==='facebook') shareUrl = `https\://www\.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  else if (platform==='twitter') shareUrl = `https\://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  else if (platform==='copy'){
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success')).catch(()=>fallbackCopy(text));
+    else fallbackCopy(text);
+    document.querySelectorAll('.share-dropdown-content').forEach(d=>d.classList.remove('show'));
+    return;
+  }
+  if (shareUrl) window.open(shareUrl, '\_blank');
+  document.querySelectorAll('.share-dropdown-content').forEach(d=>d.classList.remove('show'));
+  showToast('Shared successfully','success');
 }
 function fallbackCopy(text){
-  const input = document.createElement('input'); input.value = text; document.body.appendChild(input); input.select();
-  document.execCommand('copy'); document.body.removeChild(input); showToast('Link copied!','success');
+  const input = document.createElement('input'); input.value = text; document.body.appendChild(input); input.select();
+  document.execCommand('copy'); document.body.removeChild(input); showToast('Link copied!','success');
 }
 
 /* ============================================================
-   FILTER
-   ============================================================ */
+   FILTER
+   ============================================================ */
 function filterContent(){
-  const search = document.getElementById('eduSearch').value.toLowerCase();
-  const fieldFilter = document.getElementById('eduFieldFilter').value;
-  const levelFilter = document.getElementById('eduLevelFilter').value;
-  const cards = document.querySelectorAll('#gridAll .edu-card-wrapper');
-  cards.forEach(card=>{
-    const title = card.dataset.title || '', field = card.dataset.field || '', level = card.dataset.level || '';
-    let show = true;
-    if (search && !title.includes(search)) show = false;
-    if (fieldFilter && field !== fieldFilter) show = false;
-    if (levelFilter && level !== levelFilter) show = false;
-    card.style.display = show ? '' : 'none';
-  });
-  const visibleBursaries = document.querySelectorAll('#gridAll .edu-card-wrapper[data-type="bursary"]:not([style*="display: none"])').length;
-  const statEl = document.getElementById('statBursaries'); if (statEl) statEl.textContent = visibleBursaries;
+  const search = document.getElementById('eduSearch').value.toLowerCase();
+  const fieldFilter = document.getElementById('eduFieldFilter').value;
+  const levelFilter = document.getElementById('eduLevelFilter').value;
+  const cards = document.querySelectorAll('#gridAll .edu-card-wrapper');
+  const gradeFilter = document.getElementById('eduGradeFilter').value;
+  const activeType = window.eduActiveCategory || "";
+  cards.forEach(card=>{
+    const title = card.dataset.title || '', field = card.dataset.field || '', level = card.dataset.level || '';
+    let show = true;
+    if (search && !title.includes(search)) show = false;
+    if (activeType && card.dataset.type !== activeType) show = false;
+    if (gradeFilter && card.dataset.grade !== gradeFilter) show = false;
+    if (fieldFilter && field !== fieldFilter) show = false;
+    if (levelFilter && level !== levelFilter) show = false;
+    card.style.display = show ? '' : 'none';
+  });
+  const visibleBursaries = document.querySelectorAll('#gridAll .edu-card-wrapper[data-type="bursary"]:not([style*="display: none"])').length;
+  // Summary counts reflect the actual records, not the current filter.
 }
 
 /* ============================================================
-   ADD CONTENT MODAL (business)
-   ============================================================ */
+   ADD CONTENT MODAL (business)
+   ============================================================ */
 let modalType = '';
 function openContentModal(type){
-  modalType = type;
-  const titles = { bursary:'🎓 Add bursary', university:'🏛️ Add university', school:'🏫 Add school', paper:'📄 Upload question paper', news:'📰 Add news' };
-  document.getElementById('modalTitle').innerHTML = `<i class="fas fa-circle-plus"></i>${titles[type] || 'Add content'}`;
-  const body = document.getElementById('modalBody');
-  let html = '';
-  if (type === 'bursary') html = `
-    <div class="field wide"><label>Title *</label><input type="text" name="title" required placeholder="Bursary title"></div>
-    <div class="field wide"><label>Provider *</label><input type="text" name="provider" required placeholder="Organization name"></div>
-    <div class="field wide"><label>Description</label><textarea name="description" rows="2" placeholder="Describe the bursary"></textarea></div>
-    <div class="field"><label>Field of study</label>
-      <select name="field_of_study"><option value="engineering">Engineering</option><option value="medicine">Medicine</option><option value="business">Business</option><option value="arts">Arts</option><option value="science">Science</option><option value="education">Education</option><option value="law">Law</option><option value="technology">Technology</option><option value="agriculture">Agriculture</option><option value="health">Health sciences</option><option value="other">Other</option></select>
-    </div>
-    <div class="field"><label>Level</label>
-      <select name="level"><option value="undergraduate">Undergraduate</option><option value="postgraduate">Postgraduate</option><option value="phd">PhD</option><option value="diploma">Diploma</option><option value="certificate">Certificate</option></select>
-    </div>
-    <div class="field"><label>Amount</label><input type="number" name="amount" placeholder="e.g. 50000"></div>
-    <div class="field"><label>Closing date *</label><input type="date" name="closing_date" required></div>
-    <div class="field wide"><label>Requirements</label><textarea name="requirements" rows="2" placeholder="Eligibility requirements"></textarea></div>
-    <div class="field wide"><label>Provider logo</label><input type="file" name="provider_logo" accept="image/*"></div>`;
-  else if (type === 'university') html = `
-    <div class="field wide"><label>University name *</label><input type="text" name="name" required placeholder="University name"></div>
-    <div class="field"><label>Province</label><input type="text" name="province" placeholder="Province"></div>
-    <div class="field"><label>City</label><input type="text" name="city" placeholder="City"></div>
-    <div class="field wide"><label>Description</label><textarea name="description" rows="2" placeholder="University description"></textarea></div>
-    <div class="field wide"><label>Website</label><input type="url" name="website" placeholder="https://university.ac.za"></div>
-    <div class="field wide"><label>Logo</label><input type="file" name="logo" accept="image/*"></div>`;
-  else if (type === 'school') html = `
-    <div class="field wide"><label>School name *</label><input type="text" name="name" required placeholder="School name"></div>
-    <div class="field wide"><label>EMIS number</label><input type="text" name="emis_number" placeholder="EMIS number"></div>
-    <div class="field"><label>Province</label><input type="text" name="province" placeholder="Province"></div>
-    <div class="field"><label>City</label><input type="text" name="city" placeholder="City"></div>
-    <div class="field wide"><label>School type</label>
-      <select name="school_type"><option value="primary">Primary school</option><option value="secondary" selected>Secondary school</option><option value="combined">Combined school</option><option value="special">Special needs school</option><option value="early_childhood">Early childhood</option><option value="other">Other</option></select>
-    </div>`;
-  else if (type === 'paper'){
-    html = `
-    <div class="field wide"><label>Paper title *</label><input type="text" name="title" required placeholder="Question paper title"></div>
-    <div class="field"><label>Grade *</label><select name="grade_id" required><option value="">Select grade</option>{% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}</select></div>
-    <div class="field"><label>Subject *</label><select name="subject_id" required><option value="">Select subject</option>{% for subject in subjects %}<option value="{{ subject.id }}">{{ subject.name }}</option>{% endfor %}</select></div>
-    <div class="field"><label>Year *</label><input type="number" name="year" required min="2000" max="2026" value="2026"></div>
-    <div class="field"><label>PDF file *</label><input type="file" name="file" accept=".pdf" required></div>`;
-  }
-  else if (type === 'news') html = `
-    <div class="field wide"><label>Title *</label><input type="text" name="title" required placeholder="News title"></div>
-    <div class="field wide"><label>Content *</label><textarea name="content" rows="3" required placeholder="Full news content"></textarea></div>
-    <div class="field"><label>Category</label><select name="category"><option value="general">General</option><option value="bursary">Bursary news</option><option value="university">University news</option><option value="school">School news</option><option value="exam">Exam updates</option></select></div>
-    <div class="field"><label>Image</label><input type="file" name="image" accept="image/*"></div>`;
-  body.innerHTML = html;
-  openModal('eduModal');
+  modalType = type;
+  const titles = { bursary:'🎓 Add bursary', university:'🏛️ Add university', school:'🏫 Add school', paper:'📄 Upload question paper', news:'📰 Add news' };
+  document.getElementById('modalTitle').innerHTML = `<i class="fas fa-circle-plus"></i>${titles[type] || 'Add content'}`;
+  const body = document.getElementById('modalBody');
+  let html = '';
+  if (type === 'bursary') html = `
+    <div class="field wide"><label>Title *</label><input type="text" name="title" required placeholder="Bursary title"></div>
+    <div class="field wide"><label>Provider *</label><input type="text" name="provider" required placeholder="Organization name"></div>
+    <div class="field wide"><label>Description</label><textarea name="description" rows="2" placeholder="Describe the bursary"></textarea></div>
+    <div class="field"><label>Field of study</label>
+      <select name="field_of_study"><option value="engineering">Engineering</option><option value="medicine">Medicine</option><option value="business">Business</option><option value="arts">Arts</option><option value="science">Science</option><option value="education">Education</option><option value="law">Law</option><option value="technology">Technology</option><option value="agriculture">Agriculture</option><option value="health">Health sciences</option><option value="other">Other</option></select>
+    </div>
+    <div class="field"><label>Level</label>
+      <select name="level"><option value="undergraduate">Undergraduate</option><option value="postgraduate">Postgraduate</option><option value="phd">PhD</option><option value="diploma">Diploma</option><option value="certificate">Certificate</option></select>
+    </div>
+    <div class="field"><label>Amount</label><input type="number" name="amount" placeholder="e.g. 50000"></div>
+    <div class="field"><label>Closing date *</label><input type="date" name="closing_date" required></div>
+    <div class="field wide"><label>Requirements</label><textarea name="requirements" rows="2" placeholder="Eligibility requirements"></textarea></div>
+    <div class="field wide"><label>Provider logo</label><input type="file" name="provider_logo" accept="image/*"></div>`;
+  else if (type === 'university') html = `
+    <div class="field wide"><label>University name *</label><input type="text" name="name" required placeholder="University name"></div>
+    <div class="field"><label>Province</label><input type="text" name="province" placeholder="Province"></div>
+    <div class="field"><label>City</label><input type="text" name="city" placeholder="City"></div>
+    <div class="field wide"><label>Description</label><textarea name="description" rows="2" placeholder="University description"></textarea></div>
+    <div class="field wide"><label>Website</label><input type="url" name="website" placeholder="https\://university.ac.za"></div>
+    <div class="field wide"><label>Logo</label><input type="file" name="logo" accept="image/*"></div>`;
+  else if (type === 'school') html = `
+    <div class="field wide"><label>School name *</label><input type="text" name="name" required placeholder="School name"></div>
+    <div class="field wide"><label>EMIS number</label><input type="text" name="emis_number" placeholder="EMIS number"></div>
+    <div class="field"><label>Province</label><input type="text" name="province" placeholder="Province"></div>
+    <div class="field"><label>City</label><input type="text" name="city" placeholder="City"></div>
+    <div class="field wide"><label>School type</label>
+      <select name="school_type"><option value="primary">Primary school</option><option value="secondary" selected>Secondary school</option><option value="combined">Combined school</option><option value="special">Special needs school</option><option value="early_childhood">Early childhood</option><option value="other">Other</option></select>
+    </div>`;
+  else if (type === 'paper'){
+    html = `
+    <div class="field wide"><label>Paper title *</label><input type="text" name="title" required placeholder="Question paper title"></div>
+    <div class="field"><label>Grade *</label><select name="grade_id" required><option value="">Select grade</option>{% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>Subject *</label><select name="subject_id" required><option value="">Select subject</option>{% for subject in subjects %}<option value="{{ subject.id }}">{{ subject.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>Year *</label><input type="number" name="year" required min="2000" max="2026" value="2026"></div>
+    <div class="field"><label>PDF file *</label><input type="file" name="file" accept=".pdf" required></div>`;
+  }
+  else if (type === 'news') html = `
+    <div class="field wide"><label>Title *</label><input type="text" name="title" required placeholder="News title"></div>
+    <div class="field wide"><label>Content *</label><textarea name="content" rows="3" required placeholder="Full news content"></textarea></div>
+    <div class="field"><label>Category</label><select name="category"><option value="general">General</option><option value="bursary">Bursary news</option><option value="university">University news</option><option value="school">School news</option><option value="exam">Exam updates</option></select></div>
+    <div class="field"><label>Image</label><input type="file" name="image" accept="image/*"></div>`;
+  body.innerHTML = html;
+  openModal('eduModal');
 }
 document.getElementById('eduForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const formData = new FormData(this);
-  const btn = document.getElementById('modalSubmitBtn'); const original = btn.innerHTML;
-  btn.innerHTML = '<span class="spin"></span> Saving…'; btn.disabled = true;
-  let endpoint = '';
-  switch (modalType){
-    case 'bursary': endpoint = '/api/education/bursaries/'; break;
-    case 'university': endpoint = '/api/education/universities/'; break;
-    case 'school': endpoint = '/api/education/schools/'; break;
-    case 'paper': endpoint = '/api/education/papers/'; break;
-    case 'news': endpoint = '/api/education/news/'; break;
-    default: showToast('Invalid type','error'); btn.innerHTML = original; btn.disabled = false; return;
-  }
-  fetch(endpoint, { method:'POST', headers:{'X-CSRFToken':getCSRFToken()}, body:formData })
-    .then(r=>r.json()).then(data=>{
-      btn.innerHTML = original; btn.disabled = false;
-      if (data.id || data.success){ closeModal('eduModal'); showToast('Saved successfully','success'); setTimeout(()=>location.reload(), 1200); }
-      else showToast('Error: ' + (data.error || 'Unknown error'), 'error');
-    }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Network error — please try again','error'); });
+  e.preventDefault();
+  const formData = new FormData(this);
+  const btn = document.getElementById('modalSubmitBtn'); const original = btn.innerHTML;
+  btn.innerHTML = '<span class="spin"></span> Saving…'; btn.disabled = true;
+  let endpoint = '';
+  switch (modalType){
+    case 'bursary': endpoint = '/api/education/bursaries/'; break;
+    case 'university': endpoint = '/api/education/universities/'; break;
+    case 'school': endpoint = '/api/education/schools/'; break;
+    case 'paper': endpoint = '/api/education/papers/'; break;
+    case 'news': endpoint = '/api/education/news/'; break;
+    default: showToast('Invalid type','error'); btn.innerHTML = original; btn.disabled = false; return;
+  }
+  fetch(endpoint, { method:'POST', headers:{'X-CSRFToken':getCSRFToken()}, body:formData })
+    .then(r=>r.json()).then(data=>{
+      btn.innerHTML = original; btn.disabled = false;
+      if (data.id || data.success){ closeModal('eduModal'); showToast('Saved successfully','success'); setTimeout(()=>location.reload(), 1200); }
+      else showToast('Error: ' + (data.error || 'Unknown error'), 'error');
+    }).catch(()=>{ btn.innerHTML = original; btn.disabled = false; showToast('Network error — please try again','error'); });
 });
 
 /* ============================================================
-   INIT
-   ============================================================ */
+   INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', function(){
-  filterContent();
-  document.addEventListener('keydown', function(e){
-    if (e.ctrlKey && e.key === 'f'){ e.preventDefault(); document.getElementById('eduSearch').focus(); }
+  document.querySelectorAll('[data-edu-category]').forEach(link => link.addEventListener('click', () => {
+    window.eduActiveCategory = link.dataset.eduCategory;
+    document.querySelectorAll('[data-edu-category]').forEach(el => el.classList.toggle('selected', el === link));
+    document.getElementById('eduResetCategory').hidden = false;
+    filterContent();
+  }));
+  document.getElementById('eduResetCategory')?.addEventListener('click', () => {
+    window.eduActiveCategory = '';
+    document.querySelectorAll('[data-edu-category]').forEach(el => el.classList.remove('selected'));
+    document.getElementById('eduResetCategory').hidden = true;
+    filterContent();
   });
+  filterContent();
+  document.addEventListener('keydown', function(e){
+    if (e.ctrlKey && e.key === 'f'){ e.preventDefault(); document.getElementById('eduSearch').focus(); }
+  });
 });
 </script>
 
-  <script src="/static/hiring/js/notifications-global.js" defer></script>
+  <script src="/static/hiring/js/notifications-global.js" defer></script>
 </body>
 </html>
