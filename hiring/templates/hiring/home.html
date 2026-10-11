@@ -2566,7 +2566,7 @@ img { max-width:100%; }
   <!-- ===== LEFT RAIL ===== -->
   <div class="rail-left">
     <div class="og-home-search" role="search" aria-label="Search OppoGlobe navigation">
-      <button type="button" class="og-search-activate" onclick="openHomeSearch(true)" aria-label="Search navigation"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></button>
+      <button type="button" class="og-search-activate" onclick="ogSubmitHomeSearch()" aria-label="Search navigation"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></button>
       <input id="ogHomeNavSearch" type="search" autocomplete="off" placeholder="Search OppoGlobe…" aria-label="Search homepage sections" oninput="filterHomeNavigation(this.value)" onfocus="openHomeSearch(false)">
       <button type="button" class="og-search-menu" onclick="openHomeSearch(true)" aria-label="Open all homepage navigation"><i class="fas fa-sliders"></i></button>
     </div>
@@ -5415,12 +5415,26 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
       if (focusDrawer) $('ogHomeNavSearch')?.focus();
     }
   };
+  window.ogSubmitHomeSearch = function () {
+    const input = $('ogHomeNavSearch');
+    const query = (input?.value || '').trim();
+    if (!query) { window.openHomeSearch(true); return; }
+    window.filterHomeNavigation(query);
+    const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
+    if (first) {
+      first.click();
+      if (isMobile() && typeof window.closeRail === 'function') window.closeRail();
+    } else {
+      window.openHomeSearch(true);
+      input?.focus();
+    }
+  };
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (typeof window.closeRail === 'function') window.closeRail();
       return;
     }
-    if (e.key !== 'Enter' || !e.target?.id === 'ogHomeNavSearch') return;
+    if (e.key !== 'Enter' || e.target?.id !== 'ogHomeNavSearch') return;
     const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
     if (first) {
       e.preventDefault();
