@@ -2431,6 +2431,12 @@ img { max-width:100%; }
   .rail-left.og-search-drawer-open .rail-body.open button { pointer-events:auto!important; }
 }
 
+/* One visible search control, followed by matching navigation items. */
+@media(max-width:999px){
+  #railBody.open > .og-home-search{position:relative!important;z-index:auto!important;margin:12px 0!important;flex-shrink:0;box-shadow:none!important}
+  #railBody.open > .og-home-search input{min-width:0;opacity:1!important;pointer-events:auto!important}
+  #railBody.open > .og-nav-no-results{margin:0 0 8px}
+}
 /* Homepage education is substantive content, not navigation-only cards. */
 .og-edu-guides-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:12px 0 22px}
 .og-edu-guide{min-width:0;background:var(--surface,#fff);border:1px solid var(--line,#e0e7e3);border-radius:17px;padding:20px;display:flex;flex-direction:column;gap:11px}
@@ -2566,7 +2572,6 @@ img { max-width:100%; }
     </div>
     <div class="rail-body" id="railBody">
       <div class="og-rail-mobile-head"><strong>Explore OppoGlobe</strong><button type="button" onclick="closeRail()" aria-label="Close navigation"><i class="fas fa-xmark"></i></button></div>
-      <div class="og-rail-inner-search"><i class="fas fa-magnifying-glass"></i><input type="search" id="ogRailNavSearch" placeholder="Find a page or feature…" aria-label="Filter sidebar links" oninput="filterHomeNavigation(this.value, 'drawer')"></div>
       <p class="og-nav-no-results" id="ogNavNoResults" hidden>No matching pages. Try a different word.</p>
       <div class="card card-pad og-nav-primary-card">
         <div class="rail-story-heading"><span class="rail-head-icon"><i class="fas fa-compass"></i></span><span class="rail-head-copy"><strong>Explore OppoGlobe</strong><small>Your neighbourhood, one tap away</small></span></div>
@@ -3403,15 +3408,34 @@ document.addEventListener('keydown', function(e){
 /* ============================================================
    LEFT RAIL
    ============================================================ */
+/* Use ONE search bar: move the existing input into the mobile drawer while open. */
+function ogPositionSingleSearch(inDrawer){
+  const search=document.querySelector('.og-home-search');
+  const drawer=document.getElementById('railBody');
+  const rail=document.querySelector('.rail-left');
+  if(!search || !drawer || !rail)return;
+  if(inDrawer && window.matchMedia('(max-width:999px)').matches){
+    const mobileHead=drawer.querySelector('.og-rail-mobile-head');
+    if(mobileHead) mobileHead.insertAdjacentElement('afterend',search);
+    else drawer.prepend(search);
+  }else if(search.parentElement!==rail){rail.insertBefore(search,drawer);}
+}
+window.ogPositionSingleSearch=ogPositionSingleSearch;
+window.addEventListener('resize',()=>{
+  const drawer=document.getElementById('railBody');
+  ogPositionSingleSearch(!!drawer?.classList.contains('open'));
+});
 function toggleRail(){
   document.getElementById('railBody').classList.toggle('open');
   document.getElementById('railOverlay').classList.toggle('active');
   document.querySelector('.rail-left')?.classList.toggle('og-search-drawer-open', document.getElementById('railBody').classList.contains('open'));
+  ogPositionSingleSearch(document.getElementById('railBody').classList.contains('open'));
 }
 function closeRail(){
   document.getElementById('railBody').classList.remove('open');
   document.getElementById('railOverlay').classList.remove('active');
   document.querySelector('.rail-left')?.classList.remove('og-search-drawer-open');
+  ogPositionSingleSearch(false);
 }
 
 /* ============================================================
@@ -5349,6 +5373,7 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
   function isMobile() { return window.matchMedia('(max-width: 999px)').matches; }
   function showRail() {
     if (isMobile()) {
+      window.ogPositionSingleSearch?.(true);
       $('railBody')?.classList.add('open');
       $('railOverlay')?.classList.add('active');
       document.querySelector('.rail-left')?.classList.add('og-search-drawer-open');
@@ -5382,7 +5407,7 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
   window.openHomeSearch = function (focusDrawer = false) {
     if (isMobile()) {
       showRail();
-      if (focusDrawer) $('ogRailNavSearch')?.focus();
+      if (focusDrawer) $('ogHomeNavSearch')?.focus();
     } else {
       const c = card();
       c?.classList.add('og-nav-expanded');
@@ -5395,7 +5420,7 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
       if (typeof window.closeRail === 'function') window.closeRail();
       return;
     }
-    if (e.key !== 'Enter' || !['ogHomeNavSearch', 'ogRailNavSearch'].includes(e.target?.id)) return;
+    if (e.key !== 'Enter' || !e.target?.id === 'ogHomeNavSearch') return;
     const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
     if (first) {
       e.preventDefault();
