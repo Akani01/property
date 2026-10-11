@@ -2450,6 +2450,21 @@ img { max-width:100%; }
 .og-edu-story-photo:has(img.og-edu-photo-failed)::before{content:'Education';position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:16px;font-weight:800;letter-spacing:.06em}
 @media(max-width:650px){.og-edu-guides-grid{grid-template-columns:1fr}.og-edu-guide{padding:16px}.og-edu-story-photo img{height:100%;width:100%}}
 
+
+/* Mobile search results remain visible under the single input. */
+@media(max-width:999px){
+ .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open){
+   position:relative!important;left:auto!important;top:auto!important;
+   width:100%!important;max-width:100%!important;height:auto!important;
+   max-height:65dvh!important;overflow-y:auto!important;display:block!important;
+   background:var(--surface,#fff)!important;box-shadow:0 10px 24px #0002;
+   border-radius:14px;z-index:40!important;padding:10px!important;
+ }
+ .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-rail-mobile-head{display:none!important}
+ .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-primary-card{display:block!important}
+ .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-link-stack>.rail-story-link:not([hidden]){display:flex!important}
+ .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-explore{display:none!important}
+}
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2567,7 +2582,7 @@ img { max-width:100%; }
   <div class="rail-left">
     <div class="og-home-search" role="search" aria-label="Search OppoGlobe navigation">
       <button type="button" class="og-search-activate" onclick="ogSubmitHomeSearch()" aria-label="Search navigation"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></button>
-      <input id="ogHomeNavSearch" type="search" autocomplete="off" placeholder="Search OppoGlobe…" aria-label="Search homepage sections" oninput="filterHomeNavigation(this.value)" onfocus="openHomeSearch(false)">
+      <input id="ogHomeNavSearch" type="search" autocomplete="off" placeholder="Search OppoGlobe…" aria-label="Search homepage sections" oninput="filterHomeNavigation(this.value)" onfocus="ogFocusHomeSearch()">
       <button type="button" class="og-search-menu" onclick="openHomeSearch(true)" aria-label="Open all homepage navigation"><i class="fas fa-sliders"></i></button>
     </div>
     <div class="rail-body" id="railBody">
@@ -5364,87 +5379,77 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
   </div>
 </div>
 <script>
-/* Homepage navigation controls: available on mobile and desktop. */
-(function () {
-  'use strict';
-  const $ = id => document.getElementById(id);
-  const links = () => Array.from(document.querySelectorAll('#railBody .og-nav-link-stack > .rail-story-link'));
-  const card = () => document.querySelector('#railBody .og-nav-primary-card');
-  function isMobile() { return window.matchMedia('(max-width: 999px)').matches; }
-  function showRail() {
-    if (isMobile()) {
-      window.ogPositionSingleSearch?.(true);
-      $('railBody')?.classList.add('open');
-      $('railOverlay')?.classList.add('active');
-      document.querySelector('.rail-left')?.classList.add('og-search-drawer-open');
-    }
-  }
-  window.ogToggleMoreNavigation = function () {
-    const c = card(); if (!c) return;
-    const expanded = c.classList.toggle('og-nav-expanded');
-    const button = $('ogNavExplore');
-    button?.setAttribute('aria-expanded', String(expanded));
-    if (button) button.innerHTML = expanded
-      ? '<i class="fas fa-grip"></i> Show less <i class="fas fa-chevron-up"></i>'
-      : '<i class="fas fa-grip"></i> Explore more <i class="fas fa-chevron-down"></i>';
-  };
-  window.filterHomeNavigation = function (value, source) {
-    const term = String(value || '').trim().toLocaleLowerCase();
-    const main = $('ogHomeNavSearch'), drawer = $('ogRailNavSearch');
-    if (source === 'drawer') { if (main) main.value = value; }
-    else { if (drawer) drawer.value = value; }
-    card()?.classList.toggle('og-nav-searching', !!term);
-    let count = 0;
-    links().forEach(link => {
-      const found = !term || (link.textContent || '').toLocaleLowerCase().includes(term);
-      link.hidden = !found;
-      if (found) count++;
-    });
-    const empty = $('ogNavNoResults');
-    if (empty) empty.hidden = !term || count > 0;
-    if (term && isMobile()) showRail();
-  };
-  window.openHomeSearch = function (focusDrawer = false) {
-    if (isMobile()) {
-      showRail();
-      if (focusDrawer) $('ogHomeNavSearch')?.focus();
-    } else {
-      const c = card();
-      c?.classList.add('og-nav-expanded');
-      $('ogNavExplore')?.setAttribute('aria-expanded', 'true');
-      if (focusDrawer) $('ogHomeNavSearch')?.focus();
-    }
-  };
-  window.ogSubmitHomeSearch = function () {
-    const input = $('ogHomeNavSearch');
-    const query = (input?.value || '').trim();
-    if (!query) { window.openHomeSearch(true); return; }
-    window.filterHomeNavigation(query);
-    const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
-    if (first) {
-      first.click();
-      if (isMobile() && typeof window.closeRail === 'function') window.closeRail();
-    } else {
-      window.openHomeSearch(true);
-      input?.focus();
-    }
-  };
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      if (typeof window.closeRail === 'function') window.closeRail();
-      return;
-    }
-    if (e.key !== 'Enter' || e.target?.id !== 'ogHomeNavSearch') return;
-    const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
-    if (first) {
-      e.preventDefault();
-      first.click();
-      if (isMobile() && typeof window.closeRail === 'function') window.closeRail();
-    }
-  });
-  document.addEventListener('click', function (e) {
-    if (isMobile() && e.target.closest('#railBody .rail-story-link') && typeof window.closeRail === 'function') window.closeRail();
-  });
+/* Unified search: do not move a focused input while typing on a phone. */
+(function(){
+ 'use strict';
+ const byId=id=>document.getElementById(id);
+ const card=()=>document.querySelector('#railBody .og-nav-primary-card');
+ const links=()=>Array.from(document.querySelectorAll('#railBody .og-nav-link-stack > .rail-story-link'));
+ const mobile=()=>window.matchMedia('(max-width:999px)').matches;
+ function drawer(){
+   const d=byId('railBody');
+   if(!d)return;
+   if(!d.classList.contains('open')){
+     /* Move before focus, never during a keyboard input event. */
+     window.ogPositionSingleSearch?.(true);
+     d.classList.add('open');
+     byId('railOverlay')?.classList.add('active');
+     document.querySelector('.rail-left')?.classList.add('og-search-drawer-open');
+   }
+ }
+ function visibleMatches(){
+   return links().filter(el=>!el.hidden);
+ }
+ window.ogFocusHomeSearch=function(){
+   /* Focusing the visible mobile search must not reparent it and dismiss
+      the soft keyboard. Opening the drawer is reserved for the menu button. */
+   if(!mobile())card()?.classList.add('og-nav-expanded');
+ };
+ window.ogToggleMoreNavigation=function(){
+   const c=card();if(!c)return;
+   const expanded=c.classList.toggle('og-nav-expanded');
+   const btn=byId('ogNavExplore');
+   btn?.setAttribute('aria-expanded',String(expanded));
+   if(btn)btn.innerHTML=expanded?'<i class="fas fa-grip"></i> Show less <i class="fas fa-chevron-up"></i>':'<i class="fas fa-grip"></i> Explore more <i class="fas fa-chevron-down"></i>';
+ };
+ window.filterHomeNavigation=function(value){
+   const term=String(value||'').trim().toLocaleLowerCase();
+   const c=card();
+   c?.classList.toggle('og-nav-searching',!!term);
+   let count=0;
+   links().forEach(el=>{
+     const match=!term||(el.textContent||'').toLocaleLowerCase().includes(term);
+     el.hidden=!match;
+     if(match)count++;
+   });
+   const empty=byId('ogNavNoResults');
+   if(empty)empty.hidden=!term||count>0;
+   /* Do not open the drawer while typing: moving the input on mobile
+      causes blur and makes the search appear unresponsive. */
+ };
+ window.openHomeSearch=function(focus){
+   if(mobile())drawer();
+   else card()?.classList.add('og-nav-expanded');
+   if(focus)requestAnimationFrame(()=>byId('ogHomeNavSearch')?.focus());
+ };
+ function activate(){
+   const input=byId('ogHomeNavSearch');
+   const term=(input?.value||'').trim();
+   if(!term){window.openHomeSearch(true);return;}
+   window.filterHomeNavigation(term);
+   const first=visibleMatches()[0];
+   if(first){first.click();if(mobile())window.closeRail?.();}
+   else if(mobile())window.openHomeSearch(true);
+ }
+ window.ogSubmitHomeSearch=activate;
+ document.addEventListener('keydown',e=>{
+   if(e.key==='Enter'&&e.target?.id==='ogHomeNavSearch'){
+     e.preventDefault();activate();
+   }
+ });
+ document.addEventListener('click',e=>{
+   if(mobile()&&e.target.closest('#railBody .rail-story-link'))window.closeRail?.();
+ });
 })();
 </script>
 
