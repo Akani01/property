@@ -568,49 +568,6 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 .adv-panel .form-control{font-size:13px; border-radius:var(--radius-xs); border-color:var(--line);}
 
 
-// Filter the EXISTING homepage sidebar links, preserving their original actions.
-function ogToggleMoreNavigation(){
-  const card=document.querySelector('#railBody .og-nav-primary-card');
-  if(!card)return;
-  const expanded=card.classList.toggle('og-nav-expanded');
-  document.getElementById('ogNavExplore')?.setAttribute('aria-expanded',String(expanded));
-}
-function filterHomeNavigation(value,source){
-  const term=String(value||'').trim().toLowerCase();
-  const launcher=document.getElementById('ogHomeNavSearch');
-  const drawer=document.getElementById('ogRailNavSearch');
-  if(source==='drawer'){if(launcher)launcher.value=value;}
-  else if(drawer)drawer.value=value;
-  const card=document.querySelector('#railBody .og-nav-primary-card');
-  card?.classList.toggle('og-nav-searching',!!term);
-  let count=0;
-  document.querySelectorAll('#railBody .og-nav-link-stack>.rail-story-link').forEach(link=>{
-    const label=(link.textContent||'').toLowerCase();
-    const found=!term||label.includes(term);
-    link.hidden=!found;
-    if(found)count++;
-  });
-  const empty=document.getElementById('ogNavNoResults');
-  if(empty)empty.hidden=!term||count>0;
-  if(term&&window.matchMedia('(max-width:999px)').matches)openHomeSearch(false);
-}
-function openHomeSearch(focusDrawer=false){
-  if(!window.matchMedia('(max-width:999px)').matches)return;
-  document.getElementById('railBody')?.classList.add('open');
-  document.getElementById('railOverlay')?.classList.add('active');
-  if(focusDrawer)document.getElementById('ogRailNavSearch')?.focus();
-}
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')closeRail();
-  if(e.key==='Enter'&&['ogHomeNavSearch','ogRailNavSearch'].includes(e.target?.id)){
-    const link=Array.from(document.querySelectorAll('#railBody .og-nav-link-stack>.rail-story-link')).find(el=>!el.hidden&&getComputedStyle(el).display!=='none');
-    if(link){e.preventDefault();link.click();closeRail();}
-  }
-});
-document.addEventListener('click',e=>{
-  if(e.target.closest?.('#railBody .rail-story-link')&&window.matchMedia('(max-width:999px)').matches)closeRail();
-});
-
 /* ============================================================
    TABS
    ============================================================ */
@@ -2437,6 +2394,19 @@ img { max-width:100%; }
 #eduMiniScroll .mini-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 #eduMiniScroll .mini-thumb .mini-no-image,#eduMiniScroll .mini-thumb .mini-badge{display:none!important}
 
+
+/* Education cards matched to the Education Hub, not green promotional pills. */
+.og-edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.og-edu-item{--edu-accent:#1f6f5c;position:relative;display:flex;flex-direction:column;gap:12px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:16px;min-width:0;transition:box-shadow .2s,border-color .2s,transform .2s}
+.og-edu-item:hover{border-color:#c6ccc7;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.og-edu-item:before{content:'';position:absolute;top:0;left:18px;width:28px;height:3px;background:var(--edu-accent);border-radius:0 0 3px 3px}
+.og-edu-item[data-type=bursary]{--edu-accent:#c98a1b}.og-edu-item[data-type=university]{--edu-accent:#2e78a8}.og-edu-item[data-type=school]{--edu-accent:#1f6f5c}.og-edu-item[data-type=paper]{--edu-accent:#e24e2f}.og-edu-item[data-type=news]{--edu-accent:#7a5aa3}
+.og-edu-head{display:flex;align-items:center;gap:12px;min-width:0}.og-edu-mark{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:grid;place-items:center;background:#f1f2ef;color:var(--edu-accent);overflow:hidden}.og-edu-mark img{width:100%;height:100%;object-fit:cover}.og-edu-identity{display:flex;flex-direction:column;min-width:0}.og-edu-kind{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--edu-accent)}.og-edu-sub{font-size:12px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.og-edu-item h3{font-size:17px;line-height:1.3;font-weight:600}.og-edu-item h3 a:hover{color:var(--jade)}.og-edu-description{font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}.og-edu-facts{display:flex;flex-wrap:wrap;gap:6px}.og-edu-facts span{font-size:11px;padding:4px 8px;background:var(--paper);border-radius:6px;color:var(--ink-soft)}.og-edu-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line-soft);padding-top:12px;margin-top:auto;font-size:12px;color:var(--ink-soft)}.og-edu-footer a{font-weight:700;color:var(--ink)}.og-edu-footer a:hover{color:var(--jade)}
+.edu-hub-empty,.og-hub-empty{padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:14px;color:var(--ink-soft);font-size:13px}.edu-hub-empty a,.og-hub-empty button{color:var(--jade);font-weight:700;border:0;background:none;cursor:pointer}
+.ad-image-empty{width:100%;height:100%;min-height:140px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--jade);font-size:13px;font-weight:700}.ad-image-empty i{font-size:30px}.ad-img.ad-no-photo:before{content:'Advertisement image unavailable';position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--ink-soft)}
+@media(max-width:576px){.og-edu-grid{grid-template-columns:1fr}.og-edu-item{padding:16px}}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2845,7 +2815,7 @@ img { max-width:100%; }
         </div>
       </div>
 
-      <div class="section-head" style="margin-top:16px;"><h2><i class="fas fa-clock-rotate-left"></i> Maintenance timeline</h2><button class="link-btn" onclick="loadMaintenanceRequests()"><i class="fas fa-rotate"></i> Refresh</button></div>
+      <div class="section-head" style="margin-top:16px;"><h2><i class="fas fa-list-check"></i> Your maintenance requests</h2></div>
       <div id="maintenanceContainer"></div>
     </div>
 
@@ -3681,22 +3651,16 @@ function isFallbackAd(adOrId){
 
 function loadAds(position='feed', limit=10){
   return fetch(`/api/ads/get_active_ads/?position=${encodeURIComponent(position)}&limit=${encodeURIComponent(limit)}`)
-    .then(r=>{ if (!r.ok) throw new Error(`Ads request failed: ${r.status}`); return r.json(); })
+    .then(r=>{ if(!r.ok) throw new Error(`Ads request failed: ${r.status}`); return r.json(); })
     .then(data=>{
-      if (data.success && Array.isArray(data.ads) && data.ads.length){
-        allAds = data.ads;
-        adIndex = 0;
-        return allAds;
-      }
-      allAds = getFallbackAds();
-      adIndex = 0;
-      return allAds;
+      const ads = Array.isArray(data) ? data : (Array.isArray(data.ads) ? data.ads : (Array.isArray(data.results) ? data.results : []));
+      if(ads.length){ allAds=ads; adIndex=0; return ads; }
+      // Never replace genuine ads already loaded in another homepage section with demo ads.
+      return allAds.length ? allAds : [];
     })
     .catch(err=>{
-      console.warn('Ads API unavailable, using OppoGlobe fallback ads.', err);
-      allAds = getFallbackAds();
-      adIndex = 0;
-      return allAds;
+      console.warn('Advertisement request unavailable:',err);
+      return allAds.length ? allAds : [];
     });
 }
 
@@ -3726,7 +3690,7 @@ function getFallbackAds(){
 }
 
 function getNextAd(){
-  if (!allAds.length) allAds = getFallbackAds();
+  if (!allAds.length) return null;
   const ad = allAds[adIndex % allAds.length];
   adIndex += 1;
   return ad;
@@ -3734,7 +3698,7 @@ function getNextAd(){
 
 function resolveAdImage(ad){
   if (!ad || typeof ad !== 'object') return '';
-  const candidates = [ad.image_url,ad.image,ad.image_file,ad.banner_url,ad.banner,ad.photo_url,ad.photo,ad.thumbnail_url,ad.thumbnail,ad.media_url,ad.media,ad.creative_url,ad.creative];
+  const candidates = [ad.image_url,ad.image,ad.image_file,ad.banner_url,ad.banner,ad.photo_url,ad.photo,ad.thumbnail_url,ad.thumbnail,ad.media_url,ad.media,ad.creative_url,ad.creative,ad.property?.main_image_url];
   let value = candidates.find(v=>{
     if (!v) return false;
     if (typeof v === 'string') return v.trim().length > 0;
@@ -3757,7 +3721,7 @@ function renderAdCard(ad=null, options={}){
   ad = ad || getNextAd();
   if (!ad) return '';
 
-  const image = resolveAdImage(ad) || getAdFallbackImage();
+  const image = resolveAdImage(ad);
   const advertiser = ad.advertiser_name || 'OppoGlobe Partner';
   const initial = advertiser.charAt(0).toUpperCase() || 'O';
   const title = ad.title || 'Recommended for you';
@@ -3771,7 +3735,7 @@ function renderAdCard(ad=null, options={}){
   return `<article class="ad-card" data-ad-id="${escapeHtml(adId)}">
     <span class="ad-flag"><i class="fas fa-bullhorn"></i> Sponsored</span>
     <div class="ad-img" onclick="handleAdAction('${escapeHtml(adId)}')">
-      <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src=getAdFallbackImage();">
+      ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.hidden=true;this.parentElement.classList.add('ad-no-photo');">` : `<div class="ad-image-empty"><i class="fas fa-bullhorn"></i><span>${escapeHtml(advertiser)}</span></div>`}
       <div class="ad-cta-overlay"><button type="button" onclick="event.stopPropagation();handleAdAction('${escapeHtml(adId)}')">${escapeHtml(cta)} <i class="fas fa-arrow-right"></i></button></div>
     </div>
     <div class="ad-advertiser">
@@ -3800,7 +3764,7 @@ async function loadSponsoredDiscovery(){
   container.innerHTML = `<div class="sponsored-loading"><span class="spin"></span> Finding recommendations…</div>`;
   try{
     const ads = await loadAds('feed', 12);
-    const usable = Array.isArray(ads) && ads.length ? ads : getFallbackAds();
+    const usable = Array.isArray(ads) ? ads : [];
     if (!usable.length){ if (section) section.style.display='none'; return; }
     allAds = usable;
     container.innerHTML = usable.slice(0,12).map(ad=>renderAdCard(ad,{track:false})).join('');
@@ -3808,10 +3772,7 @@ async function loadSponsoredDiscovery(){
     initSponsoredCarousel();
   }catch(err){
     console.warn('Sponsored discovery failed.', err);
-    const fallback = getFallbackAds();
-    allAds = fallback;
-    container.innerHTML = fallback.map(ad=>renderAdCard(ad,{track:false})).join('');
-    initSponsoredCarousel();
+    if(section) section.style.display='none';
   }
 }
 
@@ -3912,7 +3873,7 @@ function loadProperties(){
   const container = document.getElementById('propertiesContainer');
   if (!container) return;
   container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading properties…</div>`;
-  loadAds('feed', 10).then(()=>{
+  loadAds('feed', 12).then(()=>{
     fetch('/api/get-properties-with-owner/').then(r=>r.json()).then(ownerData=>{
       if (!ownerData.success || !ownerData.properties) return loadPropertiesFallback(container);
       fetch('/api/properties/').then(r=>r.json()).then(priceData=>{
@@ -4320,7 +4281,7 @@ function messagePropertyOwner(propertyId, propertyTitle){
 function loadFeatured(){
   const container = document.getElementById('featuredContainer'); if (!container) return;
   const featured = allProperties.filter(p=>p.is_featured);
-  if (!featured.length) container.innerHTML = `<div class="empty-state"><i class="fas fa-star"></i><h4>No featured properties</h4></div>`;
+  if (!featured.length) container.innerHTML = `<div class="og-hub-empty">Featured homes will appear here when available. <button type="button" onclick="switchTab('properties')">Browse homes</button></div>`;
   else renderPropertiesByLocation(featured, container);
 }
 
@@ -4488,7 +4449,7 @@ function loadMaintenanceRequests(){
   container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading requests…</div>`;
   fetch('/api/maintenance-requests/feed/?page=1&page_size=20').then(r=>r.json()).then(data=>{
     if (data.success){ allMaintenanceRequests = data.requests||[]; updateMaintenanceStats(); renderMaintenanceFeed(allMaintenanceRequests); }
-    else container.innerHTML = `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><h4>No requests yet</h4><p>Type a message above to create one.</p></div>`;
+    else container.innerHTML = `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><h4>No maintenance requests submitted</h4><p>Use the form above whenever you need assistance.</p></div>`;
   }).catch(()=>container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load requests</h4></div>`);
 }
 function updateMaintenanceStats(){
@@ -4500,7 +4461,7 @@ function updateMaintenanceStats(){
 }
 function renderMaintenanceFeed(requests){
   const container = document.getElementById('maintenanceContainer'); if (!container) return;
-  if (!requests?.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><h4>No requests yet</h4><p>Type a message above to create one.</p></div>`; return; }
+  if (!requests?.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><h4>No maintenance requests submitted</h4><p>Use the form above whenever you need assistance.</p></div>`; return; }
   const priorityDot = { low:'#2C9A5B', medium:'#E8A93B', high:'#e2801a', urgent:'#D64545' };
   container.innerHTML = requests.map(r=>{
     const propertyHtml = r.property ? `<div class="post-tag-chip"><i class="fas fa-house" style="color:var(--jade);"></i><strong>${escapeHtml(r.property.title||'Property')}</strong><button class="link-btn" onclick="viewProperty('${r.property.id}')">View</button></div>` : '';
@@ -4612,12 +4573,12 @@ function loadJobs(){
     if (data.success && data.jobs){
       allJobs = data.jobs; renderJobs(allJobs); renderTrendingJobs(allJobs.slice(0,3));
       const el = document.getElementById('activeJobsCount'); if (el) el.textContent = allJobs.length;
-    } else container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>No jobs yet</h4></div>`;
+    } else container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>Explore available jobs</h4></div>`;
   }).catch(()=>container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load jobs</h4></div>`);
 }
 function renderJobs(jobs){
   const container = document.getElementById('jobsContainer'); if (!container) return;
-  if (!jobs?.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>No jobs yet</h4></div>`; return; }
+  if (!jobs?.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>Explore available jobs</h4></div>`; return; }
   container.innerHTML = jobs.map(j=>`<div class="card job-card">
     <div class="job-head"><div class="job-logo"><i class="fas fa-building"></i></div><div><div class="job-title">${escapeHtml(j.title||'Untitled')}</div><div class="job-company">${escapeHtml(j.company_name||'Unknown')}</div></div></div>
     <div class="job-meta"><span class="job-meta-item"><i class="fas fa-location-dot"></i>${escapeHtml(j.location||'N/A')}</span><span class="job-meta-item"><i class="far fa-clock"></i>${escapeHtml(j.employment_type||'Full-time')}</span><span class="job-meta-item"><i class="fas fa-money-bill-wave"></i>${escapeHtml(j.salary||'Competitive')}</span></div>
@@ -4864,67 +4825,48 @@ function renderEduMiniScroll(items){
   }).join('');
 }
 function renderEducationItems(items, container){
-  container ||= document.getElementById('educationContainer'); if (!container) return;
-  let filtered = educationFilter === 'all' ? items : items.filter(i=>i.type===educationFilter);
-  const q = document.getElementById('eduSearchInput')?.value?.toLowerCase() || '';
-  if (q) filtered = filtered.filter(i=>i.title.toLowerCase().includes(q) || (i.institution||'').toLowerCase().includes(q) || (i.description||'').toLowerCase().includes(q));
-  if (!filtered.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-compass"></i><h4>Nothing here yet</h4><p>${isBusinessUser?'Use the buttons above to add content.':'Check back soon for new listings.'}</p></div>`; return; }
-  const groups = { bursary:filtered.filter(i=>i.type==='bursary'), university:filtered.filter(i=>i.type==='university'), school:filtered.filter(i=>i.type==='school'), paper:filtered.filter(i=>i.type==='paper') };
-  const labels = {
-    bursary:{icon:'fa-hand-holding-dollar', name:'Bursaries', color:'var(--jade)'},
-    university:{icon:'fa-building-columns', name:'Universities', color:'var(--sky)'},
-    school:{icon:'fa-school', name:'Schools', color:'var(--plum)'},
-    paper:{icon:'fa-file-lines', name:'Question papers', color:'var(--coral)'}
+  container ||= document.getElementById('educationContainer');
+  if(!container) return;
+  let filtered = educationFilter === 'all' ? items : items.filter(item=>item.type===educationFilter);
+  const query = (document.getElementById('eduSearchInput')?.value||'').trim().toLowerCase();
+  if(query) filtered=filtered.filter(item=>[item.title,item.institution,item.description].some(value=>String(value||'').toLowerCase().includes(query)));
+  if(!filtered.length){
+    container.innerHTML='<div class="edu-hub-empty">No matching education opportunities right now. <a href="/education/">Explore the Education Hub</a></div>';
+    return;
+  }
+  const types={
+    bursary:{label:'Bursary',icon:'fa-hand-holding-heart'},
+    university:{label:'University',icon:'fa-building-columns'},
+    school:{label:'School',icon:'fa-school'},
+    paper:{label:'Past paper',icon:'fa-file-pdf'},
+    news:{label:'Education news',icon:'fa-newspaper'}
   };
-  let html = '';
-  Object.entries(groups).forEach(([type, typeItems])=>{
-    if (!typeItems.length) return;
-    const label = labels[type];
-    html += `<div style="margin-bottom:24px;"><div class="edu-group-head"><span class="badge-icon" style="color:${label.color};"><i class="fas ${label.icon}"></i></span><span class="name">${label.name}</span><span class="count">${typeItems.length}</span></div>
-      <div class="edu-group-grid">`;
-    typeItems.forEach(item=>{
-      if (type === 'paper'){
-        html += `<div class="paper-card" onclick="viewEducationItem('paper','${item.id}')">
-          <div class="paper-thumb"><div class="box" style="background:${label.color};"><i class="fas fa-file-pdf"></i></div></div>
-          <div class="paper-body"><div class="paper-title">${escapeHtml(item.title)}</div><div class="paper-meta">${escapeHtml(item.grade)} ${item.subject?'· '+escapeHtml(item.subject):''} ${item.year?'· '+item.year:''}</div></div>
-          <div class="paper-foot">${item.file_url?`<button class="paper-dl" onclick="event.stopPropagation();downloadPaper('${item.id}')"><i class="fas fa-download"></i> Download</button>`:`<span style="font-size:11px; color:var(--ink-faint);">Not available</span>`}</div>
-        </div>`;
-      } else {
-        const hasImage = item.image && item.image.length > 10;
-        const desc = (item.description||'').length > 130 ? item.description.substring(0,130)+'…' : (item.description||'');
-        const itemIcon = item.type==='bursary'?'fa-hand-holding-dollar':item.type==='university'?'fa-building-columns':'fa-school';
-        const itemTypeLabel = item.type==='bursary'?'Funding opportunity':item.type==='university'?'University':'School';
-        const safeDesc = desc || `Explore ${itemTypeLabel.toLowerCase()} information, details and opportunities available on OppoGlobe.`;
-        html += `<div class="edu-card ${hasImage?'':'no-image-card'}" onclick="viewEducationItem('${item.type}','${item.id}')">
-          ${hasImage ? `<div class="edu-card-img">
-            <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='none'; this.parentElement.classList.add('edu-image-failed'); this.parentElement.insertAdjacentHTML('beforebegin', '<div class=\'edu-no-image-panel\'><div class=\'edu-no-image-top\'><span class=\'edu-no-image-icon\'><i class=\'fas ${itemIcon}\'></i></span><span class=\'edu-no-image-type\'>${itemTypeLabel}</span></div><div class=\'edu-no-image-copy\'><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(safeDesc)}</p><span class=\'edu-no-image-prompt\'><i class=\'fas fa-arrow-up-right-from-square\'></i> Explore details</span></div></div>'); this.parentElement.remove();">
-            <span class="edu-badge-flag" style="background:${label.color};"><i class="fas ${label.icon}"></i> ${label.name}</span>
-            ${item.is_featured?'<span class="edu-feat-flag"><i class="fas fa-star"></i> Featured</span>':''}
-          </div>` : `<div class="edu-no-image-panel">
-            <div class="edu-no-image-top"><span class="edu-no-image-icon"><i class="fas ${itemIcon}"></i></span><span class="edu-no-image-type">${itemTypeLabel}</span></div>
-            <div class="edu-no-image-copy"><h4>${escapeHtml(item.title)}</h4><p>${escapeHtml(safeDesc)}</p><span class="edu-no-image-prompt"><i class="fas fa-arrow-up-right-from-square"></i> Explore details</span></div>
-          </div>`}
-          <div class="edu-card-body">
-            <div class="edu-card-title">${escapeHtml(item.title)}</div>
-            ${item.institution?`<div class="edu-card-sub"><i class="fas fa-location-dot"></i> ${escapeHtml(item.institution)}</div>`:''}
-            ${desc?`<div class="edu-card-desc">${escapeHtml(desc)}</div>`:''}
-            <div class="edu-card-meta">
-              ${item.closing_date?`<span><i class="far fa-calendar"></i> Closes ${new Date(item.closing_date).toLocaleDateString()}</span>`:''}
-              ${item.amount?`<span><i class="fas fa-tag"></i> ${escapeHtml(item.amount)}</span>`:''}
-            </div>
-          </div>
-          <div class="edu-card-foot">
-            <button class="edu-go-btn" onclick="event.stopPropagation();viewEducationItem('${item.type}','${item.id}')">${item.type==='bursary'?'Apply now':'View details'}</button>
-            <button class="edu-share-btn" onclick="event.stopPropagation();messageEducationOwner('${item.type}','${item.id}')" title="Message the poster"><i class="fas fa-comment-dots"></i></button>
-            <button class="edu-share-btn" onclick="event.stopPropagation();shareEducationItem('${item.type}','${item.id}','${escapeHtml(item.title).replace(/'/g,"\\'")}')"><i class="fas fa-share-nodes"></i></button>
-          </div>
-        </div>`;
-      }
-    });
-    html += `</div></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML=`<div class="og-edu-grid">${filtered.map(item=>{
+    const type=types[item.type]||types.news;
+    const detail=`/api/education/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}/`;
+    const iconImage=resolveEducationImage(item.image);
+    const subtitle=String(item.institution||item.grade||item.subject||'OppoGlobe Education');
+    const details=String(item.description||'').slice(0,180);
+    return `<article class="og-edu-item" data-type="${escapeHtml(item.type)}">
+      <div class="og-edu-head">
+        <div class="og-edu-mark">${iconImage?`<img src="${escapeHtml(iconImage)}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;"><i class="fas ${type.icon}" hidden></i>`:`<i class="fas ${type.icon}"></i>`}</div>
+        <div class="og-edu-identity"><span class="og-edu-kind">${type.label}${item.is_featured?' · Featured':''}</span><span class="og-edu-sub">${escapeHtml(subtitle)}</span></div>
+      </div>
+      <h3><a href="${detail}">${escapeHtml(item.title||type.label)}</a></h3>
+      ${details?`<p class="og-edu-description">${escapeHtml(details)}</p>`:''}
+      <div class="og-edu-facts">${item.amount?`<span>${escapeHtml(item.amount)}</span>`:''}${item.year?`<span>${escapeHtml(String(item.year))}</span>`:''}${item.closing_date?`<span>Closes ${escapeHtml(String(item.closing_date).slice(0,10))}</span>`:''}</div>
+      <div class="og-edu-footer"><span>${type.label}</span><a href="${detail}">${item.type==='paper'?'View paper':'View details'} <i class="fas fa-arrow-right"></i></a></div>
+    </article>`;
+  }).join('')}</div>`;
 }
+function resolveEducationImage(image){
+  if(!image) return '';
+  const value=typeof image==='object'?(image.url||image.src||''):String(image);
+  if(!value) return '';
+  if(/^(https?:)?\/\//.test(value)||value.startsWith('/'))return value;
+  return '/media/'+value.replace(/^media\//,'');
+}
+
 function filterEducation(filter, btn){
   educationFilter = filter;
   document.querySelectorAll('#educationTab .edu-chip').forEach(c=>{ c.classList.remove('active'); c.setAttribute('aria-selected','false'); });
@@ -5350,5 +5292,73 @@ document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLo
     </form>
   </div>
 </div>
+<script>
+/* Homepage navigation controls: available on mobile and desktop. */
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const links = () => Array.from(document.querySelectorAll('#railBody .og-nav-link-stack > .rail-story-link'));
+  const card = () => document.querySelector('#railBody .og-nav-primary-card');
+  function isMobile() { return window.matchMedia('(max-width: 999px)').matches; }
+  function showRail() {
+    if (isMobile()) {
+      $('railBody')?.classList.add('open');
+      $('railOverlay')?.classList.add('active');
+    }
+  }
+  window.ogToggleMoreNavigation = function () {
+    const c = card(); if (!c) return;
+    const expanded = c.classList.toggle('og-nav-expanded');
+    const button = $('ogNavExplore');
+    button?.setAttribute('aria-expanded', String(expanded));
+    if (button) button.innerHTML = expanded
+      ? '<i class="fas fa-grip"></i> Show less <i class="fas fa-chevron-up"></i>'
+      : '<i class="fas fa-grip"></i> Explore more <i class="fas fa-chevron-down"></i>';
+  };
+  window.filterHomeNavigation = function (value, source) {
+    const term = String(value || '').trim().toLocaleLowerCase();
+    const main = $('ogHomeNavSearch'), drawer = $('ogRailNavSearch');
+    if (source === 'drawer') { if (main) main.value = value; }
+    else { if (drawer) drawer.value = value; }
+    card()?.classList.toggle('og-nav-searching', !!term);
+    let count = 0;
+    links().forEach(link => {
+      const found = !term || (link.textContent || '').toLocaleLowerCase().includes(term);
+      link.hidden = !found;
+      if (found) count++;
+    });
+    const empty = $('ogNavNoResults');
+    if (empty) empty.hidden = !term || count > 0;
+    if (term && isMobile()) showRail();
+  };
+  window.openHomeSearch = function (focusDrawer = false) {
+    if (isMobile()) {
+      showRail();
+      if (focusDrawer) $('ogRailNavSearch')?.focus();
+    } else {
+      const c = card();
+      c?.classList.add('og-nav-expanded');
+      $('ogNavExplore')?.setAttribute('aria-expanded', 'true');
+      if (focusDrawer) $('ogHomeNavSearch')?.focus();
+    }
+  };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (typeof window.closeRail === 'function') window.closeRail();
+      return;
+    }
+    if (e.key !== 'Enter' || !['ogHomeNavSearch', 'ogRailNavSearch'].includes(e.target?.id)) return;
+    const first = links().find(el => !el.hidden && getComputedStyle(el).display !== 'none');
+    if (first) {
+      e.preventDefault();
+      first.click();
+      if (isMobile() && typeof window.closeRail === 'function') window.closeRail();
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (isMobile() && e.target.closest('#railBody .rail-story-link') && typeof window.closeRail === 'function') window.closeRail();
+  });
+})();
+</script>
 </body>
 </html>
