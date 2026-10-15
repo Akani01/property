@@ -2481,6 +2481,23 @@ img { max-width:100%; }
 .og-guide-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}.og-guide-toc a{border:1px solid var(--line);background:white;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.4;color:var(--jade-deep)}
 .og-guide-articles{display:grid;grid-template-columns:1fr;gap:18px}.og-guide-article{padding:clamp(18px,4vw,28px);border:1px solid var(--line);border-radius:20px;background:#fff;scroll-margin-top:90px}.og-guide-number{font:700 11px var(--font-mono);letter-spacing:.1em;color:var(--jade)}.og-guide-article h4{font-size:24px;line-height:1.3;margin:12px 0}.og-guide-article h5{font:700 16px/1.5 var(--font-body);margin:22px 0 8px}.og-guide-article p{font-size:15px;line-height:1.8;color:#43574b;margin:0 0 14px}.og-guide-article .og-guide-summary{font-size:16px;color:var(--ink)}.og-guide-read{display:inline-block;color:var(--jade-deep);font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:3px;margin-top:8px}.og-guide-note{padding:22px;background:#e7f1ec;border-radius:16px;margin-top:22px}.og-guide-note h4{font-size:20px;margin:0 0 12px}.og-guide-note p{font-size:14px;line-height:1.8}.og-guide-note a{color:#154f41;text-decoration:underline;font-size:13px}.og-footer-cookie{background:transparent;border:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
 
+
+/* Compact welcome cards: one photo, one heading and one short sentence. */
+#welcomeModal .modal-box{width:min(360px,calc(100vw - 24px))!important;max-width:360px;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:20px!important}
+#welcomeModal .modal-box-head{min-height:36px;padding:4px 10px 0;flex-shrink:0}
+#welcomeModal .modal-box-body{padding:0 18px 12px;min-height:0}
+#welcomeModal .welcome-illustration.og-welcome-photo{width:100%;max-width:324px;height:132px;min-height:0;margin:0 auto 12px;border-radius:14px;box-shadow:none;overflow:hidden}
+#welcomeModal .welcome-illustration.og-welcome-photo img{display:block;width:100%;max-width:100%;height:100%;object-fit:cover;object-position:center}
+#welcomeModal .welcome-slide h4{font-size:20px;line-height:1.25;margin:0 0 7px}
+#welcomeModal .welcome-slide p{font-size:14px;line-height:1.5;margin:0 auto;max-width:290px;padding:0}
+#welcomeModal .welcome-badge{width:32px;height:32px;font-size:14px;border-width:2px}
+#welcomeModal .welcome-dots{margin:14px 0 0}
+#welcomeModal .modal-box-foot{padding:10px 16px;flex-shrink:0}
+#welcomeModal .welcome-skip,#welcomeModal #welcomeBackBtn{min-height:40px}
+@media(max-width:420px){#welcomeModal .modal-box{width:min(360px,calc(100vw - 20px))!important}}
+@media(max-height:540px){#welcomeModal .welcome-illustration.og-welcome-photo{height:94px}#welcomeModal .welcome-slide h4{font-size:18px}#welcomeModal .welcome-slide p{font-size:13px}#welcomeModal .welcome-dots{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){#welcomeModal .welcome-slide.active{animation:none}}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -3044,38 +3061,37 @@ img { max-width:100%; }
 
       <!-- Slide 1: Welcome -->
       <div class="welcome-slide active">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=78" alt="Community on OppoGlobe" loading="eager" decoding="async" width="700" height="350" fetchpriority="auto"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
         <h4>Welcome to OppoGlobe!</h4>
-        <p>Your neighbourhood's home for houses, jobs and the people next door. Got 30 seconds for a quick look around?</p>
-        <div class="welcome-payment-note"><strong><i class="fas fa-shield-halved me-1" aria-hidden="true"></i> Pay with confidence</strong>For eligible card payments, OppoGlobe sends you to Yoco’s secure hosted checkout. You enter your card details with Yoco, not into an OppoGlobe card form. Available payment methods are shown at checkout.</div>
+        <p>Homes, jobs and opportunities, all in one place.</p>
       </div>
 
       <!-- Slide 2: Properties -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Property on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=78" alt="Property on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
         <h4>Find your next place</h4>
-        <p>Browse listings grouped by area. Tap the heart to like, the star to rate, and the share icon to send a place to a friend.</p>
+        <p>Browse homes and connect with property owners.</p>
       </div>
 
       <!-- Slide 3: Messaging -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=78" alt="Community on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
         <h4>Talk to your neighbours</h4>
-        <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed. You can also message whoever posted a maintenance request, job, bursary or university listing.</p>
+        <p>Tap a name to start a conversation.</p>
       </div>
 
       <!-- Slide 4: Maintenance -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=700&q=78" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
         <h4>Get things fixed</h4>
-        <p>Type what needs fixing in the Maintenance tab — tag how urgent it is, add a photo, and you're done.</p>
+        <p>Post a maintenance request and connect with help.</p>
       </div>
 
       <!-- Slide 5: Jobs & Education -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduate on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=700&q=78" alt="Graduation and study funding opportunities" data-fallback="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20700%20350%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23e8e2f8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e1f1e9%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22700%22%20height%3D%22350%22%20rx%3D%2224%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22553%22%20cy%3D%2269%22%20r%3D%2295%22%20fill%3D%22%23fff%22%20opacity%3D%22.35%22%2F%3E%3Ccircle%20cx%3D%22114%22%20cy%3D%22305%22%20r%3D%22130%22%20fill%3D%22%23fff%22%20opacity%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M201%20247q70-27%20139%200v-80q-69-27-139%200z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23415c59%22%20stroke-width%3D%225%22%2F%3E%3Cpath%20d%3D%22M340%20247q70-27%20139%200v-80q-69-27-139%200z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23415c59%22%20stroke-width%3D%225%22%2F%3E%3Cpath%20d%3D%22m239%20132%20111-50%20111%2050-111%2050z%22%20fill%3D%22%23715495%22%2F%3E%3Cpath%20d%3D%22M284%20155v39q65%2035%20132%200v-39l-66%2029z%22%20fill%3D%22%23573a79%22%2F%3E%3Cpath%20d%3D%22M461%20132v65%22%20stroke%3D%22%23c78e20%22%20stroke-width%3D%227%22%2F%3E%3Ccircle%20cx%3D%22461%22%20cy%3D%22204%22%20r%3D%229%22%20fill%3D%22%23e6b952%22%2F%3E%3Ccircle%20cx%3D%22503%22%20cy%3D%22253%22%20r%3D%2238%22%20fill%3D%22%23e6b952%22%20stroke%3D%22%23c78e20%22%20stroke-width%3D%224%22%2F%3E%3Cpath%20d%3D%22M503%20231v43m12-35q-24-13-24%201c0%2013%2026%206%2026%2020q0%2017-27%204%22%20fill%3D%22none%22%20stroke%3D%22%23795b20%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E" onerror="this.onerror=null;this.src=this.dataset.fallback;" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
         <h4>Jobs & bursaries too</h4>
-        <p>Explore local jobs, bursaries and schools, right alongside your neighbourhood feed. That's the tour — enjoy!</p>
+        <p>Explore jobs, bursaries and places to study.</p>
       </div>
 
       <div class="welcome-dots">
@@ -5171,7 +5187,30 @@ function closeAppsModal(){ appsModal?.hide(); }
 let welcomeStep = 0;
 const WELCOME_TOTAL = document.querySelectorAll('#welcomeModal .welcome-slide').length || 5;
 function updateWelcomeSlide(){
-  document.querySelectorAll('#welcomeModal .welcome-slide').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
+  document.querySelectorAll('#welcomeModal .welcome-slide').forEach((el,i)=>{
+    const active = i===welcomeStep;
+    el.classList.toggle('active', active);
+    if (!active) return;
+    const image = el.querySelector('img');
+    if (!image) return;
+    // Hidden slides must start loading as soon as they are selected.
+    image.loading = 'eager';
+    image.setAttribute('fetchpriority', 'high');
+    if (image.dataset.fallback && !image.dataset.welcomeFallbackReady){
+      image.dataset.welcomeFallbackReady = '1';
+      const useFallback = ()=>{
+        if (image.dataset.welcomeFallbackUsed) return;
+        image.dataset.welcomeFallbackUsed = '1';
+        image.onerror = null;
+        image.src = image.dataset.fallback;
+      };
+      if (image.complete && image.naturalWidth === 0) useFallback();
+      else {
+        const timer = setTimeout(()=>{if(!image.complete || image.naturalWidth===0)useFallback();},6000);
+        image.addEventListener('load',()=>clearTimeout(timer),{once:true});
+      }
+    }
+  });
   document.querySelectorAll('#welcomeModal .welcome-dots span').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
   const backBtn = document.getElementById('welcomeBackBtn');
   if (backBtn) backBtn.style.visibility = welcomeStep===0 ? 'hidden' : 'visible';
