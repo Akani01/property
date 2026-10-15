@@ -23,6 +23,7 @@ urlpatterns = [
     # ============================================================
     path('manifest.json', hiring_views.pwa_manifest, name='custom_pwa_manifest'),
     path(".well-known/assetlinks.json", assetlinks),
+    path("", include("oppo_seo.urls")),
     path('admin/', admin.site.urls),
     path('', include('hiring.urls')),
     path('carwash/', include('carwash.urls')),

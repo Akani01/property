@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>OppoGlobe — Homes, Jobs & Neighbourhood Life</title>
+<title>OppoGlobe — Homes, Jobs & Education</title>
+<meta name="description" content="Find homes, jobs and practical education guides on OppoGlobe. Plan bursary applications, compare study options and prepare for exams in South Africa.">
+<link rel="canonical" href="https://oppoglobe.co.za/">
+<meta property="og:title" content="OppoGlobe — Homes, Jobs & Education">
+<meta property="og:description" content="Explore local opportunities and practical education guides for South African learners and families.">
+<meta property="og:url" content="https://oppoglobe.co.za/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://oppoglobe.co.za/#organization","name":"OppoGlobe","url":"https://oppoglobe.co.za/"},{"@type":"WebSite","@id":"https://oppoglobe.co.za/#website","url":"https://oppoglobe.co.za/","name":"OppoGlobe","publisher":{"@id":"https://oppoglobe.co.za/#organization"}},{"@type":"WebPage","@id":"https://oppoglobe.co.za/#webpage","url":"https://oppoglobe.co.za/","name":"OppoGlobe — Homes, Jobs & Education","isPartOf":{"@id":"https://oppoglobe.co.za/#website"}}]}</script>
 
 {% load static %}
 {% load pwa %}
@@ -14,13 +22,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}" />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-5924073395226525">
+<!-- Activate Google advertising only after consent integration; see START_HERE.md. -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <!-- 1. Manifest link -->
 <link rel="manifest" href="/manifest.json">
 
 <!-- 2. Viewport for mobile scaling -->
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 
 <!-- 3. Theme color for status bar -->
 <meta name="theme-color" content="#c62828">
@@ -2465,6 +2474,13 @@ img { max-width:100%; }
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-link-stack>.rail-story-link:not([hidden]){display:flex!important}
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-explore{display:none!important}
 }
+
+
+/* Education reading section below property cards. */
+#ogEducationHub h1{font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0 0 14px;color:var(--ink)}
+.og-guide-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}.og-guide-toc a{border:1px solid var(--line);background:white;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.4;color:var(--jade-deep)}
+.og-guide-articles{display:grid;grid-template-columns:1fr;gap:18px}.og-guide-article{padding:clamp(18px,4vw,28px);border:1px solid var(--line);border-radius:20px;background:#fff;scroll-margin-top:90px}.og-guide-number{font:700 11px var(--font-mono);letter-spacing:.1em;color:var(--jade)}.og-guide-article h4{font-size:24px;line-height:1.3;margin:12px 0}.og-guide-article h5{font:700 16px/1.5 var(--font-body);margin:22px 0 8px}.og-guide-article p{font-size:15px;line-height:1.8;color:#43574b;margin:0 0 14px}.og-guide-article .og-guide-summary{font-size:16px;color:var(--ink)}.og-guide-read{display:inline-block;color:var(--jade-deep);font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:3px;margin-top:8px}.og-guide-note{padding:22px;background:#e7f1ec;border-radius:16px;margin-top:22px}.og-guide-note h4{font-size:20px;margin:0 0 12px}.og-guide-note p{font-size:14px;line-height:1.8}.og-guide-note a{color:#154f41;text-decoration:underline;font-size:13px}.og-footer-cookie{background:transparent;border:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2499,7 +2515,7 @@ img { max-width:100%; }
 <button type="button" onclick="ogEducationGo('nsfas')"><i class="fas fa-wallet" aria-hidden="true"></i><span>NSFAS information</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 </div></section>
             <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('aps')" aria-label="Explore education tools"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for education tools" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-calculator"></i> Education tools</span></button><p class="og-edu-story-desc">Plan your path with practical study tools</p><div class="og-edu-story-links">
-<button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>APS calculator</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>Admission points guide</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Bursary finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('school')"><i class="fas fa-location-dot" aria-hidden="true"></i><span>School finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('careers')"><i class="fas fa-compass" aria-hidden="true"></i><span>Career guidance</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
@@ -2621,7 +2637,7 @@ img { max-width:100%; }
   </div>
 
   <!-- ===== MAIN ===== -->
-  <div class="main">
+  <main class="main">
 
     <!-- Latest from community -->
     <div class="section-head">
@@ -2740,9 +2756,9 @@ img { max-width:100%; }
       <!-- Education discovery immediately follows property cards on the default landing tab. -->
       <!-- ===== OPPOGLOBE EDUCATION HUB: connected to existing education APIs ===== -->
       <section class="og-edu-hub" id="ogEducationHub" aria-label="Education hub">
-        <div class="og-edu-heading"><div><h2>Education, bursaries & study opportunities in South Africa</h2><p>Explore schools, universities, study funding, past examination papers and education news. Browse existing opportunities, compare options and find the information you need before applying.</p></div></div>
+        <div class="og-edu-heading"><div><h1>Education, bursaries &amp; study opportunities in South Africa</h1><p>Explore schools, universities, study funding, past examination papers and education news. Browse existing opportunities, compare options and find the information you need before applying.</p></div></div>
         <div class="og-edu-toolgrid">
-          <button class="og-edu-tool" onclick="ogEducationGo('aps')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-calculator"></i><span><strong>APS calculator</strong><small>Estimate admission points</small></span></button>
+          <button class="og-edu-tool" onclick="ogEducationGo('aps')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-calculator"></i><span><strong>Understand APS</strong><small>Check admission point rules</small></span></button>
           <button class="og-edu-tool" onclick="ogEducationGo('bursary')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&amp;fit=crop&amp;w=900&amp;q=78" alt="Graduates celebrating - Bursary Finder" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&amp;fit=crop&amp;w=900&amp;q=78'"><i class="fas fa-hand-holding-dollar"></i><span><strong>Bursary finder</strong><small>Funding and applications</small></span></button>
           <button class="og-edu-tool" onclick="ogEducationGo('papers')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-file-pdf"></i><span><strong>Past papers</strong><small>Exam papers and memos</small></span></button>
           <button class="og-edu-tool" onclick="ogEducationGo('school')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&amp;fit=crop&amp;w=900&amp;q=78" alt="School campus" loading="lazy" decoding="async"><i class="fas fa-school"></i><span><strong>School finder</strong><small>Discover schools</small></span></button>
@@ -2753,18 +2769,11 @@ img { max-width:100%; }
         <div class="og-edu-live-grid" id="ogEduNewsCards"><div class="og-edu-empty">Loading published education articles…</div></div>
         <div class="og-edu-heading"><div><h3>Latest bursaries</h3><p>Available opportunities from existing listings.</p></div><button class="og-edu-trigger" onclick="ogEducationGo('bursary')">All bursaries <i class="fas fa-arrow-right"></i></button></div>
         <div class="og-edu-live-grid" id="ogEduBursaryCards"><div class="og-edu-empty">Loading bursaries…</div></div>
-        <div class="og-edu-heading"><div><h3>Schools & universities</h3><p>Explore registered institutions and application information.</p></div></div>
+        <div class="og-edu-heading"><div><h3>Schools & universities</h3><p>Explore institution listings and verify their details through official sources.</p></div></div>
         <div class="og-edu-live-grid" id="ogEduInstitutionCards"><div class="og-edu-empty">Loading schools and universities…</div></div>
         <div class="og-edu-heading"><div><h3>Popular education searches</h3><p>Quick links to grades, subjects, funding and career resources.</p></div></div>
         <div class="og-edu-quicklinks" id="ogEduQuicklinks"></div>
-        <!-- Server-rendered education guidance remains readable even if API requests are slow. -->
-        <div class="og-edu-heading" id="ogEducationGuides"><div><h3>Education guides for learners and families</h3><p>Practical starting points for researching opportunities and preparing applications.</p></div><a class="og-edu-trigger" href="/education/">Explore Education Hub <i class="fas fa-arrow-right"></i></a></div>
-        <div class="og-edu-guides-grid">
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-hand-holding-dollar"></i></span><h4>How to prepare a bursary application</h4><p>Start with the eligibility criteria: study field, academic performance, financial requirements and citizenship or residency rules. Prepare your academic results, identity document and any supporting evidence requested by the provider. Check the closing date and use the provider's official application instructions before submitting.</p><a href="/education/">Browse bursaries <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-building-columns"></i></span><h4>Choosing a university or college</h4><p>Compare courses by entry requirements, accreditation, location, tuition and available student support. Check whether a qualification fits your career goals and verify the current admission rules on the institution's official website. Apply early enough to resolve missing documents.</p><a href="/education/">Explore institutions <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-file-lines"></i></span><h4>Using past papers to study</h4><p>Practise with a timed paper before checking the memorandum. Mark your answers, identify the topics where you lost marks and revisit those concepts in your notes or textbook. Repeat with a different paper to check whether your understanding has improved.</p><a href="/education/">Find learning resources <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-graduation-cap"></i></span><h4>Planning for Grade 12 and beyond</h4><p>Keep track of subject requirements for your preferred programmes and understand how your results contribute to admission points. Make a shortlist of realistic options, including alternative routes, and record application deadlines. Ask institutions directly when requirements are unclear.</p><a href="/education/">Plan your studies <i class="fas fa-arrow-right"></i></a></article>
-        </div>
+        {% include 'oppo_seo/home_guides.html' %}
         <div class="og-edu-heading"><div><h3>Share education content</h3><p>Help learners discover opportunities. Sign in to contribute.</p></div></div>
         <div class="og-edu-inline-actions"><button onclick="ogEducationCreate('bursary')"><i class="fas fa-plus"></i> Add education content</button><button class="secondary" onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square"></i> Manage my content</button></div>
       </section>
@@ -2900,7 +2909,7 @@ img { max-width:100%; }
         <div class="col-sm-6"><a href="/properties/analytics/" class="card card-pad d-block" style="text-decoration:none;"><div class="card-title"><i class="fas fa-chart-column" style="color:var(--sky);"></i>Analytics</div><p class="text-muted small mb-0">See how you're doing</p></a></div>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- ===== RIGHT RAIL ===== -->
   <div class="rail-right">
@@ -3246,7 +3255,7 @@ img { max-width:100%; }
     </div>
     <div>
       <h6 class="footer-h">Company</h6>
-      <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/blog/">Blog</a></li></ul>
+      <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/education/guides/">Education guides</a></li><li><a href="/education/editorial/">About these guides</a></li></ul>
     </div>
     <div>
       <h6 class="footer-h">Support</h6>
@@ -3273,7 +3282,7 @@ img { max-width:100%; }
   </section>
   <div class="footer-bottom">
     <span>© 2026 OppoGlobe. All rights reserved.</span>
-    <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/cookies/">Cookies</a></div>
+    <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/site-cookies/">Cookies</a> · <button type="button" class="og-footer-cookie" onclick="window.ogOpenCookiePreferences()">Cookie preferences</button></div>
   </div>
 </footer>
 
@@ -5337,7 +5346,7 @@ function ogCloseNewsComposer(){document.getElementById('ogNewsComposer')?.classL
 function ogCloseEducationMenu(){const menu=document.getElementById('ogEducationMenu'),trigger=document.getElementById('ogEducationTrigger');if(menu)menu.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false')}
 function ogToggleEducationMenu(e){e?.stopPropagation();const menu=document.getElementById('ogEducationMenu'),trigger=document.getElementById('ogEducationTrigger');if(!menu)return;menu.hidden=!menu.hidden;trigger?.setAttribute('aria-expanded',String(!menu.hidden))}
 document.addEventListener('click',e=>{if(!e.target.closest('#ogEducationNav'))ogCloseEducationMenu()});document.addEventListener('keydown',e=>{if(e.key==='Escape')ogCloseEducationMenu()});
-function ogEducationGo(section){ogCloseEducationMenu();switchTab('properties');const filterMap={bursary:'bursary',school:'school',university:'university',papers:'paper'};if(filterMap[section]){const f=filterMap[section];switchTab('education');filterEducation(f,document.querySelector('#educationTab .edu-chip[data-filter="'+f+'"]'));document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'});return;}if(section==='news'||section==='guides'){window.location.href='/education/';return;}if(section==='my-content'){ogShowMyContent();return;}if(section==='aps'){window.location.href='/education/';return;}if(section==='nsfas'){window.open('https://www.nsfas.org.za/','_blank','noopener,noreferrer');return;}if(section==='grades'||section==='careers'){document.getElementById('ogEduQuicklinks')?.scrollIntoView({behavior:'smooth',block:'start'});return;}document.getElementById('ogEducationHub')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function ogEducationGo(section){ogCloseEducationMenu();switchTab('properties');const filterMap={bursary:'bursary',school:'school',university:'university',papers:'paper'};if(filterMap[section]){const f=filterMap[section];switchTab('education');filterEducation(f,document.querySelector('#educationTab .edu-chip[data-filter="'+f+'"]'));document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'});return;}if(section==='guides'){window.location.href='/education/guides/';return;}if(section==='news'){window.location.href='/education/';return;}if(section==='my-content'){ogShowMyContent();return;}if(section==='aps'){window.location.href='/education/guides/understand-aps-and-subject-requirements/';return;}if(section==='nsfas'){window.open('https://www.nsfas.org.za/','_blank','noopener,noreferrer');return;}if(section==='grades'||section==='careers'){document.getElementById('ogEduQuicklinks')?.scrollIntoView({behavior:'smooth',block:'start'});return;}document.getElementById('ogEducationHub')?.scrollIntoView({behavior:'smooth',block:'start'})}
 function ogEducationCreate(type){ogCloseEducationMenu();if(document.body.dataset.userLoggedIn!=='true'){if(typeof showLogin==='function')showLogin();return;}switchTab('education');showEduUpload(type||'bursary')}
 function ogShowMyContent(){ogCloseEducationMenu();if(document.body.dataset.userLoggedIn!=='true'){if(typeof showLogin==='function')showLogin();return;}switchTab('education');showToast('Your submissions are available in Education. Editing requires owner-aware API permissions.','info');document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'})}
 const ogEduSearches=['Grade 8','Grade 9','Grade 10','Grade 11','Grade 12','Mathematics','Physical Sciences','Life Sciences','English','Accounting','Geography','Business Studies','Past Papers','Memorandums','Bursaries','Universities','TVET Colleges','NSFAS','APS Calculator','Study Tips','Career Guidance'];
@@ -5505,5 +5514,6 @@ function ogEducationImageFallback(img){
   });
 })();
 </script>
+{% include 'oppo_seo/consent.html' %}
 </body>
 </html>
