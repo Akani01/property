@@ -19,7 +19,8 @@
 <!-- 1. Manifest link -->
 <link rel="manifest" href="/manifest.json">
 
-<!-- Viewport is declared once above. -->
+<!-- 2. Viewport for mobile scaling -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <!-- 3. Theme color for status bar -->
 <meta name="theme-color" content="#c62828">
@@ -2464,22 +2465,11 @@ img { max-width:100%; }
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-link-stack>.rail-story-link:not([hidden]){display:flex!important}
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-explore{display:none!important}
 }
-/* Lightweight updates stay in document flow and never obstruct a form or navbar. */
-.og-refresh-bar{position:sticky;top:var(--header-h,64px);z-index:80;max-width:1440px;margin:8px auto;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--jade-wash);color:var(--jade-deep);border:1px solid var(--line);border-radius:12px;font-size:11px}
-.og-refresh-bar>div{display:flex;align-items:center;gap:8px;min-width:0}.og-refresh-dot{height:7px;width:7px;border-radius:50%;background:var(--jade);flex-shrink:0}.og-refresh-bar button,.og-content-retry button,.og-edu-share-news{border:1px solid var(--jade);border-radius:99px;background:var(--surface);color:var(--jade-deep);padding:7px 12px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer}.og-refresh-bar button:disabled{opacity:.55;cursor:wait}.og-refresh-bar.is-loading .og-refresh-dot{animation:ogRefreshPulse 1s ease-in-out infinite}.og-refresh-bar.has-error{background:var(--gold-wash)}.og-content-retry{padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;grid-column:1/-1;flex:0 0 100%;background:var(--gold-wash);border-radius:12px}.og-edu-footer .og-edu-share-news{margin-left:auto;margin-right:8px}.og-edu-live-card .og-news-share-button{background:var(--surface);color:var(--jade);border:1px solid var(--jade)}
-@keyframes ogRefreshPulse{50%{opacity:.3}}@media(max-width:700px){.og-refresh-bar{margin:6px 8px;padding:8px 10px;font-size:10px}.og-refresh-bar button{padding:8px 10px;font-size:10px}.og-refresh-bar>div{line-height:1.4}.og-content-retry{flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){.og-refresh-bar.is-loading .og-refresh-dot{animation:none}}
-
-@media(min-width:1000px){.rail-left,.rail-right{top:calc(var(--header-h,64px) + 62px);max-height:calc(100dvh - var(--header-h,64px) - 76px)}}
-
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
 
 <!-- ===== HEADER ===== -->
-<div class="og-refresh-bar" id="ogRefreshBar" role="region" aria-label="Content updates">
- <div><span class="og-refresh-dot" aria-hidden="true"></span><span id="ogRefreshStatus" role="status" aria-live="polite">Loading this section…</span></div>
- <button type="button" id="ogRefreshButton" onclick="ogRefreshVisibleContent(true)"><i class="fas fa-rotate-right" aria-hidden="true"></i> Refresh content</button>
-</div>
 <header class="header-area">
   <div class="header-inner">
     <a href="/carwash/" class="brand"
@@ -2745,7 +2735,7 @@ img { max-width:100%; }
           <button onclick="dismissPropertyHint()" style="background:none; border:none; color:var(--ink-faint); font-size:14px; cursor:pointer; flex-shrink:0;"><i class="fas fa-times"></i></button>
         </div>
       </div>
-      <div class="og-story og-story--property"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=78" alt="Contemporary residential home" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Find your place</div><h3>A home for your next chapter</h3><p>Explore real homes, discover neighbourhoods and connect directly with property owners.</p></div></div>
+      <div class="og-story og-story--property"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Contemporary residential home" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Find your place</div><h3>A home for your next chapter</h3><p>Explore real homes, discover neighbourhoods and connect directly with property owners.</p></div></div>
       <div id="propertiesContainer"></div>
       <!-- Education discovery immediately follows property cards on the default landing tab. -->
       <!-- ===== OPPOGLOBE EDUCATION HUB: connected to existing education APIs ===== -->
@@ -2799,7 +2789,7 @@ img { max-width:100%; }
     </div>
 
     <div id="educationTab" class="tab-content" style="margin-top:14px;">
-      <div class="og-story og-story--graduate"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1000&q=78" alt="Graduates celebrating their achievement" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Learn • Grow • Graduate</div><h3>Big dreams start close to home</h3><p>Discover bursaries, universities, schools and learning opportunities that move you forward.</p></div></div>
+      <div class="og-story og-story--graduate"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduates celebrating their achievement" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">Learn • Grow • Graduate</div><h3>Big dreams start close to home</h3><p>Discover bursaries, universities, schools and learning opportunities that move you forward.</p></div></div>
 
       <div id="eduUploadZone" class="edu-upload-strip hidden">
         <span class="label"><i class="fas fa-book-open-reader"></i><span id="eduBusinessLabel">Manage education content</span></span>
@@ -2823,7 +2813,6 @@ img { max-width:100%; }
           </div>
         </div>
         <div class="edu-filter-row" role="tablist" aria-label="Education categories">
-          <button class="edu-chip" data-filter="news" onclick="filterEducation('news', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-newspaper"></i></span><span>News</span></button>
           <button class="edu-chip active" data-filter="all" onclick="filterEducation('all', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-layer-group"></i></span><span>All</span></button>
           <button class="edu-chip" data-filter="bursary" onclick="filterEducation('bursary', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-hand-holding-dollar"></i></span><span>Bursaries</span></button>
           <button class="edu-chip" data-filter="university" onclick="filterEducation('university', this)" type="button"><span class="edu-chip-icon"><i class="fas fa-building-columns"></i></span><span>Universities</span></button>
@@ -2837,7 +2826,7 @@ img { max-width:100%; }
     </div>
 
     <div id="maintenanceTab" class="tab-content" style="margin-top:14px;">
-      <div class="og-story og-story--maintenance"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=78" alt="Maintenance professional at work" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">People who get it done</div><h3>Every home deserves good care</h3><p>From repairs to everyday upkeep, share what needs attention and track the progress.</p></div></div>
+      <div class="og-story og-story--maintenance"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance professional at work" loading="lazy" decoding="async"><div class="og-story-content"><div class="og-story-kicker">People who get it done</div><h3>Every home deserves good care</h3><p>From repairs to everyday upkeep, share what needs attention and track the progress.</p></div></div>
       <div class="maint-hero">
         <div class="maint-hero-top">
           <div>
@@ -3021,11 +3010,10 @@ img { max-width:100%; }
 
 <!-- ===== SHARE SHEET ===== -->
 <div class="modal-veil" id="shareModal">
-  <div class="modal-box" style="max-width:380px;max-height:85dvh;overflow:auto;">
+  <div class="modal-box" style="max-width:380px;">
     <div class="modal-box-head"><h5><i class="fas fa-share-nodes" style="color:var(--coral); margin-right:8px;"></i>Share</h5><button class="x-close" onclick="closeShareSheet()">&times;</button></div>
     <div class="modal-box-body">
       <div class="share-target-name" id="shareTargetName"></div>
-      <button class="share-option" onclick="shareVia('native')"><span class="ic" style="background:var(--jade);"><i class="fas fa-share-nodes"></i></span> Share using your phone / apps</button>
       <button class="share-option to-user" onclick="shareToOppoGlobeUser()">
         <span class="ic" style="background:var(--jade);"><i class="fas fa-paper-plane"></i></span>
         <span><span>Send to a person on OppoGlobe</span><span class="sub">Message it straight to a neighbour's inbox</span></span>
@@ -3034,8 +3022,6 @@ img { max-width:100%; }
       <button class="share-option" onclick="shareVia('facebook')"><span class="ic" style="background:#1877F2;"><i class="fab fa-facebook-f"></i></span> Facebook</button>
       <button class="share-option" onclick="shareVia('twitter')"><span class="ic" style="background:#111;"><i class="fab fa-twitter"></i></span> Twitter / X</button>
       <button class="share-option" onclick="shareVia('linkedin')"><span class="ic" style="background:#0A66C2;"><i class="fab fa-linkedin-in"></i></span> LinkedIn</button>
-      <button class="share-option" onclick="shareVia('telegram')"><span class="ic" style="background:#229ED9;"><i class="fab fa-telegram"></i></span> Telegram</button>
-      <button class="share-option" onclick="shareVia('email')"><span class="ic" style="background:var(--jade);"><i class="fas fa-envelope"></i></span> Email</button>
       <button class="share-option" onclick="shareVia('copy')" style="margin-bottom:0;"><span class="ic" style="background:var(--ink-faint);"><i class="fas fa-link"></i></span> Copy link</button>
     </div>
   </div>
@@ -3049,7 +3035,7 @@ img { max-width:100%; }
 
       <!-- Slide 1: Welcome -->
       <div class="welcome-slide active">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=78" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
         <h4>Welcome to OppoGlobe!</h4>
         <p>Your neighbourhood's home for houses, jobs and the people next door. Got 30 seconds for a quick look around?</p>
         <div class="welcome-payment-note"><strong><i class="fas fa-shield-halved me-1" aria-hidden="true"></i> Pay with confidence</strong>For eligible card payments, OppoGlobe sends you to Yoco’s secure hosted checkout. You enter your card details with Yoco, not into an OppoGlobe card form. Available payment methods are shown at checkout.</div>
@@ -3057,28 +3043,28 @@ img { max-width:100%; }
 
       <!-- Slide 2: Properties -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=78" alt="Property on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Property on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
         <h4>Find your next place</h4>
         <p>Browse listings grouped by area. Tap the heart to like, the star to rate, and the share icon to send a place to a friend.</p>
       </div>
 
       <!-- Slide 3: Messaging -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=78" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
         <h4>Talk to your neighbours</h4>
         <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed. You can also message whoever posted a maintenance request, job, bursary or university listing.</p>
       </div>
 
       <!-- Slide 4: Maintenance -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=78" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
         <h4>Get things fixed</h4>
         <p>Type what needs fixing in the Maintenance tab — tag how urgent it is, add a photo, and you're done.</p>
       </div>
 
       <!-- Slide 5: Jobs & Education -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1000&q=78" alt="Graduate on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduate on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
         <h4>Jobs & bursaries too</h4>
         <p>Explore local jobs, bursaries and schools, right alongside your neighbourhood feed. That's the tour — enjoy!</p>
       </div>
@@ -3194,7 +3180,7 @@ img { max-width:100%; }
 
 <!-- ===== CAR WASH QUICK ACCESS ===== -->
 <a id="carWashQuickWidget" href="/carwash/" aria-label="Open OppoGlobe Car Wash">
-  <img class="og-wash-avatar" src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy" decoding="async">
+  <img class="og-wash-avatar" src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1400&q=82" alt="" loading="lazy" decoding="async">
   <span class="carwash-widget-copy">
     <span class="carwash-widget-title"><span class="live-dot"></span> Car Wash</span>
     <span class="carwash-widget-intro">Mobile wash or find a nearby drive-in.</span>
@@ -3291,7 +3277,7 @@ img { max-width:100%; }
   </div>
 </footer>
 
-<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- PROPERTY BOOKING / PAYMENT -->
 <div class="modal-veil property-booking-modal" id="propertyBookingModal" onclick="if(event.target===this)closePropertyBooking()">
@@ -3342,100 +3328,6 @@ img { max-width:100%; }
 </div>
 
 <script>
-/* OppoGlobe sharing and progressive loading. GET cache is memory-only, never localStorage. */
-const ogContent={sections:new Map(),cache:new Map(),inflight:new Map(),queue:[],active:0,visible:new Set(),lastInput:0,refreshing:false,retryTimers:new Map()};
-const ogSectionContainers={properties:'propertiesContainer',jobs:'jobsContainer',feed:'feedContainer',maintenance:'maintenanceContainer',education:'educationContainer',reels:'reelsFeedContainer',hub:'ogEduNewsCards'};
-function ogRows(data,key){return Array.isArray(data)?data:Array.isArray(data?.[key])?data[key]:Array.isArray(data?.results)?data.results:[];}
-function ogShareURL(type,id){
- const routes={news:'education/news',bursary:'education/bursary',school:'education/school',university:'education/university',paper:'education/paper',property:'properties',post:'post',job:'jobs',maintenance:'maintenance'};
- const base=routes[type];if(!base||id===null||id===undefined||String(id)==='')throw Error('Invalid share item');
- return new URL('/'+base+'/'+encodeURIComponent(String(id))+'/',location.origin).href;
-}
-async function ogCopyLink(url){
- if(navigator.clipboard&&window.isSecureContext){try{await navigator.clipboard.writeText(url);return;}catch{}}
- const field=document.createElement('textarea');field.value=url;field.setAttribute('readonly','');field.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw Error('Clipboard unavailable');
-}
-function ogPumpJSON(){while(ogContent.active<3&&ogContent.queue.length){const next=ogContent.queue.shift();ogContent.active++;Promise.resolve().then(next.run).then(next.resolve,next.reject).finally(()=>{ogContent.active--;ogPumpJSON();});}}
-function ogInvalidateJSON(prefix){for(const key of ogContent.cache.keys())if(key.startsWith(prefix))ogContent.cache.delete(key);}
-function ogGetJSON(url,{force=false,ttl=45000}={}){
- const key=new URL(url,location.origin);if(key.origin!==location.origin)return Promise.reject(Error('Unexpected API origin'));
- const path=key.pathname+key.search;
- if(ogContent.inflight.has(path))return ogContent.inflight.get(path);
- const cached=ogContent.cache.get(path);if(!force&&cached&&Date.now()-cached.time<ttl)return Promise.resolve(cached.data);
- const promise=new Promise((resolve,reject)=>{ogContent.queue.push({resolve,reject,run:async()=>{
-   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
-   try{const response=await fetch(path,{credentials:'same-origin',headers:{Accept:'application/json'},signal:controller.signal,cache:force?'no-cache':'default'});
-     if(!response.ok)throw Error('Request failed ('+response.status+').');
-     const data=await response.json();if(data?.success===false)throw Error(data.error||data.message||'Content could not load.');
-     ogContent.cache.set(path,{data,time:Date.now()});if(ogContent.cache.size>45)ogContent.cache.delete(ogContent.cache.keys().next().value);return data;
-   }catch(error){if(error.name==='AbortError')throw Error('The connection is taking too long. Please retry.');throw error;}finally{clearTimeout(timer);}
- }});ogPumpJSON();}).finally(()=>ogContent.inflight.delete(path));
- ogContent.inflight.set(path,promise);return promise;
-}
-function ogCurrentSection(){return typeof currentTab==='undefined'?'properties':currentTab==='featured'?'properties':currentTab;}
-function ogIsVisible(el){if(!el||!el.getClientRects().length)return false;const r=el.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight+150&&r.right>0&&r.left<innerWidth;}
-function ogEditing(){return !!document.querySelector('.modal-veil.show,.modal.show,.og-news-composer.open')||!!document.activeElement?.matches('input,textarea,select,[contenteditable="true"]')||Date.now()-ogContent.lastInput<10000||[...document.querySelectorAll('video')].some(v=>!v.paused);}
-function ogFailureMarkup(name){return '<div class="og-content-retry"><span>Could not load this section. Check your connection.</span><button type="button" data-og-retry="'+name+'">Retry section</button></div>';}
-function ogUpdateRefreshStatus(){
- const status=document.getElementById('ogRefreshStatus'),button=document.getElementById('ogRefreshButton'),bar=document.getElementById('ogRefreshBar');if(!status||!bar)return;
- const name=ogCurrentSection(),state=ogContent.sections.get(name),busy=ogContent.refreshing||state?.pending;
- bar.classList.toggle('is-loading',!!busy);bar.classList.toggle('has-error',!!state?.error);
- if(button){button.disabled=!!busy;button.setAttribute('aria-busy',String(!!busy));}
- if(!navigator.onLine){status.textContent='You’re offline. Existing content is still on screen.';return;}
- status.textContent=busy?'Updating content…':state?.error?'Connection slow or interrupted — tap refresh to retry.':state?.time?'Updated '+new Date(state.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' · Refresh when needed':'Content loads as you explore.';
-}
-function ogRunSection(name,options,task){
- options=options||{};let state=ogContent.sections.get(name);if(!state){state={time:0,pending:null,error:null,retries:0};ogContent.sections.set(name,state);}
- if(state.pending)return state.pending;
- if(options.force===false&&state.time&&Date.now()-state.time<45000&&!state.error)return Promise.resolve({ok:true,cached:true});
- if(!options.automatic){state.retries=0;clearTimeout(ogContent.retryTimers.get(name));}
- const container=document.getElementById(ogSectionContainers[name]);if(container)container.setAttribute('aria-busy','true');
- const run=Promise.resolve().then(task).then(()=>{state.time=Date.now();state.error=null;state.retries=0;container?.querySelector('.og-content-retry')?.remove();return {ok:true};}).catch(error=>{
-  state.error=error.message||'Could not update.';
-  if(container&&!container.querySelector('.prop-card,.post-card,.job-card,.og-edu-item,.reels-item,.og-edu-live-card')){
-   if(!container.querySelector('.og-content-retry'))container.insertAdjacentHTML('beforeend',ogFailureMarkup(name));
-   container.querySelectorAll('.loading-line,.sponsored-loading').forEach(el=>el.remove());
-  }
-  // Two bounded retry attempts, only while this section is visible and the user is idle.
-  if(state.retries<2){const delay=state.retries?30000:10000;state.retries++;clearTimeout(ogContent.retryTimers.get(name));ogContent.retryTimers.set(name,setTimeout(()=>{if(!document.hidden&&navigator.onLine&&!ogEditing()&&(name===ogCurrentSection()||ogIsVisible(container)))ogLoadSection(name,{force:true,automatic:true});},delay));}
-  return {ok:false,error:state.error};
- }).finally(()=>{state.pending=null;container?.setAttribute('aria-busy','false');ogUpdateRefreshStatus();});
- state.pending=run;ogUpdateRefreshStatus();return run;
-}
-function ogLoadSection(name,options={force:false}){
- const loaders={properties:loadProperties,jobs:loadJobs,feed:loadFeedPosts,maintenance:loadMaintenanceRequests,education:loadEducationContent,hub:ogLoadEducationHub,reels:()=>loadReels(1,options)};
- return loaders[name]?Promise.resolve(loaders[name](options)):Promise.resolve({ok:true});
-}
-async function ogRefreshVisibleContent(manual=false){
- if(ogContent.refreshing)return;
- if(!navigator.onLine){ogUpdateRefreshStatus();if(manual)showToast('You’re offline. Reconnect and try again.','warning');return;}
- if(!manual&&ogEditing())return;
- ogContent.refreshing=true;ogUpdateRefreshStatus();
- const names=new Set([ogCurrentSection()]);for(const [name,id]of Object.entries(ogSectionContainers))if(name==='hub'&&ogIsVisible(document.getElementById(id)))names.add(name);
- // Existing cards stay mounted until a successful response. Forms and page state are untouched.
- try{const results=await Promise.all([...names].map(name=>ogLoadSection(name,{force:true,automatic:!manual})));
-   if(manual){ogRetryVisibleImages();showToast(results.some(r=>r?.ok===false)?'Some content could not update. Existing content has been kept.':'Content updated.','info');}
- }finally{ogContent.refreshing=false;ogUpdateRefreshStatus();}
-}
-function ogRetryVisibleImages(){document.querySelectorAll('img[data-og-load-error="1"]').forEach(img=>{if(ogIsVisible(img)&&Number(img.dataset.ogRetries||0)<2){img.dataset.ogRetries=String(Number(img.dataset.ogRetries||0)+1);delete img.dataset.ogLoadError;const src=img.dataset.ogFailedSrc;if(src){img.hidden=false;img.style.removeProperty('display');img.src=src;}}});}
-function ogWatchVisible(id,loader){const element=document.getElementById(id);if(!element)return;if(!('IntersectionObserver'in window)){setTimeout(loader,800);return;}const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){observer.disconnect();loader();}},{rootMargin:'180px'});observer.observe(element);}
-function ogAttachVideo(video){if(video?.dataset.src&&!video.src){video.src=video.dataset.src;video.preload='metadata';video.load();}}
-function ogStartContentLoading(){
- ogLoadSection(ogCurrentSection(),{force:false});
- ogWatchVisible('sponsoredDiscovery',()=>loadSponsoredDiscovery());
- ogWatchVisible('reelsStripScroll',()=>loadReels(1,{force:false}));
- ogWatchVisible('eduMiniScroll',()=>loadEducationContent({force:false}));
- ogWatchVisible('ogEducationHub',()=>ogLoadEducationHub({force:false}));
- ogWatchVisible('trendingJobs',()=>loadJobs({force:false}));
- setInterval(()=>{if(document.hidden||!navigator.onLine||ogEditing())return;const name=ogCurrentSection(),state=ogContent.sections.get(name);if(state?.time&&!state.error&&Date.now()-state.time>120000)ogRefreshVisibleContent(false);},60000);
- document.addEventListener('input',()=>{ogContent.lastInput=Date.now();},{passive:true});
- document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else ogUpdateRefreshStatus();});
- window.addEventListener('offline',ogUpdateRefreshStatus);window.addEventListener('online',()=>{ogUpdateRefreshStatus();if(!ogEditing())ogRefreshVisibleContent(false);});
- document.addEventListener('error',event=>{const img=event.target;if(img?.tagName==='IMG'&&!img.src.startsWith('data:')){img.dataset.ogLoadError='1';img.dataset.ogFailedSrc=img.currentSrc||img.src;}},true);
- document.addEventListener('load',event=>{if(event.target?.tagName==='IMG'&&(!event.target.dataset.ogFailedSrc||(event.target.currentSrc||event.target.src)===event.target.dataset.ogFailedSrc))delete event.target.dataset.ogLoadError;},true);
- document.addEventListener('click',event=>{const retry=event.target.closest('[data-og-retry]');if(retry)ogLoadSection(retry.dataset.ogRetry,{force:true});const button=event.target.closest('.og-edu-share-news');if(button){const card=button.closest('[data-item-id]');const item=allEducationItems.find(x=>x.type==='news'&&String(x.id)===card?.dataset.itemId);if(item)shareEducationItem('news',item.id,item.title);}});
-}
-
 /* ============================================================
    CORE UTILITIES
    ============================================================ */
@@ -3568,15 +3460,13 @@ let currentTab = 'properties';
 function scrollToTab(tabName){
   const target = document.getElementById(tabName+'Tab');
   if (!target) return;
-  const y = target.getBoundingClientRect().top + window.scrollY - 126;
+  const y = target.getBoundingClientRect().top + window.scrollY - 76;
   window.scrollTo({ top:y, behavior:'smooth' });
 }
 function switchTab(tabName, options = {}){
   if (tabName !== 'reels' && document.body.classList.contains('reels-fullscreen')) exitReelsFullscreen();
   const shouldScroll = options.scroll !== false;
   currentTab = tabName;
-  if(tabName!=='reels')document.querySelectorAll('.reels-item video').forEach(v=>v.pause());
-  ogUpdateRefreshStatus();
   const mobileTabs = document.querySelectorAll('#mobileBottomNav .bn-tab');
   mobileTabs.forEach(btn=>{
     const active = btn.dataset.tab === tabName;
@@ -3597,13 +3487,13 @@ function switchTab(tabName, options = {}){
   const filter = document.getElementById('propertyFilter');
   if (filter) filter.style.display = (tabName === 'properties' || tabName === 'featured') ? 'block' : 'none';
 
-  if (tabName === 'jobs') loadJobs({force:false});
-  if (tabName === 'properties') loadProperties({force:false});
-  if (tabName === 'featured') loadProperties({force:false}).then(()=>loadFeatured());
-  if (tabName === 'feed') loadFeedPosts({force:false});
-  if (tabName === 'reels') loadReels(1,{force:false});
-  if (tabName === 'maintenance') loadMaintenanceRequests({force:false});
-  if (tabName === 'education') loadEducationContent({force:false});
+  if (tabName === 'jobs') loadJobs();
+  if (tabName === 'properties') loadProperties();
+  if (tabName === 'featured') loadFeatured();
+  if (tabName === 'feed') loadFeedPosts();
+  if (tabName === 'reels') loadReels(1);
+  if (tabName === 'maintenance') loadMaintenanceRequests();
+  if (tabName === 'education') loadEducationContent();
 
   closeRail();
   if (shouldScroll) setTimeout(()=>scrollToTab(tabName), 120);
@@ -3705,7 +3595,7 @@ function renderReelsHorizontalStrip(){
     <div class="reel-mini" data-reel-id="${escapeHtml(String(reel.id))}" onclick="handleReelThumbClick('${escapeHtml(String(reel.id))}')">
       <div class="thumb">
         <div class="thumb-preview-fallback"><i class="fas fa-video"></i></div>
-        <video data-src="${escapeHtml(reel.video_url||'')}" poster="${escapeHtml(reel.thumbnail_url||reel.thumbnail||reel.poster||'')}" muted playsinline preload="none" aria-label="${escapeHtml(reel.title||'Reel preview')}"></video>
+        <video src="${escapeHtml(reel.video_url||'')}" muted playsinline preload="auto" aria-label="${escapeHtml(reel.title||'Reel preview')}"></video>
         <div class="fade"></div>
         <div class="views"><i class="fas fa-eye"></i> ${formatNumber(reel.views||0)}</div>
       </div>
@@ -3719,16 +3609,50 @@ function renderReelsHorizontalStrip(){
 }
 
 function prepareReelStripPreviews(container){
- window.ogPreviewObserver?.disconnect();
- const reveal=video=>{video.classList.add('preview-ready');video.closest('.reel-mini')?.classList.add('preview-ready');};
- const load=video=>{if(video.poster){reveal(video);return;}if(navigator.connection?.saveData)return;ogAttachVideo(video);};
- if('IntersectionObserver'in window)window.ogPreviewObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){load(entry.target);window.ogPreviewObserver.unobserve(entry.target);}}),{root:container,rootMargin:'40px'});
- container.querySelectorAll('.reel-mini video').forEach(video=>{
-  video.addEventListener('loadeddata',()=>reveal(video),{once:true});
-  video.addEventListener('error',()=>video.closest('.reel-mini')?.classList.add('preview-error'),{once:true});
-  if(window.ogPreviewObserver)window.ogPreviewObserver.observe(video);
-  const card=video.closest('.reel-mini');if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){card?.addEventListener('mouseenter',()=>{ogAttachVideo(video);video.play().catch(()=>{});});card?.addEventListener('mouseleave',()=>video.pause());}
- });
+  container.querySelectorAll('.reel-mini video').forEach(video => {
+    const card = video.closest('.reel-mini');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+
+    const reveal = () => {
+      video.classList.add('preview-ready');
+      card?.classList.add('preview-ready');
+    };
+
+    const seekPreviewFrame = () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0;
+      const previewTime = duration > 2 ? Math.min(Math.max(duration * 0.18, 0.6), duration - 0.25) : 0;
+      if (previewTime > 0 && Math.abs(video.currentTime - previewTime) > 0.05){
+        try { video.currentTime = previewTime; } catch (_) { reveal(); }
+      } else {
+        reveal();
+      }
+    };
+
+    video.addEventListener('loadedmetadata', seekPreviewFrame, {once:true});
+    video.addEventListener('loadeddata', reveal, {once:true});
+    video.addEventListener('seeked', reveal, {once:true});
+    video.addEventListener('canplay', reveal, {once:true});
+    video.addEventListener('error', () => card?.classList.add('preview-error'), {once:true});
+
+    if (video.readyState >= 1) seekPreviewFrame();
+    if (video.readyState >= 2) reveal();
+    try { video.load(); } catch (_) {}
+
+    if (window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+      card?.addEventListener('mouseenter', () => {
+        video.currentTime = 0;
+        video.play().catch(()=>{});
+      });
+      card?.addEventListener('mouseleave', () => {
+        video.pause();
+        seekPreviewFrame();
+      });
+    }
+  });
 }
 
 function focusReelInsideFeed(reelId){
@@ -3737,7 +3661,7 @@ function focusReelInsideFeed(reelId){
   if (!feed || !target) return false;
   feed.scrollTo({top:target.offsetTop, behavior:'smooth'});
   feed.querySelectorAll('.reels-item video').forEach(v=>{ if (v !== target.querySelector('video')) v.pause(); });
-  setTimeout(()=>{const video=target.querySelector('video');ogAttachVideo(video);video?.play().catch(()=>{});},220);
+  setTimeout(()=>target.querySelector('video')?.play().catch(()=>{}), 220);
   return true;
 }
 
@@ -4031,20 +3955,34 @@ let allProperties = [];
 let currentRating = 0, currentRatingPropertyId = null;
 let feedFilterPropertyId = null, allFeedPosts = [];
 
-function loadProperties(options={}){return ogRunSection('properties',options,async()=>{
- const force=options.force!==false;
- const [ownerResult,priceResult]=await Promise.allSettled([ogGetJSON('/api/get-properties-with-owner/',{force}),ogGetJSON('/api/properties/',{force})]);
- const owner=ownerResult.status==='fulfilled'?ogRows(ownerResult.value,'properties'):[];
- const prices=priceResult.status==='fulfilled'?ogRows(priceResult.value,'properties'):[];
- if(ownerResult.status==='rejected'&&priceResult.status==='rejected')throw Error('Properties could not load. Please retry.');
- const byId=new Map(prices.map(p=>[String(p.id),p]));
- const merged=ownerResult.status==='fulfilled'?owner.map(p=>{const extra=byId.get(String(p.id));return extra?{...p,...extra,owner:p.owner,owner_name:p.owner_name,owner_user_type:p.owner_user_type}:p;}):prices;
- allProperties=merged;
- const container=document.getElementById('propertiesContainer');if(container)renderPropertiesByLocation(merged,container);
- updateUIAfterLoad(merged);
- if(currentTab==='featured')loadFeatured();
-});}
-function loadPropertiesFallback(container){return loadProperties({force:true});}
+function loadProperties(){
+  const container = document.getElementById('propertiesContainer');
+  if (!container) return;
+  container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading properties…</div>`;
+  loadAds('feed', 12).then(()=>{
+    fetch('/api/get-properties-with-owner/').then(r=>r.json()).then(ownerData=>{
+      if (!ownerData.success || !ownerData.properties) return loadPropertiesFallback(container);
+      fetch('/api/properties/').then(r=>r.json()).then(priceData=>{
+        let merged = ownerData.properties;
+        if (priceData.success && priceData.properties){
+          merged = ownerData.properties.map(op=>{
+            const pp = priceData.properties.find(x=>x.id===op.id);
+            return pp ? { ...op, ...pp, owner:op.owner, owner_name:op.owner_name, owner_user_type:op.owner_user_type } : op;
+          });
+        }
+        allProperties = merged;
+        renderPropertiesByLocation(merged, container);
+        updateUIAfterLoad(merged);
+      }).catch(()=>{ allProperties = ownerData.properties; renderPropertiesByLocation(ownerData.properties, container); updateUIAfterLoad(ownerData.properties); });
+    }).catch(()=>loadPropertiesFallback(container));
+  });
+}
+function loadPropertiesFallback(container){
+  fetch('/api/properties/').then(r=>r.json()).then(data=>{
+    if (data.success && data.properties){ allProperties = data.properties; renderPropertiesByLocation(allProperties, container); updateUIAfterLoad(allProperties); }
+    else { container.innerHTML = `<div class="empty-state"><i class="fas fa-house"></i><h4>No properties yet</h4><p>Check back soon.</p></div>`; renderHorizontalCards(); }
+  }).catch(()=>{ container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load properties</h4></div>`; renderHorizontalCards(); });
+}
 function updateUIAfterLoad(properties){
   loadPropertyTypes();
   populatePropertySelect(properties);
@@ -4070,6 +4008,8 @@ function renderPropertiesByLocation(properties, container){
     html += `</div></div>`;
   });
   container.innerHTML = html;
+  loadPropertyTypes(properties);
+  updateUIAfterLoad(properties);
 }
 function resolveOwner(p){
   let ownerId=0, ownerName='Unknown', ownerInitial='U', isOwner=false, ownerBadge='';
@@ -4205,26 +4145,31 @@ function createPropertyCardHTML(p){
 /* ---- Share sheet: one global modal used by every property card (avoids clipping inside
    horizontally-scrolling rows) and adds a direct way to share to another OppoGlobe user ---- */
 let currentShare = null;
-function openShareSheet(type,id,title){
-  try { currentShare={type,id,title:String(title||'OppoGlobe news'),url:ogShareURL(type,id)}; }
-  catch { showToast('This item does not have a shareable link yet.','warning');return; }
-  const el=document.getElementById('shareTargetName');if(el)el.textContent=currentShare.title;
-  document.getElementById('shareModal')?.classList.add('show');
+function openShareSheet(type, id, title){
+  currentShare = { type, id, title };
+  const nameEl = document.getElementById('shareTargetName');
+  if (nameEl) nameEl.textContent = title;
+  document.getElementById('shareModal').classList.add('show');
 }
 function closeShareSheet(){ document.getElementById('shareModal').classList.remove('show'); }
-async function shareVia(platform){
-  if(!currentShare)return;
-  const {title,url}=currentShare;
-  const links={whatsapp:'https://wa.me/?text='+encodeURIComponent(title+' — '+url),facebook:'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),twitter:'https://twitter.com/intent/tweet?text='+encodeURIComponent(title)+'&url='+encodeURIComponent(url),linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url),telegram:'https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(title),email:'mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(title+'\n\nRead on OppoGlobe: '+url)};
-  if(platform==='native'){
-    if(navigator.share&&window.isSecureContext){try{await navigator.share({title,text:title,url});closeShareSheet();return;}catch(error){if(error.name==='AbortError')return;}}
-    showToast('Choose a share option below or copy the article link.','info');return;
+function shareVia(platform){
+  if (!currentShare) return;
+  const { type, id, title } = currentShare;
+  const url = `${window.location.origin}/${type}/${id}/`;
+  let shareUrl = '';
+  if (platform==='whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(title+' - '+url)}`;
+  else if (platform==='facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  else if (platform==='twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  else if (platform==='linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+  else if (platform==='copy'){
+    const text = `${title} - ${url}`;
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success'));
+    else showToast(text, 'info');
+    closeShareSheet();
+    return;
   }
-  if(platform==='copy'){
-    try{await ogCopyLink(url);showToast('Article link copied.','success');closeShareSheet();}catch{window.prompt('Copy this article link:',url);}return;
-  }
-  if(platform==='email'){window.location.href=links.email;closeShareSheet();return;}
-  if(links[platform]){window.open(links[platform],'_blank','noopener,noreferrer');closeShareSheet();}
+  if (shareUrl) window.open(shareUrl, '_blank');
+  closeShareSheet();
 }
 function shareToOppoGlobeUser(){
   if (!currentShare) return;
@@ -4429,13 +4374,18 @@ function loadFeatured(){
 /* ============================================================
    FEED / POSTS
    ============================================================ */
-function loadFeedPosts(options={}){return ogRunSection('feed',options,async()=>{
-  const data=await ogGetJSON('/api/posts/feed/',{force:options.force!==false});
-  if(data.success===false)throw Error(data.error||'The feed could not be loaded.');
-  allFeedPosts=ogRows(data,'posts');
-  const list=feedFilterPropertyId?allFeedPosts.filter(p=>p.property&&String(p.property.id)===String(feedFilterPropertyId)):allFeedPosts;
-  renderPosts(list,'feedContainer');
-});}
+function loadFeedPosts(){
+  const container = document.getElementById('feedContainer'); if (!container) return;
+  container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading the feed…</div>`;
+  fetch('/api/posts/feed/').then(r=>r.json()).then(data=>{
+    if (data.success && data.posts){
+      allFeedPosts = data.posts;
+      const list = feedFilterPropertyId ? allFeedPosts.filter(p=>p.property && String(p.property.id)===String(feedFilterPropertyId)) : allFeedPosts;
+      renderPosts(list, 'feedContainer');
+    } else { allFeedPosts = []; container.innerHTML = `<div class="empty-state"><i class="fas fa-newspaper"></i><h4>Nothing posted yet</h4><p>Start the first conversation.</p></div>`; }
+    renderHorizontalCards();
+  }).catch(()=>{ container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load the feed</h4></div>`; renderHorizontalCards(); });
+}
 function renderPosts(posts, containerId){
   const container = document.getElementById(containerId); if (!container) return;
   if (!posts || posts.length===0){ container.innerHTML = `<div class="empty-state"><i class="fas fa-newspaper"></i><h4>No posts</h4><p>Be the first to start a discussion.</p></div>`; return; }
@@ -4580,11 +4530,14 @@ function sendMaintenanceQuick(){
       else showToast('Request received','info');
     }).catch(()=>{ sendBtn.innerHTML = original; sendBtn.disabled = false; showToast('Please try again','info'); });
 }
-function loadMaintenanceRequests(options={}){return ogRunSection('maintenance',options,async()=>{
-  const data=await ogGetJSON('/api/maintenance-requests/feed/?page=1&page_size=20',{force:options.force!==false});
-  if(data.success===false)throw Error(data.error||'Requests could not be loaded.');
-  allMaintenanceRequests=ogRows(data,'requests');updateMaintenanceStats();renderMaintenanceFeed(allMaintenanceRequests);
-});}
+function loadMaintenanceRequests(){
+  const container = document.getElementById('maintenanceContainer'); if (!container) return;
+  container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading requests…</div>`;
+  fetch('/api/maintenance-requests/feed/?page=1&page_size=20').then(r=>r.json()).then(data=>{
+    if (data.success){ allMaintenanceRequests = data.requests||[]; updateMaintenanceStats(); renderMaintenanceFeed(allMaintenanceRequests); }
+    else container.innerHTML = `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><h4>No maintenance requests submitted</h4><p>Use the form above whenever you need assistance.</p></div>`;
+  }).catch(()=>container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load requests</h4></div>`);
+}
 function updateMaintenanceStats(){
   const set = (id,v)=>{ const el = document.getElementById(id); if (el) el.textContent = v; };
   set('totalMaintenance', allMaintenanceRequests.length);
@@ -4699,12 +4652,16 @@ function shareMaintenanceToFeed(id){
    JOBS
    ============================================================ */
 let allJobs = [];
-function loadJobs(options={}){return ogRunSection('jobs',options,async()=>{
-  const data=await ogGetJSON('/api/jobs/',{force:options.force!==false});
-  if(data.success===false)throw Error(data.error||'Jobs could not be loaded.');
-  allJobs=ogRows(data,'jobs');renderJobs(allJobs);renderTrendingJobs(allJobs.slice(0,3));
-  const el=document.getElementById('activeJobsCount');if(el)el.textContent=allJobs.length;
-});}
+function loadJobs(){
+  const container = document.getElementById('jobsContainer'); if (!container) return;
+  container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading jobs…</div>`;
+  fetch('/api/jobs/').then(r=>r.json()).then(data=>{
+    if (data.success && data.jobs){
+      allJobs = data.jobs; renderJobs(allJobs); renderTrendingJobs(allJobs.slice(0,3));
+      const el = document.getElementById('activeJobsCount'); if (el) el.textContent = allJobs.length;
+    } else container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>Explore available jobs</h4></div>`;
+  }).catch(()=>container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load jobs</h4></div>`);
+}
 function renderJobs(jobs){
   const container = document.getElementById('jobsContainer'); if (!container) return;
   if (!jobs?.length){ container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><h4>Explore available jobs</h4></div>`; return; }
@@ -4768,16 +4725,21 @@ function createPost(){
    REELS
    ============================================================ */
 let reelsState = { reels:[], currentPage:1, hasMore:true, isLoading:false, currentReelId:null };
-function loadReels(page=1,options={}){
- return ogRunSection('reels',page>1?{...options,force:true}:options,async()=>{
-  const container=document.getElementById('reelsFeedContainer');if(!container)return;
-  reelsState.isLoading=true;
-  try{const data=await ogGetJSON(`/api/videos/feed/?page=${page}&page_size=10`,{force:options.force!==false});
-   const rows=ogRows(data,'videos');reelsState.reels=page===1?rows:[...reelsState.reels,...rows];reelsState.hasMore=data.pagination?.has_next||false;reelsState.currentPage=page;
-   if(page===1)renderReels(rows);else{appendReels(rows);setupReelObserver();}
-   renderReelsHorizontalStrip();
-  }finally{reelsState.isLoading=false;}
- });
+function loadReels(page=1){
+  if (reelsState.isLoading) return;
+  reelsState.isLoading = true;
+  const container = document.getElementById('reelsFeedContainer'); if (!container) return;
+  if (page===1) container.innerHTML = `<div class="loading-line" style="color:#aaa;"><span class="spin"></span> Loading reels…</div>`;
+  fetch(`/api/videos/feed/?page=${page}&page_size=10`).then(r=>r.json()).then(data=>{
+    reelsState.isLoading = false;
+    if (data.success){
+      const newReels = data.videos || [];
+      reelsState.reels = page===1 ? newReels : [...reelsState.reels, ...newReels];
+      reelsState.hasMore = data.pagination?.has_next || false; reelsState.currentPage = page;
+      if (page===1) renderReels(newReels); else appendReels(newReels);
+      renderHorizontalCards(); renderReelsHorizontalStrip();
+    } else if (page===1) container.innerHTML = reelsErrorHTML('Could not load reels', 'Please try again later.');
+  }).catch(()=>{ reelsState.isLoading = false; if (page===1) container.innerHTML = reelsErrorHTML('Network error', 'Check your connection and try again.'); renderHorizontalCards(); renderReelsHorizontalStrip(); });
 }
 function reelsErrorHTML(title, sub){
   return `<div style="text-align:center; padding:60px 20px; color:#fff;"><i class="fas fa-triangle-exclamation" style="font-size:2.4rem; color:var(--coral);"></i><h4 style="color:#fff; margin-top:12px;">${title}</h4><p style="color:#999;">${sub}</p><button class="btn-jade mt-2" onclick="loadReels(1)">Retry</button></div>`;
@@ -4815,7 +4777,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.class
 
 function createReelElement(reel){
   const div = document.createElement('div'); div.className = 'reels-item'; div.dataset.reelId = reel.id;
-  const videoEl = document.createElement('video'); videoEl.dataset.src = reel.video_url; if(reel.thumbnail_url||reel.thumbnail)videoEl.poster=reel.thumbnail_url||reel.thumbnail; videoEl.loop = true; videoEl.muted = true; videoEl.defaultMuted = true; videoEl.playsInline = true; videoEl.setAttribute('playsinline',''); videoEl.setAttribute('webkit-playsinline',''); videoEl.preload = 'none';
+  const videoEl = document.createElement('video'); videoEl.src = reel.video_url; videoEl.loop = true; videoEl.muted = true; videoEl.defaultMuted = true; videoEl.playsInline = true; videoEl.setAttribute('playsinline',''); videoEl.setAttribute('webkit-playsinline',''); videoEl.preload = 'metadata';
   videoEl.addEventListener('loadedmetadata',()=>{
     const portrait=videoEl.videoHeight>=videoEl.videoWidth;
     div.classList.toggle('source-portrait',portrait);
@@ -4834,7 +4796,7 @@ function createReelElement(reel){
     }
     lastTap=now;
     tapTimer=setTimeout(()=>{
-      if(videoEl.paused){ogAttachVideo(videoEl);videoEl.play().catch(()=>{});} else videoEl.pause();
+      if(videoEl.paused) videoEl.play().catch(()=>{}); else videoEl.pause();
       tapTimer=null;
     },330);
   });
@@ -4853,13 +4815,16 @@ function createReelElement(reel){
   return div;
 }
 function setupReelObserver(){
- window.ogReelPlaybackObserver?.disconnect();
- window.ogReelPlaybackObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{
-   const video=entry.target.querySelector('video');
-   if(entry.isIntersecting&&currentTab==='reels'&&!document.hidden){ogAttachVideo(video);video?.play().catch(()=>{});const index=Array.from(entry.target.parentElement.children).indexOf(entry.target);if(index>=reelsState.reels.length-3&&reelsState.hasMore)loadReels(reelsState.currentPage+1,{force:false});}
-   else video?.pause();
- });},{threshold:0.4});
- document.querySelectorAll('.reels-item').forEach(item=>window.ogReelPlaybackObserver.observe(item));
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if (entry.isIntersecting){
+        entry.target.querySelector('video')?.play().catch(()=>{});
+        const index = Array.from(entry.target.parentElement.children).indexOf(entry.target);
+        if (index >= reelsState.reels.length - 3 && reelsState.hasMore) loadReels(reelsState.currentPage+1);
+      } else entry.target.querySelector('video')?.pause();
+    });
+  }, { threshold:0.4 });
+  document.querySelectorAll('.reels-item').forEach(item=>observer.observe(item));
 }
 function handleReelLike(id){
   fetch(`/api/videos/${id}/like/`, { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken()}, body:JSON.stringify({action:'like'}) })
@@ -4904,23 +4869,29 @@ function checkEduUserType(){
   isBusinessUser = userType.includes('business');
   document.getElementById('eduUploadZone')?.classList.toggle('hidden', document.body.dataset.userLoggedIn !== 'true');
 }
-function loadEducationContent(options={}){return ogRunSection('education',options,async()=>{
- const [bursariesData,universitiesData,schoolsData,papersData,newsData]=await Promise.all([
- '/api/education/bursaries/','/api/education/universities/','/api/education/schools/','/api/education/question-papers/','/api/education/news/'
- ].map(url=>ogGetJSON(url,{force:options.force!==false})));
+function loadEducationContent(){
+  const container = document.getElementById('educationContainer'); if (!container) return;
+  container.innerHTML = `<div class="loading-line"><span class="spin"></span> Loading education content…</div>`;
+  Promise.all([
+    fetch('/api/education/bursaries/').then(r=>r.json()).catch(()=>({})),
+    fetch('/api/education/universities/').then(r=>r.json()).catch(()=>({})),
+    fetch('/api/education/schools/').then(r=>r.json()).catch(()=>({})),
+    fetch('/api/education/question-papers/').then(r=>r.json()).catch(()=>({success:false, papers:[]}))
+  ]).then(([bursariesData, universitiesData, schoolsData, papersData])=>{
     const items = [];
-    ogRows(bursariesData,'bursaries').forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'fa-hand-holding-dollar', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0,
+    (bursariesData.bursaries||bursariesData.results||[]).forEach(b=>items.push({ type:'bursary', id:b.id, title:b.title||'Bursary', description:b.description||'', institution:b.provider||'Unknown provider', image:b.image||b.provider_logo||null, badge:'fa-hand-holding-dollar', amount:b.amount?`R${Number(b.amount).toLocaleString()}`:'Varies', closing_date:b.closing_date||null, is_featured:b.is_featured||false, likes:b.likes_count||0, comments:b.comments_count||0,
       owner:b.owner || b.posted_by || b.created_by || b.uploaded_by || null, owner_name:b.owner_name || b.posted_by_name || b.provider || null }));
-    ogRows(universitiesData,'universities').forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'fa-building-columns', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0,
+    (universitiesData.universities||universitiesData.results||[]).forEach(u=>items.push({ type:'university', id:u.id, title:u.name||'University', description:u.description||'', institution:u.city||u.province||'', image:u.logo||u.image||null, badge:'fa-building-columns', is_featured:u.is_featured||false, likes:u.likes_count||0, comments:u.comments_count||0,
       owner:u.owner || u.posted_by || u.created_by || u.uploaded_by || null, owner_name:u.owner_name || u.posted_by_name || null }));
-    ogRows(schoolsData,'schools').forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'fa-school', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0,
+    (schoolsData.schools||schoolsData.results||[]).forEach(s=>items.push({ type:'school', id:s.id, title:s.name||'School', description:s.address||'', institution:`${s.city||''}, ${s.province||''}`, image:s.logo||s.image||null, badge:'fa-school', is_featured:s.is_featured||false, likes:s.likes_count||0, comments:s.comments_count||0,
       owner:s.owner || s.posted_by || s.created_by || s.uploaded_by || null, owner_name:s.owner_name || s.posted_by_name || null }));
-    ogRows(papersData,'papers').forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'fa-file-lines', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0,
+    (papersData.papers||papersData.results||[]).forEach(p=>items.push({ type:'paper', id:p.id, title:p.title||'Question paper', description:`${p.grade?.name||''} · ${p.subject?.name||''}`, institution:p.year||'', badge:'fa-file-lines', grade:p.grade?.name||'', subject:p.subject?.name||'', year:p.year||'', file_url:p.file||null, likes:p.likes_count||0, comments:p.comments_count||0,
       owner:p.owner || p.posted_by || p.created_by || p.uploaded_by || null, owner_name:p.owner_name || p.posted_by_name || null }));
-    ogRows(newsData,'news').filter(n=>n.is_published!==false).forEach(n=>items.push({type:'news',id:n.id,title:n.title||'Education news',description:n.summary||n.content||'',institution:'OppoGlobe News',image:n.image_url||n.featured_image_url||n.featured_image||n.image||null,badge:'fa-newspaper',owner:n.owner||n.posted_by||n.created_by||null,owner_name:n.owner_name||n.posted_by_name||null}));
-    allEducationItems=items;
-    renderEduMiniScroll(items.slice(0,8));renderEducationItems(items);checkEduUserType();
- });
+    allEducationItems = items;
+    renderEduMiniScroll(items.slice(0,8));
+    renderEducationItems(items, container);
+    checkEduUserType();
+  }).catch(()=>container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h4>Couldn't load education content</h4><p>Please refresh the page.</p></div>`);
 }
 function renderEduMiniScroll(items){
   const container = document.getElementById('eduMiniScroll'); if (!container) return;
@@ -4958,11 +4929,11 @@ function renderEducationItems(items, container){
   };
   container.innerHTML=`<div class="og-edu-grid">${filtered.map(item=>{
     const type=types[item.type]||types.news;
-    const detail=new URL(ogShareURL(item.type,item.id)).pathname;
+    const detail=`/api/education/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}/`;
     const iconImage=resolveEducationImage(item.image);
     const subtitle=String(item.institution||item.grade||item.subject||'OppoGlobe Education');
     const details=String(item.description||'').slice(0,180);
-    return `<article class="og-edu-item" data-type="${escapeHtml(item.type)}" data-item-id="${escapeHtml(String(item.id))}">
+    return `<article class="og-edu-item" data-type="${escapeHtml(item.type)}">
       <div class="og-edu-head">
         <div class="og-edu-mark">${iconImage?`<img src="${escapeHtml(iconImage)}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;"><i class="fas ${type.icon}" hidden></i>`:`<i class="fas ${type.icon}"></i>`}</div>
         <div class="og-edu-identity"><span class="og-edu-kind">${type.label}${item.is_featured?' · Featured':''}</span><span class="og-edu-sub">${escapeHtml(subtitle)}</span></div>
@@ -4970,7 +4941,7 @@ function renderEducationItems(items, container){
       <h3><a href="${detail}">${escapeHtml(item.title||type.label)}</a></h3>
       ${details?`<p class="og-edu-description">${escapeHtml(details)}</p>`:''}
       <div class="og-edu-facts">${item.amount?`<span>${escapeHtml(item.amount)}</span>`:''}${item.year?`<span>${escapeHtml(String(item.year))}</span>`:''}${item.closing_date?`<span>Closes ${escapeHtml(String(item.closing_date).slice(0,10))}</span>`:''}</div>
-      <div class="og-edu-footer"><span>${type.label}</span>${item.type==='news'?'<button type="button" class="og-edu-share-news">Share</button>':''}<a href="${detail}">${item.type==='paper'?'View paper':'View details'} <i class="fas fa-arrow-right"></i></a></div>
+      <div class="og-edu-footer"><span>${type.label}</span><a href="${detail}">${item.type==='paper'?'View paper':'View details'} <i class="fas fa-arrow-right"></i></a></div>
     </article>`;
   }).join('')}</div>`;
 }
@@ -4990,7 +4961,10 @@ function filterEducation(filter, btn){
 }
 function searchEducation(){ renderEducationItems(allEducationItems); }
 function viewEducationItem(type, id){ window.location.href = `/education/${type}/${id}/`; }
-function shareEducationItem(type,id,title){openShareSheet(type,id,title);}
+function shareEducationItem(type, id, title){
+  const url = `${window.location.origin}/education/${type}/${id}/`;
+  if (navigator.clipboard) navigator.clipboard.writeText(`${title} - ${url}`).then(()=>showToast('Link copied!','success'));
+}
 function downloadPaper(id){ showToast('Downloading…','info'); window.location.href = `/api/education/question-papers/${id}/download/`; }
 function showEduUpload(type){
   eduUploadType = type;
@@ -5303,9 +5277,13 @@ document.getElementById('newsletterForm')?.addEventListener('submit', function(e
 function dismissPropertyHint(){ localStorage.setItem('property_hint_dismissed','true'); document.getElementById('propertyHint')?.classList.add('hidden'); }
 document.addEventListener('DOMContentLoaded', function(){
   if (localStorage.getItem('property_hint_dismissed') !== 'true') document.getElementById('propertyHint')?.classList.remove('hidden');
-  ogStartContentLoading();
-  loadNotificationCount();loadMessageCount();
-  setInterval(()=>{if(!document.hidden&&navigator.onLine){loadNotificationCount();loadMessageCount();}},60000);
+  loadProperties();
+  loadSponsoredDiscovery();
+  loadNotificationCount();
+  loadMessageCount();
+  setTimeout(()=>{ loadJobs(); loadFeatured(); loadFeedPosts(); loadReels(1); loadMaintenanceRequests(); loadEducationContent(); }, 500);
+  setInterval(()=>{ if (currentTab === 'maintenance') loadMaintenanceRequests(); }, 30000);
+  setInterval(()=>{ loadNotificationCount(); loadMessageCount(); }, 60000);
 
   document.getElementById('postModal')?.addEventListener('click', function(e){ if (e.target === this) hidePostModal(); });
   document.getElementById('eduUploadModal')?.addEventListener('click', function(e){ if (e.target === this) closeEduUploadModal(); });
@@ -5328,7 +5306,7 @@ document.addEventListener('DOMContentLoaded', function(){
     img.dataset.ogImagePrepared = '1';
     img.decoding = 'async';
     if (!img.hasAttribute('loading') && !img.closest('.modal.show, .welcome-modal.show')) img.loading = 'lazy';
-    if(!img.hasAttribute('fetchpriority'))img.setAttribute('fetchpriority','auto');
+    if (!img.hasAttribute('fetchpriority')) img.setAttribute('fetchpriority', 'low');
   }
   function scan(root){
     if (root.nodeType !== 1) return;
@@ -5366,20 +5344,9 @@ const ogEduSearches=['Grade 8','Grade 9','Grade 10','Grade 11','Grade 12','Mathe
 function ogInitEducationSearches(){const el=document.getElementById('ogEduQuicklinks');if(!el)return;ogEduSearches.forEach(term=>{const b=document.createElement('button');b.type='button';b.textContent=term;b.addEventListener('click',()=>{if(term==='NSFAS')return ogEducationGo('nsfas');if(term==='APS Calculator')return ogEducationGo('aps');if(term==='Bursaries')return ogEducationGo('bursary');if(term==='Universities'||term==='TVET Colleges')return ogEducationGo('university');if(term==='Past Papers'||term==='Memorandums')return ogEducationGo('papers');if(term==='Study Tips'||term==='Career Guidance')return ogEducationGo('guides');ogEducationGo('all');const input=document.getElementById('eduSearchInput');if(input){input.value=term;searchEducation(term)}});el.appendChild(b)})}
 function ogEduArray(data,key){return Array.isArray(data)?data:Array.isArray(data?.results)?data.results:Array.isArray(data?.[key])?data[key]:[]}
 function ogEduText(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function ogEduCards(elId,items,type){const el=document.getElementById(elId);if(!el)return;el.innerHTML='';if(!items.length){el.innerHTML='<div class="og-edu-empty">No published listings available yet.</div>';return;}items.slice(0,4).forEach(item=>{const title=item.title||item.name||'Education listing',subtitle=type==='news'?(item.summary||item.content||''):type==='bursary'?(item.provider||item.description||''):(item.city||item.province||item.description||'');const card=document.createElement('article');card.className='og-edu-live-card';const img=item.image_url||item.featured_image_url||item.featured_image||item.image||item.logo_url||item.logo||item.provider_logo;const fallbackImages={institution:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78',news:'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=900&q=78',bursary:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=78',school:'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=900&q=78',university:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78'};const image=document.createElement('img');image.src=img&&/^https?:|^\//i.test(String(img))?img:(fallbackImages[item._kind||type]||fallbackImages.news);image.loading='lazy';image.decoding='async';image.alt=img?title:'Illustrative education photograph';image.onerror=function(){const fallback=fallbackImages[item._kind||type]||fallbackImages.news;if(this.dataset.fallbackTried){this.onerror=null;this.style.display='none';return;}this.dataset.fallbackTried='1';this.src=fallback};card.appendChild(image);const heading=document.createElement('strong');heading.textContent=title;card.appendChild(heading);const desc=document.createElement('p');desc.textContent=String(subtitle).slice(0,155);card.appendChild(desc);if(item.closing_date){const date=document.createElement('p');date.textContent='Closes: '+item.closing_date;card.appendChild(date)}const actions=document.createElement('div');actions.className='og-edu-actions';const btn=document.createElement('button');btn.textContent=type==='news'?'Read article':type==='bursary'||type==='school'||type==='university'?'View & apply':'View details';btn.addEventListener('click',()=>{if(type==='news')window.location.href='/education/news/'+encodeURIComponent(item.id)+'/';else viewEducationItem(item._kind||type,item.id)});actions.appendChild(btn);if(type==='news'){const share=document.createElement('button');share.type='button';share.className='og-news-share-button';share.textContent='Share';share.setAttribute('aria-label','Share '+title);share.addEventListener('click',()=>shareEducationItem('news',item.id,title));actions.appendChild(share)}card.appendChild(actions);el.appendChild(card)})}
-function ogLoadEducationHub(options={}){return ogRunSection('hub',options,async()=>{
- const sources=[['/api/education/bursaries/','bursaries'],['/api/education/schools/','schools'],['/api/education/universities/','universities'],['/api/education/news/','news']];
- const results=await Promise.allSettled(sources.map(async([url,key])=>ogRows(await ogGetJSON(url,{force:options.force!==false}),key)));
- const values=results.map(r=>r.status==='fulfilled'?r.value:[]);
- if(results[0].status==='fulfilled')ogEduCards('ogEduBursaryCards',values[0],'bursary');
- if(results[1].status==='fulfilled'&&results[2].status==='fulfilled'){
-   const institutions=[...values[1].map(x=>({...x,_kind:'school'})),...values[2].map(x=>({...x,_kind:'university'}))];
-   ogEduCards('ogEduInstitutionCards',institutions.slice(0,4),'institution');
- }
- if(results[3].status==='fulfilled')ogEduCards('ogEduNewsCards',values[3].filter(x=>x.is_published!==false),'news');
- if(results.some(r=>r.status==='rejected'))throw Error('Some education sections could not update. Existing articles have been kept.');
-});}
-document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches()});
+function ogEduCards(elId,items,type){const el=document.getElementById(elId);if(!el)return;el.innerHTML='';if(!items.length){el.innerHTML='<div class="og-edu-empty">No published listings available yet.</div>';return;}items.slice(0,4).forEach(item=>{const title=item.title||item.name||'Education listing',subtitle=type==='news'?(item.summary||item.content||''):type==='bursary'?(item.provider||item.description||''):(item.city||item.province||item.description||'');const card=document.createElement('article');card.className='og-edu-live-card';const img=item.image_url||item.featured_image_url||item.featured_image||item.image||item.logo_url||item.logo||item.provider_logo;const fallbackImages={institution:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78',news:'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=900&q=78',bursary:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=78',school:'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=900&q=78',university:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78'};const image=document.createElement('img');image.src=img&&/^https?:|^\//i.test(String(img))?img:(fallbackImages[item._kind||type]||fallbackImages.news);image.loading='lazy';image.decoding='async';image.alt=img?title:'Illustrative education photograph';image.onerror=function(){const fallback=fallbackImages[item._kind||type]||fallbackImages.news;if(this.dataset.fallbackTried){this.onerror=null;this.style.display='none';return;}this.dataset.fallbackTried='1';this.src=fallback};card.appendChild(image);const heading=document.createElement('strong');heading.textContent=title;card.appendChild(heading);const desc=document.createElement('p');desc.textContent=String(subtitle).slice(0,155);card.appendChild(desc);if(item.closing_date){const date=document.createElement('p');date.textContent='Closes: '+item.closing_date;card.appendChild(date)}const actions=document.createElement('div');actions.className='og-edu-actions';const btn=document.createElement('button');btn.textContent=type==='news'?'Read article':type==='bursary'||type==='school'||type==='university'?'View & apply':'View details';btn.addEventListener('click',()=>{if(type==='news')window.location.href='/education/news/'+encodeURIComponent(item.id)+'/';else viewEducationItem(type,item.id)});actions.appendChild(btn);card.appendChild(actions);el.appendChild(card)})}
+async function ogLoadEducationHub(){const sources=[['/api/education/bursaries/','bursaries'],['/api/education/schools/','schools'],['/api/education/universities/','universities'],['/api/education/news/','news']];const values=await Promise.all(sources.map(async([url,key])=>{try{const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw Error(r.status);return ogEduArray(await r.json(),key)}catch{return []}}));ogEduCards('ogEduBursaryCards',values[0],'bursary');ogEduCards('ogEduInstitutionCards',[...values[1].map(x=>({...x,_kind:'school'})),...values[2].map(x=>({...x,_kind:'university'}))].slice(0,4),'institution');document.querySelectorAll('#ogEduInstitutionCards .og-edu-actions button').forEach((btn,index)=>{const item=[...values[1].map(x=>({...x,_kind:'school'})),...values[2].map(x=>({...x,_kind:'university'}))][index];if(item)btn.onclick=()=>viewEducationItem(item._kind,item.id)});ogEduCards('ogEduNewsCards',values[3].filter(x=>x.is_published!==false),'news')}
+document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLoadEducationHub()});
 
 </script>
 
@@ -5528,9 +5495,7 @@ function ogEducationImageFallback(img){
       feedback.textContent = 'News published successfully.';
       form.reset();
       if (typeof ogCloseNewsComposer === 'function') ogCloseNewsComposer();
-      ogInvalidateJSON('/api/education/');
-      if (typeof ogLoadEducationHub === 'function') ogLoadEducationHub({force:true});
-      if(currentTab==='education')loadEducationContent({force:true});
+      if (typeof ogLoadEducationHub === 'function') ogLoadEducationHub();
     } catch (error) {
       feedback.textContent = error.message || 'Could not publish this article.';
     } finally {
