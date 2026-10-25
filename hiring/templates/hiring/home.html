@@ -3,9 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>OppoGlobe — Homes, Jobs & Neighbourhood Life</title>
+<title>OppoGlobe — Homes, Jobs & Education</title>
+<meta name="description" content="Find homes, jobs and practical education guides on OppoGlobe. Plan bursary applications, compare study options and prepare for exams in South Africa.">
+<link rel="canonical" href="https://oppoglobe.co.za/">
+<meta property="og:title" content="OppoGlobe — Homes, Jobs & Education">
+<meta property="og:description" content="Explore local opportunities and practical education guides for South African learners and families.">
+<meta property="og:url" content="https://oppoglobe.co.za/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://oppoglobe.co.za/#organization","name":"OppoGlobe","url":"https://oppoglobe.co.za/"},{"@type":"WebSite","@id":"https://oppoglobe.co.za/#website","url":"https://oppoglobe.co.za/","name":"OppoGlobe","publisher":{"@id":"https://oppoglobe.co.za/#organization"}},{"@type":"WebPage","@id":"https://oppoglobe.co.za/#webpage","url":"https://oppoglobe.co.za/","name":"OppoGlobe — Homes, Jobs & Education","isPartOf":{"@id":"https://oppoglobe.co.za/#website"}}]}</script>
 
 {% load static %}
+{% load education_showcase %}
 {% load pwa %}
 {% progressive_web_app_meta %}
 
@@ -14,13 +23,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="{% static 'notifications/css/notifications.css' %}" />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924073395226525" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-5924073395226525">
+<!-- Activate Google advertising only after consent integration; see START_HERE.md. -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <!-- 1. Manifest link -->
 <link rel="manifest" href="/manifest.json">
 
 <!-- 2. Viewport for mobile scaling -->
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 
 <!-- 3. Theme color for status bar -->
 <meta name="theme-color" content="#c62828">
@@ -1238,237 +1248,121 @@ body.reels-fullscreen .reels-side-actions{position:absolute!important;right:max(
 .loading-line{text-align:center; padding:16px 0; color:var(--ink-faint); font-size:12.5px;}
 
 /* ============================================================
-   MOBILE BOTTOM NAV — OppoGlobe floating native-style dock
+   MOBILE BOTTOM NAV — permanent titles beneath every icon
    ============================================================ */
 .bottom-nav{
   position:fixed;
   left:50%;
   bottom:calc(9px + var(--safe-b));
-  width:min(520px,calc(100vw - 16px));
-  height:62px;
-  padding:5px 7px 5px 9px;
+  width:min(520px,calc(100vw - 12px));
+  height:74px;
+  padding:6px 4px;
   transform:translateX(-50%);
   z-index:3300;
   display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr)) 62px;
+  grid-template-columns:repeat(6,minmax(0,1fr));
   align-items:center;
   gap:0;
-  border:1px solid rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.65);
   border-radius:21px;
-  background:rgba(246,247,245,.57);
-  box-shadow:
-    0 10px 32px rgba(22,36,31,.10),
-    0 2px 8px rgba(22,36,31,.04),
-    inset 0 1px 0 rgba(255,255,255,.62);
+  background:rgba(246,247,245,.94);
+  box-shadow:0 10px 32px rgba(22,36,31,.10),0 2px 8px rgba(22,36,31,.04),inset 0 1px 0 rgba(255,255,255,.62);
   backdrop-filter:blur(24px) saturate(150%);
   -webkit-backdrop-filter:blur(24px) saturate(150%);
   isolation:isolate;
-  overflow:visible;
-  transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s ease,background .2s ease;
-}
-.bottom-nav::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.23),rgba(255,255,255,.035) 48%,rgba(255,255,255,0));
-}
-.bottom-nav::after{
-  content:'';
-  position:absolute;
-  left:14px;
-  right:74px;
-  top:0;
-  height:1px;
-  border-radius:99px;
-  background:linear-gradient(90deg,transparent,rgba(31,111,92,.22),transparent);
-  pointer-events:none;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s ease;
 }
 .bottom-nav.hide{transform:translate(-50%,150%);opacity:0;pointer-events:none;}
 @media (min-width:1000px){.bottom-nav{display:none;}}
-
 .bn-tab{
   appearance:none;
   -webkit-appearance:none;
-  border:0;
-  background:transparent;
-  min-width:0;
-  height:52px;
-  padding:0;
+  position:relative;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  position:relative;
-  color:rgba(91,102,96,.90);
+  gap:4px;
+  width:100%;
+  min-width:0;
+  height:60px;
+  padding:2px 0 5px;
+  border:0;
+  background:transparent;
+  color:var(--ink-soft);
   cursor:pointer;
   font:inherit;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
-  overflow:visible;
 }
 .bn-tab .bn-icon{
-  width:42px;
-  height:42px;
-  border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
-  position:relative;
-  z-index:2;
-  font-size:20px;
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  font-size:19px;
   line-height:1;
   color:inherit;
-  transition:transform .22s cubic-bezier(.2,.9,.3,1.35),color .18s ease,background .18s ease,box-shadow .18s ease;
+  transition:transform .18s ease,color .18s ease,background .18s ease;
 }
-
-/* Label only appears briefly after navigation. */
 .bn-tab .bn-label{
-  position:absolute;
-  left:50%;
-  top:-31px;
-  z-index:20;
-  width:max-content;
-  max-width:92px;
-  padding:5px 9px;
-  border:1px solid rgba(255,255,255,.65);
-  border-radius:999px;
-  background:rgba(22,36,31,.84);
-  color:#fff;
-  box-shadow:0 7px 20px rgba(22,36,31,.18);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  font-size:9.5px;
-  line-height:1;
-  font-weight:700;
-  letter-spacing:.01em;
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  color:inherit;
+  font-family:var(--font-body);
+  font-size:clamp(8px,2.2vw,10px);
+  font-weight:600;
+  line-height:14px;
+  letter-spacing:0;
+  text-align:center;
   white-space:nowrap;
-  opacity:0;
-  visibility:hidden;
   pointer-events:none;
-  transform:translate(-50%,6px) scale(.94);
-  transition:opacity .16s ease,transform .18s var(--ease),visibility .16s;
 }
-.bn-tab .bn-label::after{
-  content:'';
-  position:absolute;
-  left:50%;
-  bottom:-4px;
-  width:7px;
-  height:7px;
-  background:rgba(22,36,31,.84);
-  transform:translateX(-50%) rotate(45deg);
-}
-.bn-tab.show-label .bn-label{
-  opacity:1;
-  visibility:visible;
-  transform:translate(-50%,0) scale(1);
-}
-
 .bn-tab::after{
   content:'';
   position:absolute;
   left:50%;
-  bottom:2px;
+  bottom:0;
   width:14px;
   height:2.5px;
   border-radius:99px;
-  background:var(--jade);
+  background:currentColor;
   opacity:0;
-  transform:translate(-50%,5px) scaleX(.45);
-  transition:opacity .18s ease,transform .22s var(--ease);
+  transform:translateX(-50%);
 }
 .bn-tab.active{color:var(--jade-deep);}
-.bn-tab.active .bn-icon{
-  transform:translateY(-3px) scale(1.08);
-  background:rgba(31,111,92,.075);
-  box-shadow:inset 0 0 0 1px rgba(31,111,92,.05);
-}
-.bn-tab.active::after{opacity:1;transform:translate(-50%,0) scaleX(1);}
-.bn-tab:active .bn-icon{transform:scale(.90);}
-
-/* Raised utility action on the far right. */
-.bn-tab.bn-hero{
-  width:56px;
-  height:56px;
-  justify-self:end;
-  align-self:start;
-  margin-top:-18px;
-  border-radius:50%;
-  background:linear-gradient(145deg,var(--jade),var(--jade-deep));
-  color:#fff;
-  box-shadow:
-    0 10px 24px rgba(21,79,65,.25),
-    0 0 0 5px rgba(246,247,245,.68),
-    inset 0 1px 0 rgba(255,255,255,.18);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  transition:transform .2s cubic-bezier(.2,.9,.3,1.35),box-shadow .2s ease,background .2s ease;
-}
+.bn-tab.active .bn-label{font-weight:800;}
+.bn-tab.active .bn-icon{background:var(--jade-wash);}
+.bn-tab.active::after{opacity:1;}
+/* Utility action: circle around the icon, title on the same baseline. */
 .bn-tab.bn-hero .bn-icon{
-  width:56px;
-  height:56px;
   border-radius:50%;
-  font-size:20px;
+  font-size:17px;
   color:#fff;
-  background:transparent!important;
-  transform:none;
+  background:linear-gradient(145deg,var(--jade),var(--jade-deep));
+  box-shadow:0 3px 8px rgba(21,79,65,.18);
 }
-.bn-tab.bn-hero .bn-label{top:-33px;}
-.bn-tab.bn-hero::before{
-  content:'';
-  position:absolute;
-  top:-9px;
-  left:50%;
-  transform:translateX(-50%);
-  width:0;
-  height:0;
-  border-left:6px solid transparent;
-  border-right:6px solid transparent;
-  border-bottom:9px solid var(--jade-deep);
-  opacity:.88;
-  filter:drop-shadow(0 2px 3px rgba(21,79,65,.13));
-}
-.bn-tab.bn-hero::after{display:none;}
-.bn-tab.bn-hero.active{
+.bn-tab.bn-hero.active{color:var(--coral-deep);}
+.bn-tab.bn-hero.active .bn-icon{
   background:linear-gradient(145deg,var(--coral),var(--coral-deep));
-  box-shadow:0 11px 27px rgba(226,78,47,.27),0 0 0 5px rgba(246,247,245,.70),inset 0 1px 0 rgba(255,255,255,.2);
 }
-.bn-tab.bn-hero.active::before{border-bottom-color:var(--coral-deep);}
-.bn-tab.bn-hero.active .bn-icon{transform:rotate(-6deg) scale(1.04);}
-.bn-tab.bn-hero:active{transform:scale(.91);}
-
+.bn-tab:active .bn-icon{transform:scale(.92);}
 @media (hover:hover){
-  .bn-tab:not(.bn-hero):hover{color:var(--jade-deep);}
-  .bn-tab:not(.bn-hero):hover .bn-icon{transform:translateY(-2px);background:rgba(31,111,92,.055);}
-  .bn-tab.bn-hero:hover{transform:translateY(-3px) scale(1.03);}
-}
-
-@media (max-width:430px){
-  :root{--bottom-nav-h:72px;}
-  .bottom-nav{
-    width:calc(100vw - 12px);
-    bottom:calc(6px + var(--safe-b));
-    height:59px;
-    padding:4px 5px 4px 7px;
-    grid-template-columns:repeat(5,minmax(0,1fr)) 56px;
-    border-radius:19px;
-    background:rgba(246,247,245,.54);
-  }
-  .bn-tab{height:49px;}
-  .bn-tab .bn-icon{width:38px;height:38px;font-size:18px;border-radius:12px;}
-  .bn-tab .bn-label{top:-29px;font-size:9px;padding:5px 8px;}
-  .bn-tab.bn-hero{width:52px;height:52px;margin-top:-16px;}
-  .bn-tab.bn-hero .bn-icon{width:52px;height:52px;font-size:19px;}
+  .bn-tab:hover{color:var(--jade-deep);}
+  .bn-tab:not(.bn-hero):hover .bn-icon{background:var(--jade-wash);}
+  .bn-tab.bn-hero.active:hover{color:var(--coral-deep);}
 }
 @media (max-width:350px){
-  .bottom-nav{width:calc(100vw - 8px);grid-template-columns:repeat(5,minmax(0,1fr)) 50px;padding-left:3px;padding-right:3px;}
-  .bn-tab .bn-icon{width:34px;height:36px;font-size:17px;}
-  .bn-tab.bn-hero{width:48px;height:48px;margin-top:-14px;}
-  .bn-tab.bn-hero .bn-icon{width:48px;height:48px;font-size:17px;}
+  .bottom-nav{width:calc(100vw - 8px);padding-inline:2px;}
+  .bn-tab .bn-label{font-size:8px;}
 }
 @media (prefers-reduced-motion:reduce){
-  .bottom-nav,.bn-tab,.bn-tab .bn-icon,.bn-tab::after,.bn-tab.bn-hero,.bn-tab .bn-label{transition:none!important;}
+  .bottom-nav,.bn-tab .bn-icon{transition:none!important;}
 }
 
 /* ============================================================
@@ -2465,6 +2359,43 @@ img { max-width:100%; }
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-link-stack>.rail-story-link:not([hidden]){display:flex!important}
  .rail-left:has(.og-home-search input:not(:placeholder-shown)) .rail-body:not(.open) .og-nav-explore{display:none!important}
 }
+
+
+/* Education reading section below property cards. */
+#ogEducationHub h1{font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0 0 14px;color:var(--ink)}
+.og-guide-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}.og-guide-toc a{border:1px solid var(--line);background:white;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.4;color:var(--jade-deep)}
+.og-guide-articles{display:grid;grid-template-columns:1fr;gap:18px}.og-guide-article{padding:clamp(18px,4vw,28px);border:1px solid var(--line);border-radius:20px;background:#fff;scroll-margin-top:90px}.og-guide-number{font:700 11px var(--font-mono);letter-spacing:.1em;color:var(--jade)}.og-guide-article h4{font-size:24px;line-height:1.3;margin:12px 0}.og-guide-article h5{font:700 16px/1.5 var(--font-body);margin:22px 0 8px}.og-guide-article p{font-size:15px;line-height:1.8;color:#43574b;margin:0 0 14px}.og-guide-article .og-guide-summary{font-size:16px;color:var(--ink)}.og-guide-read{display:inline-block;color:var(--jade-deep);font-weight:700;font-size:14px;text-decoration:underline;text-underline-offset:3px;margin-top:8px}.og-guide-note{padding:22px;background:#e7f1ec;border-radius:16px;margin-top:22px}.og-guide-note h4{font-size:20px;margin:0 0 12px}.og-guide-note p{font-size:14px;line-height:1.8}.og-guide-note a{color:#154f41;text-decoration:underline;font-size:13px}.og-footer-cookie{background:transparent;border:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
+
+
+/* Compact welcome cards: one photo, one heading and one short sentence. */
+#welcomeModal .modal-box{width:min(360px,calc(100vw - 24px))!important;max-width:360px;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:20px!important}
+#welcomeModal .modal-box-head{min-height:36px;padding:4px 10px 0;flex-shrink:0}
+#welcomeModal .modal-box-body{padding:0 18px 12px;min-height:0}
+#welcomeModal .welcome-illustration.og-welcome-photo{width:100%;max-width:324px;height:132px;min-height:0;margin:0 auto 12px;border-radius:14px;box-shadow:none;overflow:hidden}
+#welcomeModal .welcome-illustration.og-welcome-photo img{display:block;width:100%;max-width:100%;height:100%;object-fit:cover;object-position:center}
+#welcomeModal .welcome-slide h4{font-size:20px;line-height:1.25;margin:0 0 7px}
+#welcomeModal .welcome-slide p{font-size:14px;line-height:1.5;margin:0 auto;max-width:290px;padding:0}
+#welcomeModal .welcome-badge{width:32px;height:32px;font-size:14px;border-width:2px}
+#welcomeModal .welcome-dots{margin:14px 0 0}
+#welcomeModal .modal-box-foot{padding:10px 16px;flex-shrink:0}
+#welcomeModal .welcome-skip,#welcomeModal #welcomeBackBtn{min-height:40px}
+@media(max-width:420px){#welcomeModal .modal-box{width:min(360px,calc(100vw - 20px))!important}}
+@media(max-height:540px){#welcomeModal .welcome-illustration.og-welcome-photo{height:94px}#welcomeModal .welcome-slide h4{font-size:18px}#welcomeModal .welcome-slide p{font-size:13px}#welcomeModal .welcome-dots{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){#welcomeModal .welcome-slide.active{animation:none}}
+
+
+/* Existing education records take the lead on the landing page. */
+.og-directory-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--jade);margin-bottom:8px}
+.og-directory-nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.og-directory-nav a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:9px 13px;background:#fff;border:1px solid var(--line);border-radius:999px;color:var(--jade-deep)}
+.og-directory-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 24px}.og-directory-stats>a{display:flex;align-items:center;gap:9px;padding:14px;background:#e7f1ec;border:1px solid #d6e5dc;border-radius:15px;min-width:0}.og-directory-stats strong{font-family:var(--font-display);font-size:27px;line-height:1;color:#154f41}.og-directory-stats span{font-size:11px;line-height:1.4;color:#405d4e}.og-directory-stats i{margin-left:auto;font-size:11px;color:#1f6f5c}
+.og-directory-section{margin:26px 0 32px;scroll-margin-top:90px}.og-directory-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:0 0 14px}.og-directory-heading h2{font-size:23px;line-height:1.25;margin:0 0 6px}.og-directory-heading p{margin:0;color:var(--ink-soft);font-size:13px;line-height:1.5}.og-directory-heading>a{font-size:11px;font-weight:700;color:var(--jade-deep);text-decoration:underline;flex-shrink:0}
+.og-directory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.og-directory-card{display:flex;flex-direction:column;min-width:0;padding:17px;background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 3px 14px rgba(22,36,31,.035)}
+.og-directory-card-top{display:flex;align-items:center;gap:10px;min-width:0;margin-bottom:12px}.og-directory-card-top>div{min-width:0}.og-directory-logo{width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:#e7f1ec;color:#1f6f5c;display:grid;place-items:center;overflow:hidden;font:700 20px var(--font-display)}.og-directory-logo img{width:100%;height:100%;object-fit:contain;padding:4px;background:white}.og-directory-logo [hidden]{display:none!important}.og-directory-type{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#1f6f5c}.og-directory-provider{display:block;font-size:11px;color:#56695e;line-height:1.4;margin-top:3px;overflow-wrap:anywhere}
+.og-directory-card h3{font-size:18px;line-height:1.35;margin:0 0 10px;overflow-wrap:anywhere}.og-directory-card h3 a:hover{color:var(--jade)}.og-directory-description{font-size:13px;line-height:1.65;color:#485e50;margin:0 0 12px}.og-directory-facts{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}.og-directory-facts span{font-size:10px;padding:4px 7px;border-radius:6px;background:#f3f5f1;color:#4d6254}.og-directory-requirements{font-size:11px;line-height:1.6;color:#56695e;margin:0 0 14px}.og-directory-requirements strong{font-weight:700;color:#2b4335}
+.og-directory-card-foot{margin-top:auto;padding-top:12px;border-top:1px solid #edf0eb;display:flex;flex-direction:column;gap:8px}.og-directory-card-foot>span{font-size:10px;color:#56695e}.og-directory-card-foot a{font-size:12px;font-weight:750;color:#1f6f5c}.og-directory-card-foot .og-directory-closed{color:#8b4e24}.og-directory-card-foot time{font:inherit}.og-directory-grid:not(.og-directory-expanded)>.og-directory-card:nth-of-type(n+7){display:none}
+.og-directory-more{display:block;margin:14px auto 0;padding:10px 18px;border:1px solid #b8cfc0;border-radius:999px;background:#fff;color:#154f41;font-size:12px;font-weight:700;cursor:pointer}.og-directory-empty{padding:16px;border:1px dashed #cbd8cf;border-radius:12px;font-size:13px;line-height:1.6;grid-column:1/-1}.og-directory-empty a{text-decoration:underline;color:#1f6f5c}.og-directory-note{font-size:12px;line-height:1.7;color:#56695e;margin:20px 0 0}.og-directory-schools{margin:20px 0;border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}.og-directory-schools summary{cursor:pointer;font-size:14px;font-weight:700}.og-directory-schools[open] summary{margin-bottom:14px}
+@media(max-width:560px){.og-directory-grid{grid-template-columns:1fr}.og-directory-card{padding:16px}.og-directory-heading{align-items:start;flex-wrap:wrap}.og-directory-heading h2{font-size:21px}.og-directory-stats>a{padding:12px 10px;gap:7px}.og-directory-stats strong{font-size:24px}.og-directory-stats i{display:none}.og-directory-nav a{font-size:12px;padding:8px 11px}}
+
 </style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
@@ -2499,7 +2430,7 @@ img { max-width:100%; }
 <button type="button" onclick="ogEducationGo('nsfas')"><i class="fas fa-wallet" aria-hidden="true"></i><span>NSFAS information</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 </div></section>
             <section class="og-edu-story-group"><button type="button" class="og-edu-story-photo" onclick="ogEducationGo('aps')" aria-label="Explore education tools"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=700&amp;q=78" alt="Illustrative photograph for education tools" loading="lazy" decoding="async" onerror="ogEducationImageFallback(this)"><span class="og-edu-story-overlay"><i class="fas fa-calculator"></i> Education tools</span></button><p class="og-edu-story-desc">Plan your path with practical study tools</p><div class="og-edu-story-links">
-<button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>APS calculator</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
+<button type="button" onclick="ogEducationGo('aps')"><i class="fas fa-calculator" aria-hidden="true"></i><span>Admission points guide</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('bursary')"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Bursary finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('school')"><i class="fas fa-location-dot" aria-hidden="true"></i><span>School finder</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
 <button type="button" onclick="ogEducationGo('careers')"><i class="fas fa-compass" aria-hidden="true"></i><span>Career guidance</span><i class="fas fa-arrow-right og-edu-link-arrow" aria-hidden="true"></i></button>
@@ -2621,7 +2552,7 @@ img { max-width:100%; }
   </div>
 
   <!-- ===== MAIN ===== -->
-  <div class="main">
+  <main class="main">
 
     <!-- Latest from community -->
     <div class="section-head">
@@ -2739,34 +2670,14 @@ img { max-width:100%; }
       <div id="propertiesContainer"></div>
       <!-- Education discovery immediately follows property cards on the default landing tab. -->
       <!-- ===== OPPOGLOBE EDUCATION HUB: connected to existing education APIs ===== -->
-      <section class="og-edu-hub" id="ogEducationHub" aria-label="Education hub">
-        <div class="og-edu-heading"><div><h2>Education, bursaries & study opportunities in South Africa</h2><p>Explore schools, universities, study funding, past examination papers and education news. Browse existing opportunities, compare options and find the information you need before applying.</p></div></div>
-        <div class="og-edu-toolgrid">
-          <button class="og-edu-tool" onclick="ogEducationGo('aps')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-calculator"></i><span><strong>APS calculator</strong><small>Estimate admission points</small></span></button>
-          <button class="og-edu-tool" onclick="ogEducationGo('bursary')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&amp;fit=crop&amp;w=900&amp;q=78" alt="Graduates celebrating - Bursary Finder" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&amp;fit=crop&amp;w=900&amp;q=78'"><i class="fas fa-hand-holding-dollar"></i><span><strong>Bursary finder</strong><small>Funding and applications</small></span></button>
-          <button class="og-edu-tool" onclick="ogEducationGo('papers')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-file-pdf"></i><span><strong>Past papers</strong><small>Exam papers and memos</small></span></button>
-          <button class="og-edu-tool" onclick="ogEducationGo('school')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&amp;fit=crop&amp;w=900&amp;q=78" alt="School campus" loading="lazy" decoding="async"><i class="fas fa-school"></i><span><strong>School finder</strong><small>Discover schools</small></span></button>
-          <button class="og-edu-tool" onclick="ogEducationGo('university')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&amp;fit=crop&amp;w=900&amp;q=78" alt="University campus" loading="lazy" decoding="async"><i class="fas fa-building-columns"></i><span><strong>Universities</strong><small>Explore and apply</small></span></button>
-          <button class="og-edu-tool" onclick="ogEducationGo('guides')"><img class="og-edu-tool-photo" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&amp;fit=crop&amp;w=650&amp;q=78" alt="" loading="lazy" decoding="async"><i class="fas fa-book-open-reader"></i><span><strong>Study guides</strong><small>Learning advice and news</small></span></button>
-        </div>
-        <div class="og-edu-heading" id="ogEduNewsAnchor"><div><h3>Latest education news & guides</h3><p>Published articles with photos from our education community.</p></div><div class="og-edu-heading-actions">{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}<button type="button" class="og-edu-trigger og-edu-add-news" onclick="ogOpenNewsComposer()"><i class="fas fa-plus"></i> Add news</button>{% endif %}<button type="button" class="og-edu-trigger" onclick="ogEducationGo('news')">View all <i class="fas fa-arrow-right"></i></button></div></div>
-        <div class="og-edu-live-grid" id="ogEduNewsCards"><div class="og-edu-empty">Loading published education articles…</div></div>
-        <div class="og-edu-heading"><div><h3>Latest bursaries</h3><p>Available opportunities from existing listings.</p></div><button class="og-edu-trigger" onclick="ogEducationGo('bursary')">All bursaries <i class="fas fa-arrow-right"></i></button></div>
-        <div class="og-edu-live-grid" id="ogEduBursaryCards"><div class="og-edu-empty">Loading bursaries…</div></div>
-        <div class="og-edu-heading"><div><h3>Schools & universities</h3><p>Explore registered institutions and application information.</p></div></div>
-        <div class="og-edu-live-grid" id="ogEduInstitutionCards"><div class="og-edu-empty">Loading schools and universities…</div></div>
-        <div class="og-edu-heading"><div><h3>Popular education searches</h3><p>Quick links to grades, subjects, funding and career resources.</p></div></div>
-        <div class="og-edu-quicklinks" id="ogEduQuicklinks"></div>
-        <!-- Server-rendered education guidance remains readable even if API requests are slow. -->
-        <div class="og-edu-heading" id="ogEducationGuides"><div><h3>Education guides for learners and families</h3><p>Practical starting points for researching opportunities and preparing applications.</p></div><a class="og-edu-trigger" href="/education/">Explore Education Hub <i class="fas fa-arrow-right"></i></a></div>
-        <div class="og-edu-guides-grid">
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-hand-holding-dollar"></i></span><h4>How to prepare a bursary application</h4><p>Start with the eligibility criteria: study field, academic performance, financial requirements and citizenship or residency rules. Prepare your academic results, identity document and any supporting evidence requested by the provider. Check the closing date and use the provider's official application instructions before submitting.</p><a href="/education/">Browse bursaries <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-building-columns"></i></span><h4>Choosing a university or college</h4><p>Compare courses by entry requirements, accreditation, location, tuition and available student support. Check whether a qualification fits your career goals and verify the current admission rules on the institution's official website. Apply early enough to resolve missing documents.</p><a href="/education/">Explore institutions <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-file-lines"></i></span><h4>Using past papers to study</h4><p>Practise with a timed paper before checking the memorandum. Mark your answers, identify the topics where you lost marks and revisit those concepts in your notes or textbook. Repeat with a different paper to check whether your understanding has improved.</p><a href="/education/">Find learning resources <i class="fas fa-arrow-right"></i></a></article>
-          <article class="og-edu-guide"><span class="og-edu-guide-icon"><i class="fas fa-graduation-cap"></i></span><h4>Planning for Grade 12 and beyond</h4><p>Keep track of subject requirements for your preferred programmes and understand how your results contribute to admission points. Make a shortlist of realistic options, including alternative routes, and record application deadlines. Ask institutions directly when requirements are unclear.</p><a href="/education/">Plan your studies <i class="fas fa-arrow-right"></i></a></article>
-        </div>
-        <div class="og-edu-heading"><div><h3>Share education content</h3><p>Help learners discover opportunities. Sign in to contribute.</p></div></div>
-        <div class="og-edu-inline-actions"><button onclick="ogEducationCreate('bursary')"><i class="fas fa-plus"></i> Add education content</button><button class="secondary" onclick="ogEducationGo('my-content')"><i class="fas fa-pen-to-square"></i> Manage my content</button></div>
+      <section class="og-edu-hub" id="ogEducationHub" aria-labelledby="ogEducationTitle">
+        <div class="og-edu-heading"><div><span class="og-directory-kicker">Your next chapter</span><h1 id="ogEducationTitle">Find funding. Find your place to study.</h1><p>Bursaries, universities and colleges from OppoGlobe’s education directory.</p></div></div>
+        <nav class="og-directory-nav" aria-label="Education discoveries"><a href="#ogBursariesShowcase"><i class="fas fa-graduation-cap" aria-hidden="true"></i> Bursaries</a><a href="#ogUniversitiesShowcase"><i class="fas fa-building-columns" aria-hidden="true"></i> Universities &amp; colleges</a><a href="/education/">All education <span aria-hidden="true">↗</span></a></nav>
+        {% education_home_showcase %}
+        <div class="og-edu-heading" id="ogEduNewsAnchor"><div><h2>Education news</h2><p>Updates from the education community.</p></div><div class="og-edu-heading-actions">{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}<button type="button" class="og-edu-trigger og-edu-add-news" onclick="ogOpenNewsComposer()"><i class="fas fa-plus"></i> Add news</button>{% endif %}<a class="og-edu-trigger" href="/education/">View all →</a></div></div>
+        <div class="og-edu-live-grid" id="ogEduNewsCards"><p class="og-directory-empty">Loading education news… <a href="/education/">Visit Education</a></p></div>
+        <details class="og-directory-schools"><summary>Looking for a school?</summary><div class="og-edu-live-grid" id="ogEduSchoolCards"><p class="og-directory-empty">Loading schools… <a href="/education/">Visit Education</a></p></div></details>
+        <p class="og-directory-note">Check the full listing and the provider’s current requirements before applying. A listing does not guarantee funding or admission.</p>
       </section>
 
     </div>
@@ -2900,7 +2811,7 @@ img { max-width:100%; }
         <div class="col-sm-6"><a href="/properties/analytics/" class="card card-pad d-block" style="text-decoration:none;"><div class="card-title"><i class="fas fa-chart-column" style="color:var(--sky);"></i>Analytics</div><p class="text-muted small mb-0">See how you're doing</p></a></div>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- ===== RIGHT RAIL ===== -->
   <div class="rail-right">
@@ -3035,38 +2946,37 @@ img { max-width:100%; }
 
       <!-- Slide 1: Welcome -->
       <div class="welcome-slide active">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=78" alt="Community on OppoGlobe" loading="eager" decoding="async" width="700" height="350" fetchpriority="auto"><div class="welcome-badge" style="background:#1F6F5C;">👋</div></div>
         <h4>Welcome to OppoGlobe!</h4>
-        <p>Your neighbourhood's home for houses, jobs and the people next door. Got 30 seconds for a quick look around?</p>
-        <div class="welcome-payment-note"><strong><i class="fas fa-shield-halved me-1" aria-hidden="true"></i> Pay with confidence</strong>For eligible card payments, OppoGlobe sends you to Yoco’s secure hosted checkout. You enter your card details with Yoco, not into an OppoGlobe card form. Available payment methods are shown at checkout.</div>
+        <p>Homes, jobs and opportunities, all in one place.</p>
       </div>
 
       <!-- Slide 2: Properties -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=82" alt="Property on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=78" alt="Property on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#2E8BC0;"><i class="fas fa-magnifying-glass"></i></div></div>
         <h4>Find your next place</h4>
-        <p>Browse listings grouped by area. Tap the heart to like, the star to rate, and the share icon to send a place to a friend.</p>
+        <p>Browse homes and connect with property owners.</p>
       </div>
 
       <!-- Slide 3: Messaging -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82" alt="Community on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=78" alt="Community on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#E24E2F;"><i class="fas fa-comment-dots"></i></div></div>
         <h4>Talk to your neighbours</h4>
-        <p>See a green name chip on a listing? Tap it to message the owner directly — right inside OppoGlobe, no phone number needed. You can also message whoever posted a maintenance request, job, bursary or university listing.</p>
+        <p>Tap a name to start a conversation.</p>
       </div>
 
       <!-- Slide 4: Maintenance -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=82" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=700&q=78" alt="Maintenance on OppoGlobe" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#E8A93B; color:#3c2c05;"><i class="fas fa-screwdriver-wrench"></i></div></div>
         <h4>Get things fixed</h4>
-        <p>Type what needs fixing in the Maintenance tab — tag how urgent it is, add a photo, and you're done.</p>
+        <p>Post a maintenance request and connect with help.</p>
       </div>
 
       <!-- Slide 5: Jobs & Education -->
       <div class="welcome-slide">
-        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=82" alt="Graduate on OppoGlobe" loading="lazy" decoding="async"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
+        <div class="welcome-illustration og-welcome-photo"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=700&q=78" alt="Graduation and study funding opportunities" data-fallback="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20700%20350%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23e8e2f8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e1f1e9%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22700%22%20height%3D%22350%22%20rx%3D%2224%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22553%22%20cy%3D%2269%22%20r%3D%2295%22%20fill%3D%22%23fff%22%20opacity%3D%22.35%22%2F%3E%3Ccircle%20cx%3D%22114%22%20cy%3D%22305%22%20r%3D%22130%22%20fill%3D%22%23fff%22%20opacity%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M201%20247q70-27%20139%200v-80q-69-27-139%200z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23415c59%22%20stroke-width%3D%225%22%2F%3E%3Cpath%20d%3D%22M340%20247q70-27%20139%200v-80q-69-27-139%200z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23415c59%22%20stroke-width%3D%225%22%2F%3E%3Cpath%20d%3D%22m239%20132%20111-50%20111%2050-111%2050z%22%20fill%3D%22%23715495%22%2F%3E%3Cpath%20d%3D%22M284%20155v39q65%2035%20132%200v-39l-66%2029z%22%20fill%3D%22%23573a79%22%2F%3E%3Cpath%20d%3D%22M461%20132v65%22%20stroke%3D%22%23c78e20%22%20stroke-width%3D%227%22%2F%3E%3Ccircle%20cx%3D%22461%22%20cy%3D%22204%22%20r%3D%229%22%20fill%3D%22%23e6b952%22%2F%3E%3Ccircle%20cx%3D%22503%22%20cy%3D%22253%22%20r%3D%2238%22%20fill%3D%22%23e6b952%22%20stroke%3D%22%23c78e20%22%20stroke-width%3D%224%22%2F%3E%3Cpath%20d%3D%22M503%20231v43m12-35q-24-13-24%201c0%2013%2026%206%2026%2020q0%2017-27%204%22%20fill%3D%22none%22%20stroke%3D%22%23795b20%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E" onerror="this.onerror=null;this.src=this.dataset.fallback;" loading="lazy" decoding="async" width="700" height="350" fetchpriority="low"><div class="welcome-badge" style="background:#7A5AA3;"><i class="fas fa-graduation-cap"></i></div></div>
         <h4>Jobs & bursaries too</h4>
-        <p>Explore local jobs, bursaries and schools, right alongside your neighbourhood feed. That's the tour — enjoy!</p>
+        <p>Explore jobs, bursaries and places to study.</p>
       </div>
 
       <div class="welcome-dots">
@@ -3211,9 +3121,9 @@ img { max-width:100%; }
 <div class="toast-stack" id="toastStack"></div>
 <div class="pwa-prompt" id="pwaPrompt"><i class="fas fa-mobile-screen"></i><span>Install the OppoGlobe app</span><button class="close-btn" id="pwaCloseBtn"><i class="fas fa-times"></i></button></div>
 
-<!-- ===== MOBILE BOTTOM NAV — minimal OppoGlobe floating dock ===== -->
+<!-- ===== MOBILE BOTTOM NAV — icons with permanent titles ===== -->
 <nav class="bottom-nav" id="mobileBottomNav" aria-label="Primary mobile navigation">
-  <button type="button" class="bn-tab active" data-tab="properties" onclick="switchTab('properties')" aria-label="Homes" title="Homes">
+  <button type="button" class="bn-tab active" data-tab="properties" onclick="switchTab('properties')" aria-label="Homes" title="Homes" aria-current="page">
     <span class="bn-icon"><i class="fas fa-house"></i></span><span class="bn-label">Homes</span>
   </button>
   <button type="button" class="bn-tab" data-tab="reels" onclick="switchTab('reels')" aria-label="Reels" title="Reels">
@@ -3246,7 +3156,7 @@ img { max-width:100%; }
     </div>
     <div>
       <h6 class="footer-h">Company</h6>
-      <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/blog/">Blog</a></li></ul>
+      <ul class="footer-links"><li><a href="/about/">About us</a></li><li><a href="/contact/">Contact</a></li><li><a href="/careers/">Careers</a></li><li><a href="/education/guides/">Education guides</a></li><li><a href="/education/editorial/">About these guides</a></li></ul>
     </div>
     <div>
       <h6 class="footer-h">Support</h6>
@@ -3273,7 +3183,7 @@ img { max-width:100%; }
   </section>
   <div class="footer-bottom">
     <span>© 2026 OppoGlobe. All rights reserved.</span>
-    <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/cookies/">Cookies</a></div>
+    <div style="display:flex; gap:6px;"><a href="/privacy/">Privacy</a>·<a href="/terms/">Terms</a>·<a href="/site-cookies/">Cookies</a> · <button type="button" class="og-footer-cookie" onclick="window.ogOpenCookiePreferences()">Cookie preferences</button></div>
   </div>
 </footer>
 
@@ -3472,14 +3382,7 @@ function switchTab(tabName, options = {}){
     const active = btn.dataset.tab === tabName;
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-current', active ? 'page' : 'false');
-    btn.classList.remove('show-label');
-    if (btn._labelTimer) clearTimeout(btn._labelTimer);
   });
-  const activeMobileTab = document.querySelector(`#mobileBottomNav .bn-tab[data-tab="${tabName}"]`);
-  if (activeMobileTab){
-    activeMobileTab.classList.add('show-label');
-    activeMobileTab._labelTimer = setTimeout(()=>activeMobileTab.classList.remove('show-label'), 1250);
-  }
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(tabName+'Tab')?.classList.add('active');
 
@@ -5162,7 +5065,30 @@ function closeAppsModal(){ appsModal?.hide(); }
 let welcomeStep = 0;
 const WELCOME_TOTAL = document.querySelectorAll('#welcomeModal .welcome-slide').length || 5;
 function updateWelcomeSlide(){
-  document.querySelectorAll('#welcomeModal .welcome-slide').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
+  document.querySelectorAll('#welcomeModal .welcome-slide').forEach((el,i)=>{
+    const active = i===welcomeStep;
+    el.classList.toggle('active', active);
+    if (!active) return;
+    const image = el.querySelector('img');
+    if (!image) return;
+    // Hidden slides must start loading as soon as they are selected.
+    image.loading = 'eager';
+    image.setAttribute('fetchpriority', 'high');
+    if (image.dataset.fallback && !image.dataset.welcomeFallbackReady){
+      image.dataset.welcomeFallbackReady = '1';
+      const useFallback = ()=>{
+        if (image.dataset.welcomeFallbackUsed) return;
+        image.dataset.welcomeFallbackUsed = '1';
+        image.onerror = null;
+        image.src = image.dataset.fallback;
+      };
+      if (image.complete && image.naturalWidth === 0) useFallback();
+      else {
+        const timer = setTimeout(()=>{if(!image.complete || image.naturalWidth===0)useFallback();},6000);
+        image.addEventListener('load',()=>clearTimeout(timer),{once:true});
+      }
+    }
+  });
   document.querySelectorAll('#welcomeModal .welcome-dots span').forEach((el,i)=>el.classList.toggle('active', i===welcomeStep));
   const backBtn = document.getElementById('welcomeBackBtn');
   if (backBtn) backBtn.style.visibility = welcomeStep===0 ? 'hidden' : 'visible';
@@ -5337,7 +5263,7 @@ function ogCloseNewsComposer(){document.getElementById('ogNewsComposer')?.classL
 function ogCloseEducationMenu(){const menu=document.getElementById('ogEducationMenu'),trigger=document.getElementById('ogEducationTrigger');if(menu)menu.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false')}
 function ogToggleEducationMenu(e){e?.stopPropagation();const menu=document.getElementById('ogEducationMenu'),trigger=document.getElementById('ogEducationTrigger');if(!menu)return;menu.hidden=!menu.hidden;trigger?.setAttribute('aria-expanded',String(!menu.hidden))}
 document.addEventListener('click',e=>{if(!e.target.closest('#ogEducationNav'))ogCloseEducationMenu()});document.addEventListener('keydown',e=>{if(e.key==='Escape')ogCloseEducationMenu()});
-function ogEducationGo(section){ogCloseEducationMenu();switchTab('properties');const filterMap={bursary:'bursary',school:'school',university:'university',papers:'paper'};if(filterMap[section]){const f=filterMap[section];switchTab('education');filterEducation(f,document.querySelector('#educationTab .edu-chip[data-filter="'+f+'"]'));document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'});return;}if(section==='news'||section==='guides'){window.location.href='/education/';return;}if(section==='my-content'){ogShowMyContent();return;}if(section==='aps'){window.location.href='/education/';return;}if(section==='nsfas'){window.open('https://www.nsfas.org.za/','_blank','noopener,noreferrer');return;}if(section==='grades'||section==='careers'){document.getElementById('ogEduQuicklinks')?.scrollIntoView({behavior:'smooth',block:'start'});return;}document.getElementById('ogEducationHub')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function ogEducationGo(section){ogCloseEducationMenu();switchTab('properties');const filterMap={bursary:'bursary',school:'school',university:'university',papers:'paper'};if(filterMap[section]){const f=filterMap[section];switchTab('education');filterEducation(f,document.querySelector('#educationTab .edu-chip[data-filter="'+f+'"]'));document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'});return;}if(section==='guides'){window.location.href='/education/guides/';return;}if(section==='news'){window.location.href='/education/';return;}if(section==='my-content'){ogShowMyContent();return;}if(section==='aps'){window.location.href='/education/guides/understand-aps-and-subject-requirements/';return;}if(section==='nsfas'){window.open('https://www.nsfas.org.za/','_blank','noopener,noreferrer');return;}if(section==='grades'||section==='careers'){window.location.href='/education/';return;}document.getElementById('ogEducationHub')?.scrollIntoView({behavior:'smooth',block:'start'})}
 function ogEducationCreate(type){ogCloseEducationMenu();if(document.body.dataset.userLoggedIn!=='true'){if(typeof showLogin==='function')showLogin();return;}switchTab('education');showEduUpload(type||'bursary')}
 function ogShowMyContent(){ogCloseEducationMenu();if(document.body.dataset.userLoggedIn!=='true'){if(typeof showLogin==='function')showLogin();return;}switchTab('education');showToast('Your submissions are available in Education. Editing requires owner-aware API permissions.','info');document.getElementById('educationContainer')?.scrollIntoView({behavior:'smooth',block:'start'})}
 const ogEduSearches=['Grade 8','Grade 9','Grade 10','Grade 11','Grade 12','Mathematics','Physical Sciences','Life Sciences','English','Accounting','Geography','Business Studies','Past Papers','Memorandums','Bursaries','Universities','TVET Colleges','NSFAS','APS Calculator','Study Tips','Career Guidance'];
@@ -5345,7 +5271,37 @@ function ogInitEducationSearches(){const el=document.getElementById('ogEduQuickl
 function ogEduArray(data,key){return Array.isArray(data)?data:Array.isArray(data?.results)?data.results:Array.isArray(data?.[key])?data[key]:[]}
 function ogEduText(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function ogEduCards(elId,items,type){const el=document.getElementById(elId);if(!el)return;el.innerHTML='';if(!items.length){el.innerHTML='<div class="og-edu-empty">No published listings available yet.</div>';return;}items.slice(0,4).forEach(item=>{const title=item.title||item.name||'Education listing',subtitle=type==='news'?(item.summary||item.content||''):type==='bursary'?(item.provider||item.description||''):(item.city||item.province||item.description||'');const card=document.createElement('article');card.className='og-edu-live-card';const img=item.image_url||item.featured_image_url||item.featured_image||item.image||item.logo_url||item.logo||item.provider_logo;const fallbackImages={institution:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78',news:'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=900&q=78',bursary:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=78',school:'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=900&q=78',university:'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=900&q=78'};const image=document.createElement('img');image.src=img&&/^https?:|^\//i.test(String(img))?img:(fallbackImages[item._kind||type]||fallbackImages.news);image.loading='lazy';image.decoding='async';image.alt=img?title:'Illustrative education photograph';image.onerror=function(){const fallback=fallbackImages[item._kind||type]||fallbackImages.news;if(this.dataset.fallbackTried){this.onerror=null;this.style.display='none';return;}this.dataset.fallbackTried='1';this.src=fallback};card.appendChild(image);const heading=document.createElement('strong');heading.textContent=title;card.appendChild(heading);const desc=document.createElement('p');desc.textContent=String(subtitle).slice(0,155);card.appendChild(desc);if(item.closing_date){const date=document.createElement('p');date.textContent='Closes: '+item.closing_date;card.appendChild(date)}const actions=document.createElement('div');actions.className='og-edu-actions';const btn=document.createElement('button');btn.textContent=type==='news'?'Read article':type==='bursary'||type==='school'||type==='university'?'View & apply':'View details';btn.addEventListener('click',()=>{if(type==='news')window.location.href='/education/news/'+encodeURIComponent(item.id)+'/';else viewEducationItem(type,item.id)});actions.appendChild(btn);card.appendChild(actions);el.appendChild(card)})}
-async function ogLoadEducationHub(){const sources=[['/api/education/bursaries/','bursaries'],['/api/education/schools/','schools'],['/api/education/universities/','universities'],['/api/education/news/','news']];const values=await Promise.all(sources.map(async([url,key])=>{try{const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw Error(r.status);return ogEduArray(await r.json(),key)}catch{return []}}));ogEduCards('ogEduBursaryCards',values[0],'bursary');ogEduCards('ogEduInstitutionCards',[...values[1].map(x=>({...x,_kind:'school'})),...values[2].map(x=>({...x,_kind:'university'}))].slice(0,4),'institution');document.querySelectorAll('#ogEduInstitutionCards .og-edu-actions button').forEach((btn,index)=>{const item=[...values[1].map(x=>({...x,_kind:'school'})),...values[2].map(x=>({...x,_kind:'university'}))][index];if(item)btn.onclick=()=>viewEducationItem(item._kind,item.id)});ogEduCards('ogEduNewsCards',values[3].filter(x=>x.is_published!==false),'news')}
+function ogToggleDirectoryCards(button){
+ const grid=document.getElementById(button.getAttribute('aria-controls'));if(!grid)return;
+ const expanded=grid.classList.toggle('og-directory-expanded');button.setAttribute('aria-expanded',String(expanded));
+ button.textContent=expanded?'Show fewer':grid.dataset.kind==='bursary'?'Show more bursaries':'Show more institutions';
+}
+function ogDirectoryPlain(value){return String(value??'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()}
+function ogDirectoryWords(value,limit){const words=ogDirectoryPlain(value).split(/\s+/).filter(Boolean);return words.slice(0,limit).join(' ')+(words.length>limit?' …':'')}
+function ogDirectoryImage(value){if(!value)return '';try{const url=new URL(String(value),location.origin);return ['https:','http:'].includes(url.protocol)&&!url.username&&!url.password?url.href:''}catch{return ''}}
+function ogDirectoryToday(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const values=Object.fromEntries(parts.map(x=>[x.type,x.value]));return values.year+'-'+values.month+'-'+values.day}
+function ogRenderDirectoryFallback(grid,data,key){
+ const type=grid.dataset.kind,today=ogDirectoryToday(),escape=ogEduText;
+ const items=ogEduArray(data,key).filter(item=>item.is_active!==false&&/^\d+$/.test(String(item.id)));
+ if(type==='bursary')items.sort((a,b)=>{const ac=!!a.closing_date&&String(a.closing_date).slice(0,10)<today,bc=!!b.closing_date&&String(b.closing_date).slice(0,10)<today;return Number(ac)-Number(bc)});
+ const count=document.querySelector('[data-edu-count="'+type+'"]');if(count)count.textContent=Number.isFinite(data?.count)?data.count:items.length;
+ if(!items.length){grid.innerHTML='<p class="og-directory-empty">No public listings are available right now. <a href="/education/">Visit Education</a></p>';return}
+ grid.innerHTML=items.slice(0,12).map(item=>{
+  const title=ogDirectoryPlain(item.title||item.name),description=ogDirectoryWords(item.description,45),provider=type==='bursary'?ogDirectoryPlain(item.provider):[item.city,item.province].filter(Boolean).join(', '),image=ogDirectoryImage(type==='bursary'?item.provider_logo:item.logo),initial=title.slice(0,1).toUpperCase(),url='/education/'+type+'/'+encodeURIComponent(item.id)+'/',date=/^\d{4}-\d{2}-\d{2}/.test(String(item.closing_date||''))?String(item.closing_date).slice(0,10):'',closed=date&&date<today;
+  const logo=image?'<img src="'+escape(image)+'" alt="" loading="lazy" decoding="async" width="42" height="42" onerror="this.hidden=true;this.nextElementSibling.hidden=false;"><span hidden>'+escape(initial)+'</span>':'<span>'+escape(initial)+'</span>';
+  const facts=type==='bursary'?[item.field_of_study,item.level].filter(Boolean).map(v=>'<span>'+escape(ogDirectoryPlain(v).replace(/_/g,' '))+'</span>').join(''):'';
+  const requirements=type==='bursary'&&item.requirements?'<p class="og-directory-requirements"><strong>Who can apply:</strong> '+escape(ogDirectoryWords(item.requirements,23))+'</p>':'';
+  const status=date?(closed?'Closing date passed · ':'Closes ')+escape(date):type==='bursary'?'Check provider details':'Explore this institution';
+  return '<article class="og-directory-card" data-record-id="'+escape(item.id)+'"><div class="og-directory-card-top"><span class="og-directory-logo" aria-hidden="true">'+logo+'</span><div><span class="og-directory-type">'+(type==='bursary'?'Bursary':'Institution')+'</span><span class="og-directory-provider">'+escape(provider)+'</span></div></div><h3><a href="'+url+'">'+escape(title)+'</a></h3>'+(description?'<p class="og-directory-description">'+escape(description)+'</p>':'')+(facts?'<div class="og-directory-facts">'+facts+'</div>':'')+requirements+'<div class="og-directory-card-foot"><span'+(closed?' class="og-directory-closed"':'')+'>'+status+'</span><a href="'+url+'">'+(type==='bursary'?'Full bursary':'View institution')+' ↗</a></div></article>';
+ }).join('');
+ if(items.length>6&&!grid.parentElement.querySelector('.og-directory-more')){const button=document.createElement('button');button.type='button';button.className='og-directory-more';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls',grid.id);button.textContent=type==='bursary'?'Show more bursaries':'Show more institutions';button.onclick=()=>ogToggleDirectoryCards(button);grid.after(button)}
+}
+async function ogLoadEducationHub(){
+ const fetchPublic=async(url)=>{const response=await fetch(url,{headers:{Accept:'application/json'}});if(!response.ok)throw Error(response.status);return response.json()};
+ const tasks=[['/api/education/news/','news','ogEduNewsCards','news'],['/api/education/schools/','schools','ogEduSchoolCards','school']].map(async([url,key,id,type])=>{try{const data=await fetchPublic(url);ogEduCards(id,ogEduArray(data,key).filter(x=>x.is_published!==false&&x.is_active!==false),type)}catch{const element=document.getElementById(id);if(element)element.innerHTML='<p class="og-directory-empty">Unable to load these listings. <a href="/education/">Visit Education</a></p>'}});
+ for(const [id,url,key] of [['ogEduBursaryCards','/api/education/bursaries/','bursaries'],['ogEduInstitutionCards','/api/education/universities/','universities']]){const grid=document.getElementById(id);if(grid?.dataset.serverRendered==='false')tasks.push((async()=>{try{ogRenderDirectoryFallback(grid,await fetchPublic(url),key)}catch{grid.innerHTML='<p class="og-directory-empty">Unable to load these listings. <a href="/education/">Visit Education</a></p>'}})())}
+ await Promise.allSettled(tasks);
+}
 document.addEventListener('DOMContentLoaded',()=>{ogInitEducationSearches();ogLoadEducationHub()});
 
 </script>
@@ -5505,5 +5461,6 @@ function ogEducationImageFallback(img){
   });
 })();
 </script>
+{% include 'oppo_seo/consent.html' %}
 </body>
 </html>
