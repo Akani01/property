@@ -14,7 +14,6 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://oppoglobe.co.za/#organization","name":"OppoGlobe","url":"https://oppoglobe.co.za/"},{"@type":"WebSite","@id":"https://oppoglobe.co.za/#website","url":"https://oppoglobe.co.za/","name":"OppoGlobe","publisher":{"@id":"https://oppoglobe.co.za/#organization"}},{"@type":"WebPage","@id":"https://oppoglobe.co.za/#webpage","url":"https://oppoglobe.co.za/","name":"OppoGlobe — Homes, Jobs & Education","isPartOf":{"@id":"https://oppoglobe.co.za/#website"}}]}</script>
 
 {% load static %}
-{% load education_showcase %}
 {% load pwa %}
 {% progressive_web_app_meta %}
 
@@ -2673,7 +2672,6 @@ img { max-width:100%; }
       <section class="og-edu-hub" id="ogEducationHub" aria-labelledby="ogEducationTitle">
         <div class="og-edu-heading"><div><span class="og-directory-kicker">Your next chapter</span><h1 id="ogEducationTitle">Find funding. Find your place to study.</h1><p>Bursaries, universities and colleges from OppoGlobe’s education directory.</p></div></div>
         <nav class="og-directory-nav" aria-label="Education discoveries"><a href="#ogBursariesShowcase"><i class="fas fa-graduation-cap" aria-hidden="true"></i> Bursaries</a><a href="#ogUniversitiesShowcase"><i class="fas fa-building-columns" aria-hidden="true"></i> Universities &amp; colleges</a><a href="/education/">All education <span aria-hidden="true">↗</span></a></nav>
-        {% education_home_showcase %}
         <div class="og-edu-heading" id="ogEduNewsAnchor"><div><h2>Education news</h2><p>Updates from the education community.</p></div><div class="og-edu-heading-actions">{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}<button type="button" class="og-edu-trigger og-edu-add-news" onclick="ogOpenNewsComposer()"><i class="fas fa-plus"></i> Add news</button>{% endif %}<a class="og-edu-trigger" href="/education/">View all →</a></div></div>
         <div class="og-edu-live-grid" id="ogEduNewsCards"><p class="og-directory-empty">Loading education news… <a href="/education/">Visit Education</a></p></div>
         <details class="og-directory-schools"><summary>Looking for a school?</summary><div class="og-edu-live-grid" id="ogEduSchoolCards"><p class="og-directory-empty">Loading schools… <a href="/education/">Visit Education</a></p></div></details>
