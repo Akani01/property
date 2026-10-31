@@ -830,7 +830,13 @@ class PropertyViewSet(viewsets.ModelViewSet):
             payment.gateway_response = {'error': str(exc)}
             payment.save(update_fields=['status', 'gateway_response', 'updated_at'])
             _notify_property_booking(booking, event='payment_failed', sound=True)
-            return Response({'success': False, 'error': f'Yoco checkout failed: {exc}'}, status=502)
+            return Response({
+                'success': True,
+                'payment_method': 'card',
+                'checkout_error': 'Card checkout could not be started. Please retry payment from My Bookings.',
+                'booking_url': f'/bookings/?booking={booking.id}',
+                'booking': BookingSerializer(booking).data,
+            }, status=201)
 
 
 # ============================================================

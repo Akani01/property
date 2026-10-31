@@ -17,7 +17,12 @@ def assetlinks(request):
         raise Http404("assetlinks.json not found")
     return FileResponse(open(path, "rb"), content_type="application/json")
 
+from core import universal_search
+
 urlpatterns = [
+    path("search/", universal_search.search_page, name="universal_search"),
+    path("api/search/", universal_search.search_api, name="universal_search_api"),
+    path("pricecheck/", include("pricecheck.urls")),
     # ============================================================
     # CUSTOM PWA MANIFEST — registered FIRST so it wins
     # ============================================================

@@ -1,0 +1,32 @@
+:root { --og-bg:#f7faf8; --og-surface:#fff; --og-text:#16251e; --og-muted:#52665b; --og-border:#dce6df; --og-accent:#1f6f5c; }
+:root[data-og-theme="dark"] { --og-bg:#101b18; --og-surface:#1b2923; --og-text:#eef6f0; --og-muted:#b8c9be; --og-border:#34483c; --og-accent:#55c99b; }
+html[data-og-theme] { background:var(--og-bg); color:var(--og-text); }
+html[data-og-theme] body { background:var(--og-bg); color:var(--og-text); }
+html[data-og-theme="dark"] :is(.card,.modal-content,.dropdown-menu,.list-group-item,.offcanvas,.popover,.accordion-item,.table,.bg-white,.bg-light) { background-color:var(--og-surface)!important; color:var(--og-text)!important; border-color:var(--og-border)!important; }
+html[data-og-theme="dark"] :is(.text-dark,.text-body,.text-black) { color:var(--og-text)!important; }
+html[data-og-theme="dark"] :is(.text-muted,.text-secondary) { color:var(--og-muted)!important; }
+html[data-og-theme="dark"] :is(input,textarea,select,.form-control,.form-select) { background-color:var(--og-surface); color:var(--og-text); border-color:var(--og-border); }
+html[data-og-theme="dark"] :is(input,textarea)::placeholder { color:var(--og-muted); opacity:1; }
+html[data-og-theme="dark"] a:not(.btn) { color:#83dfb5; }
+html[data-og-theme="dark"] .table { --bs-table-bg:var(--og-surface); --bs-table-color:var(--og-text); --bs-table-border-color:var(--og-border); }
+.og-appearance { border:1px solid var(--og-border); background:var(--og-surface); color:var(--og-text); border-radius:16px; padding:16px; max-width:520px; }
+.og-appearance fieldset { display:flex; flex-wrap:wrap; gap:12px; border:0; padding:0; margin:10px 0 0; }
+.og-appearance label { display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+
+html[data-og-theme="dark"] { color-scheme: dark; }
+html[data-og-theme="light"] { color-scheme: light; }
+html[data-og-theme="dark"] :is(header,nav,footer,main,section,aside) { border-color: var(--og-border); }
+html[data-og-theme="dark"] :is(.navbar,.sidebar,.panel,.dashboard-card,.property-card,.listing-card,.search-panel,.settings-card) { background-color:var(--og-surface);color:var(--og-text);border-color:var(--og-border); }
+html[data-og-theme="dark"] :is(.form-label,label,h1,h2,h3,h4,h5,h6,p) { color:inherit; }
+html[data-og-theme="dark"] :is(button,.btn) { color:inherit; }
+html[data-og-theme="dark"] :is(.btn-primary,.btn-success) { color:#fff; }
+
+/* OppoGlobe cross-page contrast and PriceCheck dark surfaces */
+html[data-og-theme="dark"] :is(.bar,.card,.product,.offer,.chip,.search,.loc-btn,.hero + section,.modal,.modal-dialog,.content-card,.widget,.dropdown-content){background:var(--og-surface)!important;color:var(--og-text)!important;border-color:var(--og-border)!important;}
+html[data-og-theme="dark"] :is(.muted,.empty,.foot,.notice,.text-muted){color:var(--og-muted)!important;}
+html[data-og-theme="dark"] :is(.price,.back,.offer a){color:#76e0b3!important;}
+html[data-og-theme="dark"] :is(.product.selected,.chip.active){background:#214c3c!important;color:#f5fff9!important;}
+html[data-og-theme="dark"] :is(.search input,.search input:focus){background:var(--og-surface)!important;color:var(--og-text)!important;}
+html[data-og-theme="dark"] :is(.search button,.loc-btn[aria-pressed="true"]){background:#126449!important;color:white!important;}
+html[data-og-theme="dark"] :is(.radius,.search select){background:var(--og-surface);color:var(--og-text);border-color:var(--og-border);}
+@media (prefers-reduced-motion: reduce){html[data-og-theme] *,html[data-og-theme] *::before,html[data-og-theme] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}

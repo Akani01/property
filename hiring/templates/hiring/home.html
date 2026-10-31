@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="/static/oppoglobe/theme.css">
+<script src="/static/oppoglobe/theme.js"></script>
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>OppoGlobe — Homes, Jobs & Education</title>
@@ -4830,7 +4833,7 @@ function renderEducationItems(items, container){
   };
   container.innerHTML=`<div class="og-edu-grid">${filtered.map(item=>{
     const type=types[item.type]||types.news;
-    const detail=`/api/education/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}/`;
+    const detail=`/education/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}/`;
     const iconImage=resolveEducationImage(item.image);
     const subtitle=String(item.institution||item.grade||item.subject||'OppoGlobe Education');
     const details=String(item.description||'').slice(0,180);
@@ -4861,7 +4864,7 @@ function filterEducation(filter, btn){
   renderEducationItems(allEducationItems);
 }
 function searchEducation(){ renderEducationItems(allEducationItems); }
-function viewEducationItem(type, id){ window.location.href = `/education/${type}/${id}/`; }
+function viewEducationItem(type, id){ window.location.href = `/education/${encodeURIComponent(type)}/${encodeURIComponent(id)}/`; }
 function shareEducationItem(type, id, title){
   const url = `${window.location.origin}/education/${type}/${id}/`;
   if (navigator.clipboard) navigator.clipboard.writeText(`${title} - ${url}`).then(()=>showToast('Link copied!','success'));

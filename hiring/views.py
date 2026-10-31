@@ -1354,74 +1354,78 @@ def property_rooms_manage(request, property_id):
 
 @login_required
 def property_room_add(request, property_id):
-    """
-    Add a room to a property
-    """
-    # Only allow admin users
-    if request.user.user_type != 'admin' and not request.user.is_superuser:
-        return JsonResponse({'error': 'Permission denied'}, status=403)
-    
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
+    from django.core.exceptions import ValidationError
+    from django.core.files.images import get_image_dimensions
+    from decimal import Decimal, InvalidOperation
     property_obj = get_object_or_404(Property, id=property_id)
-    
-    # Check permission
-    if property_obj.company and property_obj.company.user != request.user and not request.user.is_superuser:
-        return JsonResponse({'error': 'Permission denied'}, status=403)
-    
+    if not (request.user.is_superuser or (property_obj.company and property_obj.company.user_id == request.user.id)):
+        return JsonResponse({'success': False, 'error': 'Only the property owner can manage rooms.'}, status=403)
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
     try:
-        data = json.loads(request.body)
-        
-        room = Room.objects.create(
-            property=property_obj,
-            room_number=data.get('room_number', ''),
-            room_name=data.get('room_name', ''),
-            room_type=data.get('room_type', 'single'),
-            room_status=data.get('room_status', 'available'),
-            capacity=data.get('capacity', 1),
-            bed_count=data.get('bed_count', 1),
-            size_sq_meters=data.get('size_sq_meters'),
-            price_per_night=data.get('price_per_night'),
-            description=data.get('description', ''),
-            is_active=True,
-        )
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Room added successfully',
-            'room_id': str(room.id)
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        data = request.POST if request.POST else json.loads(request.body)
+        room_id = data.get('room_id')
+        room = get_object_or_404(Room, id=room_id, property=property_obj) if room_id else Room(property=property_obj)
+        room.room_name = (data.get('name') or '').strip()
+        if not room.room_name:
+            return JsonResponse({'success': False, 'error': 'Enter a room name.'}, status=400)
+        room.room_number = (data.get('room_number') or '').strip()
+        allowed_types = dict(Room.ROOM_TYPES)
+        requested_type = data.get('room_type', 'single')
+        room.room_type = requested_type if requested_type in allowed_types else 'other'
+        if room.room_type == 'other': room.custom_room_type = requested_type[:100]
+        requested_status = data.get('status', 'available')
+        room.room_status = requested_status if requested_status in dict(Room.ROOM_STATUS) else 'available'
+        room.bed_count = max(0, int(data.get('beds') or 1))
+        room.capacity = max(1, int(data.get('capacity') or 1))
+        def optional_decimal(key):
+            value = str(data.get(key, '')).strip()
+            return Decimal(value) if value else None
+        room.size_sq_meters = optional_decimal('size')
+        room.price_per_night = optional_decimal('price')
+        if any(v is not None and v < 0 for v in [room.size_sq_meters, room.price_per_night]):
+            return JsonResponse({'success': False, 'error': 'Price and size cannot be negative.'}, status=400)
+        room.description = data.get('description', '')
+        photo = request.FILES.get('room_image')
+        if photo:
+            if photo.size > 5 * 1024 * 1024:
+                return JsonResponse({'success': False, 'error': 'Room photo must be 5 MB or smaller.'}, status=400)
+            if photo.content_type not in ('image/jpeg','image/png','image/webp'):
+                return JsonResponse({'success': False, 'error': 'Use JPG, PNG or WebP for the room photo.'}, status=400)
+            get_image_dimensions(photo)
+            photo.seek(0)
+            room.room_image = photo
+        room.full_clean()
+        room.save()
+        return JsonResponse({'success': True, 'message': 'Room saved successfully.', 'room_id': str(room.id)})
+    except (ValueError, InvalidOperation, ValidationError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+
+@login_required
+def property_room_detail(request, room_id):
+    room = get_object_or_404(Room, id=room_id, is_active=True)
+    if not (request.user.is_superuser or (room.property.company and room.property.company.user_id == request.user.id)):
+        return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+    return JsonResponse({'success': True, 'room': {
+        'name': room.room_name, 'room_number': room.room_number,
+        'room_type': room.custom_room_type if room.room_type == 'other' else room.room_type,
+        'status': room.room_status, 'beds': room.bed_count, 'capacity': room.capacity,
+        'size': str(room.size_sq_meters or ''), 'price': str(room.price_per_night or ''),
+        'description': room.description,
+    }})
 
 
 @login_required
 def property_room_delete(request, room_id):
-    """
-    Delete a room
-    """
-    # Only allow admin users
-    if request.user.user_type != 'admin' and not request.user.is_superuser:
-        return JsonResponse({'error': 'Permission denied'}, status=403)
-    
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
     room = get_object_or_404(Room, id=room_id)
-    
-    # Check permission
-    if room.property.company and room.property.company.user != request.user and not request.user.is_superuser:
-        return JsonResponse({'error': 'Permission denied'}, status=403)
-    
-    try:
-        room.is_active = False
-        room.save()
-        return JsonResponse({'success': True, 'message': 'Room deleted successfully'})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
+    if not (request.user.is_superuser or (room.property.company and room.property.company.user_id == request.user.id)):
+        return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
+    room.is_active = False
+    room.save(update_fields=['is_active'])
+    return JsonResponse({'success': True, 'message': 'Room removed.'})
 
 
 # ===== API ENDPOINTS =====

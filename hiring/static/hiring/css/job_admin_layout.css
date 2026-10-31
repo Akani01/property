@@ -1,0 +1,21 @@
+/* OppoGlobe: JobListing admin form layout; scoped to the Django change form. */
+@media (min-width: 1025px) {
+  body.change-form #content { min-width: 0; box-sizing: border-box; }
+  body.change-form #content-main { min-width: 0; max-width: 100%; }
+  body.change-form #content-main form { min-width: 0; max-width: 100%; }
+}
+body.change-form #content-main fieldset,
+body.change-form #content-main .form-row,
+body.change-form #content-main .flex-container { min-width: 0; max-width: 100%; box-sizing: border-box; }
+body.change-form #content-main input:not([type=checkbox]):not([type=radio]),
+body.change-form #content-main select,
+body.change-form #content-main textarea { max-width: 100%; box-sizing: border-box; }
+@media (max-width: 1024px) {
+  body.change-form #content { margin-inline: 12px !important; padding: 12px !important; width: auto !important; }
+  body.change-form #content-main { width: 100% !important; min-width: 0 !important; }
+  body.change-form #content-main .aligned .form-row { display: block; }
+  body.change-form #content-main .aligned label { display: block; float: none; width: auto; padding: 0 0 6px; }
+  body.change-form #content-main .aligned .form-row > div { margin-left: 0 !important; min-width: 0; }
+  body.change-form #content-main input:not([type=checkbox]):not([type=radio]),
+  body.change-form #content-main select,body.change-form #content-main textarea { width: 100%; }
+}

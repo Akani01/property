@@ -398,6 +398,7 @@ urlpatterns = [
 
     path('properties/<uuid:property_id>/rooms/add/', views.property_room_add, name='property_room_add'),
 
+    path('rooms/<uuid:room_id>/', views.property_room_detail, name='property_room_detail'),
     path('rooms/<uuid:room_id>/delete/', views.property_room_delete, name='property_room_delete'),
 
 
