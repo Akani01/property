@@ -245,7 +245,6 @@ if not DEBUG:
 
 
 INSTALLED_APPS = [
-    "pricecheck",
 
     # Django
 

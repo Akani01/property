@@ -1,12 +1,8 @@
 # core/urls.py
 from django.urls import path
-from django.shortcuts import render
 from . import views
-from .appearance_api import appearance_preference
 
 urlpatterns = [
-    path("appearance/", lambda request: render(request, "appearance_settings.html"), name="appearance_settings"),
-    path("api/preferences/appearance/", appearance_preference, name="appearance_preference"),
     # Real Estate AI
     path('api/ai/property/<uuid:property_id>/analyze/', views.ai_analyze_property, name='ai_analyze_property'),
     

@@ -67,9 +67,6 @@ class ApplicantProfileAdmin(admin.ModelAdmin):
 
 # ─── JobListing ─────────────────────────────────────────────────────
 class JobListingAdmin(admin.ModelAdmin):
-    class Media:
-        css = {'all': ('hiring/css/job_admin_layout.css',)}
-
     list_display = ('title', 'listing_reference', 'status', 'company_name', 'location', 'apply_by', 'created_at')
     list_filter = ('status', 'industry', 'contract_type', 'created_at')
     search_fields = ('title', 'company_name', 'listing_reference', 'location')

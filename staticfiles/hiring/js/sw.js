@@ -10,8 +10,6 @@ const STATIC_CACHE_URLS = [
     '/',
     '/static/hiring/manifest.json',
     '/static/hiring/js/pwa.js',
-    '/static/hiring/js/notifications-global.js',
-    '/static/hiring/audio/notification.mp3',
     '/static/hiring/icons/icon-192.png',
     '/static/hiring/icons/icon-512.png',
     '/static/hiring/icons/icon-72.png',
@@ -167,7 +165,7 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// Handle OppoGlobe push notifications globally.
+// Handle push notifications - FIXED ICON PATHS
 self.addEventListener('push', event => {
     let data = {};
     if (event.data) {
@@ -176,56 +174,37 @@ self.addEventListener('push', event => {
         } catch (e) {
             data = {
                 title: 'OppoGlobe',
-                body: event.data.text()
+                body: event.data.text(),
+                icon: '/static/hiring/icons/icon-192.png',
+                badge: '/static/hiring/icons/icon-72.png'
             };
         }
     }
-
-    const title = data.title || data.head || 'OppoGlobe';
-    const targetUrl = data.action_url || data.url || '/';
-    const silent = data.silent === true || data.sound === false;
-
+    
     const options = {
         body: data.body || 'You have a new notification',
         icon: data.icon || '/static/hiring/icons/icon-192.png',
-        badge: data.badge || '/static/hiring/icons/icon-72x72.png',
-        tag: data.tag || undefined,
-        renotify: true,
-        silent: silent,
-        vibrate: silent ? undefined : [200, 100, 200],
+        badge: data.badge || '/static/hiring/icons/icon-72.png',
+        vibrate: [200, 100, 200],
         data: {
-            ...data,
-            url: targetUrl,
-            action_url: targetUrl,
+            url: data.url || '/',
             dateOfArrival: Date.now()
         },
         actions: [
-            { action: 'open', title: 'Open App' },
-            { action: 'close', title: 'Dismiss' }
+            {
+                action: 'open',
+                title: 'Open App'
+            },
+            {
+                action: 'close',
+                title: 'Dismiss'
+            }
         ]
     };
-
-    const notifyOpenPages = clients.matchAll({
-        type: 'window',
-        includeUncontrolled: true
-    }).then(clientList => Promise.all(clientList.map(client =>
-        client.postMessage({
-            type: 'OPPOGLOBE_PUSH_RECEIVED',
-            payload: {
-                ...data,
-                title,
-                url: targetUrl,
-                action_url: targetUrl,
-                silent,
-                received_at: Date.now()
-            }
-        })
-    )));
-
-    event.waitUntil(Promise.all([
-        self.registration.showNotification(title, options),
-        notifyOpenPages
-    ]));
+    
+    event.waitUntil(
+        self.registration.showNotification(data.title || 'OppoGlobe', options)
+    );
 });
 
 // Handle notification click

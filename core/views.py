@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .ai_service import ai_service
-from .ai_context import build_chat_context
 from realestate.models import Property
 from hiring.models import JobListing, ApplicantProfile
 from realestate.models import MaintenanceRequest
@@ -250,14 +249,17 @@ def ai_chat(request):
         }, status=400)
     
     # Build context from user data
-    context = build_chat_context(query, request.user)
+    context = {
+        'user_type': request.user.user_type,
+        'username': request.user.username,
+    }
+    
     response = ai_service.chat_assistant(query, context)
     
     return Response({
-        'success': 'error' not in response,
+        'success': True,
         'query': query,
-        'response': response,
-        'sources': {'properties': context['properties'], 'jobs': context['jobs']}
+        'response': response
     })
 
 @api_view(['POST'])

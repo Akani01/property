@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="/static/oppoglobe/theme.css">
-<script src="/static/oppoglobe/theme.js"></script>
-
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>My Profile - OppoGlobe</title>
@@ -263,7 +260,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-display); margin:0; letter-spacing:-.01
 
 .company-logo-preview{max-width:120px; max-height:120px; border-radius:var(--radius-sm); object-fit:cover; border:1px solid var(--line);}
 </style>
-</head>
+<script src="/static/oppoglobe/appearance.js"></script><link rel="stylesheet" href="/static/oppoglobe/appearance.css"></head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
 {% api_js_functions %}
 
@@ -1190,5 +1187,5 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
   <script src="/static/hiring/js/notifications-global.js" defer></script>
-</body>
+<section class="og-appearance-settings" aria-labelledby="appearance-title"><h2 id="appearance-title">Appearance</h2><p>Light, dark or follow your device. Your selection stays saved after refresh.</p><div class="og-appearance-options" role="group" aria-label="Appearance"><button type="button" data-og-theme="light">Light</button><button type="button" data-og-theme="dark">Dark</button><button type="button" data-og-theme="system">System</button></div></section></body>
 </html>

@@ -7,9 +7,6 @@
 <html lang="en-ZA">
 
 <head>
-<link rel="stylesheet" href="/static/oppoglobe/theme.css">
-<script src="/static/oppoglobe/theme.js"></script>
-
 
   <meta charset="utf-8">
 
@@ -639,6 +636,8 @@
 
   </style>
 
+<script src="{% static 'oppoglobe/appearance.js' %}"></script>
+<link rel="stylesheet" href="{% static 'oppoglobe/appearance.css' %}">
 </head>
 
 <body class="{% block body_class %}{% endblock %}"
@@ -699,9 +698,9 @@
 
             <li class="og-rel">
 
-              <button class="og-avatar" type="button" onclick="toggleProfileMenu(event)" aria-label="Profile menu">{{ user.username|first|upper }}<span class="og-online-dot"></span></button>
+              <button class="og-avatar" type="button" onclick="window.location.href='/profile/'" aria-label="View my profile">{{ user.username|first|upper }}<span class="og-online-dot"></span></button>
 
-              <div class="og-menu" id="profileMenu">
+              <div class="og-menu" id="profileMenu" hidden>
 
                 {% if user.user_type == 'admin' or user.is_superuser %}
 

@@ -2,9 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="/static/oppoglobe/theme.css">
-<script src="/static/oppoglobe/theme.js"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>OppoGlobe - {{ property.title }}</title>
@@ -2197,7 +2194,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             <i class="fas fa-plus-circle"></i>
             <span class="tooltip-text">Add Property</span>
         </a>
-        <a href="/bookings/" class="nav-link" title="My Bookings">
+        <a href="/properties/bookings/" class="nav-link" title="Bookings">
             <i class="fas fa-calendar-check"></i>
             <span class="tooltip-text">Bookings</span>
         </a>
@@ -2230,7 +2227,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
                     <a href="/admin-portal/" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
                     <a href="/properties/manage/" class="dropdown-item"><i class="fas fa-home"></i> Properties</a>
                     <a href="/properties/add/" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Property</a>
-                    <a href="/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
+                    <a href="/properties/bookings/" class="dropdown-item"><i class="fas fa-calendar-check"></i> Bookings</a>
                     <a href="/properties/analytics/" class="dropdown-item"><i class="fas fa-chart-bar"></i> Analytics</a>
                     <a href="/property-map/" class="dropdown-item"><i class="fas fa-map"></i> Map View</a>
                     <div class="dropdown-divider"></div>
@@ -2990,7 +2987,7 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
         <a href="/admin-portal/"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
         <a href="/properties/manage/"><i class="fas fa-home"></i><span>Properties</span></a>
         <a href="/properties/add/"><i class="fas fa-plus"></i><span>Add</span></a>
-        <a href="/bookings/"><i class="fas fa-calendar-check"></i><span>Bookings</span></a>
+        <a href="/properties/bookings/"><i class="fas fa-calendar-check"></i><span>Bookings</span></a>
         <a href="/profile/"><i class="fas fa-user"></i><span>Profile</span></a>
     </nav>
 
@@ -3485,8 +3482,6 @@ data-agent-profile-id="{% if agent_profile %}{{ agent_profile.id }}{% else %}0{%
             try{
                 const res=await fetch(`/api/properties/${encodeURIComponent(PROPERTY_BOOKING.id)}/book/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCSRFToken(),'Accept':'application/json'},credentials:'same-origin',body:JSON.stringify({check_in:new Date(checkIn).toISOString(),check_out:new Date(checkOut).toISOString(),number_of_guests:Number(document.getElementById('bookingGuests')?.value||1),special_requests:document.getElementById('bookingSpecialRequests')?.value||'',payment_method:PROPERTY_BOOKING.paymentMethod})});
                 const data=await res.json().catch(()=>({})); if(!res.ok||!data.success)throw new Error(data.error||data.detail||'Could not create booking.');
-                if(data.booking_url && data.checkout_error){ closePropertyBooking(); showToast('Booking saved. Card checkout is unavailable; open My Bookings to retry.','warning'); window.location.href=data.booking_url; return; }
-                if(data.payment_method==='card'&&!data.redirect_url){ closePropertyBooking(); window.location.href=data.booking_url||'/bookings/'; return; }
                 if(data.payment_method==='card'&&data.redirect_url){ showToast('Opening secure Yoco checkout…','success'); window.location.href=data.redirect_url; return; }
                 closePropertyBooking(); showToast(data.message||'Booking created.','success');
                 setTimeout(()=>{ window.location.href='/bookings/'; },1100);
