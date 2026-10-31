@@ -32,10 +32,10 @@ def search_api(request):
         for obj in Property.objects.filter(is_active=True).exclude(status__in=['closed','maintenance']).filter(Q(title__icontains=query)|Q(description__icontains=query)|Q(city__icontains=query)|Q(address__icontains=query)).order_by('-id')[:12]:
             add('properties',obj.title,obj.city,reverse('property_detail',args=[obj.pk]),obj.pk)
     if category in ('all','schools'):
-        for obj in School.objects.filter(is_active=True).filter(Q(name__icontains=query)|Q(city__icontains=query)|Q(province__icontains=query)).order_by('name')[:12]:
+        for obj in School.objects.filter(is_active=True, is_public=True).filter(Q(name__icontains=query)|Q(city__icontains=query)|Q(province__icontains=query)).order_by('name')[:12]:
             add('schools',obj.name,obj.city,reverse('education_school_detail',args=[obj.pk]),obj.pk)
     if category in ('all','universities'):
-        for obj in University.objects.filter(is_active=True).filter(Q(name__icontains=query)|Q(city__icontains=query)|Q(province__icontains=query)).order_by('name')[:12]:
+        for obj in University.objects.filter(is_active=True, is_public=True).filter(Q(name__icontains=query)|Q(city__icontains=query)|Q(province__icontains=query)).order_by('name')[:12]:
             add('universities',obj.name,obj.city,reverse('education_university_detail',args=[obj.pk]),obj.pk)
     if category in ('all','bursaries'):
         for obj in Bursary.objects.filter(is_active=True,closing_date__gte=timezone.localdate()).filter(Q(title__icontains=query)|Q(provider__icontains=query)|Q(description__icontains=query)).order_by('closing_date')[:12]:

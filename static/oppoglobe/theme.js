@@ -3,11 +3,11 @@
   const KEY = 'oppoglobe.theme';
   const allowed = ['light', 'dark', 'system'];
   const media = window.matchMedia('(prefers-color-scheme: dark)');
-  function choice() { try { const v = localStorage.getItem(KEY); return allowed.includes(v) ? v : 'system'; } catch (_) { return 'system'; } }
+  function choice() { try { let v = localStorage.getItem(KEY); if (!allowed.includes(v)) { const legacy=localStorage.getItem('tolleya_theme'); v=allowed.includes(legacy)?legacy:'system'; localStorage.setItem(KEY,v); } return v; } catch (_) { return 'system'; } }
   function apply() {
     const c = choice();
     const effective = c === 'system' ? (media.matches ? 'dark' : 'light') : c;
-    document.documentElement.dataset.ogTheme = effective;
+    document.documentElement.dataset.ogTheme = effective; document.documentElement.dataset.theme = effective;
     document.documentElement.style.colorScheme = effective;
     document.querySelectorAll('[data-og-theme-choice]').forEach(el => { el.checked = el.value === c; });
     document.querySelectorAll('[data-og-theme-current]').forEach(el => { el.textContent = c.charAt(0).toUpperCase() + c.slice(1); });

@@ -30,3 +30,12 @@ html[data-og-theme="dark"] :is(.search input,.search input:focus){background:var
 html[data-og-theme="dark"] :is(.search button,.loc-btn[aria-pressed="true"]){background:#126449!important;color:white!important;}
 html[data-og-theme="dark"] :is(.radius,.search select){background:var(--og-surface);color:var(--og-text);border-color:var(--og-border);}
 @media (prefers-reduced-motion: reduce){html[data-og-theme] *,html[data-og-theme] *::before,html[data-og-theme] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+/* Shared legacy OppoGlobe tokens: inherited page-specific styles */
+html[data-og-theme="dark"]{--ink:#eef6f0;--ink-soft:#b8c9be;--ink-faint:#a1b4a8;--paper:#101b18;--surface:#1b2923;--surface-2:#22352b;--line:#34483c;--line-soft:#34483c;--jade:#55c99b;--jade-deep:#74e2b6;--jade-wash:#214a3b;--bg-primary:#101b18;--bg-secondary:#1b2923;--text-primary:#eef6f0;--border-color:#34483c;--bs-body-bg:#101b18;--bs-body-color:#eef6f0;--bs-border-color:#34483c;--bs-secondary-color:#b8c9be;--bs-tertiary-bg:#22352b}
+html[data-og-theme="light"]{--bg-primary:#f7faf8;--bg-secondary:#fff;--text-primary:#16251e}
+html[data-og-theme="dark"] :is(.modal,.modal-content,.dropdown-menu,.offcanvas,.toast,.card,.accordion-body,.list-group,.form-control,.form-select,.input-group-text){background-color:var(--og-surface)!important;color:var(--og-text)!important;border-color:var(--og-border)!important}
+html[data-og-theme="dark"] :is(.text-black,.text-dark,.text-body,.text-body-secondary){color:var(--og-text)!important}
+html[data-og-theme="dark"] :is(input,select,textarea){color-scheme:dark}
+html[data-og-theme="dark"] :is(input,textarea,select):focus{outline-color:#55c99b}
+html[data-og-theme="dark"] :is(.bg-white,.bg-light){background-color:var(--og-surface)!important;color:var(--og-text)!important}
