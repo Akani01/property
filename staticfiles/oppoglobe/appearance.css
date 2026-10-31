@@ -1,0 +1,14 @@
+/* Appearance changes colours only; never alter layout or icon fonts. */
+.og-appearance-settings{margin:22px 0;padding:20px;border:1px solid var(--line,#dce3dd);border-radius:14px;background:var(--paper,#fff);font-family:Arial,Helvetica,sans-serif}
+.og-appearance-settings h2{font:700 18px Arial,Helvetica,sans-serif;margin:0 0 8px}
+.og-appearance-settings p{margin:0 0 16px;color:var(--ink-soft,#5c6560)}
+.og-appearance-options{display:flex;gap:10px;flex-wrap:wrap}
+.og-appearance-options button{font:600 14px Arial,Helvetica,sans-serif;border:1px solid var(--line,#ccc);background:var(--paper,#fff);color:var(--ink,#161616);padding:11px 17px;border-radius:10px;cursor:pointer}
+.og-appearance-options button[aria-pressed=true]{border-color:#28a56a;outline:2px solid #28a56a;outline-offset:1px}
+html[data-og-theme=dark]{color-scheme:dark;--paper:#17191b;--ink:#f3f4f5;--ink-soft:#c1c6c9;--ink-faint:#a0a7aa;--line:#363a3e;--line-soft:#303439;--jade-wash:#173125;--bg:#0e0f11;--surface:#17191b}
+html[data-og-theme=dark] body{background:#0e0f11;color:#f3f4f5}
+html[data-og-theme=dark] :is(.og-header,.og-menu,.og-card,.card,.modal-content,.dropdown-menu,.og-appearance-settings){background-color:#17191b;color:#f3f4f5;border-color:#363a3e}
+html[data-og-theme=dark] :is(input,textarea,select){background-color:#24272a;color:#f3f4f5;border-color:#555b60}
+html[data-og-theme=dark] :is(input,textarea)::placeholder{color:#aeb5ba}
+html[data-og-theme=dark] a{color:inherit}
+html[data-og-theme=dark] :is(.fas,.far,.fab,.fa,.fa-solid,.fa-regular){visibility:visible;opacity:1}
