@@ -27,7 +27,6 @@ class Offer(models.Model):
     product_url = models.URLField(blank=True)
     available = models.BooleanField(default=True)
     branch = models.CharField(max_length=200, blank=True)
-    branch_location = models.ForeignKey('RetailerBranch', null=True, blank=True, on_delete=models.SET_NULL, related_name='offers')
     source = models.CharField(max_length=30, default='merchant')
     checked_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -46,18 +45,3 @@ class PriceAlert(models.Model):
     active = models.BooleanField(default=True)
     class Meta:
         constraints = [models.UniqueConstraint(fields=['user','product'], name='pricecheck_unique_alert')]
-
-
-class RetailerBranch(models.Model):
-    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, related_name='locations')
-    name = models.CharField(max_length=200)
-    address = models.CharField(max_length=300, blank=True)
-    latitude = models.DecimalField(max_digits=10, decimal_places=7)
-    longitude = models.DecimalField(max_digits=10, decimal_places=7)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        constraints = [models.UniqueConstraint(fields=['retailer', 'name'], name='pricecheck_branch_unique')]
-
-    def __str__(self):
-        return f'{self.retailer.name} - {self.name}'

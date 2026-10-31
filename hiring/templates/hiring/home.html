@@ -2398,6 +2398,149 @@ img { max-width:100%; }
 </style>
 <script src="{% static 'oppoglobe/appearance.js' %}"></script>
 <link rel="stylesheet" href="{% static 'oppoglobe/appearance.css' %}">
+<style>
+/* PriceCheck — hero, category card and one-page results sheet.
+   Uses the OppoGlobe design tokens (--jade, --ink, --line …) with fallbacks. */
+
+.pc-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pc-hero button,.pc-strip button,.pc-veil button{font-family:inherit}
+
+/* ---------------- Hero ---------------- */
+.pc-hero{position:relative;overflow:hidden;margin:0 0 14px;border-radius:22px;color:#fff;
+  background:radial-gradient(circle at 88% 8%,rgba(255,255,255,.14),transparent 36%),linear-gradient(165deg,#17624f 0%,#0f4a3b 58%,#0c3d31 100%);
+  border:1px solid rgba(15,74,59,.35);box-shadow:var(--shadow-md,0 8px 24px rgba(22,36,31,.08));min-width:0}
+.pc-hero-top{padding:16px 16px 0}
+.pc-brandrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;min-width:0}
+.pc-brandrow>i{font-size:22px;color:#fff;transform:rotate(-8deg)}
+.pc-brandname{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(19px,5.4vw,24px);letter-spacing:-.01em}
+.pc-new{padding:3px 12px;border-radius:999px;background:#1e9a62;font-size:12px;font-weight:700;line-height:1.5}
+.pc-hero-grid{display:grid;grid-template-columns:minmax(0,58%) minmax(0,1fr);gap:6px;align-items:start}
+.pc-hero-copy{min-width:0;padding-bottom:4px}
+.pc-hero h2{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(21px,6vw,32px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em;color:#fff}
+.pc-hero-copy p{margin:0;font-size:clamp(12px,3.4vw,14.5px);line-height:1.5;color:rgba(255,255,255,.9)}
+.pc-art{display:block;width:100%;max-width:270px;height:auto;margin:-34px -6px 0 auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.25))}
+@media (min-width:640px){.pc-hero-top{padding:22px 24px 0}.pc-hero-grid{grid-template-columns:minmax(0,1fr) 300px}.pc-art{margin-top:-28px;max-width:300px}}
+@media (max-width:339px){.pc-hero-grid{grid-template-columns:minmax(0,1fr)}.pc-art{display:none}}
+
+.pc-hero-search{display:flex;align-items:center;gap:10px;margin:14px 16px 0;padding:6px 6px 6px 16px;min-height:54px;background:#fff;border-radius:999px;box-shadow:0 8px 22px rgba(0,0,0,.18);color:var(--ink,#16241f)}
+.pc-hero-search:focus-within{box-shadow:0 0 0 3px rgba(232,169,59,.55),0 8px 22px rgba(0,0,0,.18)}
+.pc-hero-search>i{color:#154f41;font-size:17px}
+.pc-hero-search input{flex:1 1 auto;width:0;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:inherit;padding:8px 0}
+.pc-hero-search input::placeholder{color:#8b958f}
+.pc-search-sep{width:1px;height:26px;background:var(--line,#e4e7e2);flex:none}
+.pc-filter-btn{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:#e7f1ec;color:#154f41;font-size:16px;cursor:pointer}
+.pc-filter-btn:hover{background:#d5e8de}
+@media (min-width:640px){.pc-hero-search{margin:16px 24px 0}}
+
+.pc-chips-wrap{margin-top:14px;padding:14px 16px 14px;background:linear-gradient(180deg,rgba(231,241,236,0) 0%,#e4efe9 42%,#eef5f1 100%)}
+@media (min-width:640px){.pc-chips-wrap{padding:16px 24px}}
+.pc-chips-row{display:flex;align-items:center;gap:8px;min-width:0}
+.pc-chips{display:flex;gap:8px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.pc-chips::-webkit-scrollbar{display:none}
+.pc-chip{flex:none;min-height:42px;padding:0 15px;border-radius:999px;border:1px solid #cfe0d7;background:rgba(255,255,255,.94);color:#154f41;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;scroll-snap-align:start;transition:background .15s,color .15s,transform .15s}
+.pc-chip:hover{background:#fff;transform:translateY(-1px)}
+.pc-chip.active{background:#12584a;border-color:#12584a;color:#fff}
+.pc-chip i{font-size:15px}
+.pc-chip.sm{min-height:36px;padding:0 13px;font-size:13px}
+.pc-chip-next{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid #cfe0d7;background:#fff;color:#154f41;cursor:pointer}
+.pc-hero button:focus-visible,.pc-strip button:focus-visible,.pc-veil button:focus-visible{outline:2.5px solid #e8a93b;outline-offset:2px}
+
+/* ---------------- Category card ---------------- */
+.pc-strip{margin:0 0 16px;padding:14px;background:var(--surface,#fff);border:1px solid var(--line,#e4e7e2);border-radius:18px;box-shadow:var(--shadow-sm,0 1px 3px rgba(22,36,31,.06));min-width:0}
+.pc-strip-head{display:flex;align-items:center;gap:10px;min-width:0}
+.pc-strip-icon{width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;background:#e7f1ec;color:#154f41;font-size:18px}
+.pc-strip-brand{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(17px,4.8vw,21px);color:#154f41;flex:1;min-width:0}
+.pc-strip-link{border:0;background:none;color:#154f41;font-weight:700;font-size:clamp(12px,3.4vw,14px);cursor:pointer;display:inline-flex;gap:6px;align-items:center;white-space:nowrap;padding:8px 2px}
+.pc-strip-link:hover{text-decoration:underline}
+.pc-strip h2{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(21px,6vw,28px);line-height:1.15;margin:4px 0 12px;color:var(--ink,#16241f)}
+.pc-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.pc-tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 4px 10px;min-width:0;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:#f4f7f4;color:var(--ink,#16241f);font-size:clamp(10px,2.9vw,13px);font-weight:600;line-height:1.25;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}
+.pc-tile:hover{transform:translateY(-2px);background:#fff;box-shadow:var(--shadow-sm,0 1px 3px rgba(22,36,31,.08))}
+.pc-tile>span:last-child{overflow-wrap:anywhere}
+.pc-tile-ico{width:clamp(34px,10vw,48px);height:clamp(34px,10vw,48px);border-radius:14px;display:grid;place-items:center;font-size:clamp(15px,4.4vw,21px);background:#e7f1ec;color:#154f41}
+.pc-tile-ico.sky{background:#e7f3fa;color:#2e8bc0}.pc-tile-ico.coral{background:#ffeae3;color:#e24e2f}
+.pc-tile-ico.plum{background:#f1ebf9;color:#7a5aa3}.pc-tile-ico.gold{background:#fbf0da;color:#9a6b11}
+
+/* ---------------- Sheet ---------------- */
+.pc-veil{position:fixed;inset:0;z-index:5100;display:none;align-items:flex-end;justify-content:center;background:rgba(13,24,20,.58);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.pc-veil.open{display:flex}
+.pc-panel{display:flex;flex-direction:column;width:100%;max-height:92dvh;height:92dvh;background:var(--surface,#fff);border-radius:22px 22px 0 0;overflow:hidden;box-shadow:0 -12px 50px rgba(10,24,18,.28);outline:0;animation:pcUp .24s cubic-bezier(.2,.8,.2,1)}
+@keyframes pcUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:700px){.pc-veil{align-items:center;padding:20px}.pc-panel{width:min(680px,100%);height:min(780px,88dvh);border-radius:22px}}
+@media (prefers-reduced-motion:reduce){.pc-panel{animation:none}.pc-skel{animation:none!important}}
+
+.pc-panel-head{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px;border-bottom:1px solid var(--line,#e4e7e2);flex:none}
+.pc-panel-head h3{flex:1;min-width:0;margin:0;font-family:'Fraunces',Georgia,serif;font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink,#16241f)}
+.pc-icon-btn{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--line,#e4e7e2);background:var(--paper,#f6f7f5);color:var(--ink,#16241f);cursor:pointer;display:grid;place-items:center}
+.pc-icon-btn[hidden],.pc-radius[hidden]{display:none!important}
+.pc-icon-btn:hover{background:#e7f1ec}
+
+.pc-tools{flex:none;padding:12px 14px 8px;border-bottom:1px solid var(--line-soft,#eef0ed);display:flex;flex-direction:column;gap:10px}
+.pc-searchrow{display:flex;align-items:center;gap:10px;padding:0 14px;min-height:46px;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:var(--paper,#f6f7f5)}
+.pc-searchrow:focus-within{border-color:#1f6f5c;background:#fff;box-shadow:0 0 0 3px #e7f1ec}
+.pc-searchrow i{color:#1f6f5c}
+.pc-searchrow input{flex:1;width:0;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:var(--ink,#16241f);padding:10px 0}
+.pc-sheet-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.pc-sheet-chips::-webkit-scrollbar{display:none}
+.pc-nearrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pc-near{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid #1f6f5c;background:#fff;color:#154f41;font-weight:700;font-size:13px;cursor:pointer}
+.pc-near[aria-pressed="true"]{background:#1f6f5c;color:#fff}
+.pc-radius select{min-height:38px;border:1px solid var(--line,#e4e7e2);border-radius:999px;padding:0 12px;background:#fff;font-size:13px;color:var(--ink,#16241f)}
+.pc-tabs{margin-left:auto;display:inline-flex;padding:3px;border-radius:999px;background:var(--paper,#f6f7f5);border:1px solid var(--line,#e4e7e2)}
+.pc-tabs button{border:0;background:transparent;min-height:32px;padding:0 12px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--ink-soft,#5b6660);cursor:pointer}
+.pc-tabs button.active{background:#12584a;color:#fff}
+.pc-note{margin:0;min-height:0;font-size:12px;color:#8a4b1f}
+.pc-note:empty{display:none}
+.pc-view-offers .pc-searchrow,.pc-view-offers .pc-sheet-chips,.pc-view-offers .pc-tabs{display:none}
+
+.pc-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:14px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+@media (max-width:380px){.pc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pc-product{display:flex;flex-direction:column;text-align:left;padding:0;min-width:0;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:#fff;overflow:hidden;cursor:pointer;color:inherit;transition:transform .15s,box-shadow .15s}
+.pc-product:hover{transform:translateY(-2px);box-shadow:var(--shadow-md,0 8px 24px rgba(22,36,31,.1))}
+.pc-product-img{aspect-ratio:1/1;background:#f4f7f4;display:grid;place-items:center;color:#1f6f5c;opacity:.95;font-size:28px}
+.pc-product-img img{width:100%;height:100%;object-fit:contain;padding:8px;background:#fff}
+.pc-product-info{padding:10px 11px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.pc-product-name{font-size:13px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.pc-product-brand{font-size:11px;color:var(--ink-faint,#8b958f);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-product-price{font-size:14px;font-weight:800;color:var(--coral-deep,#e24e2f)}
+.pc-product-price small{font-weight:600;font-size:11px;color:var(--ink-faint,#8b958f);margin-right:3px}
+.pc-product-price.none{font-size:11.5px;font-weight:600;color:var(--ink-faint,#8b958f)}
+
+.pc-offer-head{display:flex;gap:12px;align-items:center;margin-bottom:12px;padding:12px;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:var(--paper,#f6f7f5)}
+.pc-offer-head .pc-product-img{width:64px;aspect-ratio:1/1;flex:none;border-radius:12px;overflow:hidden;font-size:22px}
+.pc-offer-head strong{display:block;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.pc-offer-head span{font-size:12px;color:var(--ink-faint,#8b958f)}
+.pc-offers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pc-offer{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:13px 14px;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:#fff}
+.pc-offer.best{border-color:#1f6f5c;background:#f3faf6}
+.pc-offer-main{min-width:0;display:flex;flex-direction:column;gap:3px}
+.pc-offer-main strong{font-size:14.5px;overflow-wrap:anywhere}
+.pc-offer-meta{font-size:12px;color:var(--ink-soft,#5b6660);line-height:1.5}
+.pc-offer-meta i{color:#1f6f5c;width:14px;text-align:center}
+.pc-offer-side{flex:none;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.pc-price{font-size:17px;font-weight:800;color:var(--coral-deep,#e24e2f);white-space:nowrap}
+.pc-best{display:inline-block;padding:2px 9px;border-radius:999px;background:#1f6f5c;color:#fff;font-size:10.5px;font-weight:700;width:max-content}
+.pc-link{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 13px;border-radius:999px;background:#16241f;color:#fff!important;font-size:12px;font-weight:700;text-decoration:none}
+.pc-link:hover{background:#154f41}
+
+.pc-store{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line,#e4e7e2);border-radius:14px;background:#fff}
+.pc-store-ico{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:#e7f1ec;color:#154f41}
+.pc-store>div{min-width:0;flex:1}
+.pc-store strong{display:block;font-size:14px;overflow-wrap:anywhere}
+.pc-store span{display:block;font-size:12px;color:var(--ink-soft,#5b6660);overflow-wrap:anywhere}
+.pc-store em{flex:none;font-style:normal;font-size:12.5px;font-weight:800;color:#154f41}
+
+.pc-empty{text-align:center;padding:34px 16px;border:1px dashed var(--line,#e4e7e2);border-radius:16px;color:var(--ink-soft,#5b6660);font-size:13.5px;line-height:1.6}
+.pc-empty i{display:block;font-size:30px;color:#1f6f5c;opacity:.4;margin-bottom:10px}
+.pc-empty strong{display:block;color:var(--ink,#16241f);font-size:15px;margin-bottom:4px}
+.pc-empty button{margin-top:12px;min-height:40px;padding:0 18px;border-radius:999px;border:0;background:#1f6f5c;color:#fff;font-weight:700;cursor:pointer}
+.pc-disclaimer{margin:14px 2px 0;font-size:11.5px;line-height:1.55;color:var(--ink-faint,#8b958f)}
+.pc-skel{border-radius:14px;min-height:190px;background:linear-gradient(90deg,#eef0ed 25%,#f7f8f6 37%,#eef0ed 63%);background-size:400% 100%;animation:pcShimmer 1.3s ease infinite}
+.pc-skel.row{min-height:76px}
+@keyframes pcShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+</style>
 </head>
 <body data-user-logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-can-publish-education="{% if user.is_superuser or user.user_type == 'business' or user.user_type == 'admin' %}true{% else %}false{% endif %}" data-user-id="{% if user.is_authenticated %}{{ user.id }}{% else %}0{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% else %}{% endif %}">
 
@@ -2555,6 +2698,120 @@ img { max-width:100%; }
   <!-- ===== MAIN ===== -->
   <main class="main">
 
+    <!-- ===== PRICECHECK HERO ===== -->
+{% url 'pricecheck:products' as pc_products_url %}
+{% url 'pricecheck:offers' 0 as pc_offers_url %}
+{% url 'pricecheck:branches' as pc_branches_url %}
+
+<section class="pc-hero" aria-labelledby="pcHeroTitle">
+  <div class="pc-hero-top">
+    <div class="pc-brandrow">
+      <i class="fas fa-tag" aria-hidden="true"></i>
+      <span class="pc-brandname">PriceCheck</span>
+      <span class="pc-new">New</span>
+    </div>
+    <div class="pc-hero-grid">
+      <div class="pc-hero-copy">
+        <h2 id="pcHeroTitle">Find the best price.<br>Shop smarter.</h2>
+        <p>Compare prices from online stores, local shops and malls — all in one place.</p>
+      </div>
+      <!-- Decorative artwork; sample prices are illustrative only. -->
+      <svg class="pc-art" viewBox="0 0 240 210" aria-hidden="true" focusable="false">
+        <rect x="20" y="8" width="112" height="190" rx="16" fill="#12201b"/>
+        <rect x="26" y="15" width="100" height="176" rx="11" fill="#fff"/>
+        <text x="40" y="32" font-size="7" font-weight="700" fill="#16241f" font-family="Arial,sans-serif">Check prices</text>
+        <g font-family="Arial,sans-serif" font-size="6.6" fill="#16241f">
+          <circle cx="40" cy="56" r="8" fill="#2e8bc0"/><text x="53" y="58">Online store</text><text x="119" y="58" text-anchor="end" font-weight="700">R9,999</text>
+          <line x1="33" x2="119" y1="72" y2="72" stroke="#e4e7e2"/>
+          <circle cx="40" cy="88" r="8" fill="#e24e2f"/><text x="53" y="90">Local shop</text><text x="119" y="90" text-anchor="end" font-weight="700">R10,499</text>
+          <line x1="33" x2="119" y1="104" y2="104" stroke="#e4e7e2"/>
+          <circle cx="40" cy="120" r="8" fill="#e8a93b"/><text x="53" y="122">Mall store</text><text x="119" y="122" text-anchor="end" font-weight="700">R11,299</text>
+          <line x1="33" x2="119" y1="136" y2="136" stroke="#e4e7e2"/>
+          <circle cx="40" cy="152" r="8" fill="#1f6f5c"/><text x="53" y="154">Supermarket</text><text x="119" y="154" text-anchor="end" font-weight="700">R11,999</text>
+        </g>
+        <rect x="150" y="34" width="40" height="46" rx="4" fill="#f0a43a"/>
+        <path d="M158 34q12-24 24 0" fill="none" stroke="#f0a43a" stroke-width="3"/>
+        <rect x="184" y="52" width="40" height="48" rx="4" fill="#2c9a5b"/>
+        <path d="M192 52q12-24 24 0" fill="none" stroke="#2c9a5b" stroke-width="3"/>
+        <path d="M118 84l14 12" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M132 96h96l-12 62h-72z" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M146 110l8 40M166 106l4 46M188 106l-2 46M208 110l-8 40" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+        <circle cx="152" cy="178" r="7" fill="#fff"/><circle cx="206" cy="178" r="7" fill="#fff"/>
+        <circle cx="226" cy="132" r="15" fill="#f0a43a"/>
+        <text x="226" y="138" text-anchor="middle" font-size="16" font-weight="700" fill="#fff" font-family="Arial,sans-serif">%</text>
+      </svg>
+    </div>
+  </div>
+
+  <form class="pc-hero-search" id="pcHeroForm" role="search" autocomplete="off">
+    <label class="pc-sr" for="pcHeroInput">Search products, shops and malls</label>
+    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+    <input id="pcHeroInput" type="search" name="q" maxlength="120" placeholder="Search products, shops, malls…" enterkeyhint="search">
+    <span class="pc-search-sep" aria-hidden="true"></span>
+    <button type="button" class="pc-filter-btn" data-pc-open data-pc-category="" data-pc-focus aria-label="Open filters and nearby options"><i class="fas fa-sliders" aria-hidden="true"></i></button>
+  </form>
+
+  <div class="pc-chips-wrap">
+    <div class="pc-chips-row">
+      <div class="pc-chips" id="pcHeroChips" role="group" aria-label="Product categories">
+        <button type="button" class="pc-chip active" data-pc-open data-pc-category="" data-pc-hero-chip>All</button>
+        <button type="button" class="pc-chip" data-pc-open data-pc-category="Electronics" data-pc-hero-chip><i class="fas fa-mobile-screen-button" aria-hidden="true"></i>Electronics</button>
+        <button type="button" class="pc-chip" data-pc-open data-pc-category="Groceries" data-pc-hero-chip><i class="fas fa-basket-shopping" aria-hidden="true"></i>Groceries</button>
+        <button type="button" class="pc-chip" data-pc-open data-pc-category="Fashion" data-pc-hero-chip><i class="fas fa-shirt" aria-hidden="true"></i>Fashion</button>
+        <button type="button" class="pc-chip" data-pc-open data-pc-category="Home &amp; Living" data-pc-hero-chip><i class="fas fa-couch" aria-hidden="true"></i>Home &amp; Living</button>
+      </div>
+      <button type="button" class="pc-chip-next" data-pc-scroll aria-label="Show more categories"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- One-page results sheet: bottom sheet on phones, centred panel on tablets and desktops. -->
+<div class="pc-veil" id="pcSheet" aria-hidden="true"
+     data-products-url="{{ pc_products_url }}"
+     data-offers-url="{{ pc_offers_url }}"
+     data-branches-url="{{ pc_branches_url }}">
+  <div class="pc-panel" role="dialog" aria-modal="true" aria-labelledby="pcSheetTitle" tabindex="-1">
+    <header class="pc-panel-head">
+      <button type="button" class="pc-icon-btn" data-pc-back hidden aria-label="Back to results"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+      <h3 id="pcSheetTitle">PriceCheck</h3>
+      <button type="button" class="pc-icon-btn" data-pc-close aria-label="Close PriceCheck"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+    </header>
+
+    <div class="pc-tools">
+      <div class="pc-searchrow">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <label class="pc-sr" for="pcSheetInput">Search products</label>
+        <input id="pcSheetInput" type="search" maxlength="120" placeholder="Search products, brands or barcodes" autocomplete="off">
+      </div>
+      <div class="pc-sheet-chips" id="pcSheetChips" role="group" aria-label="Filter by category">
+        <button type="button" class="pc-chip sm active" data-pc-chip="">All</button>
+        <button type="button" class="pc-chip sm" data-pc-chip="Electronics">Electronics</button>
+        <button type="button" class="pc-chip sm" data-pc-chip="Groceries">Groceries</button>
+        <button type="button" class="pc-chip sm" data-pc-chip="Fashion">Fashion</button>
+        <button type="button" class="pc-chip sm" data-pc-chip="Home &amp; Living">Home &amp; Living</button>
+      </div>
+      <div class="pc-nearrow">
+        <button type="button" class="pc-near" data-pc-near aria-pressed="false"><i class="fas fa-location-crosshairs" aria-hidden="true"></i><span>Near me</span></button>
+        <label class="pc-radius" hidden>
+          <span class="pc-sr">Search radius</span>
+          <select id="pcRadius" aria-label="Search radius">
+            <option value="5">5 km</option><option value="10">10 km</option><option value="25" selected>25 km</option><option value="50">50 km</option><option value="100">100 km</option>
+          </select>
+        </label>
+        <div class="pc-tabs" role="tablist" aria-label="PriceCheck views">
+          <button type="button" role="tab" class="active" data-pc-tab="products" aria-selected="true">Products</button>
+          <button type="button" role="tab" data-pc-tab="stores" aria-selected="false">Nearby stores</button>
+        </div>
+      </div>
+      <p class="pc-note" id="pcNote" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="pc-body" id="pcBody" aria-live="polite"></div>
+  </div>
+</div>
+
+
+
     <!-- Latest from community -->
     <div class="section-head">
       <h2><i class="fas fa-fire"></i>Latest from the neighbourhood</h2>
@@ -2563,6 +2820,23 @@ img { max-width:100%; }
     <div class="hscroll" id="recommendationScroll">
       <div class="loading-line" style="width:100%;"><span class="spin"></span> Gathering the latest…</div>
     </div>
+
+    <!-- ===== PRICECHECK CATEGORY CARD ===== -->
+<section class="pc-strip" aria-labelledby="pcStripTitle">
+  <div class="pc-strip-head">
+    <span class="pc-strip-icon" aria-hidden="true"><i class="fas fa-cart-shopping"></i></span>
+    <span class="pc-strip-brand">PriceCheck</span>
+    <button type="button" class="pc-strip-link" data-pc-open data-pc-category="">Compare prices <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+  </div>
+  <h2 id="pcStripTitle">Shop smarter. Save more.</h2>
+  <div class="pc-tiles">
+    <button type="button" class="pc-tile" data-pc-open data-pc-category="Electronics"><span class="pc-tile-ico sky"><i class="fas fa-mobile-screen-button" aria-hidden="true"></i></span><span>Electronics</span></button>
+    <button type="button" class="pc-tile" data-pc-open data-pc-category="Groceries"><span class="pc-tile-ico coral"><i class="fas fa-basket-shopping" aria-hidden="true"></i></span><span>Groceries</span></button>
+    <button type="button" class="pc-tile" data-pc-open data-pc-category="Fashion"><span class="pc-tile-ico plum"><i class="fas fa-shirt" aria-hidden="true"></i></span><span>Fashion</span></button>
+    <button type="button" class="pc-tile" data-pc-open data-pc-category="Home &amp; Living"><span class="pc-tile-ico gold"><i class="fas fa-couch" aria-hidden="true"></i></span><span>Home &amp; Living</span></button>
+    <button type="button" class="pc-tile" data-pc-open data-pc-category=""><span class="pc-tile-ico jade"><i class="fas fa-grip" aria-hidden="true"></i></span><span>More</span></button>
+  </div>
+</section>
 
     <!-- Sponsored discovery — native OppoGlobe ads -->
     <section class="sponsored-discovery" id="sponsoredDiscovery" aria-label="Sponsored recommendations">
@@ -5460,6 +5734,339 @@ function ogEducationImageFallback(img){
     }
   });
 })();
+</script>
+<script>
+/* PriceCheck — one-page search, offers and nearby stores.
+   Talks to: pricecheck:products, pricecheck:offers, pricecheck:branches (URLs come from data-* on #pcSheet). */
+(function () {
+  'use strict';
+
+  var root = document.getElementById('pcSheet');
+  if (!root) return;
+
+  var PRODUCTS_URL = root.dataset.productsUrl;
+  var OFFERS_URL = root.dataset.offersUrl;      // e.g. /pricecheck/api/products/0/offers/
+  var BRANCHES_URL = root.dataset.branchesUrl;
+
+  var panel = root.querySelector('.pc-panel');
+  var bodyEl = document.getElementById('pcBody');
+  var titleEl = document.getElementById('pcSheetTitle');
+  var inputEl = document.getElementById('pcSheetInput');
+  var noteEl = document.getElementById('pcNote');
+  var backBtn = root.querySelector('[data-pc-back]');
+  var nearBtn = root.querySelector('[data-pc-near]');
+  var radiusWrap = root.querySelector('.pc-radius');
+  var radiusEl = document.getElementById('pcRadius');
+
+  var state = { q: '', category: '', view: 'products', product: null, coords: null, nearOnly: false, radius: 25 };
+  var controller = null, timer = null, lastFocus = null, prevOverflow = '';
+
+  /* ---------- helpers ---------- */
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function safeUrl(u) {
+    if (!u) return '';
+    try {
+      var x = new URL(String(u), window.location.origin);
+      return (x.protocol === 'https:' || x.protocol === 'http:') && !x.username && !x.password ? x.href : '';
+    } catch (e) { return ''; }
+  }
+  function money(v) {
+    var n = Number(v);
+    if (!isFinite(n)) return '';
+    var whole = Math.abs(n - Math.round(n)) < 0.005;
+    return 'R' + n.toLocaleString('en-US', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 });
+  }
+  function ago(iso) {
+    var t = Date.parse(iso);
+    if (!t) return '';
+    var m = Math.max(0, Math.round((Date.now() - t) / 60000));
+    if (m < 2) return 'just now';
+    if (m < 60) return m + ' min ago';
+    var h = Math.round(m / 60);
+    if (h < 24) return h + ' h ago';
+    var d = Math.round(h / 24);
+    return d < 30 ? d + ' d ago' : new Date(t).toLocaleDateString();
+  }
+  function qs(obj) {
+    return Object.keys(obj).filter(function (k) { return obj[k] !== '' && obj[k] != null; })
+      .map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]); }).join('&');
+  }
+  function offersUrl(id) { return OFFERS_URL.replace(/\/0\/offers\/$/, '/' + encodeURIComponent(id) + '/offers/'); }
+  function getJson(url) {
+    if (controller) controller.abort();
+    controller = new AbortController();
+    return fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin', signal: controller.signal })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (!r.ok) throw new Error(d.error || ('Request failed (' + r.status + ')'));
+          return d;
+        });
+      });
+  }
+  function setBody(html) { bodyEl.innerHTML = html; bodyEl.scrollTop = 0; }
+  function note(msg) { noteEl.textContent = msg || ''; }
+  function skeleton(n, cls) {
+    var s = '';
+    for (var i = 0; i < n; i++) s += '<div class="pc-skel ' + (cls || '') + '"></div>';
+    return cls === 'row' ? '<div class="pc-offers">' + s + '</div>' : '<div class="pc-grid">' + s + '</div>';
+  }
+  function empty(icon, title, text, btn) {
+    return '<div class="pc-empty"><i class="fas ' + icon + '" aria-hidden="true"></i><strong>' + esc(title) + '</strong>' + esc(text || '') + (btn || '') + '</div>';
+  }
+  function handleError(err) {
+    if (err && err.name === 'AbortError') return;
+    setBody(empty('fa-triangle-exclamation', 'Something went wrong', (err && err.message) || 'Please check your connection and try again.',
+      '<br><button type="button" data-pc-retry>Try again</button>'));
+  }
+
+  /* ---------- chrome ---------- */
+  function syncChrome() {
+    var offers = state.view === 'offers';
+    panel.classList.toggle('pc-view-offers', offers);
+    backBtn.hidden = !offers;
+    titleEl.textContent = offers && state.product ? state.product.name : 'PriceCheck';
+    root.querySelectorAll('[data-pc-tab]').forEach(function (b) {
+      var on = b.dataset.pcTab === state.view;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', String(on));
+    });
+    root.querySelectorAll('[data-pc-chip]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.pcChip === state.category);
+    });
+    nearBtn.setAttribute('aria-pressed', String(state.nearOnly));
+    radiusWrap.hidden = !state.nearOnly;
+  }
+
+  /* ---------- location ---------- */
+  function locate() {
+    return new Promise(function (resolve) {
+      if (!navigator.geolocation) { note('Location is not available on this device. You can still compare all prices.'); return resolve(false); }
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        state.coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        note('');
+        resolve(true);
+      }, function () {
+        note('We could not get your location. Allow location access to see nearby stores.');
+        resolve(false);
+      }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+    });
+  }
+  function locParams() {
+    return state.coords ? { lat: state.coords.lat.toFixed(6), lon: state.coords.lon.toFixed(6), radius: state.radius } : {};
+  }
+
+  /* ---------- views ---------- */
+  function refresh() {
+    syncChrome();
+    if (state.view === 'offers') return loadOffers();
+    if (state.view === 'stores') return loadStores();
+    return loadProducts();
+  }
+
+  function loadProducts() {
+    state.view = 'products';
+    syncChrome();
+    setBody(skeleton(6));
+    getJson(PRODUCTS_URL + '?' + qs({ q: state.q, category: state.category })).then(function (d) {
+      var list = d.results || [];
+      if (!list.length) {
+        setBody(empty('fa-magnifying-glass', 'No products found', 'Try another word, a brand name or a barcode — or pick a different category.'));
+        return;
+      }
+      setBody('<div class="pc-grid">' + list.map(productCard).join('') + '</div>' +
+        '<p class="pc-disclaimer">Prices are supplied by retailers and can change. Always confirm the price in store or at checkout.</p>');
+    }).catch(handleError);
+  }
+
+  function productImage(p) {
+    var img = safeUrl(p.image);
+    return '<span class="pc-product-img">' + (img
+      ? '<img src="' + esc(img) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+      : '<i class="fas fa-box-open" aria-hidden="true"></i>') + '</span>';
+  }
+  function productCard(p) {
+    var price = p.lowest != null
+      ? '<span class="pc-product-price"><small>From</small>' + esc(money(p.lowest)) + '</span>'
+      : '<span class="pc-product-price none">No live price yet</span>';
+    return '<button type="button" class="pc-product" data-pc-product="' + esc(p.id) + '" data-name="' + esc(p.name) + '" data-brand="' + esc(p.brand || '') + '" data-image="' + esc(p.image || '') + '">' +
+      productImage(p) + '<span class="pc-product-info"><span class="pc-product-name">' + esc(p.name) + '</span>' +
+      (p.brand ? '<span class="pc-product-brand">' + esc(p.brand) + '</span>' : '') + price + '</span></button>';
+  }
+
+  function loadOffers() {
+    var p = state.product;
+    if (!p) return loadProducts();
+    state.view = 'offers';
+    syncChrome();
+    setBody(skeleton(4, 'row'));
+    var params = locParams();
+    if (state.nearOnly && state.coords) params.nearby = '1';
+    getJson(offersUrl(p.id) + '?' + qs(params)).then(function (d) {
+      var list = d.offers || [];
+      var head = '<div class="pc-offer-head">' + productImage({ image: p.image }) + '<div><strong>' + esc(p.name) + '</strong><span>' + esc(p.brand || 'Compare stores') + '</span></div></div>';
+      if (!list.length) {
+        setBody(head + empty('fa-store-slash', state.nearOnly ? 'No nearby stores have this' : 'No prices available yet',
+          state.nearOnly ? 'Try a bigger radius, or switch off Near me to compare every store.' : 'Check back soon — retailers update prices regularly.'));
+        return;
+      }
+      setBody(head + '<ul class="pc-offers">' + list.map(function (o, i) { return offerRow(o, i === 0); }).join('') + '</ul>' +
+        '<p class="pc-disclaimer">Prices are supplied by retailers and can change. Delivery fees and stock are not guaranteed — confirm before you buy.</p>');
+    }).catch(handleError);
+  }
+
+  function offerRow(o, best) {
+    var url = safeUrl(o.url);
+    var meta = [];
+    if (o.branch) meta.push('<i class="fas fa-location-dot" aria-hidden="true"></i> ' + esc(o.branch) + (o.distance_km != null ? ' · ' + esc(o.distance_km) + ' km away' : ''));
+    else if (o.distance_km != null) meta.push('<i class="fas fa-location-dot" aria-hidden="true"></i> ' + esc(o.distance_km) + ' km away');
+    meta.push('<i class="fas fa-truck" aria-hidden="true"></i> ' + (o.delivery_fee != null ? (Number(o.delivery_fee) === 0 ? 'Free delivery' : 'Delivery ' + esc(money(o.delivery_fee))) : 'Delivery not listed'));
+    if (o.checked_at) meta.push('<i class="far fa-clock" aria-hidden="true"></i> Checked ' + esc(ago(o.checked_at)));
+    return '<li class="pc-offer' + (best ? ' best' : '') + '"><div class="pc-offer-main"><strong>' + esc(o.retailer) + '</strong>' +
+      '<span class="pc-offer-meta">' + meta.join('<br>') + '</span></div>' +
+      '<div class="pc-offer-side">' + (best ? '<span class="pc-best">Lowest price</span>' : '') +
+      '<span class="pc-price">' + esc(money(o.price)) + '</span>' +
+      (url ? '<a class="pc-link" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer nofollow">View in store <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>' : '') +
+      '</div></li>';
+  }
+
+  function loadStores() {
+    state.view = 'stores';
+    syncChrome();
+    if (!state.coords) {
+      setBody(empty('fa-location-crosshairs', 'See stores close to you', 'Share your location to find participating stores within your chosen distance.',
+        '<br><button type="button" data-pc-act="locate">Use my location</button>'));
+      return;
+    }
+    setBody(skeleton(4, 'row'));
+    getJson(BRANCHES_URL + '?' + qs(locParams())).then(function (d) {
+      var list = d.results || [];
+      if (!list.length) {
+        setBody(empty('fa-store-slash', 'No stores within ' + state.radius + ' km', 'Try a larger radius.'));
+        return;
+      }
+      setBody('<div class="pc-offers">' + list.map(function (b) {
+        return '<div class="pc-store"><span class="pc-store-ico" aria-hidden="true"><i class="fas fa-store"></i></span><div><strong>' + esc(b.retailer) + ' · ' + esc(b.name) + '</strong>' +
+          (b.address ? '<span>' + esc(b.address) + '</span>' : '') + '</div><em>' + esc(b.distance_km) + ' km</em></div>';
+      }).join('') + '</div>');
+    }).catch(handleError);
+  }
+
+  /* ---------- open / close ---------- */
+  function open(opts) {
+    opts = opts || {};
+    lastFocus = document.activeElement;
+    state.q = (opts.q || '').trim();
+    state.category = opts.category || '';
+    state.product = null;
+    state.view = 'products';
+    inputEl.value = state.q;
+    note('');
+    root.classList.add('open');
+    root.setAttribute('aria-hidden', 'false');
+    prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    syncChrome();
+    loadProducts();
+    setTimeout(function () {
+      if (opts.focus && window.matchMedia('(pointer:fine)').matches) inputEl.focus(); else panel.focus();
+    }, 30);
+  }
+  function close() {
+    if (!root.classList.contains('open')) return;
+    if (controller) controller.abort();
+    root.classList.remove('open');
+    root.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = prevOverflow;
+    if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  }
+  window.pcOpen = open;
+  window.pcClose = close;
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest('[data-pc-open]');
+    if (trigger) {
+      if (trigger.hasAttribute('data-pc-hero-chip')) {
+        document.querySelectorAll('[data-pc-hero-chip]').forEach(function (c) { c.classList.toggle('active', c === trigger); });
+      }
+      var heroInput = document.getElementById('pcHeroInput');
+      open({ category: trigger.dataset.pcCategory || '', q: heroInput ? heroInput.value : '', focus: trigger.hasAttribute('data-pc-focus') });
+      return;
+    }
+    var scroller = e.target.closest('[data-pc-scroll]');
+    if (scroller) {
+      var row = document.getElementById('pcHeroChips');
+      if (row) row.scrollBy({ left: Math.max(140, row.clientWidth * 0.7), behavior: 'smooth' });
+    }
+  });
+
+  var heroForm = document.getElementById('pcHeroForm');
+  if (heroForm) heroForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var active = document.querySelector('[data-pc-hero-chip].active');
+    open({ q: document.getElementById('pcHeroInput').value, category: active ? (active.dataset.pcCategory || '') : '' });
+  });
+
+  root.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t === root || t.closest('[data-pc-close]')) return close();
+    if (t.closest('[data-pc-back]')) { state.view = 'products'; state.product = null; return loadProducts(); }
+    var prod = t.closest('[data-pc-product]');
+    if (prod) {
+      state.product = { id: prod.dataset.pcProduct, name: prod.dataset.name, brand: prod.dataset.brand, image: prod.dataset.image };
+      return loadOffers();
+    }
+    var chip = t.closest('[data-pc-chip]');
+    if (chip) { state.category = chip.dataset.pcChip; state.view = 'products'; state.product = null; return loadProducts(); }
+    var tab = t.closest('[data-pc-tab]');
+    if (tab) { state.view = tab.dataset.pcTab; state.product = null; return refresh(); }
+    if (t.closest('[data-pc-retry]')) return refresh();
+    if (t.closest('[data-pc-near]')) {
+      if (state.nearOnly) { state.nearOnly = false; note(''); return refresh(); }
+      return (state.coords ? Promise.resolve(true) : locate()).then(function (ok) { state.nearOnly = ok; refresh(); });
+    }
+    if (t.closest('[data-pc-act="locate"]')) {
+      return locate().then(function (ok) { if (ok) { state.nearOnly = true; } refresh(); });
+    }
+  });
+
+  root.addEventListener('error', function (e) {
+    if (e.target && e.target.tagName === 'IMG') e.target.style.display = 'none';
+  }, true);
+
+  inputEl.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      state.q = inputEl.value.trim();
+      state.view = 'products';
+      state.product = null;
+      loadProducts();
+    }, 300);
+  });
+  radiusEl.addEventListener('change', function () {
+    state.radius = Number(radiusEl.value) || 25;
+    if (state.nearOnly || state.view === 'stores') refresh();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!root.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key === 'Tab') {
+      var f = Array.prototype.filter.call(panel.querySelectorAll('a[href],button,input,select,[tabindex="0"]'), function (el) {
+        return !el.disabled && !el.hidden && el.offsetParent !== null;
+      });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+})();
+
 </script>
 {% include 'oppo_seo/consent.html' %}
 </body>
