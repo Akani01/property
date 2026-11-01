@@ -4887,117 +4887,39 @@ class CarWashRequestViewSet(viewsets.ModelViewSet):
 
 
 
-
     @action(detail=True, methods=['get'])
-
-
-
-
-
-
-
     def tracking(self, request, pk=None):
-
-
-
-
-
-
-
         wash_request = self.get_object()
-
-
-
-
-
-
-
+        now = timezone.now()
+        quote = wash_request.quote
         location = None
+        age = None
+        is_live = False
 
-
-
-
-
-
-
-        if wash_request.assigned_worker:
-
-
-
-
-
-
-
+        if wash_request.assigned_worker and wash_request.status in {
+            'accepted', 'en_route', 'arrived', 'washing'
+        }:
             location = CarWashProviderLocation.objects.filter(
-
-
-
-
-
-
-
-                worker=wash_request.assigned_worker,
-
-
-
-
-
-
-
-                is_active=True,
-
-
-
-
-
-
-
+                worker=wash_request.assigned_worker, is_active=True,
             ).first()
-
-
-
-
-
-
+            if location and location.recorded_at:
+                age = max(0, int((now - location.recorded_at).total_seconds()))
+                is_live = age <= 120
 
         return Response({
-
-
-
-
-
-
-
             'success': True,
-
-
-
-
-
-
-
+            'server_time': now.isoformat(),
+            'fulfilment_mode': quote.fulfilment_mode,
             'request': self.get_serializer(wash_request).data,
-
-
-
-
-
-
-
-            'provider_location': CarWashProviderLocationSerializer(location).data if location else None,
-
-
-
-
-
-
-
+            'provider_location': CarWashProviderLocationSerializer(location).data if (location and is_live) else None,
+            'provider_location_is_live': is_live,
+            'provider_location_age_seconds': age,
+            'customer_location': {
+                'latitude': str(quote.service_latitude),
+                'longitude': str(quote.service_longitude),
+                'address': quote.service_address,
+            } if quote.service_latitude is not None else None,
         })
-
-
-
-
-
 
 
 
@@ -5134,6 +5056,37 @@ def update_provider_location(request):
 
 
 
+    # Reject cached GPS fixes rather than relabelling old coordinates as live.
+    # The browser supplies observed_at as milliseconds since the Unix epoch.
+    observed_at = request.data.get('observed_at')
+    now = timezone.now()
+    if observed_at not in (None, ''):
+        try:
+            from datetime import datetime, timezone as datetime_timezone
+            fix_time = datetime.fromtimestamp(float(observed_at) / 1000.0, tz=datetime_timezone.utc)
+        except (TypeError, ValueError, OverflowError, OSError):
+            return Response({'success': False, 'error': 'Invalid GPS observation timestamp.'}, status=400)
+        fix_age = (now - fix_time).total_seconds()
+        if fix_age > 120 or fix_age < -30:
+            return Response({'success': False, 'error': 'GPS fix is stale or has an invalid future timestamp.'}, status=400)
+    else:
+        fix_time = now
+
+    # Validate optional telemetry to prevent impossible values and database overflow.
+    heading = optional_decimal('heading')
+    speed_kph = optional_decimal('speed_kph')
+    accuracy_m = optional_decimal('accuracy_m')
+    if heading is not None and not (0 <= heading <= 360):
+        return Response({'success': False, 'error': 'Heading must be between 0 and 360.'}, status=400)
+    if speed_kph is not None and not (0 <= speed_kph <= 99999):
+        return Response({'success': False, 'error': 'Invalid speed.'}, status=400)
+    if accuracy_m is not None and not (0 <= accuracy_m <= 9999999):
+        return Response({'success': False, 'error': 'Invalid GPS accuracy.'}, status=400)
+
+    existing_location = CarWashProviderLocation.objects.filter(worker=worker).first()
+    if existing_location and existing_location.recorded_at and fix_time < existing_location.recorded_at:
+        return Response({'success': False, 'error': 'Older GPS fix ignored.'}, status=409)
+
     incoming_available = request.data.get('is_available')
 
     if isinstance(incoming_available, str):
@@ -5186,7 +5139,7 @@ def update_provider_location(request):
 
             'is_active': True,
 
-            'recorded_at': timezone.now(),
+            'recorded_at': fix_time,
 
         },
 
